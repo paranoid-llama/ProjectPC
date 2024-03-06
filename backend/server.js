@@ -1,0 +1,307 @@
+const express = require('express');
+const cors = require('cors');
+const mongoose = require ('mongoose');
+require('dotenv').config()
+
+function newObjectId() {
+    const timestamp = Math.floor(new Date().getTime() / 1000).toString(16);
+    const objectId = timestamp + 'xxxxxxxxxxxxxxxx'.replace(/[x]/g, () => {
+        return Math.floor(Math.random() * 16).toString(16);
+    }).toLowerCase();
+
+    return objectId;
+}
+
+//env variables
+const APIKEY = process.env.API_KEY
+
+//utils and classes
+const catchAsync = require('./utils/catchAsync')
+const CollectionClass = require('./utils/createCollection')
+
+//models
+const Collection = require('./models/collections')
+const User = require('./models/users')
+
+//totalaprimonAPI
+const gen1Info = require('./routes/aprimonAPI/gen1/gen1info')
+const gen2Info = require('./routes/aprimonAPI/gen2/gen2info')
+const gen3Info = require('./routes/aprimonAPI/gen3/gen3info')
+const gen4Info = require('./routes/aprimonAPI/gen4/gen4info')
+const gen5Info = require('./routes/aprimonAPI/gen5/gen5info')
+const gen6Info = require('./routes/aprimonAPI/gen6/gen6info')
+const gen7Info = require('./routes/aprimonAPI/gen7/gen7info')
+const gen8Info = require('./routes/aprimonAPI/gen8/gen8info')
+const gen9Info = require('./routes/aprimonAPI/gen9/gen9info')
+
+//routes
+const gen1Routes = require('./routes/aprimonAPI/gen1/gen1pokemon')
+const gen2Routes = require("./routes/aprimonAPI/gen2/gen2pokemon")
+const gen3Routes = require("./routes/aprimonAPI/gen3/gen3pokemon")
+const gen4Routes = require("./routes/aprimonAPI/gen4/gen4pokemon")
+const gen5Routes = require("./routes/aprimonAPI/gen5/gen5pokemon")
+const gen6Routes = require("./routes/aprimonAPI/gen6/gen6pokemon")
+const gen7Routes = require("./routes/aprimonAPI/gen7/gen7pokemon")
+const gen8Routes = require("./routes/aprimonAPI/gen8/gen8pokemon")
+const gen9Routes = require("./routes/aprimonAPI/gen9/gen9pokemon")
+
+//database connection
+mongoose.connect("mongodb://127.0.0.1:27017/ProjectPC", {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+})
+
+const db = mongoose.connection;
+
+db.on("error", console.error.bind(console, "connection error:"));
+db.once("open", () => {
+    console.log("Database connected");
+});
+
+const app = express();
+
+//middleware
+app.use(cors())
+app.use(express.json())
+
+//routes
+app.use('/gen1', gen1Routes)
+app.use('/gen2', gen2Routes)
+app.use('/gen3', gen3Routes)
+app.use('/gen4', gen4Routes)
+app.use('/gen5', gen5Routes)
+app.use('/gen6', gen6Routes)
+app.use('/gen7', gen7Routes)
+app.use('/gen8', gen8Routes)
+app.use('/gen9', gen9Routes)
+
+app.get('/aprimonAPI', (req, res) => {
+    const allPokemon = gen1Info.concat(
+        gen2Info,
+        gen3Info,
+        gen4Info,
+        gen5Info,
+        gen6Info,
+        gen7Info,
+        gen8Info,
+        gen9Info
+    )
+    res.json(allPokemon)
+})
+
+app.get('/message', (req, res) => {
+    res.json({ message: "Hello from server!" });
+})
+
+app.post('/users/new', catchAsync(async(req, res) => {
+    const user = new User({username: 'llama', password: 'rfgwgw', email: 'fgwfgvw'})
+    await user.save()
+    res.send('ok, made new user!')
+}))
+
+app.get('/collections', catchAsync(async(req, res) => {
+    const collections = await Collection.find({}).populate({path: 'owner'})
+    res.json(collections)
+}))
+
+app.get('/collections/new/import', catchAsync(async(req, res) => {
+    const {spreadsheetId, sheetName, nameRange, ballRange, ballOrder, gen, owner} = req.body
+    const nameData = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/1gfetCXG_5XcquNsIiPdtTeTsHrM0FSxh4UKirIXpzD0/values/Gen 8 Collection!C7:C294?&key=${APIKEY}`, {
+        method: 'GET',
+        headers: {
+            "Content-Type": "application/json"
+        },
+    }).then((data) => data.json())
+    const formatted = nameData.values.flat()
+    console.log(formatted)
+
+    res.end()
+}))
+
+
+app.post('/collections/new', catchAsync(async(req, res) => {
+    const {gen, includeBabyMon, includeIncenseMon, owner, interchangeableAltForms} = req.body
+    const collectionData = new CollectionClass(gen, includeBabyMon, includeIncenseMon, owner, interchangeableAltForms)
+    const collection = new Collection(collectionData)
+    await collection.save()
+    res.end()
+}))
+
+app.get('/collections/:id', catchAsync(async(req, res) => {
+    const collection = await Collection.findById(req.params.id).populate({path: 'owner'})
+    res.json(collection)
+}))
+
+app.put('/collections/:id/edit', catchAsync(async(req, res) => {
+    const changedField = Object.keys(req.body)[2]
+    const newValueOfChangedField = Object.values(req.body)[2]
+    const {pokename, ballname, idOfPokemon, onhandPokemon} = req.body //idofpokemon is only for onhand pokemon
+    const {id, ownerid} = req.params
+
+    if (onhandPokemon === true) {
+        const setModifier = { $set: {
+            [`onHand.$.${changedField}`]: newValueOfChangedField
+        }}
+        await Collection.updateOne({
+            _id: id,
+            'onHand._id': idOfPokemon
+            }, setModifier
+        )
+    } else {
+        if (changedField === 'isOwned' && newValueOfChangedField === true) {
+            const setModifier = { $set: {
+                [`ownedPokemon.$.balls.${ballname}.${changedField}`]: newValueOfChangedField
+            }, $unset: {
+                [`ownedPokemon.$.balls.${ballname}.highlyWanted`]: "",
+                [`ownedPokemon.$.balls.${ballname}.pending`]: ""
+            }}
+
+            await Collection.updateOne({
+                _id: id, 
+                "ownedPokemon.name": pokename
+                }, setModifier
+            )
+        } else {
+            const setModifier = { $set: {
+                [`ownedPokemon.$.balls.${ballname}.${changedField}`]: newValueOfChangedField
+            }}
+
+            await Collection.updateOne({
+                _id: id, 
+                "ownedPokemon.name": pokename
+                }, setModifier
+            )
+        }
+    }
+    res.end()
+}))
+
+app.put('/collections/:id/edit/bulkedit', catchAsync(async(req, res) => {
+    const {bulkEdit, idOfPokemon, onhandPokemon} = req.body
+    const {id} = req.params
+
+    if (onhandPokemon === true) {
+        await Collection.updateOne({
+            _id: id,
+            "onHand._id": idOfPokemon
+            }, { 
+                $set: {['onHand.$']: bulkEdit} 
+            }
+        )
+    } else {}
+
+    res.end()
+}))
+
+app.put('/collections/:id/edit/tagedit', catchAsync(async(req, res) => {
+    const {tag, activeTag, pokename, ballname, isDefaultModifier} = req.body
+    const {id} = req.params
+
+    //currently only highlyWanted and pending tags available
+    const otherTag = tag === 'highlyWanted' ? 'pending' : 'highlyWanted'
+
+    const setModifier = tag !== activeTag ? activeTag !== 'none' ? 
+        { $set: {
+            [`ownedPokemon.$.balls.${ballname}.${tag}`]: true
+        }, $unset: {
+            [`ownedPokemon.$.balls.${ballname}.${otherTag}`]: ""
+        }} : { $set: {
+            [`ownedPokemon.$.balls.${ballname}.${tag}`]: true
+        }} :
+        { $unset: {
+            [`ownedPokemon.$.balls.${ballname}.${tag}`]: ""
+        }}
+
+    const setModifierDefault = tag !== activeTag ? activeTag !== 'none' ? 
+        { $set: {
+            [`ownedPokemon.$.balls.${tag}.default`]: true
+        }, $unset: {
+            [`ownedPokemon.$.balls.${activeTag}.default`]: ""
+        }} : { $set: {
+            [`ownedPokemon.$.balls.${tag}.default`] : true
+        }} : { $unset: {
+            [`ownedPokemon.$.balls.${tag}.default`] : ""
+        }}
+    
+    if (isDefaultModifier) {
+        await Collection.updateOne({
+            _id: id,
+            "ownedPokemon.name": pokename
+        }, setModifierDefault)
+    } else {
+        await Collection.updateOne({
+            _id: id,
+            "ownedPokemon.name": pokename
+        }, setModifier)
+    }
+
+    res.end()
+}))
+
+app.put('/collections/:id/edit/addonhand', catchAsync(async(req, res) => {
+    const {newOnHand} = req.body
+    const {id} = req.params
+
+    const collection = await Collection.findById(id)
+    collection.onHand.push(newOnHand)
+    collection.save()
+
+    res.end()
+}))
+
+app.delete('/collections/:id/edit/deleteonhand', catchAsync(async(req, res) => {
+    const {pokemonId} = req.body
+    const {id} = req.params
+    await Collection.updateOne({
+        _id: id
+        }, {
+            $pull: {"onHand": {"_id": pokemonId}}
+        }, 
+        { multi: true }
+    )
+    res.end()
+}))
+
+app.put('/addtolist', async(req, res) => {
+    const pokename = 'love'
+    const ballname = 'moon'
+    const setModifier = { $set: {
+        [`ownedPokemon.$.balls.${ballname}.isHA`]: true
+    }}
+    const collection = await Collection.updateOne({
+        _id: '64ea6ad589ae773b4001ec34', 
+        "ownedPokemon.name": pokename
+        }, setModifier
+    )
+    res.send('okay, updated pokemon!')
+})
+
+app.put('/addonhand', async(req, res) => {
+    const id = '64fcbebe0a34c290b2956527'
+    const newOnHand = {
+        name: 'Charmander',
+        natDexNum: 4,
+        ball: 'heavy',
+        gender: 'female',
+        isHA: true,
+        emCount: 4,
+        EMs: ['Counter', 'Belly Drum', 'Iron Tail', 'Metal Claw'],
+        qty: 1,
+        _id: newObjectId()
+    }
+    const collection = await Collection.findById(id)
+    collection.onHand.push(newOnHand)
+    await collection.save()
+    res.send('okay, added on-hand!')
+})
+
+app.get('/', (req, res) => {
+    res.send('HOME PAGE')
+})
+
+// port/server
+const port = process.env.PORT || 3000
+
+app.listen(port, () => {
+    console.log('LISTENING ON PORT 3000')
+})

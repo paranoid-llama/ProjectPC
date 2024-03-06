@@ -1,0 +1,33 @@
+@keyframes fade-out {
+    from {
+        opacity: 100%
+    }
+    to {
+        opacity: 0%
+    }
+}
+
+.alertarea {
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    top: 80%;
+    left: 50%;
+    z-index: 1000;
+    height: 300px;
+}
+
+@media only screen and (min-width: 601px) {
+    .alertarea {
+        width: 480px;
+        transform: translate(-50%, -50%)
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    .alertarea {
+        width: 80%;
+        transform: translate(-50%, -50%)
+    }
+}

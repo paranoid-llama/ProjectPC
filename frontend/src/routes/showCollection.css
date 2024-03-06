@@ -1,0 +1,150 @@
+.header-color {
+    padding: 16px;
+    background-color: #1e2f41;
+    border-radius: 10px;
+}
+
+.body-color {
+    margin: 0;
+    padding: 16px;
+    background-color: #1d1c1b;
+    border-radius: 10px;
+}
+
+.ball-padding {
+    padding-top: 3px;
+}
+
+.fit-in {
+    padding-top: 28px;
+    padding-bottom: 28px;
+}
+
+.img-name-header-wrapper {
+    margin: 0;
+    padding: 0;
+}
+
+.checkbox-num-alignment {
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+}
+
+/* styles for checkbox content */
+
+.indicatorRowTop {
+    display: flex;
+    justify-content: center;
+    position: relative
+}
+
+.indicatorRow {
+    display: flex;
+    flex-direction: row;
+    position: relative;
+}
+
+.emindicatorContainer, .haindicatorContainer, .indicatorTop {
+    position: relative;
+    width: 100%;
+}
+
+.emindicatorContainer {
+    margin-left: 30px;
+}
+
+.haindicator, .emindicator {
+    font-size: 14px;
+    top: -4px;
+}
+
+.haindicator {
+    right: 3px;
+}
+
+.haindicatorTop {
+    top: 0px;
+    right: 1px;
+}
+
+.emindicator {
+    left: -5px;
+    margin-left: 5px;
+}
+
+.indicatorInactive {
+    opacity: 0.5;
+}
+
+.indicatorActive {
+    /* box-shadow: 0px 0px 5px 2px #d5c45d;
+    background-color: #d5c45d;
+    border-radius: 80%;
+    color: #0d0d0c; */
+    font-weight: 700
+}
+
+/* media queries */
+
+@media only screen and (max-width: 875px) {
+    .num-alignment {
+        padding-left: 5px;
+    }
+    .haindicatorTop {
+        right: -10px;
+    }
+}
+
+@media only screen and (min-width: 876px) and (max-width: 1000px) {
+    .haindicatorTop {
+        right: -3px;
+    }
+}
+
+@media only screen and (max-width: 1100px) {
+    .ball-label {
+        padding-left: 5px
+    }
+    .img-alignment {
+        padding-left: 5px;
+    }
+    .emindicatorContainer {
+        margin-left: 0px;
+        justify-content: center;
+    }
+    .haindicatorContainer {
+        margin-right: 0px;
+        width: 0%;
+    }
+    .haindicatorTop {
+        display: inline;
+    }
+    .indicatorTop {
+        margin-right: 20px;
+    }
+}
+
+@media only screen and (min-width: 1101px) and (max-width: 1200px) {
+    .haindicatorContainer {
+        margin-right: -25px;
+    }
+}
+
+@media only screen and (min-width: 1201px) and (max-width: 1300px) {
+    .haindicatorContainer {
+        margin-right: -20px;
+    }
+}
+
+@media only screen and (min-width: 1301px) and (max-width: 1400px) {
+    .haindicatorContainer {
+        margin-right: -10px;
+    }
+}
+
+@media only screen and (min-width: 1401px) and (max-width: 1500px) {
+    .haindicatorContainer {
+        margin-right: -7px;
+    }
+}

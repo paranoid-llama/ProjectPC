@@ -1,0 +1,111 @@
+import {Box, Typography, Button} from '@mui/material'
+import {useState} from 'react'
+import BallProgress from './subcomponents/ballprogress'
+import { apriballs as balls } from '../../infoconstants'
+import { selectScreenBreakpoint } from '../../app/selectors/windowsizeselectors'
+import { selectBallProgress } from '../../app/selectors/selectors'
+import { useSelector } from 'react-redux'
+import { setCirclePositionStyles, setRowXScaling } from '../../../utils/functions/ballprogresscircle/ballprogress'
+
+export default function CollectionProgress({}) {
+    const [selectedBall, setSelectedBall] = useState('')
+    const breakpoint = useSelector((state) => selectScreenBreakpoint(state, 'ballprogress'))
+    const totalProgress = useSelector((state) => selectBallProgress(state, 'total'))
+
+    const totalBalls = balls
+    const apriballs = balls.slice(0, 11)
+    const setCircleLayout = totalBalls.length > 6 && breakpoint === 'md'
+    const setRowLayout = (totalBalls.length <= 6 && breakpoint === 'md') || breakpoint === 'lg'
+    
+    if (apriballs.length % 2 === 1 && selectedBall !== '') {
+        apriballs.splice(apriballs.indexOf(selectedBall), 1) 
+    }
+
+    const handleBallSelect = (e) => {
+        if (selectedBall === e.target.value && apriballs.length % 2 === 0) {
+            setSelectedBall('') 
+            return
+        }
+        setSelectedBall(e.target.value)
+    }
+
+    const seeTotalProgress = () => {
+        setSelectedBall('')
+    }
+
+    const totalProgressStyles = {
+        label: {
+            '@media only screen and (min-width: 1000px)': {
+                right: '50%',
+                fontSize: '30px'
+            },
+            '@media only screen and (min-width: 900px) and (max-width: 999px)': {
+                right: '48%',
+                fontSize: '30px'
+            },
+            '@media only screen and (max-width: 899px)': {
+                right: '48%',
+                fontSize: '24px'
+            }
+        },
+        text: {
+            '@media only screen and (min-width: 1000px)': {
+                right: '20%',
+                fontSize: '20px'
+            },
+            '@media only screen and (min-width: 900px) and (max-width: 999px)': {
+                right: '18%',
+                fontSize: '20px'
+            },
+            '@media only screen and (max-width: 899px)': {
+                right: '18%',
+                fontSize: '14px'
+            }
+        }
+    }
+
+    return (
+        <Box sx={{position: 'relative', height: '100%', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+            {setRowLayout && <Typography sx={{position: 'absolute', top: '-25px', ...totalProgressStyles.label, fontWeight: 700}} variant='h4'>Total Progress</Typography> }
+            {setRowLayout && <Typography sx={{position: 'absolute', top: '-20px', ...totalProgressStyles.text, fontWeight: 700}} variant='h5'>{totalProgress}</Typography> }
+            {setRowLayout &&
+            totalBalls.map((ball, idx) => {
+                const scalingStyles = setRowXScaling(idx, totalBalls.length)
+                const topRowBall = ((idx+1) % 2 === 0) && (totalBalls.length >= 6)
+                const topPosition = topRowBall ? '30%' : totalBalls.length >= 6 ? '70%' : '50%'
+                const position = {top: topPosition, left: scalingStyles.left}
+                return <BallProgress key={`progress-bar-${ball}-ball`} ball={ball} position={position} size={scalingStyles.size} lgScreen={true} addLabel={totalBalls.length < 6}/>
+            })
+            }
+            {setCircleLayout && 
+            apriballs.map((ball, idx) => {
+                const positioning = setCirclePositionStyles(idx, apriballs.length)
+                const selected = ball === selectedBall
+                return <BallProgress 
+                            key={`progress-bar-${ball}-ball`} 
+                            ball={ball} 
+                            className={positioning.className} 
+                            position={positioning.position} 
+                            circleOrientation={true}
+                            selected={selected}
+                            handleBallChange={handleBallSelect}
+                        />
+            })
+            }
+            {setCircleLayout && selectedBall === '' && <Typography sx={{position: 'absolute', top: '40px', fontWeight: 700}} variant='h4'>Total Progress</Typography>}
+            {setCircleLayout && selectedBall === '' && <Typography sx={{position: 'absolute', top: '100px', fontWeight: 700}} variant='h5'>{totalProgress}</Typography>}
+            {(setCircleLayout && selectedBall !== '') && 
+                <BallProgress 
+                  ball={selectedBall}
+                  position={{right: '50%', top: '50%'}}
+                  circleCenterBall={true}  
+                />
+            }
+            {(setCircleLayout && totalBalls.length % 2 === 1 && selectedBall !== '') && 
+                <Button sx={{position: 'absolute', top: '-30px'}} size='small' onClick={seeTotalProgress}>
+                    Total Progress
+                </Button>
+            }
+        </Box>
+    )
+}
