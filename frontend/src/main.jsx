@@ -64,7 +64,7 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <AlertsProvider>
-      <Box sx={{width: '100%'}}>
+      <Box sx={{width: '100%', display: 'flex', flexDirection: 'column', minHeight: '100vh', margin: 0}}>
         <NavBar />
         <RouterProvider router={router}/>
         <Footer />

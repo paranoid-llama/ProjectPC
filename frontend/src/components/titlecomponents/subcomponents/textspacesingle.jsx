@@ -57,7 +57,7 @@ export default function TextSpaceSingle({bgColor, textColor, text, multipleTexts
                 })}
             </Box>
         </Box> : 
-        <Box sx={{display: 'flex', justifyContent: 'start', flexDirection: 'row', height: '2rem', width, bgColor}}>
+        <Box sx={{display: 'flex', justifyContent: 'start', flexDirection: 'row', height: '2rem', width, ...bgStyle}}>
             <Box sx={{margin: 0}}>
                 <Typography sx={{color: textColor, ...otherTextStyles}}>{text}</Typography>
             </Box>

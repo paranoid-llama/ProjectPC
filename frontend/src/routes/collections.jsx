@@ -1,4 +1,5 @@
 import {useLocation} from "react-router-dom"
+import { Box } from "@mui/material"
 import {useEffect, useState} from 'react'
 
 export default function Collections() {
@@ -11,7 +12,7 @@ export default function Collections() {
     }, [])
 
     return (
-        <div>
+        <Box sx={{flex: 1}}>
             <h1>All Collections</h1>
             <ul>
                 {collections.map((c) => (
@@ -22,6 +23,6 @@ export default function Collections() {
                     </li>
                 ))}
             </ul>
-        </div>
+        </Box>
     )
 }

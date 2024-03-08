@@ -5,7 +5,7 @@ import {Box, Typography} from "@mui/material";
 import Header from "../components/titlecomponents/subcomponents/header";
 import BodyWrapper from "../components/partials/routepartials/bodywrapper";
 import CreationProgress from "../components/collectioncreation/creationprogress";
-import CollectionTypeSelection from "../components/collectioncreation/stepcomponents/collectiontypeselection";
+import CollectionTypeSelection from "../components/collectioncreation/stepcomponents/typeselection/collectiontypeselection";
 
 export default function NewCollection(userid) {
     const navigate = useNavigate()
@@ -31,16 +31,18 @@ export default function NewCollection(userid) {
     
     return (
         <>
-        <Box sx={{flexGrow: 1, width: '100%', alignItems: 'center'}}>
-            <Header text={"Create New Collection"} additionalStyles={{backgroundColor: '#26BCC9', color: 'black'}}>Create New Collection</Header>
+        <Box sx={{flex: 1}}>
+            <Box sx={{flexGrow: 1, width: '100%', alignItems: 'center'}}>
+                <Header text={"Create New Collection"} additionalStyles={{backgroundColor: '#26BCC9', color: 'black'}}>Create New Collection</Header>
+            </Box>
+            <BodyWrapper>
+                <CreationProgress progress={creationProgress}/>
+                {creationProgress === 0 && <CollectionTypeSelection/>}
+            </BodyWrapper>
         </Box>
-        <BodyWrapper>
-            <CreationProgress progress={creationProgress}/>
-            {creationProgress === 0 && <CollectionTypeSelection/>}
-        </BodyWrapper>
         </>
         
-        
+    
         // <div>
         //     <h1>Create new collection!</h1>
         //     <form action="/collections/new" method="POST" onSubmit={handleFormData}>

@@ -21,4 +21,14 @@ const apriballs = ['fast', 'friend', 'heavy', 'level', 'love', 'lure', 'moon', '
 
 const shopballs = ['poke', 'great', 'ultra', 'premier', 'repeat', 'timer', 'nest', 'net', 'luxury', 'dive', 'quick', 'heal', 'dusk']
 
-export {generations, genRomans, apriballs, shopballs, findGenByDexNum}
+//new types of collections put here
+
+const collectionTypes = ['aprimon'] //haven't set up app for living dex collections yet, so it will stay out of this array until it does. exact name has to be 'living dex'
+const collectionDescription = ['Collect pokemon in apricorn/rare pokeballs!', "Collect every pokemon. Gotta catch 'em all!"]
+
+const collectionSubTypes = {
+    aprimon: ['Gen 6', 'Gen 7', 'SW/SH', 'BD/SP', 'Gen 9 (S/V)', 'HOME'],
+    ['living dex']: ['Regular', 'Shiny', 'Alternate Forms']
+}
+
+export {generations, genRomans, apriballs, shopballs, findGenByDexNum, collectionTypes, collectionDescription, collectionSubTypes}

@@ -76,53 +76,55 @@ export default function ShowCollection({colorStyles, listStyles}) {
     return (
         <>
         {/* <EditCollection /> */}
-        <Box sx={{flexGrow: 1, width: '100%', alignItems: 'center'}}>
-            <Header additionalStyles={{backgroundColor: '#26BCC9', color: 'black'}}>{collectionName}</Header>
-        </Box>
-        <BodyWrapper>
-            {/* <h1>Collection info</h1>
-            <h2>Owner: {collection.owner && collection.owner.username}</h2> */}
-            <ShowCollectionTitle collectionID={collectionId}/>
-            <FilterSortArea/>
-            <Box sx={{flexGrow: 1, margin: 0, width: '100%', display: 'flex'}}>
-                <Tabs 
-                    textcolor='inherit'
-                    value={list}
-                    onChange={changeListType}
-                    indicatorColor='#FFDF26'
-                    sx={{width: '40%', zIndex: 100}}
-                >
-                    <Tab 
-                        sx={list === 'collection' ? tabStyles(true) : tabStyles(false)} 
-                        style={{color: '#283f57'}}
-                        label='Collection List' 
-                        value='collection'
-                    />
-                    <Tab 
-                        sx={list === 'onHand' ? tabStyles(true) : tabStyles(false)} 
-                        style={{color: '#283f57'}}
-                        label='On-Hand List' 
-                        value='onHand'
-                    />
-                    
-                </Tabs>
-                <Box sx={{width: '60%', display: 'flex', flexDirection: 'row-reverse', alignItems: 'center'}}>
-                    <Box sx={{width: '50%', height: '100%', display: 'flex', flexDirection: 'column'}}>
+        <Box sx={{flex: 1}}>
+            <Box sx={{flexGrow: 1, width: '100%', alignItems: 'center'}}>
+                <Header additionalStyles={{backgroundColor: '#26BCC9', color: 'black'}}>{collectionName}</Header>
+            </Box>
+            <BodyWrapper>
+                {/* <h1>Collection info</h1>
+                <h2>Owner: {collection.owner && collection.owner.username}</h2> */}
+                <ShowCollectionTitle collectionID={collectionId}/>
+                <FilterSortArea/>
+                <Box sx={{flexGrow: 1, margin: 0, width: '100%', display: 'flex'}}>
+                    <Tabs 
+                        textcolor='inherit'
+                        value={list}
+                        onChange={changeListType}
+                        indicatorColor='#FFDF26'
+                        sx={{width: '40%', zIndex: 100}}
+                    >
+                        <Tab 
+                            sx={list === 'collection' ? tabStyles(true) : tabStyles(false)} 
+                            style={{color: '#283f57'}}
+                            label='Collection List' 
+                            value='collection'
+                        />
+                        <Tab 
+                            sx={list === 'onHand' ? tabStyles(true) : tabStyles(false)} 
+                            style={{color: '#283f57'}}
+                            label='On-Hand List' 
+                            value='onHand'
+                        />
+                        
+                    </Tabs>
+                    <Box sx={{width: '60%', display: 'flex', flexDirection: 'row-reverse', alignItems: 'center'}}>
+                        <Box sx={{width: '50%', height: '100%', display: 'flex', flexDirection: 'column'}}>
+                        </Box>
                     </Box>
                 </Box>
-            </Box>
-            {list === 'collection' ? 
-            <ShowCollectionList
-                collection={collection}
-                styles={listStyles.collection}
-            /> :
-            <ShowOnHandList
-                collectionID={collection._id}
-                eggMoveInfo={collection.eggMoveInfo}
-                styles={listStyles.onhand}
-            />
-            }
-        </BodyWrapper>
+                {list === 'collection' ? 
+                <ShowCollectionList
+                    collection={collection}
+                    styles={listStyles.collection}
+                /> :
+                <ShowOnHandList
+                    collectionID={collection._id}
+                    eggMoveInfo={collection.eggMoveInfo}
+                    styles={listStyles.onhand}
+                />
+                }
+            </BodyWrapper>
+        </Box>
         </>
     )
 }

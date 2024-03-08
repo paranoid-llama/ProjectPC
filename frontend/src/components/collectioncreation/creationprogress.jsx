@@ -10,9 +10,7 @@ export default function CreationProgress({progress}) {
     const shrinkStepIdx = stepPos.indexOf(progressRef.current)
 
     useEffect(() => {
-        console.log(progressRef.current)
         progressRef.current = progress
-        console.log(progressRef.current)
     })
 
     const stepText = ['Type', 'Import', 'Scope', 'Options', 'Finalize']
@@ -24,7 +22,7 @@ export default function CreationProgress({progress}) {
                 const growTransition = idx === growStepIdx 
                 const shrinkTransition = idx === shrinkStepIdx
                 return (
-                    <ProgressStep percentNum={stepPos[idx]} stepNum={num} stepText={stepText[idx]} currentProgress={progress} transitionClass={growTransition ? 'grow-step' : shrinkTransition ? 'shrink-step' : 'none'}/>
+                    <ProgressStep key={`collection-creation-step-${num}`} percentNum={stepPos[idx]} stepNum={num} stepText={stepText[idx]} currentProgress={progress} transitionClass={growTransition ? 'grow-step' : shrinkTransition ? 'shrink-step' : 'none'}/>
                 )
             })}
         </Box>
