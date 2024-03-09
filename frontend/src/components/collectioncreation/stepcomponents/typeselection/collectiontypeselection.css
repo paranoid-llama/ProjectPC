@@ -46,6 +46,18 @@
     animation-fill-mode: forwards
 }
 
+.transition-shrink-card-height {
+    animation-name: shrink-collection-creation-card-height;
+    animation-duration: 0.5s;
+    animation-fill-mode: forwards;
+}
+
+.transition-slide-in-subtype {
+    animation-name: sub-type-selection-slide-in;
+    animation-duration: 0.20s;
+    animation-fill-mode: forwards;
+}
+
 .sub-type-selection-slide-out {
     animation-name: sub-type-selection-slide-out;
     animation-duration: 0.5s;

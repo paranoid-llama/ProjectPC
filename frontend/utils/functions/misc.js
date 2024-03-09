@@ -24,6 +24,17 @@ function selectNextEmCount(emCountArr, currEmCount) {
         return emCountArr[idxOfCurrEmCount + 1]
     }
 }
+//below is a generalized function of the specific above. too lazy to unify them.
+function selectAdjArrItem(arr, currItem, next) {
+    const idxOfCurrItem = arr.indexOf(currItem)
+    if (idxOfCurrItem === (arr.length - 1) && next) {
+        return arr[0]
+    } else if (idxOfCurrItem === 0 && !next){
+        return arr[arr.length - 1]
+    } else {
+        return arr[(next ? (idxOfCurrItem + 1) : (idxOfCurrItem - 1))]
+    }
+}
 
 function getOwnedBalls(ballsObj) {
     const temp = Object.entries(ballsObj)
@@ -97,4 +108,15 @@ function handleEMsState(newEM, currEMArr) {
     }
 }
 
-export {capitalizeFirstLetter, setMaxEmArr, selectNextEmCount, getOwnedBalls, getPokemonWithOwnedBalls, randomGender, setNewOnHandPokemonState, selectivelyReturnIsHAAndEMs, handleEMsState}
+export {
+    capitalizeFirstLetter, 
+    setMaxEmArr, 
+    selectNextEmCount, 
+    selectAdjArrItem, 
+    getOwnedBalls, 
+    getPokemonWithOwnedBalls, 
+    randomGender, 
+    setNewOnHandPokemonState, 
+    selectivelyReturnIsHAAndEMs, 
+    handleEMsState
+}

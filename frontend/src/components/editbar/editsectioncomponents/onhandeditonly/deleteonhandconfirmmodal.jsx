@@ -36,8 +36,9 @@ export default function DeleteOnHandConfirm({open, handleClose, pokemonName, bal
             setTimeout(() => {
                 dispatch(deleteOnHand(pokemonId))
             }, 500)
-            // dispatch(showAlert())
-
+            // setting timeout to update onhand pokemon state for each individual row actually works with only one re-render on the deleted row and re-renders on the other row (which should be normal)
+            // do not know why it works this way but hey it does
+            
             //spawning alert
             const alertMessage = `Deleted ${capitalizeFirstLetter(ball)} ${pokemonName}`
             const alertInfo = {severity: 'success', message: alertMessage, timeout: 3, messageImgs: [{type: 'ball', linkKey: ball}, {type: 'poke', linkKey: imgLink}]}
@@ -45,8 +46,7 @@ export default function DeleteOnHandConfirm({open, handleClose, pokemonName, bal
             setAlertIds((prev) => [...prev, id]);
 
             handleClose()
-            // setting timeout to update onhand pokemon state for each individual row actually works with only one re-render on the deleted row and re-renders on the other row (which should be normal)
-            // do not know why it works this way but hey it does
+            
         }, 1000)
         
     }

@@ -1,10 +1,11 @@
 import {Box, Typography, Button, Card, CardMedia, CardContent, CardActionArea} from '@mui/material'
+import ImgData from '../../../collectiontable/tabledata/imgdata'
 import { capitalizeFirstLetter } from '../../../../../utils/functions/misc'
 import { collectionDescription } from '../../../../infoconstants'
 import { useState } from 'react'
 import './collectiontypeselection.css'
 
-export default function CollectionTypeCard({collectionType, idx, subTypes, handleSubTypeScreen, slideClass}) {
+export default function CollectionTypeCard({collectionType, idx, subTypes, handleSubTypeScreen, slideClass, handleChange}) {
     
     const displayName = collectionType === 'living dex' ? 'Living Dex' : capitalizeFirstLetter(collectionType)
     const description = collectionDescription[idx]
@@ -65,10 +66,20 @@ export default function CollectionTypeCard({collectionType, idx, subTypes, handl
                     const height = `${85/subTypes.length}%`
                     return (
                         <Box sx={{width: '100%', backgroundColor, height, maxHeight: '50px', display: 'flex', alignItems: 'center'}} key={`${collectionType}-subtype-${subType}-selection`}>
-                            <Button sx={{width: '100%', height: '100%', color}}>{subType}</Button>
+                            <Button 
+                                sx={{width: '100%', height: '100%', color}}
+                                onClick={(e) => handleChange(e, collectionType, subType)}
+                            >
+                                {subType}
+                            </Button>
                         </Box>
                     )
                 })}
+                <Box sx={{width: '100%', height: '5%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                    <Button sx={{height: '100%', width: '100%', borderBottomLeftRadius: '10px', borderBottomRightRadius: '10px'}} onClick={(e) => handleSubTypeScreen(e, idx)}>    
+                        <ImgData type='gender' linkKey='arrowup' size='12px'/>
+                    </Button>
+                </Box>
             </Box>
         </Card>
     )

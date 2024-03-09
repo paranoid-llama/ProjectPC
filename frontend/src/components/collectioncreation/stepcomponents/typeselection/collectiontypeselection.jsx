@@ -1,13 +1,11 @@
-import {Box, Typography, Button, Card, CardHeader, CardMedia, CardContent, CardActions, Collapse, CardActionArea} from '@mui/material'
+import {Box} from '@mui/material'
 import { useState } from 'react'
 import Header from '../../../titlecomponents/subcomponents/header'
 import CollectionTypeCard from './collectiontypecard'
 import { collectionTypes, collectionSubTypes } from '../../../../infoconstants'
-import ImgData from '../../../collectiontable/tabledata/imgdata'
-import TextSpaceDouble from '../../../titlecomponents/subcomponents/textspacedouble'
 import './collectiontypeselection.css'
 
-export default function CollectionTypeSelection({collectionType}) {
+export default function CollectionTypeSelection({handleChange, cssClass}) {
     const [subTypeSelection, setSubTypeSelection] = useState({screenOpen: Array.from(Array(collectionTypes.length), () => 'firstRender'), addHeight: 'firstRender'}) //whether subtype selection screen is open
     // const [addHeight, setAddHeight] = useState('firstRender')
     const heightClass = subTypeSelection.addHeight === true ? 'add-collection-creation-card-height' : subTypeSelection.addHeight === false ? 'shrink-collection-creation-card-height' : 'none'
@@ -53,26 +51,28 @@ export default function CollectionTypeSelection({collectionType}) {
     //     }
     // }
 
-    const defaultType = collectionType === undefined && 'aprimon' //this is just to make the key for subtype rendering make sense. delete this when you have mo
+    
 
     return (
-        <Box sx={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
-            <Header additionalStyles={{color: 'black', marginTop: 2}}>Select a Collection Type</Header>
+        <Box sx={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', mt: 2}} className={cssClass}>
+            <Header additionalStyles={{color: 'black'}}>Select a Collection Type</Header>
             <Box sx={{width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'center', gap: '20px'}}>
             {collectionTypes.map((type, idx) => {
                 const subTypesArr = collectionSubTypes[type]
                 return (
                     <CollectionTypeCard 
                         key={`${type}-collection-type-card`}
-                        collectionType={type} idx={idx} 
+                        collectionType={type} 
+                        idx={idx} 
                         subTypes={subTypesArr} 
                         handleSubTypeScreen={handleSubTypeSelection} 
-                        slideClass={slideClasses[idx]} 
+                        slideClass={(cssClass === 'creation-step-slide-left-exit' && subTypeSelection.screenOpen[idx] === true) ? 'transition-slide-in-subtype' : slideClasses[idx]} 
+                        handleChange={handleChange}
                     />
                 )
             })}
             </Box>
-            <Box sx={{width: '100%'}} className={heightClass}></Box>
+            <Box sx={{width: '100%'}} className={cssClass === 'creation-step-slide-left-exit' ? 'transition-shrink-card-height' : heightClass}></Box>
         </Box>
     )
 }
