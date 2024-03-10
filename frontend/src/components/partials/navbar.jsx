@@ -11,7 +11,7 @@ export default function NavBar() {
     const iconLinks = ['/', '/search', '/collections/new', '/login']
 
     return (
-        <Box sx={{width: '100%'}}>
+        <Box sx={{width: '100%', height: '61px'}}>
             <AppBar position="relative">
                 <div className="NavBar">
                     <Typography

@@ -5,7 +5,7 @@ import Typography from '@mui/material/Typography';
 
 export default function Footer() {
     return (
-        <Box sx={{width: '100%', mt: 5}}>
+        <Box sx={{width: '100%', mt: 5, height: '50px'}}>
             <AppBar 
             position='static'
             sx={{

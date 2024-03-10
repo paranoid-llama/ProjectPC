@@ -5,10 +5,11 @@ import { Virtuoso } from "react-virtuoso";
 import {Box, Typography, Button} from "@mui/material";
 import Header from "../components/titlecomponents/subcomponents/header";
 import BodyWrapper from "../components/partials/routepartials/bodywrapper";
+import BodyWithBanner from "../components/partials/routepartials/bodywithbanner";
 import CreationProgress from "../components/collectioncreation/creationprogress";
 import CollectionTypeSelection from "../components/collectioncreation/stepcomponents/typeselection/collectiontypeselection";
 import ImportSelection from "../components/collectioncreation/stepcomponents/importselection/importselection";
-import { selectAdjArrItem } from "../../utils/functions/misc";
+import { selectAdjArrItem, capitalizeFirstLetter } from "../../utils/functions/misc";
 import './newCollection.css'
 
 export default function NewCollection(userid) {
@@ -50,27 +51,10 @@ export default function NewCollection(userid) {
         step5: getSlideClasses(100)
     }
 
-    // const handleCreationProgressChange = (progressNum) => {
-    //     setCreationProgress(progressNum)
-    // }
-
     useEffect(() => {
         progressRef.current = creationProgress
     }, [creationProgress])
 
-    const handleFormData = (e) => {
-        e.preventDefault()
-        // const formData = {
-        //     gen: e.target[0].value, 
-        //     includeBabyMon: e.target[1].checked, 
-        //     includeIncenseMon: e.target[2].checked,
-        //     interchangeableAltForms: e.target[3].checked,
-        //     owner: '64ea4c22465311a6bf99c4ae'
-        //     //put userid here too for authentication
-        // }
-        // createNewCollection(formData)
-        navigate("/collections")
-    }
 
     const handleCollectionTypeChange = (e, type, subType) => {
         setFormData({...formData, collectionType: {type, subType}})
@@ -92,47 +76,21 @@ export default function NewCollection(userid) {
     const transitionOccuring = Object.values(slideClasses).filter(className => className !== 'none').length !== 0
     
     return (
-        <>
-        <Box sx={{flex: 1, overflowX: 'hidden', overflowY: 'hidden'}}>
-            <Box sx={{flexGrow: 1, width: '100%', alignItems: 'center'}}>
-                <Header text={"Create New Collection"} additionalStyles={{backgroundColor: '#26BCC9', color: 'black'}}>Create New Collection</Header>
-            </Box>
-            <BodyWrapper sx={{position: 'relative'}}>
+        <BodyWithBanner bodySx={{overflowX: 'hidden', overflowY: 'hidden', height: '100%', mt: 2}} bannerSx={{backgroundColor: '#26BCC9', color: 'black'}} text='Create New Collection'>
+            {/*extra box with margin top needed due to overflow*/}
+            <Box sx={{height: '100%', mt: 3, mx: 1}}> 
                 <CreationProgress progress={creationProgress} />
-                {(formBodyProgress === 0 || slideClasses.step1 !== 'none') && <CollectionTypeSelection handleChange={handleCollectionTypeChange} cssClass={slideClasses.step1}/>}
-                {(formBodyProgress === 25 || slideClasses.step2 !== 'none') && <ImportSelection cssClass={slideClasses.step2}/>
-                    // <Box sx={{mt: 2, height: '100%', backgroundColor: 'black', color: 'white', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}} className={slideClasses.step2}>Import Collection <Button onClick={goBackStep}>Go Back</Button></Box>
+                {(formBodyProgress === 0 || slideClasses.step1 !== 'none') && 
+                    <CollectionTypeSelection handleChange={handleCollectionTypeChange} cssClass={slideClasses.step1}/>
                 }
-            </BodyWrapper>
-        </Box>
-        </>
-        
-    
-        // <div>
-        //     <h1>Create new collection!</h1>
-        //     <form action="/collections/new" method="POST" onSubmit={handleFormData}>
-        //         <label htmlFor="gen">Gen:</label>
-        //         <select id="gen" name="gen">
-        //             <option value={6}>Gen 6</option>
-        //             <option value={7}>Gen 7</option>
-        //             <option value='swsh'>Gen 8 (Sword/Shield)</option>
-        //             <option value='bdsp'>Gen 8 (BD/SP)</option>
-        //             <option value={9}>Gen 9</option>
-        //         </select>
-        //         <div>
-        //             <label htmlFor="babyMon">Include Baby Pokemon over their evolved forms:</label>
-        //             <input type="checkbox" id="babyMon" name="includeBabyMon" defaultChecked></input>
-        //         </div>
-        //         <div>
-        //             <label htmlFor="incenseMon">Include Incense babies over their evolved forms:</label>
-        //             <input type="checkbox" id="incenseMon" name="includeIncenseBaby"></input>
-        //         </div>
-        //         <div>
-        //             <label htmlFor="interchangeableAltForms">Include Interchangeable Alternate Forms:</label>
-        //             <input type="checkbox" id="interchangeableAltForms" name="interchangeableAltForms"></input>
-        //         </div>
-        //         <button type="submit">Create Collection</button>
-        //     </form>
-        // </div>
+                {(formBodyProgress === 25 || slideClasses.step2 !== 'none') && 
+                    <ImportSelection 
+                        goBackStep={{stepName: 'Type Selection', func: goBackStep}} 
+                        cssClass={slideClasses.step2} 
+                        collectionType={`${formData.collectionType.subType} ${capitalizeFirstLetter(formData.collectionType.type)} Collection`}
+                    />
+                }
+            </Box>
+        </BodyWithBanner>
     )
 }

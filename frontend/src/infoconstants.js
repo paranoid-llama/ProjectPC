@@ -31,4 +31,41 @@ const collectionSubTypes = {
     ['living dex']: ['Regular', 'Shiny', 'Alternate Forms']
 }
 
-export {generations, genRomans, apriballs, shopballs, findGenByDexNum, collectionTypes, collectionDescription, collectionSubTypes}
+//collection creation options
+
+const pokeBabies = ['Pichu', 'Cleffa', 'Igglybuff', 'Smoochum', 'Elekid', 'Magby', 'Togepi', 'Riolu', 'Toxel'] //tyrogue is purposefully excluded since you cannot decide to display their evolutions instead
+const pokeAdults = ['Pikachu', 'Clefairy', 'Jigglypuff', 'Jynx', 'Electabuzz', 'Magmar', 'Togetic', 'Lucario', 'Toxtricity']
+
+const pokeIncenseBabies = ['Mime Jr.', 'Happiny', 'Munchlax', 'Azurill', 'Wynaut', 'Bonsly', 'Mantyke', 'Budew', 'Chingling']
+const pokeIncenseAdults = ['Mr. Mime', 'Chansey', 'Snorlax', 'Marill', 'Wobbuffet', 'Sudowoodo', 'Mantine', 'Roselia', 'Chimecho']
+
+//evolutions of pokemon with different forms. only if the pre-evolve form does not have that form AND that form isn't available to evolve into for everyone
+const differentRegionalFormEvolutions = ['Alolan Raichu', 'Alolan Exeggcutor', 'Alolan Marowak', 'Galarian Weezing', 'Hisuian Typhlosion', 'Hisuian Samurott', 'Hisuian Lilligant', 'Hisuian Braviary', 'Hisuian Sliggoo', 'Hisuian Avalugg', 'Hisuian Decidueye']
+const vivillonForms = ['Archipelago', 'Continental', 'Elegant', 'Garden', 'High Plains', 'Icy Snow', 'Jungle', 'Marine', 'Meadow', 'Modern', 'Monsoon', 'Ocean', 'Polar', 'River', 'Sandstorm', 'Savanna', 'Sun' ,'Tundra']
+const alcremieForms = {
+    sweets: ['Strawberry', 'Berry', 'Love', 'Star', 'Clover', 'Flower', 'Ribbon'], 
+    creams: ['Vanilla Cream', ' Ruby Cream', 'Matcha Cream', 'Mint Cream', 'Lemon Cream', 'Salted Cream', 'Ruby Swirl', 'Caramel Swirl', 'Rainbow Swirl']
+}
+
+const getAllAlcremieFormsArr = () => {
+    const allAlcremieForms = []
+    for (let sweet of alcremieForms.sweets) {
+        for (let cream of alcremieForms.creams) {
+            allAlcremieForms.push(`${sweet} ${cream}`)
+        }
+    }
+    return allAlcremieForms
+}
+
+export {
+    generations, 
+    genRomans, 
+    apriballs, 
+    shopballs, 
+    findGenByDexNum, 
+    collectionTypes, 
+    collectionDescription, 
+    collectionSubTypes,
+    pokeBabies, pokeAdults, pokeIncenseBabies, pokeIncenseAdults,
+    differentRegionalFormEvolutions, vivillonForms, getAllAlcremieFormsArr
+}
