@@ -1,10 +1,16 @@
 import './../../../../utils/styles/componentstyles/imgdata.css'
 
-export default function ImgData({type='poke', linkKey, size='32px', setAbsolutePosition=false}) {
+export default function ImgData({type='poke', linkKey, size='32px', setAbsolutePosition=false, imgFolder='none', additionalClasses=''}) {
     const imgLinkModifier = type === 'poke' ? 'sprites' : type === 'ball' ? 'balls' : type === 'gender' && 'icons'
-    const imgLink = `https://res.cloudinary.com/duaf1qylo/image/upload/${imgLinkModifier}/${linkKey}.png`
+    const imgLink = `https://res.cloudinary.com/duaf1qylo/image/upload/${imgFolder !== 'none' ? imgFolder : imgLinkModifier}/${linkKey}.png`
     const className = setAbsolutePosition ? 'position-absolute' : ''
+    const noCustomSize = size === 'inherit'
+    if (noCustomSize) {
+        return (
+            <img src={imgLink} className={`${className} ${additionalClasses}`}></img>
+        )
+    }
     return (
-        <img width={size} height={size} src={imgLink} className={className}></img>
+        <img width={size} height={size} src={imgLink} className={`${className} ${additionalClasses}`}></img>
     )
 }

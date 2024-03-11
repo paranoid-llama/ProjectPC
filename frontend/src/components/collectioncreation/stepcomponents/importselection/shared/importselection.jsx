@@ -1,8 +1,8 @@
 import {Box, Button, Typography} from '@mui/material'
 import { useState, useTransition, useRef, useEffect } from 'react'
-import ImgData from '../../../collectiontable/tabledata/imgdata'
-import Header from '../../../titlecomponents/subcomponents/header'
-import ImportForm from './importform'
+import ImgData from '../../../../collectiontable/tabledata/imgdata'
+import Header from '../../../../titlecomponents/subcomponents/header'
+import AprimonImportForm from '../aprimon/aprimonimportform'
 import './importselection.css'
 
 export default function ImportSelection({handleChange, cssClass, goBackStep, collectionType}) {
@@ -31,23 +31,24 @@ export default function ImportSelection({handleChange, cssClass, goBackStep, col
     })
 
     return (
-        <Box sx={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', mt: 2, height: '550px'}} className={cssClass}>
-            <Header additionalStyles={{color: 'black', height: '10%', paddingBottom: '2px', height: '32px'}}>Import Collection</Header>
+        <Box sx={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', mt: 1, height: '581px'}} className={cssClass}>
+            <Header additionalStyles={{color: 'black', height: '5%', paddingBottom: '2px', height: '32px'}}>Import Collection</Header>
             <Typography sx={{fontSize: '12px'}}>{collectionType}</Typography>
             <Box sx={{width: '100%', height: '100%', position: 'relative'}}>
                 <Box sx={{width: '100%', height: '100%', display: 'flex', flexDirection: 'row', position: 'absolute', transform: 'translateX(100%)'}} className={slideClass}>
-                    <Box sx={{mt: 5, width: '100%', height: '100%', position: 'absolute', right: '100%'}} className={fadeClass.screen1}> 
-                        <Box sx={{height: '20%'}}>
+                    <Box sx={{width: '100%', height: '100%', position: 'absolute', right: '100%'}} className={fadeClass.screen1}> 
+                        <Box sx={{height: '20%', mt: 5}}>
                             <Button size='large' sx={{fontSize: '20px'}} onClick={(e) => changeScreen(e, 1)}>Import Collection from Google Sheets</Button>
                         </Box>
                         <Box sx={{margin: 5, height: '10%'}}><Typography sx={{fontSize: '16px'}}>or</Typography></Box>
                         <Box sx={{height: '20%'}}><Button size='large' sx={{fontSize: '20px'}}>Start from Scratch</Button></Box> 
                     </Box>
             
-                    <Box sx={{width: '100%', height: '100%', mt: 5, position: 'absolute', visibility: 'hidden'}} className={fadeClass.screen2}>
-                        <Typography>NEXT SCREEN</Typography>
+                    <Box sx={{width: '100%', height: '100%', mt: 2, position: 'absolute', visibility: 'hidden'}} className={fadeClass.screen2}>
+                        {/* change this to show different import forms depending on type (once more collection types are added)*/}
+                        <AprimonImportForm/>
                     </Box>
-                    <Box sx={{width: '100%', height: '100%', mt: 5, position: 'absolute', right: '-100%', visibility: 'hidden'}} className={fadeClass.screen3}>
+                    <Box sx={{width: '100%', height: '100%', position: 'absolute', right: '-100%', visibility: 'hidden'}} className={fadeClass.screen3}>
                         <Typography>DISPLAY SCREEN</Typography>
                     </Box>
                 </Box>
@@ -55,12 +56,19 @@ export default function ImportSelection({handleChange, cssClass, goBackStep, col
             
             <Box sx={{width: '100%', display: 'flex', justifyContent: 'end', flexDirection: 'column', alignItems: 'center'}}>
                 <Box sx={{display: 'flex', width: '90%'}}>
-                    <Box sx={{width: '50%'}}>
+                    <Box sx={{width: '50%', display: 'flex', justifyContent: 'start'}}>
                         <Button onClick={goBackStep.func}>
                             <ImgData type='gender' linkKey='arrowleft' size='8px'/>
                             <Typography sx={{mx: 2, fontSize: '14px'}}>{goBackStep.stepName}</Typography>
                         </Button>
                     </Box>
+                    {(importScreen === 'import') &&
+                    <Box sx={{width: '50%', display: 'flex', justifyContent: 'end'}}>
+                        <Button>
+                            <Typography sx={{mx: 2, fontSize: '14px'}}>Start from Scratch Instead</Typography>
+                            <ImgData type='gender' linkKey='arrowright' size='8px'/>
+                        </Button>
+                    </Box>}
                     
                 </Box>
             </Box>

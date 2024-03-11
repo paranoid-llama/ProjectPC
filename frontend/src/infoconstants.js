@@ -57,6 +57,10 @@ const getAllAlcremieFormsArr = () => {
     return allAlcremieForms
 }
 
+//used to filter out breaks in spreadsheets for collection import
+
+const regions = ['kanto', 'johto', 'hoenn', 'sinnoh', 'unova', 'kalos', 'alola', 'galar', 'paldea']
+
 export {
     generations, 
     genRomans, 
@@ -67,5 +71,6 @@ export {
     collectionDescription, 
     collectionSubTypes,
     pokeBabies, pokeAdults, pokeIncenseBabies, pokeIncenseAdults,
-    differentRegionalFormEvolutions, vivillonForms, getAllAlcremieFormsArr
+    differentRegionalFormEvolutions, vivillonForms, getAllAlcremieFormsArr,
+    regions
 }

@@ -8,7 +8,7 @@ import BodyWrapper from "../components/partials/routepartials/bodywrapper";
 import BodyWithBanner from "../components/partials/routepartials/bodywithbanner";
 import CreationProgress from "../components/collectioncreation/creationprogress";
 import CollectionTypeSelection from "../components/collectioncreation/stepcomponents/typeselection/collectiontypeselection";
-import ImportSelection from "../components/collectioncreation/stepcomponents/importselection/importselection";
+import ImportSelection from "../components/collectioncreation/stepcomponents/importselection/shared/importselection";
 import { selectAdjArrItem, capitalizeFirstLetter } from "../../utils/functions/misc";
 import './newCollection.css'
 
@@ -76,7 +76,7 @@ export default function NewCollection(userid) {
     const transitionOccuring = Object.values(slideClasses).filter(className => className !== 'none').length !== 0
     
     return (
-        <BodyWithBanner bodySx={{overflowX: 'hidden', overflowY: 'hidden', height: '100%', mt: 2}} bannerSx={{backgroundColor: '#26BCC9', color: 'black'}} text='Create New Collection'>
+        <BodyWithBanner bodySx={{overflowX: 'hidden', overflowY: 'hidden', height: '100%', mt: 2, mb: 0}} bannerSx={{backgroundColor: '#26BCC9', color: 'black'}} text='Create New Collection'>
             {/*extra box with margin top needed due to overflow*/}
             <Box sx={{height: '100%', mt: 3, mx: 1}}> 
                 <CreationProgress progress={creationProgress} />
