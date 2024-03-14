@@ -265,8 +265,8 @@ export default function OnHandPokemonSelectionForm({speciesEditOnly=false, open,
 
     return (
         <Modal
-            aria-labelledby='change-onhand-pokemon-species'
-            aria-describedby='change-the-species-of-an-onhand-pokemon'
+            aria-labelledby={speciesEditOnly ? 'change-onhand-pokemon-species' : 'add-new-onhand-pokemon'}
+            aria-describedby={speciesEditOnly ? 'change-the-species-of-an-onhand-pokemon' : 'add-owned-pokemon-ball-combo-from-list-to-onhand'}
             open={open}
             onClose={handleClose}
             closeAfterTransition

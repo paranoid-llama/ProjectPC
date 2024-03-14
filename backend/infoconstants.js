@@ -6,7 +6,7 @@ const babiesOfGen1Pokemon = ['Pichu', 'Igglybuff', 'Cleffa', 'Smoochum', 'Elekid
 const babiesOfGen2Pokemon = ['Azurill', 'Wynaut', 'Bonsly', 'Mantyke']
 const babiesOfGen3Pokemon = ['Budew', 'Chingling']
 
-const altFormMons = ['Paldean Tauros', 'Shellos', 'Basculin', 'Deerling', 'Flabébé', 'Pumpkaboo', 'Rockruff', 'Oricorio', 'Minior', 'Squawkabilly', 'Tatsugiri']
+const altFormMons = ['Paldean Tauros', 'Burmy', 'Shellos', 'Basculin', 'Deerling', 'Flabébé', 'Pumpkaboo', 'Rockruff', 'Oricorio', 'Minior', 'Squawkabilly', 'Tatsugiri']
 
 const apriballs = ['fast', 'friend', 'heavy', 'level', 'love', 'lure', 'moon', 'beast', 'dream', 'safari', 'sport']
 const shopballs = ['poke', 'great', 'ultra', 'premier', 'repeat', 'timer', 'nest', 'net', 'luxury', 'dive', 'quick', 'heal', 'dusk']

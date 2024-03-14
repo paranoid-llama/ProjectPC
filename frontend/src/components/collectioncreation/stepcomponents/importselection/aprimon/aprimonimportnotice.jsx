@@ -44,15 +44,17 @@ export default function AprimonImportNotice({removeNotice, transitionClass}) {
                 </Typography>
             </Box>  
             <Box sx={{width: '90%', mt: 1, ...textHeightBreakpoints}}>
-                <Typography sx={{...textFontSizeBreakpoints, position: 'relative'}}>
+                <Typography sx={{...textFontSizeBreakpoints, position: 'relative', display: 'inline'}}>
                     If you track owned pokemon/ball combinations by inserting images in cell (via Insert &rarr; Images &rarr; Insert image in cell),
                     unfortunately <b>there is no way to retrieve your data.</b>
-                    <Tooltip
-                        title={explanationText}
-                    >
-                        <Button size='small' sx={{fontSize: '10px'}}>Why?</Button>
-                    </Tooltip>
+                    
                 </Typography>
+                <Tooltip
+                        title={explanationText}
+                        sx={{display: 'inline'}}
+                    >
+                    <Typography sx={{color: 'blue', display: 'inline', paddingLeft: 1, fontSize: '10px', ':hover': {cursor: 'pointer'}}}>Why?</Typography>
+                </Tooltip>
                 <Typography sx={{...textFontSizeBreakpoints, mt: 1}}>
                     A simple way of checking this is to click over an owned cell and see if there is function data.
                 </Typography>
