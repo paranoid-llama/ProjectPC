@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {Modal, Box, Typography, Fade, Backdrop, Tooltip, TableRow, TableCell, TableHead, TableBody, TableContainer, Paper, Table} from '@mui/material'
+import {Modal, Box, Typography, Fade, Backdrop, Tooltip, TableRow, TableCell, TableHead, TableBody, TableContainer, Paper, Table, Button} from '@mui/material'
 import HelpIcon from '@mui/icons-material/Help';
 import { aprimonGeneralIdentifiers, aprimonSpecificIdentifiers, aprimonAsideInfo } from '../../../../../importinfoconstants'
 import { TableVirtuoso } from 'react-virtuoso'
@@ -185,6 +185,9 @@ export default function NameFormatModal({open, handleClose}) {
                                 sx={{backgroundColor: '#1e2f41'}}
                             />
                         </Paper>
+                        <Box sx={{width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', mt: 2}}>
+                            <Button onClick={handleClose}>Got it!</Button>
+                        </Box>
                     </Box>
                 </Box>
             </Fade>

@@ -37,4 +37,19 @@ const aprimonAsideInfo = {
     ['Indeedee']: {id: 'Can do gender symbol instead'}
 }
 
-export {aprimonGeneralIdentifiers, aprimonSpecificIdentifiers, aprimonAsideInfo}
+const generalImportFormTemplate = {
+    spreadsheetId: '',
+    sheetName: '',
+    rowSpan: {from: '', to: ''}
+}
+
+const aprimonImportFormTemplate = {
+    ...generalImportFormTemplate,
+    dexNumCol: '',
+    nameCol: '',
+    ballColSpan: {from: '', to: '', order: []},
+    haImport: {import: false, assumeAll: true},
+    emImport: {import: false}
+}
+
+export {aprimonGeneralIdentifiers, aprimonSpecificIdentifiers, aprimonAsideInfo, aprimonImportFormTemplate}
