@@ -4,11 +4,14 @@ import ImgData from '../../../../collectiontable/tabledata/imgdata'
 import Header from '../../../../titlecomponents/subcomponents/header'
 import AprimonImportForm from '../aprimon/aprimonimportform'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { formatApiRequestLink } from '../../../../../../utils/functions/backendrequests/import'
+import { importCollection } from '../../../../../../utils/functions/backendrequests/import'
 import './importselection.css'
 
 export default function ImportSelection({handleChange, cssClass, goBackStep, collectionType}) {
     const screens = ['select', 'import', 'preview']
     const [importScreen, setImportScreen] = useState(screens[0])
+    const [importedCollectionDisplay, setImportedCollectionDisplay] = useState([])
     const screensRef = useRef(importScreen)
 
     const slideRight1 = screensRef.current === 'select' && importScreen === 'import'
@@ -38,14 +41,16 @@ export default function ImportSelection({handleChange, cssClass, goBackStep, col
     // }
 
     const handleSubmit = (e, formData) => {
-        console.log(formData)
+        const apiRequestQuery = formatApiRequestLink(formData)
+        console.log(apiRequestQuery)
+        const importedCollection = importCollection(formData.spreadsheetId, apiRequestQuery)
     }
 
     const bottomBar = importScreen === 'import' ? {right: '45%'} : {}
 
     return (
         <Box sx={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', mt: 1, height: '581px', position: 'relative'}} className={cssClass}>
-            <Header additionalStyles={{color: 'black', height: '5%', paddingBottom: '2px', height: '32px'}}>Import Collection</Header>
+            <Header additionalStyles={{color: 'black', paddingBottom: '2px', height: '32px'}}>Import Collection</Header>
             <Typography sx={{fontSize: '12px'}}>{collectionType}</Typography>
             <Box sx={{width: '100%', height: '100%', position: 'relative'}}>
                 <Box sx={{width: '100%', height: '100%', display: 'flex', flexDirection: 'row', position: 'absolute', transform: 'translateX(100%)'}} className={slideClass}>

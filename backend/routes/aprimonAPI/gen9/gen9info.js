@@ -759,7 +759,8 @@ const gen9Info = [{
         HA: {
             hasHA: false
         },
-        nonBreedable: true
+        nonBreedable: true,
+        paradoxPokemon: true
     },
     specificGenInfo: {
         gen9: {
@@ -780,7 +781,8 @@ const gen9Info = [{
         HA: {
             hasHA: false
         },
-        nonBreedable: true
+        nonBreedable: true,
+        paradoxPokemon: true
     },
     specificGenInfo: {
         gen9: {
@@ -801,7 +803,8 @@ const gen9Info = [{
         HA: {
             hasHA: false
         },
-        nonBreedable: true
+        nonBreedable: true,
+        paradoxPokemon: true
     },
     specificGenInfo: {
         gen9: {
@@ -822,7 +825,8 @@ const gen9Info = [{
         HA: {
             hasHA: false
         },
-        nonBreedable: true
+        nonBreedable: true,
+        paradoxPokemon: true
     },
     specificGenInfo: {
         gen9: {
@@ -843,7 +847,8 @@ const gen9Info = [{
         HA: {
             hasHA: false
         },
-        nonBreedable: true
+        nonBreedable: true,
+        paradoxPokemon: true
     },
     specificGenInfo: {
         gen9: {
@@ -864,7 +869,8 @@ const gen9Info = [{
         HA: {
             hasHA: false
         },
-        nonBreedable: true
+        nonBreedable: true,
+        paradoxPokemon: true
     },
     specificGenInfo: {
         gen9: {
@@ -885,7 +891,8 @@ const gen9Info = [{
         HA: {
             hasHA: false
         },
-        nonBreedable: true
+        nonBreedable: true,
+        paradoxPokemon: true
     },
     specificGenInfo: {
         gen9: {
@@ -906,7 +913,8 @@ const gen9Info = [{
         HA: {
             hasHA: false
         },
-        nonBreedable: true
+        nonBreedable: true,
+        paradoxPokemon: true
     },
     specificGenInfo: {
         gen9: {
@@ -927,7 +935,8 @@ const gen9Info = [{
         HA: {
             hasHA: false
         },
-        nonBreedable: true
+        nonBreedable: true,
+        paradoxPokemon: true
     },
     specificGenInfo: {
         gen9: {
@@ -948,7 +957,8 @@ const gen9Info = [{
         HA: {
             hasHA: false
         },
-        nonBreedable: true
+        nonBreedable: true,
+        paradoxPokemon: true
     },
     specificGenInfo: {
         gen9: {
@@ -969,7 +979,8 @@ const gen9Info = [{
         HA: {
             hasHA: false
         },
-        nonBreedable: true
+        nonBreedable: true,
+        paradoxPokemon: true
     },
     specificGenInfo: {
         gen9: {
@@ -990,7 +1001,8 @@ const gen9Info = [{
         HA: {
             hasHA: false
         },
-        nonBreedable: true
+        nonBreedable: true,
+        paradoxPokemon: true
     },
     specificGenInfo: {
         gen9: {
@@ -1063,7 +1075,91 @@ const gen9Info = [{
                 safari: {isLegal: true, haIsLegal: false},
                 sport: {isLegal: true, haIsLegal: false},
                 beast: {isLegal: true, haIsLegal: false},
-                dream: {isLegal: true, haIsLegal: false},
+                dream: {isLegal: true, haIsLegal: false}
+            }
+        }
+    }
+}, {
+    name: "wo-Chien",
+    gen: 9,
+    info: {
+        natDexNum: 1001,
+        HA: {
+            hasHA: false
+        },
+        legendary: true
+    },
+    specificGenInfo: {
+        gen9: {
+            balls: {
+                apriball: {isLegal: true, haIsLegal: false},
+                safari: {isLegal: true, haIsLegal: false},
+                sport: {isLegal: true, haIsLegal: false},
+                beast: {isLegal: true, haIsLegal: false},
+                dream: {isLegal: true, haIsLegal: false}
+            }
+        }
+    }
+}, {
+    name: "chien-Pao",
+    gen: 9,
+    info: {
+        natDexNum: 1002,
+        HA: {
+            hasHA: false
+        },
+        legendary: true
+    },
+    specificGenInfo: {
+        gen9: {
+            balls: {
+                apriball: {isLegal: true, haIsLegal: false},
+                safari: {isLegal: true, haIsLegal: false},
+                sport: {isLegal: true, haIsLegal: false},
+                beast: {isLegal: true, haIsLegal: false},
+                dream: {isLegal: true, haIsLegal: false}
+            }
+        }
+    }
+}, {
+    name: "ting-Lu",
+    gen: 9,
+    info: {
+        natDexNum: 1003,
+        HA: {
+            hasHA: false
+        },
+        legendary: true
+    },
+    specificGenInfo: {
+        gen9: {
+            balls: {
+                apriball: {isLegal: true, haIsLegal: false},
+                safari: {isLegal: true, haIsLegal: false},
+                sport: {isLegal: true, haIsLegal: false},
+                beast: {isLegal: true, haIsLegal: false},
+                dream: {isLegal: true, haIsLegal: false}
+            }
+        }
+    }
+}, {
+    name: "chi-Yu",
+    gen: 9,
+    info: {
+        natDexNum: 1004,
+        HA: {
+            hasHA: false
+        },
+        legendary: true
+    },
+    specificGenInfo: {
+        gen9: {
+            balls: {
+                apriball: {isLegal: true, haIsLegal: false},
+                safari: {isLegal: true, haIsLegal: false},
+                sport: {isLegal: true, haIsLegal: false},
+                beast: {isLegal: true, haIsLegal: false},
+                dream: {isLegal: true, haIsLegal: false}
             }
         }
     }
@@ -1075,7 +1171,8 @@ const gen9Info = [{
         HA: {
             hasHA: false
         },
-        nonBreedable: true
+        nonBreedable: true,
+        paradoxPokemon: true
     },
     specificGenInfo: {
         gen9: {
@@ -1096,7 +1193,8 @@ const gen9Info = [{
         HA: {
             hasHA: false
         },
-        nonBreedable: true
+        nonBreedable: true,
+        paradoxPokemon: true
     },
     specificGenInfo: {
         gen9: {
@@ -1106,6 +1204,92 @@ const gen9Info = [{
                 sport: {isLegal: true, haIsLegal: false},
                 beast: {isLegal: true, haIsLegal: false},
                 dream: {isLegal: true, haIsLegal: false},
+            }
+        }
+    }
+}, {
+    name: "koraidon",
+    gen: 9,
+    info: {
+        natDexNum: 1007,
+        HA: {
+            hasHA: false
+        },
+        legendary: true
+    },
+    specificGenInfo: {
+        gen9: {
+            balls: {
+                apriball: {isLegal: true, haIsLegal: false},
+                safari: {isLegal: true, haIsLegal: false},
+                sport: {isLegal: true, haIsLegal: false},
+                beast: {isLegal: true, haIsLegal: false},
+                dream: {isLegal: true, haIsLegal: false}
+            }
+        }
+    }
+}, {
+    name: "miraidon",
+    gen: 9,
+    info: {
+        natDexNum: 1008,
+        HA: {
+            hasHA: false
+        },
+        legendary: true
+    },
+    specificGenInfo: {
+        gen9: {
+            balls: {
+                apriball: {isLegal: true, haIsLegal: false},
+                safari: {isLegal: true, haIsLegal: false},
+                sport: {isLegal: true, haIsLegal: false},
+                beast: {isLegal: true, haIsLegal: false},
+                dream: {isLegal: true, haIsLegal: false}
+            }
+        }
+    }
+}, {
+    name: "walking Wake",
+    gen: 9,
+    info: {
+        natDexNum: 1009,
+        HA: {
+            hasHA: false
+        },
+        legendary: true,
+        eventOnly: true
+    },
+    specificGenInfo: {
+        gen9: {
+            balls: {
+                apriball: {isLegal: true, haIsLegal: false},
+                safari: {isLegal: true, haIsLegal: false},
+                sport: {isLegal: true, haIsLegal: false},
+                beast: {isLegal: true, haIsLegal: false},
+                dream: {isLegal: true, haIsLegal: false}
+            }
+        }
+    }
+}, {
+    name: "iron Leaves",
+    gen: 9,
+    info: {
+        natDexNum: 1010,
+        HA: {
+            hasHA: false
+        },
+        legendary: true,
+        eventOnly: true
+    },
+    specificGenInfo: {
+        gen9: {
+            balls: {
+                apriball: {isLegal: true, haIsLegal: false},
+                safari: {isLegal: true, haIsLegal: false},
+                sport: {isLegal: true, haIsLegal: false},
+                beast: {isLegal: true, haIsLegal: false},
+                dream: {isLegal: true, haIsLegal: false}
             }
         }
     }
@@ -1127,6 +1311,219 @@ const gen9Info = [{
                 sport: {isLegal: true, haIsLegal: true},
                 beast: {isLegal: true, haIsLegal: true},
                 dream: {isLegal: true, haIsLegal: true}
+            }
+        }
+    }
+}, {
+    name: "okidogi",
+    gen: 9,
+    info: {
+        natDexNum: 1014,
+        HA: {
+            hasHA: true,
+            name: {reg: "Guard Dog"}
+        },
+        legendary: true
+    },
+    specificGenInfo: {
+        gen9: {
+            balls: {
+                apriball: {isLegal: true, haIsLegal: true},
+                safari: {isLegal: true, haIsLegal: true},
+                sport: {isLegal: true, haIsLegal: true},
+                beast: {isLegal: true, haIsLegal: true},
+                dream: {isLegal: true, haIsLegal: true}
+            }
+        }
+    }
+}, {
+    name: "munkidori",
+    gen: 9,
+    info: {
+        natDexNum: 1015,
+        HA: {
+            hasHA: true,
+            name: {reg: "Frisk"}
+        },
+        legendary: true
+    },
+    specificGenInfo: {
+        gen9: {
+            balls: {
+                apriball: {isLegal: true, haIsLegal: true},
+                safari: {isLegal: true, haIsLegal: true},
+                sport: {isLegal: true, haIsLegal: true},
+                beast: {isLegal: true, haIsLegal: true},
+                dream: {isLegal: true, haIsLegal: true}
+            }
+        }
+    }
+}, {
+    name: "fezandipiti",
+    gen: 9,
+    info: {
+        natDexNum: 1016,
+        HA: {
+            hasHA: true,
+            name: {reg: "Technician"}
+        },
+        legendary: true
+    },
+    specificGenInfo: {
+        gen9: {
+            balls: {
+                apriball: {isLegal: true, haIsLegal: true},
+                safari: {isLegal: true, haIsLegal: true},
+                sport: {isLegal: true, haIsLegal: true},
+                beast: {isLegal: true, haIsLegal: true},
+                dream: {isLegal: true, haIsLegal: true}
+            }
+        }
+    }
+}, {
+    name: "ogerpon",
+    gen: 9,
+    info: {
+        natDexNum: 1017,
+        HA: {
+            hasHA: false
+        },
+        legendary: true
+    },
+    specificGenInfo: {
+        gen9: {
+            balls: {
+                apriball: {isLegal: true, haIsLegal: false},
+                safari: {isLegal: true, haIsLegal: false},
+                sport: {isLegal: true, haIsLegal: false},
+                beast: {isLegal: true, haIsLegal: false},
+                dream: {isLegal: true, haIsLegal: false}
+            }
+        }
+    }
+}, {
+    name: "gouging Fire",
+    gen: 9,
+    info: {
+        natDexNum: 1020,
+        HA: {
+            hasHA: false
+        },
+        legendary: true
+    },
+    specificGenInfo: {
+        gen9: {
+            balls: {
+                apriball: {isLegal: true, haIsLegal: false},
+                safari: {isLegal: true, haIsLegal: false},
+                sport: {isLegal: true, haIsLegal: false},
+                beast: {isLegal: true, haIsLegal: false},
+                dream: {isLegal: true, haIsLegal: false}
+            }
+        }
+    }
+}, {
+    name: "raging Bolt",
+    gen: 9,
+    info: {
+        natDexNum: 1021,
+        HA: {
+            hasHA: false
+        },
+        legendary: true
+    },
+    specificGenInfo: {
+        gen9: {
+            balls: {
+                apriball: {isLegal: true, haIsLegal: false},
+                safari: {isLegal: true, haIsLegal: false},
+                sport: {isLegal: true, haIsLegal: false},
+                beast: {isLegal: true, haIsLegal: false},
+                dream: {isLegal: true, haIsLegal: false}
+            }
+        }
+    }
+}, {
+    name: "iron Boulder",
+    gen: 9,
+    info: {
+        natDexNum: 1022,
+        HA: {
+            hasHA: false
+        },
+        legendary: true
+    },
+    specificGenInfo: {
+        gen9: {
+            balls: {
+                apriball: {isLegal: true, haIsLegal: false},
+                safari: {isLegal: true, haIsLegal: false},
+                sport: {isLegal: true, haIsLegal: false},
+                beast: {isLegal: true, haIsLegal: false},
+                dream: {isLegal: true, haIsLegal: false}
+            }
+        }
+    }
+}, {
+    name: "iron Crown",
+    gen: 9,
+    info: {
+        natDexNum: 1023,
+        HA: {
+            hasHA: false
+        },
+        legendary: true
+    },
+    specificGenInfo: {
+        gen9: {
+            balls: {
+                apriball: {isLegal: true, haIsLegal: false},
+                safari: {isLegal: true, haIsLegal: false},
+                sport: {isLegal: true, haIsLegal: false},
+                beast: {isLegal: true, haIsLegal: false},
+                dream: {isLegal: true, haIsLegal: false}
+            }
+        }
+    }
+}, {
+    name: "terapagos",
+    gen: 9,
+    info: {
+        natDexNum: 1024,
+        HA: {
+            hasHA: false
+        },
+        legendary: true
+    },
+    specificGenInfo: {
+        gen9: {
+            balls: {
+                apriball: {isLegal: true, haIsLegal: false},
+                safari: {isLegal: true, haIsLegal: false},
+                sport: {isLegal: true, haIsLegal: false},
+                beast: {isLegal: true, haIsLegal: false},
+                dream: {isLegal: true, haIsLegal: false}
+            }
+        }
+    }
+}, {
+    name: "pecharunt",
+    gen: 9,
+    info: {
+        natDexNum: 1025,
+        HA: {
+            hasHA: false
+        },
+        legendary: true
+    },
+    specificGenInfo: {
+        gen9: {
+            balls: {
+                apriball: {isLegal: true, haIsLegal: false},
+                safari: {isLegal: true, haIsLegal: false},
+                sport: {isLegal: true, haIsLegal: false},
+                beast: {isLegal: true, haIsLegal: false},
+                dream: {isLegal: true, haIsLegal: false}
             }
         }
     }

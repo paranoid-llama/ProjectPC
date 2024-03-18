@@ -105,8 +105,13 @@ export default function AprimonImportForm({handleSubmit}) {
     const formatData = () => {
         const untouchedHaImportFields = (formState.haImport.colors.filter(color => color !== '').length === 0 && formState.haImport.col === '')
         const untouchedEmImportFields = (formState.emImport.colors.filter(color => color !== '').length === 0 && formState.emImport.cols.filter(col => col !== '').length === 0)
-        const haImportFields = untouchedHaImportFields ? {} : {colors: formState.haImport.colors, col: formState.haImport.col}
-        const emImportFields = untouchedEmImportFields ? {} : {colors: formState.emImport.colors, cols: formState.emImport.cols}
+        const haImportFields = untouchedHaImportFields ? {} : 
+            formState.haImport.type === 'color-coded' ? {colors: formState.haImport.colors.filter(color => color !== '')} : 
+            formState.haImport.type === 'column-info' && {col: formState.haImport.col}
+        const emImportFields = untouchedEmImportFields ? {} : 
+            (formState.emImport.type.includes('color-coded') && formState.emImport.type.includes('column-info')) && {colors: formState.emImport.colors.filter(color => color !== ''), cols: formState.emImport.cols}
+            formState.emImport.type.includes('color-coded') ? {colors: formState.emImport.colors.filter(color => color !== '')} : 
+            formState.emImport.type.includes('column-info') && {cols: formState.emImport.cols}   
         const formattedImportData = {
             ...importData,
             ballColSpan: {...importData.ballColSpan, order: formState.ballOrder},
@@ -396,7 +401,7 @@ export default function AprimonImportForm({handleSubmit}) {
                                         </Box>
                                         <Box sx={{height: '20%', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', mt: 1, opacity: formState.emImport.type.includes('column-info') ? 1 : 0.5}}>
                                             <Typography sx={{fontSize: '10px'}}>
-                                                Egg Moves must be on different columns and spelled correctly.
+                                                Egg Moves must be on different columns and spelled correctly. All fields must be filled.
                                             </Typography>
                                         </Box>
                                     </Box>

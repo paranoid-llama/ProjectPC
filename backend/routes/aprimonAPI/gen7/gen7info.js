@@ -21,6 +21,29 @@ const gen7Info = [{
         }
     }
 }, {
+    name: "hisuian Decidueye",
+    gen: 9,
+    info: {
+        natDexNum: 724,
+        HA: {
+            hasHA: true,
+            name: {reg: "Scrappy"}
+        },
+        evolvedRegionalForm: true
+    },
+    specificGenInfo: {
+        gen9: {
+            eggmoves: {moves: ['Double Team', 'Confuse Ray', 'Knock Off', 'Roost', 'Defog']},
+            balls: {
+                apriball: {isLegal: true, haIsLegal: true},
+                safari: {isLegal: true, haIsLegal: true},
+                sport: {isLegal: true, haIsLegal: true},
+                beast: {isLegal: true, haIsLegal: true},
+                dream: {isLegal: true, haIsLegal: true}
+            }
+        }
+    }
+},{
     name: 'litten',
     gen: 7,
     info: {
@@ -293,7 +316,8 @@ const gen7Info = [{
         },
         alternateForm: {
             name: {1: 'Dusk'},
-            abilityName: 'Own Tempo'
+            abilityName: 'Own Tempo',
+            originalIsForm: true //this is for if you need to keep the original form as one of their alternate forms, else the only instance will be the alternate forms
         }
     },
     specificGenInfo: {
@@ -1249,6 +1273,519 @@ const gen7Info = [{
                 sport: {isLegal: true, haIsLegal: true},
                 beast: {isLegal: true, haIsLegal: true},
                 dream: {isLegal: true, haIsLegal: true}
+            }
+        }
+    }
+}, {
+    name: "tapu Koko",
+    gen: 7,
+    info: {
+        natDexNum: 785,
+        HA: {
+            hasHA: true,
+            name: {reg: "Telepathy"}
+        },
+        legendary: true
+    },
+    specificGenInfo: {
+        gen8: {
+            balls: {
+                swsh: {
+                    apriball: {isLegal: true, haIsLegal: true},
+                    safari: {isLegal: true, haIsLegal: true},
+                    sport: {isLegal: true, haIsLegal: true},
+                    beast: {isLegal: true, haIsLegal: true},
+                    dream: {isLegal: true, haIsLegal: true}
+                }
+            }
+        }
+    }
+}, {
+    name: "tapu Lele",
+    gen: 7,
+    info: {
+        natDexNum: 786,
+        HA: {
+            hasHA: true,
+            name: {reg: "Telepathy"}
+        },
+        legendary: true
+    },
+    specificGenInfo: {
+        gen8: {
+            balls: {
+                swsh: {
+                    apriball: {isLegal: true, haIsLegal: true},
+                    safari: {isLegal: true, haIsLegal: true},
+                    sport: {isLegal: true, haIsLegal: true},
+                    beast: {isLegal: true, haIsLegal: true},
+                    dream: {isLegal: true, haIsLegal: true}
+                }
+            }
+        }
+    }
+}, {
+    name: "tapu Bulu",
+    gen: 7,
+    info: {
+        natDexNum: 787,
+        HA: {
+            hasHA: true,
+            name: {reg: "Telepathy"}
+        },
+        legendary: true
+    },
+    specificGenInfo: {
+        gen8: {
+            balls: {
+                swsh: {
+                    apriball: {isLegal: true, haIsLegal: true},
+                    safari: {isLegal: true, haIsLegal: true},
+                    sport: {isLegal: true, haIsLegal: true},
+                    beast: {isLegal: true, haIsLegal: true},
+                    dream: {isLegal: true, haIsLegal: true}
+                }
+            }
+        }
+    }
+}, {
+    name: "tapu Fini",
+    gen: 7,
+    info: {
+        natDexNum: 788,
+        HA: {
+            hasHA: true,
+            name: {reg: "Telepathy"}
+        },
+        legendary: true
+    },
+    specificGenInfo: {
+        gen8: {
+            balls: {
+                swsh: {
+                    apriball: {isLegal: true, haIsLegal: true},
+                    safari: {isLegal: true, haIsLegal: true},
+                    sport: {isLegal: true, haIsLegal: true},
+                    beast: {isLegal: true, haIsLegal: true},
+                    dream: {isLegal: true, haIsLegal: true}
+                }
+            }
+        }
+    }
+}, {
+    name: "solgaleo",
+    gen: 7,
+    info: {
+        natDexNum: 791,
+        HA: {
+            hasHA: false
+        },
+        legendary: true
+    },
+    specificGenInfo: {
+        gen8: {
+            balls: {
+                swsh: {
+                    apriball: {isLegal: true, haIsLegal: false},
+                    safari: {isLegal: true, haIsLegal: false},
+                    sport: {isLegal: true, haIsLegal: false},
+                    beast: {isLegal: true, haIsLegal: false},
+                    dream: {isLegal: true, haIsLegal: false}
+                }
+            }
+        },
+        gen9: {
+            balls: {
+                apriball: {isLegal: true, haIsLegal: false},
+                safari: {isLegal: true, haIsLegal: false},
+                sport: {isLegal: true, haIsLegal: false},
+                beast: {isLegal: true, haIsLegal: false},
+                dream: {isLegal: true, haIsLegal: false}
+            }
+        }
+    }
+}, {
+    name: "lunala",
+    gen: 7,
+    info: {
+        natDexNum: 792,
+        HA: {
+            hasHA: false
+        },
+        legendary: true
+    },
+    specificGenInfo: {
+        gen8: {
+            balls: {
+                swsh: {
+                    apriball: {isLegal: true, haIsLegal: false},
+                    safari: {isLegal: true, haIsLegal: false},
+                    sport: {isLegal: true, haIsLegal: false},
+                    beast: {isLegal: true, haIsLegal: false},
+                    dream: {isLegal: true, haIsLegal: false}
+                }
+            }
+        },
+        gen9: {
+            balls: {
+                apriball: {isLegal: true, haIsLegal: false},
+                safari: {isLegal: true, haIsLegal: false},
+                sport: {isLegal: true, haIsLegal: false},
+                beast: {isLegal: true, haIsLegal: false},
+                dream: {isLegal: true, haIsLegal: false}
+            }
+        }
+    }
+}, {
+    name: "nihilego",
+    gen: 7,
+    info: {
+        natDexNum: 793,
+        HA: {
+            hasHA: false
+        },
+        nonBreedable: true,
+        ultraBeast: true
+    },
+    specificGenInfo: {
+        gen7: {
+            balls: {
+                apriball: {isLegal: true, haIsLegal: false},
+                safari: {isLegal: false, haIsLegal: false},
+                sport: {isLegal: false, haIsLegal: false},
+                beast: {isLegal: true, haIsLegal: false},
+                dream: {isLegal: false, haIsLegal: false}
+            }
+        },
+        gen8: {
+            balls: {
+                swsh: {
+                    apriball: {isLegal: true, haIsLegal: false},
+                    safari: {isLegal: true, haIsLegal: false},
+                    sport: {isLegal: true, haIsLegal: false},
+                    beast: {isLegal: true, haIsLegal: false},
+                    dream: {isLegal: true, haIsLegal: false}
+                }
+            }
+        }
+    }
+}, {
+    name: "buzzwole",
+    gen: 7,
+    info: {
+        natDexNum: 794,
+        HA: {
+            hasHA: false
+        },
+        nonBreedable: true,
+        ultraBeast: true
+    },
+    specificGenInfo: {
+        gen7: {
+            balls: {
+                apriball: {isLegal: true, haIsLegal: false},
+                safari: {isLegal: false, haIsLegal: false},
+                sport: {isLegal: false, haIsLegal: false},
+                beast: {isLegal: true, haIsLegal: false},
+                dream: {isLegal: false, haIsLegal: false}
+            }
+        },
+        gen8: {
+            balls: {
+                swsh: {
+                    apriball: {isLegal: true, haIsLegal: false},
+                    safari: {isLegal: true, haIsLegal: false},
+                    sport: {isLegal: true, haIsLegal: false},
+                    beast: {isLegal: true, haIsLegal: false},
+                    dream: {isLegal: true, haIsLegal: false}
+                }
+            }
+        }
+    }
+}, {
+    name: "pheromosa",
+    gen: 7,
+    info: {
+        natDexNum: 795,
+        HA: {
+            hasHA: false
+        },
+        nonBreedable: true,
+        ultraBeast: true
+    },
+    specificGenInfo: {
+        gen7: {
+            balls: {
+                apriball: {isLegal: true, haIsLegal: false},
+                safari: {isLegal: false, haIsLegal: false},
+                sport: {isLegal: false, haIsLegal: false},
+                beast: {isLegal: true, haIsLegal: false},
+                dream: {isLegal: false, haIsLegal: false}
+            }
+        },
+        gen8: {
+            balls: {
+                swsh: {
+                    apriball: {isLegal: true, haIsLegal: false},
+                    safari: {isLegal: true, haIsLegal: false},
+                    sport: {isLegal: true, haIsLegal: false},
+                    beast: {isLegal: true, haIsLegal: false},
+                    dream: {isLegal: true, haIsLegal: false}
+                }
+            }
+        }
+    }
+}, {
+    name: "xurkitree",
+    gen: 7,
+    info: {
+        natDexNum: 796,
+        HA: {
+            hasHA: false
+        },
+        nonBreedable: true,
+        ultraBeast: true
+    },
+    specificGenInfo: {
+        gen7: {
+            balls: {
+                apriball: {isLegal: true, haIsLegal: false},
+                safari: {isLegal: false, haIsLegal: false},
+                sport: {isLegal: false, haIsLegal: false},
+                beast: {isLegal: true, haIsLegal: false},
+                dream: {isLegal: false, haIsLegal: false}
+            }
+        },
+        gen8: {
+            balls: {
+                swsh: {
+                    apriball: {isLegal: true, haIsLegal: false},
+                    safari: {isLegal: true, haIsLegal: false},
+                    sport: {isLegal: true, haIsLegal: false},
+                    beast: {isLegal: true, haIsLegal: false},
+                    dream: {isLegal: true, haIsLegal: false}
+                }
+            }
+        }
+    }
+}, {
+    name: "celesteela",
+    gen: 7,
+    info: {
+        natDexNum: 797,
+        HA: {
+            hasHA: false
+        },
+        nonBreedable: true,
+        ultraBeast: true
+    },
+    specificGenInfo: {
+        gen7: {
+            balls: {
+                apriball: {isLegal: true, haIsLegal: false},
+                safari: {isLegal: false, haIsLegal: false},
+                sport: {isLegal: false, haIsLegal: false},
+                beast: {isLegal: true, haIsLegal: false},
+                dream: {isLegal: false, haIsLegal: false}
+            }
+        },
+        gen8: {
+            balls: {
+                swsh: {
+                    apriball: {isLegal: true, haIsLegal: false},
+                    safari: {isLegal: true, haIsLegal: false},
+                    sport: {isLegal: true, haIsLegal: false},
+                    beast: {isLegal: true, haIsLegal: false},
+                    dream: {isLegal: true, haIsLegal: false}
+                }
+            }
+        }
+    }
+}, {
+    name: "kartana",
+    gen: 7,
+    info: {
+        natDexNum: 798,
+        HA: {
+            hasHA: false
+        },
+        nonBreedable: true,
+        ultraBeast: true
+    },
+    specificGenInfo: {
+        gen7: {
+            balls: {
+                apriball: {isLegal: true, haIsLegal: false},
+                safari: {isLegal: false, haIsLegal: false},
+                sport: {isLegal: false, haIsLegal: false},
+                beast: {isLegal: true, haIsLegal: false},
+                dream: {isLegal: false, haIsLegal: false}
+            }
+        },
+        gen8: {
+            balls: {
+                swsh: {
+                    apriball: {isLegal: true, haIsLegal: false},
+                    safari: {isLegal: true, haIsLegal: false},
+                    sport: {isLegal: true, haIsLegal: false},
+                    beast: {isLegal: true, haIsLegal: false},
+                    dream: {isLegal: true, haIsLegal: false}
+                }
+            }
+        }
+    }
+}, {
+    name: "guzzlord",
+    gen: 7,
+    info: {
+        natDexNum: 799,
+        HA: {
+            hasHA: false
+        },
+        nonBreedable: true,
+        ultraBeast: true
+    },
+    specificGenInfo: {
+        gen7: {
+            balls: {
+                apriball: {isLegal: true, haIsLegal: false},
+                safari: {isLegal: false, haIsLegal: false},
+                sport: {isLegal: false, haIsLegal: false},
+                beast: {isLegal: true, haIsLegal: false},
+                dream: {isLegal: false, haIsLegal: false}
+            }
+        },
+        gen8: {
+            balls: {
+                swsh: {
+                    apriball: {isLegal: true, haIsLegal: false},
+                    safari: {isLegal: true, haIsLegal: false},
+                    sport: {isLegal: true, haIsLegal: false},
+                    beast: {isLegal: true, haIsLegal: false},
+                    dream: {isLegal: true, haIsLegal: false}
+                }
+            }
+        }
+    }
+}, {
+    name: "necrozma",
+    gen: 7,
+    info: {
+        natDexNum: 800,
+        HA: {
+            hasHA: false
+        },
+        legendary: true
+    },
+    specificGenInfo: {
+        gen8: {
+            balls: {
+                swsh: {
+                    apriball: {isLegal: true, haIsLegal: false},
+                    safari: {isLegal: true, haIsLegal: false},
+                    sport: {isLegal: true, haIsLegal: false},
+                    beast: {isLegal: true, haIsLegal: false},
+                    dream: {isLegal: true, haIsLegal: false}
+                }
+            }
+        },
+        gen9: {
+            balls: {
+                apriball: {isLegal: true, haIsLegal: false},
+                safari: {isLegal: true, haIsLegal: false},
+                sport: {isLegal: true, haIsLegal: false},
+                beast: {isLegal: true, haIsLegal: false},
+                dream: {isLegal: true, haIsLegal: false}
+            }
+        }
+    }
+}, {
+    name: "poipole",
+    gen: 7,
+    info: {
+        natDexNum: 803,
+        HA: {
+            hasHA: false
+        },
+        nonBreedable: true,
+        ultraBeast: true
+    },
+    specificGenInfo: {
+        gen8: {
+            balls: {
+                swsh: {
+                    apriball: {isLegal: false, haIsLegal: false},
+                    safari: {isLegal: false, haIsLegal: false},
+                    sport: {isLegal: false, haIsLegal: false},
+                    beast: {isLegal: true, haIsLegal: false},
+                    dream: {isLegal: false, haIsLegal: false}
+                }
+            }
+        }
+    }
+}, {
+    name: "stakataka",
+    gen: 7,
+    info: {
+        natDexNum: 805,
+        HA: {
+            hasHA: false
+        },
+        nonBreedable: true,
+        ultraBeast: true
+    },
+    specificGenInfo: {
+        gen7: {
+            balls: {
+                apriball: {isLegal: true, haIsLegal: false},
+                safari: {isLegal: false, haIsLegal: false},
+                sport: {isLegal: false, haIsLegal: false},
+                beast: {isLegal: true, haIsLegal: false},
+                dream: {isLegal: false, haIsLegal: false}
+            }
+        },
+        gen8: {
+            balls: {
+                swsh: {
+                    apriball: {isLegal: true, haIsLegal: false},
+                    safari: {isLegal: true, haIsLegal: false},
+                    sport: {isLegal: true, haIsLegal: false},
+                    beast: {isLegal: true, haIsLegal: false},
+                    dream: {isLegal: true, haIsLegal: false}
+                }
+            }
+        }
+    }
+}, {
+    name: "blacephalon",
+    gen: 7,
+    info: {
+        natDexNum: 806,
+        HA: {
+            hasHA: false
+        },
+        nonBreedable: true,
+        ultraBeast: true
+    },
+    specificGenInfo: {
+        gen7: {
+            balls: {
+                apriball: {isLegal: true, haIsLegal: false},
+                safari: {isLegal: false, haIsLegal: false},
+                sport: {isLegal: false, haIsLegal: false},
+                beast: {isLegal: true, haIsLegal: false},
+                dream: {isLegal: false, haIsLegal: false}
+            }
+        },
+        gen8: {
+            balls: {
+                swsh: {
+                    apriball: {isLegal: true, haIsLegal: false},
+                    safari: {isLegal: true, haIsLegal: false},
+                    sport: {isLegal: true, haIsLegal: false},
+                    beast: {isLegal: true, haIsLegal: false},
+                    dream: {isLegal: true, haIsLegal: false}
+                }
             }
         }
     }

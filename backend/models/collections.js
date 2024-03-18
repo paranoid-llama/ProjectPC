@@ -19,7 +19,7 @@ const collectionSchema = new Schema ({
     ownedPokemon: [{
         _id: false,
         name: String,
-        nickname: String,
+        displayName: String,
         natDexNum: Number,
         gen: Number,
         balls: {

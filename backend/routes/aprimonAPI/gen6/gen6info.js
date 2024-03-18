@@ -874,6 +874,52 @@ const gen6Info =[{
         }
     }
 }, {
+    name: "hisuian Sliggoo",
+    gen: 9,
+    info: {
+        natDexNum: 705,
+        HA: {
+            hasHA: true,
+            name: {reg: "Gooey"}
+        },
+        evolvedRegionalForm: true
+    },
+    specificGenInfo: {
+        gen9: {
+            eggmoves: {moves: ['Counter', 'Life Dew']},
+            balls: {
+                apriball: {isLegal: true, haIsLegal: true},
+                safari: {isLegal: true, haIsLegal: true},
+                sport: {isLegal: true, haIsLegal: true},
+                beast: {isLegal: true, haIsLegal: true},
+                dream: {isLegal: true, haIsLegal: true}
+            }
+        }
+    }
+}, {
+    name: "hisuian Goodra",
+    gen: 9,
+    info: {
+        natDexNum: 706,
+        HA: {
+            hasHA: true,
+            name: {reg: "Gooey"}
+        },
+        evolvedRegionalForm: true
+    },
+    specificGenInfo: {
+        gen9: {
+            eggmoves: {moves: ['Counter', 'Life Dew']},
+            balls: {
+                apriball: {isLegal: true, haIsLegal: true},
+                safari: {isLegal: true, haIsLegal: true},
+                sport: {isLegal: true, haIsLegal: true},
+                beast: {isLegal: true, haIsLegal: true},
+                dream: {isLegal: true, haIsLegal: true}
+            }
+        }
+    }
+}, {
     name: "klefki",
     gen: 6,
     info: {
@@ -1023,6 +1069,29 @@ const gen6Info =[{
         }
     }
 }, {
+    name: "hisuian Avalugg",
+    gen: 9,
+    info: {
+        natDexNum: 713,
+        HA: {
+            hasHA: true,
+            name: {reg: "Sturdy"}
+        },
+        evolvedRegionalForm: true
+    },
+    specificGenInfo: {
+        gen9: {
+            eggmoves: {moves: ['Counter', 'Life Dew']},
+            balls: {
+                apriball: {isLegal: true, haIsLegal: true},
+                safari: {isLegal: true, haIsLegal: true},
+                sport: {isLegal: true, haIsLegal: true},
+                beast: {isLegal: true, haIsLegal: true},
+                dream: {isLegal: true, haIsLegal: true}
+            }
+        }
+    }
+}, {
     name: "noibat",
     gen: 6,
     info: {
@@ -1063,6 +1132,93 @@ const gen6Info =[{
                 sport: {isLegal: true, haIsLegal: true},
                 beast: {isLegal: true, haIsLegal: true},
                 dream: {isLegal: true, haIsLegal: true}
+            }
+        }
+    }
+}, {
+    name: "xerneas",
+    gen: 6,
+    info: {
+        natDexNum: 716,
+        HA: {
+            hasHA: false
+        },
+        legendary: true
+    },
+    specificGenInfo: {
+        gen7: {
+            balls: {
+                apriball: {isLegal: true, haIsLegal: false},
+                safari: {isLegal: false, haIsLegal: false},
+                sport: {isLegal: false, haIsLegal: false},
+                beast: {isLegal: true, haIsLegal: false},
+                dream: {isLegal: false, haIsLegal: false}
+            }
+        }, 
+        gen8: {
+            balls: {
+                swsh: {
+                    apriball: {isLegal: true, haIsLegal: false},
+                    safari: {isLegal: true, haIsLegal: false},
+                    sport: {isLegal: true, haIsLegal: false},
+                    beast: {isLegal: true, haIsLegal: false},
+                    dream: {isLegal: true, haIsLegal: false}
+                }
+            }
+        }
+    }
+}, {
+    name: "yveltal",
+    gen: 6,
+    info: {
+        natDexNum: 717,
+        HA: {
+            hasHA: false
+        },
+        legendary: true
+    },
+    specificGenInfo: {
+        gen7: {
+            balls: {
+                apriball: {isLegal: true, haIsLegal: false},
+                safari: {isLegal: false, haIsLegal: false},
+                sport: {isLegal: false, haIsLegal: false},
+                beast: {isLegal: true, haIsLegal: false},
+                dream: {isLegal: false, haIsLegal: false}
+            }
+        }, 
+        gen8: {
+            balls: {
+                swsh: {
+                    apriball: {isLegal: true, haIsLegal: false},
+                    safari: {isLegal: true, haIsLegal: false},
+                    sport: {isLegal: true, haIsLegal: false},
+                    beast: {isLegal: true, haIsLegal: false},
+                    dream: {isLegal: true, haIsLegal: false}
+                }
+            }
+        }
+    }
+}, {
+    name: "zygarde",
+    gen: 6,
+    info: {
+        natDexNum: 718,
+        HA: {
+            hasHA: false
+        },
+        legendary: true
+    },
+    specificGenInfo: {
+        gen8: {
+            balls: {
+                swsh: {
+                    apriball: {isLegal: true, haIsLegal: false},
+                    safari: {isLegal: true, haIsLegal: false},
+                    sport: {isLegal: true, haIsLegal: false},
+                    beast: {isLegal: true, haIsLegal: false},
+                    dream: {isLegal: true, haIsLegal: false}
+                }
             }
         }
     }

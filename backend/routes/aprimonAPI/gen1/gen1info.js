@@ -529,6 +529,50 @@ const gen1info = [{
         }
     }
 }, {
+    name: "alolan Raichu",
+    gen: 7,
+    info: {
+        natDexNum: 26,
+        HA: {
+            hasHA: false
+        },
+        evolvedRegionalForm: true
+    },
+    specificGenInfo: {
+        gen7: {
+            eggmoves: {moves: ['Bestow', 'Bide', 'Charge', 'Disarming Voice', 'Double Slap', 'Encore', 'Endure', 'Fake Out', 'Flail', 'Lucky Chant', 'Present', 'Reversal', 'Thunder Punch', 'Tickle', 'Wish', 'Volt Tackle', 'Electric Terrain']},
+            balls: {
+                apriball: {isLegal: true, haIsLegal: true},
+                safari: {isLegal: true, haIsLegal: true},
+                sport: {isLegal: false, haIsLegal: false},
+                beast: {isLegal: true, haIsLegal: true},
+                dream: {isLegal: true, haIsLegal: true}
+            }
+        }, 
+        gen8: {
+            eggmoves: {moves: ['Present', 'Wish', 'Charge', 'Fake Out', 'Tickle', 'Flail', 'Disarming Voice']},
+            balls: {
+                swsh: {
+                    apriball: {isLegal: true, haIsLegal: true},
+                    safari: {isLegal: true, haIsLegal: true},
+                    sport: {isLegal: true, haIsLegal: true},
+                    beast: {isLegal: true, haIsLegal: true},
+                    dream: {isLegal: true, haIsLegal: true}
+                }
+            }
+        },
+        gen9: {
+            eggmoves: {moves: ['Flail', 'Present', 'Fake Out', 'Charge', 'Wish', 'Tickle', 'Disarming Voice', 'Volt Tackle']},
+            balls: {
+                apriball: {isLegal: true, haIsLegal: true},
+                safari: {isLegal: true, haIsLegal: true},
+                sport: {isLegal: true, haIsLegal: true},
+                beast: {isLegal: true, haIsLegal: true},
+                dream: {isLegal: true, haIsLegal: true}
+            }
+        }
+    }
+}, {
     name: "sandshrew",
     gen: 1,
     info: {
@@ -2539,13 +2583,58 @@ const gen1info = [{
         }
     }
 }, {
+    name: 'alolan Exeggutor',
+    gen: 7,
+    info: {
+        natDexNum: 103,
+        HA: {
+            hasHA: true,
+            name: {reg: "Harvest"} 
+        },
+        evolvedRegionalForm: true
+    },
+    specificGenInfo: {
+        gen7: {
+            eggmoves: {moves: ['Synthesis', 'Moonlight', 'Ancient Power', 'Ingrain', 'Curse', 'Nature Power', 'Lucky Chant', 'Leaf Storm', 'Power Swap', 'Giga Drain', 'Skill Swap', 'Natural Gift', 'Block', 'Grassy Terrain']},
+            balls: {
+                apriball: {isLegal: true, haIsLegal: true},
+                safari: {isLegal: true, haIsLegal: true},
+                sport: {isLegal: false, haIsLegal: false},
+                beast: {isLegal: true, haIsLegal: true},
+                dream: {isLegal: true, haIsLegal: true}
+            }
+        }, 
+        gen8: {
+            eggmoves: {moves: ['Ancient Power', 'Block', 'Curse', 'Ingrain', 'Moonlight', 'Sleep Powder', 'Stun Spore', 'Poison Powder']},
+            balls: {
+                swsh: {
+                    apriball: {isLegal: true, haIsLegal: true},
+                    safari: {isLegal: true, haIsLegal: true},
+                    sport: {isLegal: true, haIsLegal: true},
+                    beast: {isLegal: true, haIsLegal: true},
+                    dream: {isLegal: true, haIsLegal: true}
+                }
+            }
+        },
+        gen9: {
+            eggmoves: {moves: ['Poison Powder', 'Stun Spore', 'Sleep Powder', 'Curse', 'Moonlight', 'Ancient Power', 'Ingrain', 'Block']},
+            balls: {
+                apriball: {isLegal: true, haIsLegal: true},
+                safari: {isLegal: true, haIsLegal: true},
+                sport: {isLegal: true, haIsLegal: true},
+                beast: {isLegal: true, haIsLegal: true},
+                dream: {isLegal: true, haIsLegal: true}
+            }
+        }
+    }
+}, {
     name: "cubone",
     gen: 1,
     info: {
         natDexNum: 104,
         HA: {
             hasHA: true,
-            name: {reg: "Battle Armor"}
+            name: {reg: "Rock Head"}
         },
             
     },
@@ -2581,6 +2670,41 @@ const gen1info = [{
                     dream: {isLegal: true, haIsLegal: true}
                 },
                 bdsp: {
+                    apriball: {isLegal: true, haIsLegal: true},
+                    safari: {isLegal: true, haIsLegal: true},
+                    sport: {isLegal: true, haIsLegal: true},
+                    beast: {isLegal: true, haIsLegal: true},
+                    dream: {isLegal: true, haIsLegal: true}
+                }
+            }
+        }
+    }
+}, {
+    name: "alolan Marowak",
+    gen: 7,
+    info: {
+        natDexNum: 105,
+        HA: {
+            hasHA: true,
+            name: {reg: "Battle Armor"}
+        },
+        evolvedRegionalForm: true
+    },
+    specificGenInfo: {
+        gen7: {
+            eggmoves: {moves: ['Ancient Power', 'Belly Drum', 'Screech', 'Skull Bash', 'Perish Song', 'Double Kick', 'Iron Head', 'Detect', 'Endure', 'Chip Away'], usumOnly: ['Curse']},
+            balls: {
+                apriball: {isLegal: true, haIsLegal: true},
+                safari: {isLegal: true, haIsLegal: true},
+                sport: {isLegal: false, haIsLegal: false},
+                beast: {isLegal: true, haIsLegal: true},
+                dream: {isLegal: true, haIsLegal: true}
+            }
+        }, 
+        gen8: {
+            eggmoves: {moves: ['Ancient Power', 'Belly Drum', 'Detect', 'Double Kick', 'Perish Song', 'Skull Bash', 'Curse', 'Leer']},
+            balls: {
+                swsh: {
                     apriball: {isLegal: true, haIsLegal: true},
                     safari: {isLegal: true, haIsLegal: true},
                     sport: {isLegal: true, haIsLegal: true},
@@ -2648,9 +2772,9 @@ const gen1info = [{
     info: {
         natDexNum: 109,
         HA: {
-            hasHA: false
-        },
-            
+            hasHA: true, //HA introduced in gen 8. haIsLegal fields ensure its not taken to those gens.
+            name: {reg: "Stench"}
+        }      
     },
     specificGenInfo: {
         gen6: {
@@ -2660,17 +2784,17 @@ const gen1info = [{
                 safari: {isLegal: true, haIsLegal: false},
                 sport: {isLegal: false, haIsLegal: false},
                 beast: {isLegal: false, haIsLegal: false},
-                dream: {isLegal: true, haIsLegal: true}
+                dream: {isLegal: true, haIsLegal: false}
             }
         }, 
         gen7: {
             eggmoves: {moves: ['Curse', 'Destiny Bond', 'Grudge', 'Pain Split', 'Psybeam', 'Psywave', 'Screech', 'Spit Up', 'Spite', 'Stockpile', 'Swallow', 'Toxic Spikes'], usumOnly: ['Venom Drench']},
             balls: {
-                apriball: {isLegal: true, haIsLegal: true},
-                safari: {isLegal: true, haIsLegal: true},
+                apriball: {isLegal: true, haIsLegal: false},
+                safari: {isLegal: true, haIsLegal: false},
                 sport: {isLegal: false, haIsLegal: false},
                 beast: {isLegal: false, haIsLegal: false},
-                dream: {isLegal: true, haIsLegal: true}
+                dream: {isLegal: true, haIsLegal: false}
             }
         }, 
         gen8: {
@@ -2684,6 +2808,41 @@ const gen1info = [{
                     dream: {isLegal: true, haIsLegal: true}
                 },
                 bdsp: {
+                    apriball: {isLegal: true, haIsLegal: true},
+                    safari: {isLegal: true, haIsLegal: true},
+                    sport: {isLegal: true, haIsLegal: true},
+                    beast: {isLegal: true, haIsLegal: true},
+                    dream: {isLegal: true, haIsLegal: true}
+                }
+            }
+        },
+        gen9: {
+            eggmoves: {moves: ['Curse', 'Spite', 'Pain Split', 'Stockpile', 'Swallow', 'Spit Up']},
+            balls: {
+                apriball: {isLegal: true, haIsLegal: true},
+                safari: {isLegal: true, haIsLegal: true},
+                sport: {isLegal: true, haIsLegal: true},
+                beast: {isLegal: true, haIsLegal: true},
+                dream: {isLegal: true, haIsLegal: true}
+            }
+        }
+    }
+}, {
+    name: "galarian Weezing",
+    gen: 8,
+    info: {
+        natDexNum: 110,
+        HA: {
+            hasHA: true,
+            name: {reg: "Misty Surge"}
+        },
+        evolvedRegionalForm: true   
+    },
+    specificGenInfo: {
+        gen8: {
+            eggmoves: {moves: ['Psybeam', 'Pain Split', 'Grudge', 'Spite', 'Curse', 'Stockpile', 'Swallow', 'Spit Up']},
+            balls: {
+                swsh: {
                     apriball: {isLegal: true, haIsLegal: true},
                     safari: {isLegal: true, haIsLegal: true},
                     sport: {isLegal: true, haIsLegal: true},
@@ -3093,7 +3252,7 @@ const gen1info = [{
         }
     }
 }, {
-    name: "mr. mime",
+    name: "mr. Mime",
     gen: 1,
     info: {
         natDexNum: 122,
@@ -3104,7 +3263,7 @@ const gen1info = [{
         special: {
             incenseMon: true,
             child: {
-                name: "mime jr.",
+                name: "mime Jr.",
                 gen: 4,
                 natDexNum: 439,
                 hasHA: true,
@@ -4052,6 +4211,189 @@ const gen1info = [{
         }
     }
 }, {
+    name: "articuno",
+    gen: 1,
+    info: {
+        natDexNum: 144,
+        HA: {
+            hasHA: true,
+            name: {reg: 'Snow Cloak'}
+        },
+        regionalForm: {
+            forms: [{name: "Galarian", gen: 8}]
+        },
+        legendary: true
+    },
+    specificGenInfo: {
+        gen6: {
+            balls: {
+                apriball: {isLegal: true, haIsLegal: false},
+                safari: {isLegal: false, haIsLegal: false},
+                sport: {isLegal: false, haIsLegal: false},
+                beast: {isLegal: false, haIsLegal: false},
+                dream: {isLegal: false, haIsLegal: false}
+            }
+        }, 
+        gen7: {
+            balls: {
+                apriball: {isLegal: true, haIsLegal: false},
+                safari: {isLegal: false, haIsLegal: false},
+                sport: {isLegal: false, haIsLegal: false},
+                beast: {isLegal: true, haIsLegal: false},
+                dream: {isLegal: false, haIsLegal: false}
+            }
+        },
+        gen8: {
+            balls: {
+                swsh: {
+                    apriball: {isLegal: true, haIsLegal: true},
+                    safari: {isLegal: true, haIsLegal: true},
+                    sport: {isLegal: true, haIsLegal: true},
+                    beast: {isLegal: true, haIsLegal: true},
+                    dream: {isLegal: true, haIsLegal: true}
+                },
+                bdsp: {
+                    apriball: {isLegal: true, haIsLegal: true},
+                    safari: {isLegal: true, haIsLegal: true},
+                    sport: {isLegal: true, haIsLegal: true},
+                    beast: {isLegal: true, haIsLegal: true},
+                    dream: {isLegal: true, haIsLegal: true}
+                }
+            }
+        },
+        gen9: {
+            balls: {
+                apriball: {isLegal: true, haIsLegal: true},
+                safari: {isLegal: true, haIsLegal: true},
+                sport: {isLegal: true, haIsLegal: true},
+                beast: {isLegal: true, haIsLegal: true},
+                dream: {isLegal: true, haIsLegal: true}
+            }
+        }
+    }
+}, {
+    name: "zapdos",
+    gen: 1,
+    info: {
+        natDexNum: 145,
+        HA: {
+            hasHA: true,
+            name: {reg: 'Static'}
+        },
+        regionalForm: {
+            forms: [{name: "Galarian", gen: 8}]
+        },
+        legendary: true
+    },
+    specificGenInfo: {
+        gen6: {
+            balls: {
+                apriball: {isLegal: true, haIsLegal: false},
+                safari: {isLegal: false, haIsLegal: false},
+                sport: {isLegal: false, haIsLegal: false},
+                beast: {isLegal: false, haIsLegal: false},
+                dream: {isLegal: false, haIsLegal: false}
+            }
+        }, 
+        gen7: {
+            balls: {
+                apriball: {isLegal: true, haIsLegal: false},
+                safari: {isLegal: false, haIsLegal: false},
+                sport: {isLegal: false, haIsLegal: false},
+                beast: {isLegal: true, haIsLegal: false},
+                dream: {isLegal: false, haIsLegal: false}
+            }
+        },
+        gen8: {
+            balls: {
+                swsh: {
+                    apriball: {isLegal: true, haIsLegal: true},
+                    safari: {isLegal: true, haIsLegal: true},
+                    sport: {isLegal: true, haIsLegal: true},
+                    beast: {isLegal: true, haIsLegal: true},
+                    dream: {isLegal: true, haIsLegal: true}
+                },
+                bdsp: {
+                    apriball: {isLegal: true, haIsLegal: true},
+                    safari: {isLegal: true, haIsLegal: true},
+                    sport: {isLegal: true, haIsLegal: true},
+                    beast: {isLegal: true, haIsLegal: true},
+                    dream: {isLegal: true, haIsLegal: true}
+                }
+            } 
+        },
+        gen9: {
+            balls: {
+                apriball: {isLegal: true, haIsLegal: true},
+                safari: {isLegal: true, haIsLegal: true},
+                sport: {isLegal: true, haIsLegal: true},
+                beast: {isLegal: true, haIsLegal: true},
+                dream: {isLegal: true, haIsLegal: true}
+            }
+        }
+    }
+}, {
+    name: "moltres",
+    gen: 1,
+    info: {
+        natDexNum: 146,
+        HA: {
+            hasHA: true,
+            name: {reg: 'Flame Body'}
+        },
+        regionalForm: {
+            forms: [{name: "Galarian", gen: 8}]
+        },
+        legendary: true
+    },
+    specificGenInfo: {
+        gen6: {
+            balls: {
+                apriball: {isLegal: true, haIsLegal: false},
+                safari: {isLegal: false, haIsLegal: false},
+                sport: {isLegal: false, haIsLegal: false},
+                beast: {isLegal: false, haIsLegal: false},
+                dream: {isLegal: false, haIsLegal: false}
+            }
+        }, 
+        gen7: {
+            balls: {
+                apriball: {isLegal: true, haIsLegal: false},
+                safari: {isLegal: false, haIsLegal: false},
+                sport: {isLegal: false, haIsLegal: false},
+                beast: {isLegal: true, haIsLegal: false},
+                dream: {isLegal: false, haIsLegal: false}
+            }
+        },
+        gen8: {
+            balls: {
+                swsh: {
+                    apriball: {isLegal: true, haIsLegal: true},
+                    safari: {isLegal: true, haIsLegal: true},
+                    sport: {isLegal: true, haIsLegal: true},
+                    beast: {isLegal: true, haIsLegal: true},
+                    dream: {isLegal: true, haIsLegal: true}
+                },
+                bdsp: {
+                    apriball: {isLegal: true, haIsLegal: true},
+                    safari: {isLegal: true, haIsLegal: true},
+                    sport: {isLegal: true, haIsLegal: true},
+                    beast: {isLegal: true, haIsLegal: true},
+                    dream: {isLegal: true, haIsLegal: true}
+                }
+            }
+        },
+        gen9: {
+            balls: {
+                apriball: {isLegal: true, haIsLegal: true},
+                safari: {isLegal: true, haIsLegal: true},
+                sport: {isLegal: true, haIsLegal: true},
+                beast: {isLegal: true, haIsLegal: true},
+                dream: {isLegal: true, haIsLegal: true}
+            }
+        }
+    }
+}, {
     name: "dratini",
     gen: 1,
     info: {
@@ -4113,6 +4455,64 @@ const gen1info = [{
             }
         }
     }
-}]
+}, {
+    name: "mewtwo",
+    gen: 1,
+    info: {
+        natDexNum: 150,
+        HA: {
+            hasHA: true,
+            name: {reg: 'Pressure', alt1: 'Unnerve'}
+        },
+        legendary: true
+    },
+    specificGenInfo: {
+        gen6: {
+            balls: {
+                apriball: {isLegal: true, haIsLegal: false},
+                safari: {isLegal: false, haIsLegal: false},
+                sport: {isLegal: false, haIsLegal: false},
+                beast: {isLegal: false, haIsLegal: false},
+                dream: {isLegal: false, haIsLegal: false}
+            }
+        }, 
+        gen7: {
+            balls: {
+                apriball: {isLegal: true, haIsLegal: false},
+                safari: {isLegal: false, haIsLegal: false},
+                sport: {isLegal: false, haIsLegal: false},
+                beast: {isLegal: true, haIsLegal: false},
+                dream: {isLegal: false, haIsLegal: false}
+            }
+        },
+        gen8: {
+            balls: {
+                swsh: {
+                    apriball: {isLegal: true, haIsLegal: true},
+                    safari: {isLegal: true, haIsLegal: true},
+                    sport: {isLegal: true, haIsLegal: true},
+                    beast: {isLegal: true, haIsLegal: true},
+                    dream: {isLegal: true, haIsLegal: true}
+                },
+                bdsp: {
+                    apriball: {isLegal: true, haIsLegal: true},
+                    safari: {isLegal: true, haIsLegal: true},
+                    sport: {isLegal: true, haIsLegal: true},
+                    beast: {isLegal: true, haIsLegal: true},
+                    dream: {isLegal: true, haIsLegal: true}
+                }
+            }
+        },
+        gen9: {
+            balls: {
+                apriball: {isLegal: true, haIsLegal: true},
+                safari: {isLegal: true, haIsLegal: true},
+                sport: {isLegal: true, haIsLegal: true},
+                beast: {isLegal: true, haIsLegal: true},
+                dream: {isLegal: true, haIsLegal: true}
+            }
+        }
+    }
+}, ]
 
 module.exports = gen1info;
