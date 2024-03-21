@@ -18,22 +18,62 @@ const {interchangeableAltFormMons} = require('./../infoconstants.js')
 //   useIncenseMon: {num[dexnumofrelevantincenseadult]: boolean, ...othernums} OR boolean (if they want all or none),
 //   includeInterchangeableAltForms: {num[dexnumofrelevantpokemon]: boolean, ...othernums} OR boolean (if they want all or none),
 //   includeNonBreedables: {num[dexnumofrelevantpokemon]: boolean, ...othernums} OR boolean (if they want all or none),
+//   includeNonBreedableAltForms: {num[dexnumofrelevantpokemon]: boolean, ...othernums} OR boolean (if they want all or none) ---- this applies to sinistea and poltchageist
+//   includeVivillonForms: [arr of vivillon patterns] OR boolean (if they want all or none)
+//   includeAlcremieForms: [arr of alcremie forms] OR boolean (if they want all or none)
 //   includeLegendaries: {num[dexnumofrelevantpokemon]: boolean, ...othernums} OR boolean (if they want all or none),
 //   includeEvolvedRegionals: {num[dexnumofrelevantpokemon]: boolean, ...othernums} OR boolean (if they want all or none)
 //}
 // function setOwnedPokemonList(gen, includeBabyMon, includeIncenseMon, interchangeableAltForms) {
-function setOwnedPokemonList(gen, pokemonScope) {
+function setOwnedPokemonList(gen, pokemonScope, importing=false) {
     return (
         allPokemon.map((pokemon) => {
-            const parsedGen = gen === 'swsh' || gen === 'bdsp' ? 8 : parseInt(gen)
-            const game = gen === 'swsh' || gen === 'bdsp' ? gen : ""
-            const formattedGen = `gen${parsedGen}`
-            if (pokemon.specificGenInfo[formattedGen] && pokemon.info.nonBreedable === undefined && pokemon.info.legendary === undefined && pokemon.info.evolvedRegionalForm === undefined) {
-                if (game !== '' && pokemon.specificGenInfo[formattedGen].balls[game] === undefined) {
-                    return
-                }
+            const parsedGen = gen === 'swsh' || gen === 'bdsp' ? 8 : parseInt(gen) //gen comes as a string, since "swsh" and "bdsp" are used instead of 8. this parses it into a number
+            const game = gen === 'swsh' || gen === 'bdsp' ? gen : "" //this retains what game it is (if there is one)
+            const formattedGen = `gen${parsedGen}` //this formats gen to how its organized in the database
+            const pokemonInGen = (parsedGen !== 8 && pokemon.specificGenInfo[formattedGen] !== undefined) || (parsedGen === 8 && pokemon.specificGenInfo[formattedGen] !== undefined && pokemon.specificGenInfo[formattedGen].balls[game] !== undefined) //have to break gen 8 check in 2 since they could have no gen 8 combos
+            // console.log(`name: ${pokemon.name}, pokemonInGen: ${pokemonInGen}`)
+            // console.log(pokemonInGen)
+            if (importing && pokemonInGen) {
+                // console.log(pokemon.name)
+                const {childName, childNatDexNum, childGen, adultName, adultNatDexNum, adultGen, pokename, pokeNatDexNum, pokeGen} = handleIncenseAndBabyMons(pokemon, {}, {}, true)
                 const ballsPath = parsedGen === 8 ? pokemon.specificGenInfo[formattedGen].balls[game] : pokemon.specificGenInfo[formattedGen].balls
+                const ownedBallList = setOwnedBallList(formattedGen, ballsPath, pokemon)
+                const originalPokemon = pokename === undefined ? {
+                    name: adultName,
+                    natDexNum: adultNatDexNum,
+                    gen: adultGen,
+                    balls: ownedBallList
+                } : {
+                    name: pokename,
+                    natDexNum: pokeNatDexNum,
+                    gen: pokeGen,
+                    balls: ownedBallList
+                }
 
+                const childPokemon = childName !== undefined ? {
+                    name: childName, 
+                    natDexNum: childNatDexNum,
+                    gen: childGen,
+                    balls: ownedBallList
+                } : {}
+                if (pokemon.info.alternateForm !== undefined || (importing && pokemon.info.specialAlternateForms !== undefined)) {
+                    const isntSpecialAltForm = pokemon.info.alternateForm !== undefined
+                    if ((isntSpecialAltForm && pokemon.info.alternateForm.originalIsForm) || interchangeableAltFormMons.includes(pokename)) { //there is an option to just have a one of an interchangeable alt form mon. this just gets singled out if they have all of them, though.
+                        return [originalPokemon, handleAlternateForms(pokemon, ownedBallList, pokename, parsedGen, true)]
+                    }
+                    const multiplePokemon = handleAlternateForms(pokemon, ownedBallList, pokename, parsedGen, true) 
+                    return multiplePokemon
+                }
+                if (pokemon.info.regionalForm && game !== "bdsp") { 
+                    const multiplePokemon = handleRegionalForms(pokemon, ownedBallList, pokename, parsedGen, childPokemon.name ? [originalPokemon, childPokemon] : [originalPokemon], true)
+                    return multiplePokemon
+                }
+                return childPokemon.name ? [originalPokemon, childPokemon] : originalPokemon
+            }
+            if (pokemonInGen && pokemon.info.nonBreedable === undefined && pokemon.info.legendary === undefined && pokemon.info.evolvedRegionalForm === undefined) {
+                const ballsPath = parsedGen === 8 ? pokemon.specificGenInfo[formattedGen].balls[game] : pokemon.specificGenInfo[formattedGen].balls
+                const ownedBallList = setOwnedBallList(parsedGen, ballsPath, pokemon)
                 // function checkIfBabyOrIncenseMon(pokemon, includeBabyMon, includeIncenseMon) {
                 //     if (pokemon.info.special === undefined) {
                 //         const pokename = pokemon.name === 'mr. mime' ? 
@@ -102,7 +142,7 @@ function setOwnedPokemonList(gen, pokemonScope) {
                 //     checkLegalityGen8(game, 'sport', balls)
                 // }
 
-                const ownedBallList = setOwnedBallList(parsedGen, ballsPath, pokemon)
+                
 
                 const {pokename, pokeNatDexNum, pokeGen} = handleIncenseAndBabyMons(pokemon, pokemonScope.includeBabyMon, pokemonScope.includeIncenseMon)
 
@@ -117,7 +157,7 @@ function setOwnedPokemonList(gen, pokemonScope) {
                     if (interchangeableAltFormMons.includes(pokename) && (pokemonScope.includeInterchangeableAltForms === false || pokemonScope.includeInterchangeableAltForms[`num${pokeNatDexNum}`] === false)) {  
                         return originalPokemon
                     }
-                    if (pokemon.info.alternateForm.originalIsForm) { //handleAltForms func returns diff alternate forms of pokemon but not the original. 
+                    if (pokemon.info.alternateForm.originalIsForm) { //handleAltForms func returns diff alternate forms of pokemon but not the original. Currently this if only applies to Rockruff and his Dusk form
                         return [originalPokemon, handleAlternateForms(pokemon, ownedBallList, pokename, parsedGen)]
                     }
                     return handleAlternateForms(pokemon, ownedBallList, pokename, parsedGen) 
@@ -215,5 +255,5 @@ class Collection {
                             }
 }
 
-module.exports = Collection
+module.exports = {Collection, setOwnedPokemonList, allPokemon}
 

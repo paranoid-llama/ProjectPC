@@ -485,6 +485,9 @@ const gen4Info = [{
         HA: {
             hasHA: true,
             name: {reg: "Overcoat"}
+        },
+        alternateForm: {
+            name: {1: 'Plant', 2: 'Sandy', 3: 'Trash'}
         }
     },
     specificGenInfo: {

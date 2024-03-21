@@ -195,6 +195,42 @@ const gen6Info =[{
         }
     }
 }, {
+    name: "vivillon",
+    gen: 6,
+    info: {
+        natDexNum: 666,
+        HA: {
+            hasHA: true,
+            name: {reg: "Friend Guard"}
+        },
+        alternateForm: {
+            name: ['Meadow', 'Polar', 'Tundra', 'Continental', 'Garden', 'Elegant', 'Icy Snow', 'Modern', 'Marine', 'Archipelago', 'High Plains', 'Sandstorm', 
+            'River', 'Monsoon', 'Savanna', 'Sun', 'Ocean', 'Jungle', 'Fancy']
+        }
+    },
+    specificGenInfo: {
+        gen7: {
+            eggmoves: {moves: ['Stun Spore', 'Poison Powder', 'Rage Powder']},
+            balls: {
+                apriball: {isLegal: true, haIsLegal: true},
+                safari: {isLegal: false, haIsLegal: false},
+                sport: {isLegal: false, haIsLegal: false},
+                beast: {isLegal: true, haIsLegal: true},
+                dream: {isLegal: false, haIsLegal: false}
+            }
+        },
+        gen9: {
+            eggmoves: {moves: ['Poison Powder', 'Rage Powder']},
+            balls: {
+                apriball: {isLegal: true, haIsLegal: true},
+                safari: {isLegal: true, haIsLegal: true},
+                sport: {isLegal: true, haIsLegal: true},
+                beast: {isLegal: true, haIsLegal: true},
+                dream: {isLegal: true, haIsLegal: true}
+            }
+        }
+    }
+}, {
     name: "litleo",
     gen: 6,
     info: {

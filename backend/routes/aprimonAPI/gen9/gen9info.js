@@ -1301,6 +1301,9 @@ const gen9Info = [{
         HA: {
             hasHA: true,
             name: {reg: "Heatproof"}
+        },
+        specialAlternateForms: {
+            name: {1: 'Counterfeit', 2: 'Artisan'}
         }
     },
     specificGenInfo: {

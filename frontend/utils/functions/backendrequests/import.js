@@ -1,13 +1,13 @@
 
 //frontend needs data back to display the data
-const importCollection = (spreadsheetId, apiRequestQueries) => {
-    const collectionData = fetch(`http://localhost:3000/collections/new/import`, {
+const importCollection = async(spreadsheetId, apiRequestQueries, collectionTypeValue) => {
+    const collectionData = await fetch(`http://localhost:3000/collections/new/import`, {
         method: 'POST',
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({spreadsheetId, apiRequestQueries})
-    })
+        body: JSON.stringify({spreadsheetId, apiRequestQueries, collectionTypeValue})
+    }).then((res) => res.json())
     return collectionData
 }
 

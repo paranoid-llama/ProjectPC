@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
-const {formatImportQuery, setEMQueries, formatImportedValues} = require('./utils/CreateCollection/importCollection.js')
+const {formatImportQuery, setEMQueries, formatImportedValues, setCollection} = require('./utils/CreateCollection/importCollection.js')
 require('dotenv').config()
 
 function newObjectId() {
@@ -106,12 +106,11 @@ app.get('/collections', catchAsync(async(req, res) => {
 }))
 
 app.post('/collections/new/import', catchAsync(async(req, res) => {
-    const {spreadsheetId, apiRequestQueries} = req.body
+    const {spreadsheetId, apiRequestQueries, collectionTypeValue} = req.body
     const {dexNum, names, balls, HA, EM1, EM2, EM3, EM4, emColors} = apiRequestQueries
     const noDexNums = dexNum === undefined
     const noHAColImport = HA === undefined || typeof HA === 'object'
     const noEMsColImport = EM1 === undefined //must populate all EM fields or they don't import
-
     //console.log(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values:batchGet?key=${APIKEY}dexNum: ${formatImportQuery(dexNum)} nameRange: ${names}& ballRange: ${balls.range} HArange: ${formatImportQuery(HA)} EMQueries: ${setEMQueries(EM1, EM2, EM3, EM4, formatImportQuery(HA) === '')}`)
     //console.log(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values:batchGet?key=${APIKEY}${formatImportQuery(dexNum)}${names}&${balls.range}${formatImportQuery(HA, EM1 === undefined)}${setEMQueries(EM1, EM2, EM3, EM4, formatImportQuery(HA) === '')}`)
 
@@ -138,19 +137,18 @@ app.post('/collections/new/import', catchAsync(async(req, res) => {
         EM4: 6 + (noDexNums ? -1 : 0) + (noHAColImport ? -1 : 0)
     }
 
-    console.log(ballData.valueRanges[0].values)
-
     const gapRowIdxs = formatImportedValues('gapIdxs', data.valueRanges[0].values, [], [], noDexNums ? 'names' : 'dexNums')
 
     const importedDexNumArr = noDexNums ? [] : formatImportedValues('dexNum', data.valueRanges[0].values, gapRowIdxs)
     const importedNamesArr = formatImportedValues('names', data.valueRanges[namesDataIdx].values, gapRowIdxs)
     const importedBallInfoArr = formatImportedValues('balls', ballData.valueRanges[0].values, gapRowIdxs, balls.order)
 
+    const newCollection = setCollection(noDexNums ? importedNamesArr : importedDexNumArr, importedNamesArr, importedBallInfoArr, gapRowIdxs, balls.order, collectionTypeValue)
     // console.log(data.valueRanges[ballsDataIdx].values)
 
     // console.log(data.valueRanges[1].values)
 
-    res.end()
+    res.send(newCollection)
 }))
 
 

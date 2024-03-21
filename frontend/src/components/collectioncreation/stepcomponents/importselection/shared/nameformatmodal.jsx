@@ -142,12 +142,12 @@ export default function NameFormatModal({open, handleClose}) {
                                 return (
                                     <Box sx={{width: '100%', height: `${100/aprimonGeneralIdentifiers.length}%`, border: '1px white solid', display: 'flex', flexDirection: 'row', alignItems: 'center'}} key={`${identifiers.category}-name-requirements`}>
                                         <Box sx={{width: '30%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                                            <Typography sx={{fontSize: '12px'}}>
+                                            <Typography sx={{fontSize: '12px', textAlign: 'center'}}>
                                                 {identifiers.category}
                                             </Typography>
                                         </Box>
                                         <Box sx={{width: '55%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid white', position: 'relative'}}>
-                                            <Typography sx={{fontSize: '12px'}}>
+                                            <Typography sx={{fontSize: '12px', textAlign: 'center'}}>
                                                 {identifiers.id}
                                             </Typography>
                                             {aprimonAsideInfo[identifiers.category] !== undefined && 

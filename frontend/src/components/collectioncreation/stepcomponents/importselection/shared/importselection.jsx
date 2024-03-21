@@ -8,7 +8,7 @@ import { formatApiRequestLink } from '../../../../../../utils/functions/backendr
 import { importCollection } from '../../../../../../utils/functions/backendrequests/import'
 import './importselection.css'
 
-export default function ImportSelection({handleChange, cssClass, goBackStep, collectionType}) {
+export default function ImportSelection({handleChange, cssClass, goBackStep, collectionType, collectionSubTypeValue}) {
     const screens = ['select', 'import', 'preview']
     const [importScreen, setImportScreen] = useState(screens[0])
     const [importedCollectionDisplay, setImportedCollectionDisplay] = useState([])
@@ -40,10 +40,11 @@ export default function ImportSelection({handleChange, cssClass, goBackStep, col
     //     setImportData({...importData, [changedField]: newValue})
     // }
 
-    const handleSubmit = (e, formData) => {
+    const handleSubmit = async(e, formData) => {
         const apiRequestQuery = formatApiRequestLink(formData)
-        console.log(apiRequestQuery)
-        const importedCollection = importCollection(formData.spreadsheetId, apiRequestQuery)
+        // console.log(apiRequestQuery)
+        const importedCollection = await importCollection(formData.spreadsheetId, apiRequestQuery, collectionSubTypeValue)
+        console.log(importedCollection)
     }
 
     const bottomBar = importScreen === 'import' ? {right: '45%'} : {}

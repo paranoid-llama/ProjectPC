@@ -5,7 +5,7 @@ import { collectionDescription } from '../../../../infoconstants'
 import { useState } from 'react'
 import './collectiontypeselection.css'
 
-export default function CollectionTypeCard({collectionType, idx, subTypes, handleSubTypeScreen, slideClass, handleChange}) {
+export default function CollectionTypeCard({collectionType, idx, subTypes, subTypeValues, handleSubTypeScreen, slideClass, handleChange}) {
     
     const displayName = collectionType === 'living dex' ? 'Living Dex' : capitalizeFirstLetter(collectionType)
     const description = collectionDescription[idx]
@@ -68,7 +68,7 @@ export default function CollectionTypeCard({collectionType, idx, subTypes, handl
                         <Box sx={{width: '100%', backgroundColor, height, maxHeight: '50px', display: 'flex', alignItems: 'center'}} key={`${collectionType}-subtype-${subType}-selection`}>
                             <Button 
                                 sx={{width: '100%', height: '100%', color}}
-                                onClick={(e) => handleChange(e, collectionType, subType)}
+                                onClick={(e) => handleChange(e, collectionType, subType, subTypeValues[idx])}
                             >
                                 {subType}
                             </Button>

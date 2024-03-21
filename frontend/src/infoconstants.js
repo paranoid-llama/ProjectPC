@@ -27,7 +27,7 @@ const collectionTypes = ['aprimon'] //haven't set up app for living dex collecti
 const collectionDescription = ['Collect pokemon in apricorn/rare pokeballs!', "Collect every pokemon. Gotta catch 'em all!"]
 
 const collectionSubTypes = {
-    aprimon: ['Gen 6', 'Gen 7', 'SW/SH', 'BD/SP', 'Gen 9', 'HOME'],
+    aprimon: {display: ['Gen 6', 'Gen 7', 'SW/SH', 'BD/SP', 'Gen 9', 'HOME'], value: [6, 7, 'swsh', 'bdsp', 9, 'HOME']},
     ['living dex']: ['Regular', 'Shiny', 'Alternate Forms']
 }
 

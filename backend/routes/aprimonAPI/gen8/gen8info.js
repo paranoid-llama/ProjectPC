@@ -591,6 +591,9 @@ const gen8Info = [{
         HA: {
             hasHA: true,
             name: {reg: "Cursed Body"}
+        },
+        specialAlternateForms: {
+            name: {1: 'Phony', 2: 'Antique'}
         }
     },
     specificGenInfo: {
@@ -691,6 +694,44 @@ const gen8Info = [{
         HA: {
             hasHA: true,
             name: {reg: "Aroma Veil"}
+        }
+    },
+    specificGenInfo: {
+        gen8: {
+            eggmoves: {moves: ['Baby-Doll Eyes', 'Last Resort']},
+            balls: {
+                swsh: {
+                    apriball: {isLegal: true, haIsLegal: true},
+                    safari: {isLegal: true, haIsLegal: true},
+                    sport: {isLegal: true, haIsLegal: true},
+                    beast: {isLegal: true, haIsLegal: true},
+                    dream: {isLegal: true, haIsLegal: true}
+                }
+            }
+        },
+        gen9: {
+            eggmoves: {moves: ['Last Resort', 'Baby-Doll Eyes']},
+            balls: {
+                apriball: {isLegal: true, haIsLegal: true},
+                safari: {isLegal: true, haIsLegal: true},
+                sport: {isLegal: true, haIsLegal: true},
+                beast: {isLegal: true, haIsLegal: true},
+                dream: {isLegal: true, haIsLegal: true}
+            }
+        }
+    }
+}, {
+    name: "alcremie",
+    gen: 8,
+    info: {
+        natDexNum: 869,
+        HA: {
+            hasHA: true,
+            name: {reg: "Aroma Veil"}
+        },
+        alternateForm: {
+            sweets: ['Strawberry', 'Berry', 'Love', 'Star', 'Clover', 'Flower', 'Ribbon'], 
+            creams: ['Vanilla Cream', ' Ruby Cream', 'Matcha Cream', 'Mint Cream', 'Lemon Cream', 'Salted Cream', 'Ruby Swirl', 'Caramel Swirl', 'Rainbow Swirl']
         }
     },
     specificGenInfo: {

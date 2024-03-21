@@ -56,8 +56,8 @@ export default function NewCollection(userid) {
     }, [creationProgress])
 
 
-    const handleCollectionTypeChange = (e, type, subType) => {
-        setFormData({...formData, collectionType: {type, subType}})
+    const handleCollectionTypeChange = (e, type, subType, subTypeValue) => {
+        setFormData({...formData, collectionType: {type, subType, subTypeValue}})
         setCreationProgress(25)
         //allows transition effect to occur. if can be improved please do, as this solution re-renders the component twice
         setTimeout(() => {
@@ -88,6 +88,7 @@ export default function NewCollection(userid) {
                         goBackStep={{stepName: 'Type Selection', func: goBackStep}} 
                         cssClass={slideClasses.step2} 
                         collectionType={`${formData.collectionType.subType} ${capitalizeFirstLetter(formData.collectionType.type)} Collection`}
+                        collectionSubTypeValue={formData.collectionType.subTypeValue}
                     />
                 }
             </Box>

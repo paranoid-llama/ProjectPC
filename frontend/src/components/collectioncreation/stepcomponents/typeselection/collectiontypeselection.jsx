@@ -58,13 +58,15 @@ export default function CollectionTypeSelection({handleChange, cssClass}) {
             <Header additionalStyles={{color: 'black'}}>Select a Collection Type</Header>
             <Box sx={{width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'center', gap: '20px'}}>
             {collectionTypes.map((type, idx) => {
-                const subTypesArr = collectionSubTypes[type]
+                const subTypesArr = collectionSubTypes[type].display
+                const subTypeValues = collectionSubTypes[type].value
                 return (
                     <CollectionTypeCard 
                         key={`${type}-collection-type-card`}
                         collectionType={type} 
                         idx={idx} 
                         subTypes={subTypesArr} 
+                        subTypeValues={subTypeValues}
                         handleSubTypeScreen={handleSubTypeSelection} 
                         slideClass={(cssClass === 'creation-step-slide-left-exit' && subTypeSelection.screenOpen[idx] === true) ? 'transition-slide-in-subtype' : slideClasses[idx]} 
                         handleChange={handleChange}

@@ -1,4 +1,5 @@
 const aprimonGeneralIdentifiers = [
+    // {category: 'Original Form of Regional Form Pokemon', id: 'None (Cannot have an identifier with their original region)', canFirstLetter: false},
     {category: 'Regional Forms', id: 'Region Name (or with -an suffix)', canFirstLetter: true},
     {category: 'Alternate Forms', id: 'Form Identifier', canFirstLetter: true},
     // {category: 'Paldean Tauros', imgLink: '128-p', id: 'Breed Name', canFirstLetter: false},
@@ -15,6 +16,7 @@ const aprimonSpecificIdentifiers = [
     {category: 'Vivillon', imgLink: ['666'], id: 'Pattern Name', canFirstLetter: false},
     {category: 'Flabébé', imgLink: ['669-w', '669-y', '669-r', '669-b', '669-o'], id: 'Flower Color', canFirstLetter: true},
     {category: 'Pumpkaboo', imgLink: ['710'], id: 'Size', canFirstLetter: false},
+    {category: 'Rockruff', imgLink: ['744'], id: "'Dusk' or 'Own Tempo'", canFirstLetter: false}, 
     {category: 'Oricorio', imgLink: ['741-p', '741-b', '741-s', '741-pau'], id: 'Style Name', canFirstLetter: false},
     {category: 'Minior', imgLink: ['774-r', '774-o', '774-y', '774-g', '774-b', '774-i', '774-v'], id: 'Core Color', canFirstLetter: true},
     {category: 'Alcremie', imgLink: ['869'], id: 'Sweet and Cream/Swirl Names', canFirstLetter: false},
@@ -31,7 +33,7 @@ const aprimonAsideInfo = {
     ['Deerling']: {canFirstLetter: 'Multiple form names have the same first letter'},
     ['Vivillon']: {canFirstLetter: 'Too many forms'},
     ['Pumpkaboo']: {canFirstLetter: 'Multiple form names have the same first letter'},
-    ['Rockruff']: {canFirstLetter: 'Two different naming conventions'},
+    ['Rockruff']: {id: 'Do not have an identifier for the original form!', canFirstLetter: 'Two different naming conventions'},
     ['Oricorio']: {canFirstLetter: 'Multiple form names have the same first letter'},
     ['Alcremie']: {id: 'Must include "Cream" and "Swirl" in the names', canFirstLetter: 'Too many forms'},
     ['Indeedee']: {id: 'Can do gender symbol instead'}
