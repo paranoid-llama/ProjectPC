@@ -1,4 +1,6 @@
-const {apriballLiterals, specialBalls, uniqueAlternateFormPokemon, uniqueRegionalFormPokemon} = require('./../../infoconstants.js')
+import {apriballLiterals, specialBalls, uniqueAlternateFormPokemon, uniqueRegionalFormPokemon} from './../../infoconstants.js'
+
+//JSON.parse(JSON.stringify(ownedBallList)) ---- this makes a new ref for the owned ball list allowing changes in one alt form to not affect the other
 
 function handleAlternateForms(pokemon, ownedBallList, pokename, parsedGen, importing=false) {
     const multiplePokemon = []
@@ -21,7 +23,7 @@ function handleAlternateForms(pokemon, ownedBallList, pokename, parsedGen, impor
                     displayName: '',
                     natDexNum: pokemon.info.natDexNum,
                     gen: pokemon.gen,
-                    balls: ownedBallList,
+                    balls: JSON.parse(JSON.stringify(ownedBallList)),
                     ...importAltIdentifier
                 }
             )
@@ -32,7 +34,7 @@ function handleAlternateForms(pokemon, ownedBallList, pokename, parsedGen, impor
 
 function handleRegionalForms(pokemonInfo, ownedBallList, pokename, gen, multiplePokemonArr, importing=false) {
     const copyOfArr = multiplePokemonArr
-    const regionalForms = Object.values(pokemonInfo.info.regionalForm.forms)
+    const regionalForms = pokemonInfo.info.regionalForm.forms
     const importAltIdentifier = importing ? {originalPokemon: pokename} : {}
     if (uniqueRegionalFormPokemon.includes(pokename)) {
         const handlerFunction = pokename === 'Tauros' && handlePaldeanTauros
@@ -46,7 +48,7 @@ function handleRegionalForms(pokemonInfo, ownedBallList, pokename, gen, multiple
                     displayName: '',
                     natDexNum: pokemonInfo.info.natDexNum,
                     gen: pokemonInfo.gen,
-                    balls: ownedBallList,
+                    balls: JSON.parse(JSON.stringify(ownedBallList)),
                     ...importAltIdentifier
                 }
             ) : null
@@ -139,7 +141,7 @@ function handleBasculin(altForms, name, pokemonInfo, ownedBallList, gen, importi
                 displayName: '',
                 natDexNum: pokemonInfo.info.natDexNum,
                 gen: pokemonInfo.gen,
-                balls: ownedBallList,
+                balls: JSON.parse(JSON.stringify(ownedBallList)),
                 ...importAltIdentifier
             }
         ) : 
@@ -150,7 +152,7 @@ function handleBasculin(altForms, name, pokemonInfo, ownedBallList, gen, importi
                 name: name + ' ' + `(${pokemonInfo.info.alternateForm.name[form]})`,
                 natDexNum: pokemonInfo.info.natDexNum,
                 gen: pokemonInfo.gen,
-                balls: ownedBallList,
+                balls: JSON.parse(JSON.stringify(ownedBallList)),
                 ...importAltIdentifier
             }
         ) 
@@ -163,7 +165,7 @@ function handleRockruff(altForms, name, pokemonInfo, ownedBallList, gen, importi
     const importAltIdentifier = importing ? {originalPokemon: name} : {}
     altForms.forEach(form => {
         if (form === 'Dusk') {
-            const copyOfOwnedBallList = ownedBallList
+            const copyOfOwnedBallList = JSON.parse(JSON.stringify(ownedBallList))
             Object.keys(ownedBallList).forEach(ball => {
                 delete copyOfOwnedBallList[ball].isHA
             })
@@ -183,7 +185,7 @@ function handleRockruff(altForms, name, pokemonInfo, ownedBallList, gen, importi
                     name: name + ' ' + `(${pokemonInfo.info.alternateForm.name[form]})`,
                     natDexNum: pokemonInfo.info.natDexNum,
                     gen: pokemonInfo.gen,
-                    balls: ownedBallList,
+                    balls: JSON.parse(JSON.stringify(ownedBallList)),
                     ...importAltIdentifier
                 }
             )
@@ -197,7 +199,7 @@ function handleFlabébé(altForms, name, pokemonInfo, ownedBallList, gen, import
     const importAltIdentifier = importing ? {originalPokemon: name} : {}
     altForms.forEach(form => {
         if (gen === 7 && form === 'Blue') {
-            const copyOfOwnedBallList = ownedBallList
+            const copyOfOwnedBallList = JSON.parse(JSON.stringify(ownedBallList))
             Object.keys(ownedBallList).forEach(ball => {
                 delete copyOfOwnedBallList[ball].isHA
             })
@@ -218,7 +220,7 @@ function handleFlabébé(altForms, name, pokemonInfo, ownedBallList, gen, import
                     displayName: '',
                     natDexNum: pokemonInfo.info.natDexNum,
                     gen: pokemonInfo.gen,
-                    balls: ownedBallList,
+                    balls: JSON.parse(JSON.stringify(ownedBallList)),
                     ...importAltIdentifier
                 }
             )
@@ -237,7 +239,7 @@ function handleVivillon(patterns, name, pokemonInfo, ownedBallList, gen, importi
                 displayName: '',
                 natDexNum: pokemonInfo.info.natDexNum,
                 gen: pokemonInfo.gen,
-                balls: ownedBallList,
+                balls: JSON.parse(JSON.stringify(ownedBallList)),
                 ...importAltIdentifier
             }
         )
@@ -261,7 +263,7 @@ function handleAlcremie(sweets, creams, name, pokemonInfo, ownedBallList, gen, i
                 displayName: '',
                 natDexNum: pokemonInfo.info.natDexNum,
                 gen: pokemonInfo.gen,
-                balls: ownedBallList,
+                balls: JSON.parse(JSON.stringify(ownedBallList)),
                 ...importAltIdentifier
             }
         )
@@ -282,7 +284,7 @@ function handlePaldeanTauros(regionalForms, name, pokemonInfo, ownedBallList, ge
                     displayName: '',
                     natDexNum: pokemonInfo.info.natDexNum,
                     gen: pokemonInfo.gen,
-                    balls: ownedBallList,
+                    balls: JSON.parse(JSON.stringify(ownedBallList)),
                     ...importAltIdentifier
                 },
                 {
@@ -290,7 +292,7 @@ function handlePaldeanTauros(regionalForms, name, pokemonInfo, ownedBallList, ge
                     displayName: '',
                     natDexNum: pokemonInfo.info.natDexNum,
                     gen: pokemonInfo.gen,
-                    balls: ownedBallList,
+                    balls: JSON.parse(JSON.stringify(ownedBallList)),
                     ...importAltIdentifier
                 },
                 {
@@ -298,7 +300,7 @@ function handlePaldeanTauros(regionalForms, name, pokemonInfo, ownedBallList, ge
                     displayName: '',
                     natDexNum: pokemonInfo.info.natDexNum,
                     gen: pokemonInfo.gen,
-                    balls: ownedBallList,
+                    balls: JSON.parse(JSON.stringify(ownedBallList)),
                     ...importAltIdentifier
                 },
             )
@@ -309,4 +311,4 @@ function handlePaldeanTauros(regionalForms, name, pokemonInfo, ownedBallList, ge
 
 
 
-module.exports = {handleAlternateForms, handleRegionalForms, handleIncenseAndBabyMons, setBallInfo, setOwnedBallList}
+export {handleAlternateForms, handleRegionalForms, handleIncenseAndBabyMons, setBallInfo, setOwnedBallList}

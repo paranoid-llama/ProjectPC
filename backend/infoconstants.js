@@ -13,6 +13,7 @@ const hisuianFormMons = ['Growlithe', 'Voltorb', 'Typhlosion', 'Qwilfish', 'Snea
 const paldeanFormMons = ['Tauros', 'Wooper']
 //above specific regional forms above are only used to concat the large array below, which is being used. can import smaller lists if needed. 
 const regionalFormMons = alolanFormMons.concat(galarianFormMons, hisuianFormMons, paldeanFormMons)
+const multipleRegionalFormMons = ['Meowth']
 const allAltFormMons = ['Nidoran', 'Paldean Tauros', 'Burmy', 'Shellos', 'Basculin', 'Deerling', 'Flabébé', 'Pumpkaboo', 'Rockruff', 'Oricorio', 'Minior', 'Indeedee', 'Squawkabilly', 'Tatsugiri']
 const genderAltFormMons = ['Nidoran', 'Indeedee']
 const interchangeableAltFormMons = ['Burmy', 'Deerling', 'Oricorio']
@@ -29,9 +30,22 @@ const specialBalls = ['beast', 'dream', 'safari', 'sport']//used for setting bal
 const shopballs = ['poke', 'great', 'ultra', 'premier', 'repeat', 'timer', 'nest', 'net', 'luxury', 'dive', 'quick', 'heal', 'dusk'] //currently unused
 const generations = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
+const findGenByDexNum = (dexNum) => {
+    const gen = (1 <= dexNum && dexNum <= 151) ? 1 :
+                (152 <= dexNum && dexNum <= 251) ? 2 : 
+                (252 <= dexNum && dexNum <= 386) ? 3 : 
+                (387 <= dexNum && dexNum <= 493) ? 4 : 
+                (494 <= dexNum && dexNum <= 649) ? 5 : 
+                (650 <= dexNum && dexNum <= 721) ? 6 : 
+                (722 <= dexNum && dexNum <= 809) ? 7 : 
+                (810 <= dexNum && dexNum <= 905) ? 8 : 
+                (906 <= dexNum && dexNum <= 1025) && 9
+    return gen
+}
+
 
 //used to filter out breaks in spreadsheets for collection import
-const regions = ['kanto', 'johto', 'hoenn', 'sinnoh', 'unova', 'kalos', 'alola', 'galar', 'paldea']
+const regions = ['kanto', 'johto', 'hoenn', 'sinnoh', 'unova', 'kalos', 'alola', 'galar', 'hisui', 'paldea']
 const otherGapTextValues = ['generation', 'region']
 const gapIdentifiers = [...regions, ...otherGapTextValues]
 
@@ -51,15 +65,15 @@ const uniqueAlternateFormPokemon = ['Basculin', 'Vivillon', 'Flabébé', 'Rockru
 //Rockruff is unique as his dusk form not only calls for the original to be placed as well (kinda like a regional form), but does not have HA. 
 //vivillon and alcremie are special for obvious reasons
 
-const uniqueRegionalFormPokemon = ['Paldean Tauros']
+const uniqueRegionalFormPokemon = ['Tauros']
 //paldean tauros is unique as it has 3 different alternate forms.
 
-module.exports = {
+export {
     incenseBabiesWithExclusiveEMs, incenseAdultsWithExclusiveEMs, altFormMonsWithExclusiveEMs, 
     babiesOfGen1Pokemon, babiesOfGen2Pokemon, babiesOfGen3Pokemon,
-    regionalFormMons,
+    regionalFormMons, multipleRegionalFormMons,
     allAltFormMons, interchangeableAltFormMons, allowedAprimonMultipleDexNums, allowedAprimonDuplicateNum,
-    apriballs, apriballLiterals, specialBalls, shopballs, generations,
+    apriballs, apriballLiterals, specialBalls, shopballs, generations, findGenByDexNum,
     gapIdentifiers, regionalFormNameIdentifiers, originalRegionalFormNameIdentifiers, firstLetterAllowedAltForms, regions,
     uniqueAlternateFormPokemon, uniqueRegionalFormPokemon
 }

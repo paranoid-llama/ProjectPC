@@ -1,5 +1,5 @@
-const {handleGen8EMs, handleDifferentFormEMs, selectPokemonInfo} = require('./infoandotherfuncs')
-const {incenseBabiesWithExclusiveEMs, incenseAdultsWithExclusiveEMs, altFormMonsWithExclusiveEMs} = require('./../../infoconstants.js')
+import {handleGen8EMs, handleDifferentFormEMs, selectPokemonInfo} from './infoandotherfuncs.js'
+import {incenseBabiesWithExclusiveEMs, incenseAdultsWithExclusiveEMs, altFormMonsWithExclusiveEMs} from './../../infoconstants.js'
 
 function getImgLink(p) {
     if (p.name) {
@@ -91,4 +91,4 @@ function getPossibleGender(p) {
     }
 }
 
-module.exports = {getImgLink, getPossibleEggMoves, getPossibleGender}
+export {getImgLink, getPossibleEggMoves, getPossibleGender}

@@ -1,8 +1,10 @@
-const express = require('express');
-const cors = require('cors');
-const mongoose = require('mongoose');
-const {formatImportQuery, setEMQueries, formatImportedValues, setCollection} = require('./utils/CreateCollection/importCollection.js')
-require('dotenv').config()
+import express from 'express';
+import cors from 'cors';
+import mongoose from 'mongoose';
+import {formatImportQuery, setEMQueries, formatImportedValues, setCollection} from './utils/CreateCollection/importCollection.js'
+// require('dotenv').config()
+import dotenv from 'dotenv'
+dotenv.config()
 
 function newObjectId() {
     const timestamp = Math.floor(new Date().getTime() / 1000).toString(16);
@@ -17,34 +19,12 @@ function newObjectId() {
 const APIKEY = process.env.API_KEY
 
 //utils and classes
-const catchAsync = require('./utils/catchAsync')
-const CollectionClass = require('./utils/createCollection')
+import catchAsync from './utils/catchAsync.js'
+import CollectionClass from './utils/createCollection.js'
 
 //models
-const Collection = require('./models/collections')
-const User = require('./models/users')
-
-//totalaprimonAPI
-const gen1Info = require('./routes/aprimonAPI/gen1/gen1info')
-const gen2Info = require('./routes/aprimonAPI/gen2/gen2info')
-const gen3Info = require('./routes/aprimonAPI/gen3/gen3info')
-const gen4Info = require('./routes/aprimonAPI/gen4/gen4info')
-const gen5Info = require('./routes/aprimonAPI/gen5/gen5info')
-const gen6Info = require('./routes/aprimonAPI/gen6/gen6info')
-const gen7Info = require('./routes/aprimonAPI/gen7/gen7info')
-const gen8Info = require('./routes/aprimonAPI/gen8/gen8info')
-const gen9Info = require('./routes/aprimonAPI/gen9/gen9info')
-
-//routes
-const gen1Routes = require('./routes/aprimonAPI/gen1/gen1pokemon')
-const gen2Routes = require("./routes/aprimonAPI/gen2/gen2pokemon")
-const gen3Routes = require("./routes/aprimonAPI/gen3/gen3pokemon")
-const gen4Routes = require("./routes/aprimonAPI/gen4/gen4pokemon")
-const gen5Routes = require("./routes/aprimonAPI/gen5/gen5pokemon")
-const gen6Routes = require("./routes/aprimonAPI/gen6/gen6pokemon")
-const gen7Routes = require("./routes/aprimonAPI/gen7/gen7pokemon")
-const gen8Routes = require("./routes/aprimonAPI/gen8/gen8pokemon")
-const gen9Routes = require("./routes/aprimonAPI/gen9/gen9pokemon")
+import Collection from './models/collections.js'
+import User from './models/users.js'
 
 //database connection
 mongoose.connect("mongodb://127.0.0.1:27017/ProjectPC", {
@@ -66,29 +46,6 @@ app.use(cors())
 app.use(express.json())
 
 //routes
-app.use('/gen1', gen1Routes)
-app.use('/gen2', gen2Routes)
-app.use('/gen3', gen3Routes)
-app.use('/gen4', gen4Routes)
-app.use('/gen5', gen5Routes)
-app.use('/gen6', gen6Routes)
-app.use('/gen7', gen7Routes)
-app.use('/gen8', gen8Routes)
-app.use('/gen9', gen9Routes)
-
-app.get('/aprimonAPI', (req, res) => {
-    const allPokemon = gen1Info.concat(
-        gen2Info,
-        gen3Info,
-        gen4Info,
-        gen5Info,
-        gen6Info,
-        gen7Info,
-        gen8Info,
-        gen9Info
-    )
-    res.json(allPokemon)
-})
 
 app.get('/message', (req, res) => {
     res.json({ message: "Hello from server!" });
@@ -111,6 +68,7 @@ app.post('/collections/new/import', catchAsync(async(req, res) => {
     const noDexNums = dexNum === undefined
     const noHAColImport = HA === undefined || typeof HA === 'object'
     const noEMsColImport = EM1 === undefined //must populate all EM fields or they don't import
+    const noEMColorImport = emColors === undefined
     //console.log(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values:batchGet?key=${APIKEY}dexNum: ${formatImportQuery(dexNum)} nameRange: ${names}& ballRange: ${balls.range} HArange: ${formatImportQuery(HA)} EMQueries: ${setEMQueries(EM1, EM2, EM3, EM4, formatImportQuery(HA) === '')}`)
     //console.log(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values:batchGet?key=${APIKEY}${formatImportQuery(dexNum)}${names}&${balls.range}${formatImportQuery(HA, EM1 === undefined)}${setEMQueries(EM1, EM2, EM3, EM4, formatImportQuery(HA) === '')}`)
 
@@ -128,6 +86,13 @@ app.post('/collections/new/import', catchAsync(async(req, res) => {
         },
     }).then((data) => data.json())
 
+    const colorData = (typeof HA === 'object' || !noEMColorImport) && await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}?key=${APIKEY}&${balls.range}&includeGridData=TRUE&fields=sheets.data.rowData.values.userEnteredFormat(backgroundColor)`, {
+        method: 'GET',
+        headers: {
+            "Content-Type": "application/json"
+        },
+    }).then((data) => data.json())
+
     const namesDataIdx = noDexNums ? 0 : 1
     const HADataIdx = noDexNums ? 1 : 2
     const EMDataIdxs = {
@@ -137,18 +102,22 @@ app.post('/collections/new/import', catchAsync(async(req, res) => {
         EM4: 6 + (noDexNums ? -1 : 0) + (noHAColImport ? -1 : 0)
     }
 
-    const gapRowIdxs = formatImportedValues('gapIdxs', data.valueRanges[0].values, [], [], noDexNums ? 'names' : 'dexNums')
+    const gapRowIdxs = formatImportedValues('gapIdxs', data.valueRanges[0].values, [], noDexNums ? 'names' : 'dexNums')
 
     const importedDexNumArr = noDexNums ? [] : formatImportedValues('dexNum', data.valueRanges[0].values, gapRowIdxs)
     const importedNamesArr = formatImportedValues('names', data.valueRanges[namesDataIdx].values, gapRowIdxs)
-    const importedBallInfoArr = formatImportedValues('balls', ballData.valueRanges[0].values, gapRowIdxs, balls.order)
-
-    const newCollection = setCollection(noDexNums ? importedNamesArr : importedDexNumArr, importedNamesArr, importedBallInfoArr, gapRowIdxs, balls.order, collectionTypeValue)
+    const importedBallInfoArr = formatImportedValues('balls', ballData.valueRanges[0].values, gapRowIdxs)
+    const importedHAInfoArr = HA !== undefined && formatImportedValues('HA', noHAColImport ? colorData.sheets[0].data[0].rowData : data.valueRanges[HADataIdx].values, gapRowIdxs, 'none', noHAColImport && HA)
+    const importedEMCountInfoArr = !noEMColorImport && formatImportedValues('emColor', colorData.sheets[0].data[0].rowData, gapRowIdxs, 'none', emColors)
+    const importedEMsInfoArr = !noEMsColImport && formatImportedValues('EMs', data.valueRanges[EMDataIdxs.EM1], gapRowIdxs, 'none', [], {EM2: data.valueRanges[EMDataIdxs.EM2], EM3: data.valueRanges[EMDataIdxs.EM3], EM4: data.valueRanges[EMDataIdxs.EM4]})
+    // console.log(HA)
+    // console.log(importedHAInfoArr)
+    const newCollection = setCollection(noDexNums ? importedNamesArr : importedDexNumArr, importedNamesArr, importedBallInfoArr, gapRowIdxs, balls.order, collectionTypeValue, HA !== undefined ? importedHAInfoArr : undefined, noHAColImport ? 'colors' : 'col', importedEMCountInfoArr, importedEMsInfoArr)
     // console.log(data.valueRanges[ballsDataIdx].values)
 
     // console.log(data.valueRanges[1].values)
 
-    res.send(newCollection)
+    res.json(newCollection)
 }))
 
 

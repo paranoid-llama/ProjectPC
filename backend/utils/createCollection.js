@@ -1,14 +1,6 @@
-const gen1Info = require('./../routes/aprimonAPI/gen1/gen1info')
-const gen2Info = require('./../routes/aprimonAPI/gen2/gen2info')
-const gen3Info = require('./../routes/aprimonAPI/gen3/gen3info')
-const gen4Info = require('./../routes/aprimonAPI/gen4/gen4info')
-const gen5Info = require('./../routes/aprimonAPI/gen5/gen5info')
-const gen6Info = require('./../routes/aprimonAPI/gen6/gen6info')
-const gen7Info = require('./../routes/aprimonAPI/gen7/gen7info')
-const gen8Info = require('./../routes/aprimonAPI/gen8/gen8info')
-const gen9Info = require('./../routes/aprimonAPI/gen9/gen9info')
-const {handleAlternateForms, handleRegionalForms, handleIncenseAndBabyMons, setBallInfo, setOwnedBallList} = require('./CreateCollection/functions.js')
-const {interchangeableAltFormMons} = require('./../infoconstants.js')
+import allPokemon from './aprimonAPI/allpokemoninfo.js'
+import {handleAlternateForms, handleRegionalForms, handleIncenseAndBabyMons, setBallInfo, setOwnedBallList} from './CreateCollection/functions.js'
+import {interchangeableAltFormMons} from './../infoconstants.js'
 
 //Note for pokemon groups/scope
 //data structure: 
@@ -50,12 +42,13 @@ function setOwnedPokemonList(gen, pokemonScope, importing=false) {
                     gen: pokeGen,
                     balls: ownedBallList
                 }
-
+                //we need to make a new reference for each key in the child pokemon otherwise it'll end up updating both adult and child ball combo info
+                const newOwnedBallListRef = JSON.parse(JSON.stringify(ownedBallList))
                 const childPokemon = childName !== undefined ? {
                     name: childName, 
                     natDexNum: childNatDexNum,
                     gen: childGen,
-                    balls: ownedBallList
+                    balls: newOwnedBallListRef
                 } : {}
                 if (pokemon.info.alternateForm !== undefined || (importing && pokemon.info.specialAlternateForms !== undefined)) {
                     const isntSpecialAltForm = pokemon.info.alternateForm !== undefined
@@ -64,6 +57,10 @@ function setOwnedPokemonList(gen, pokemonScope, importing=false) {
                     }
                     const multiplePokemon = handleAlternateForms(pokemon, ownedBallList, pokename, parsedGen, true) 
                     return multiplePokemon
+                }
+                if (pokemon.info.evolvedRegionalForm) {
+                    originalPokemon.originalPokemon = pokemon.info.species
+                    originalPokemon.displayName = ''
                 }
                 if (pokemon.info.regionalForm && game !== "bdsp") { 
                     const multiplePokemon = handleRegionalForms(pokemon, ownedBallList, pokename, parsedGen, childPokemon.name ? [originalPokemon, childPokemon] : [originalPokemon], true)
@@ -220,17 +217,6 @@ function setOwnedPokemonList(gen, pokemonScope, importing=false) {
     )
 }
 
-const allPokemon = gen1Info.concat(
-    gen2Info,
-    gen3Info,
-    gen4Info,
-    gen5Info,
-    gen6Info,
-    gen7Info,
-    gen8Info,
-    gen9Info
-) 
-
 class Collection {
     constructor (gen, includeBabyMon, includeIncenseMon, owner, interchangeableAltForms) {
         this.gen = gen
@@ -255,5 +241,7 @@ class Collection {
                             }
 }
 
-module.exports = {Collection, setOwnedPokemonList, allPokemon}
+export default Collection
+
+export {setOwnedPokemonList}
 

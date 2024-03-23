@@ -3835,4 +3835,4 @@ const gen3Info = [{
     }
 }]
 
-module.exports = gen3Info
+export default gen3Info

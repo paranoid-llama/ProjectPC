@@ -1,4 +1,4 @@
-const gen1info = [{
+const gen1Info = [{
     name: "bulbasaur",
     gen: 1,
     info: {
@@ -536,7 +536,8 @@ const gen1info = [{
         HA: {
             hasHA: false
         },
-        evolvedRegionalForm: true
+        evolvedRegionalForm: true,
+        species: 'Raichu'
     },
     specificGenInfo: {
         gen7: {
@@ -2591,7 +2592,8 @@ const gen1info = [{
             hasHA: true,
             name: {reg: "Harvest"} 
         },
-        evolvedRegionalForm: true
+        evolvedRegionalForm: true,
+        species: 'Exeggutor'
     },
     specificGenInfo: {
         gen7: {
@@ -2688,7 +2690,8 @@ const gen1info = [{
             hasHA: true,
             name: {reg: "Battle Armor"}
         },
-        evolvedRegionalForm: true
+        evolvedRegionalForm: true,
+        species: 'Marowak'
     },
     specificGenInfo: {
         gen7: {
@@ -2836,7 +2839,8 @@ const gen1info = [{
             hasHA: true,
             name: {reg: "Misty Surge"}
         },
-        evolvedRegionalForm: true   
+        evolvedRegionalForm: true,   
+        species: 'Weezing'
     },
     specificGenInfo: {
         gen8: {
@@ -4515,4 +4519,4 @@ const gen1info = [{
     }
 }, ]
 
-module.exports = gen1info;
+export default gen1Info;

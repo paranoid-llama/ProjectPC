@@ -103,7 +103,8 @@ const gen5Info = [{
             hasHA: true,
             name: {reg: "Sharpness"}
         },
-        evolvedRegionalForm: true
+        evolvedRegionalForm: true,
+        species: 'Samurott'
     },
     specificGenInfo: {
         gen9: {
@@ -930,7 +931,8 @@ const gen5Info = [{
             hasHA: true,
             name: {reg: "Leaf Guard"}
         },
-        evolvedRegionalForm: true
+        evolvedRegionalForm: true,
+        species: 'Lilligant'
     },
     specificGenInfo: {
         gen9: {
@@ -3341,4 +3343,4 @@ const gen5Info = [{
     }
 }]
 
-module.exports = gen5Info
+export default gen5Info

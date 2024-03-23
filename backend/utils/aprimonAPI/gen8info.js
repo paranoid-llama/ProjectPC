@@ -1471,4 +1471,4 @@ const gen8Info = [{
     }
 }]
 
-module.exports = gen8Info
+export default gen8Info

@@ -95,7 +95,8 @@ const gen2Info= [{
             hasHA: true,
             name: {reg: "Frisk"}
         },
-        evolvedRegionalForm: true
+        evolvedRegionalForm: true,
+        species: 'Typhlosion'
     },
     specificGenInfo: {
         gen9: {
@@ -2822,4 +2823,4 @@ const gen2Info= [{
     }
 }]
 
-module.exports = gen2Info
+export default gen2Info

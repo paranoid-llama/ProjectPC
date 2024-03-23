@@ -2162,4 +2162,4 @@ const gen4Info = [{
     }
 }]
 
-module.exports = gen4Info
+export default gen4Info

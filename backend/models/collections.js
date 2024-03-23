@@ -1,8 +1,6 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
-const {getImgLink} = require('./../utils/schemavirtuals/collectionvirtuals.js')
-const {getPossibleEggMoves} = require('./../utils/schemavirtuals/collectionvirtuals.js')
-const {getPossibleGender} = require('./../utils/schemavirtuals/collectionvirtuals.js')
+import {getImgLink, getPossibleEggMoves, getPossibleGender} from './../utils/schemavirtuals/collectionvirtuals.js'
 
 const opts = {toJSON: {virtuals: true}}
 
@@ -168,4 +166,4 @@ collectionSchema.virtual('eggMoveInfo').get(function() {
 
 collectionSchema.set('toJSON', {virtuals: true})
 
-module.exports = mongoose.model('Collection', collectionSchema)
+export default mongoose.model('Collection', collectionSchema)

@@ -2,15 +2,15 @@
 const generations = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 const genRomans = ['Ⅰ', 'Ⅱ', 'Ⅲ', 'Ⅳ', 'Ⅴ', 'Ⅵ', 'Ⅶ', 'Ⅷ', 'Ⅸ']
 const findGenByDexNum = (dexNum) => {
-    const gen = (1 < dexNum && dexNum <= 151) ? 1 :
-                (151 < dexNum && dexNum <= 251) ? 2 : 
-                (252 < dexNum && dexNum <= 386) ? 3 : 
-                (386 < dexNum && dexNum <= 493) ? 4 : 
-                (493 < dexNum && dexNum <= 649) ? 5 : 
-                (649 < dexNum && dexNum <= 721) ? 6 : 
-                (721 < dexNum && dexNum <= 809) ? 7 : 
-                (809 < dexNum && dexNum <= 905) ? 8 : 
-                (905 < dexNum && dexNum <= 1025) && 9
+    const gen = (1 <= dexNum && dexNum <= 151) ? 1 :
+                (152 <= dexNum && dexNum <= 251) ? 2 : 
+                (252 <= dexNum && dexNum <= 386) ? 3 : 
+                (387 <= dexNum && dexNum <= 493) ? 4 : 
+                (494 <= dexNum && dexNum <= 649) ? 5 : 
+                (650 <= dexNum && dexNum <= 721) ? 6 : 
+                (722 <= dexNum && dexNum <= 809) ? 7 : 
+                (810 <= dexNum && dexNum <= 905) ? 8 : 
+                (906 <= dexNum && dexNum <= 1025) && 9
     return gen
 }
 

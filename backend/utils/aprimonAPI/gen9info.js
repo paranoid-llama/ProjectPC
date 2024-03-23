@@ -1532,4 +1532,4 @@ const gen9Info = [{
     }
 }]
 
-module.exports = gen9Info
+export default gen9Info

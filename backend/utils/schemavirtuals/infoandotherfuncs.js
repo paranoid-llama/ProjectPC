@@ -1,13 +1,13 @@
-const gen1Info = require('./../../routes/aprimonAPI/gen1/gen1info')
-const gen2Info = require('./../../routes/aprimonAPI/gen2/gen2info')
-const gen3Info = require('./../../routes/aprimonAPI/gen3/gen3info')
-const gen4Info = require('./../../routes/aprimonAPI/gen4/gen4info')
-const gen5Info = require('./../../routes/aprimonAPI/gen5/gen5info')
-const gen6Info = require('./../../routes/aprimonAPI/gen6/gen6info')
-const gen7Info = require('./../../routes/aprimonAPI/gen7/gen7info')
-const gen8Info = require('./../../routes/aprimonAPI/gen8/gen8info')
-const gen9Info = require('./../../routes/aprimonAPI/gen9/gen9info')
-const {incenseBabiesWithExclusiveEMs, incenseAdultsWithExclusiveEMs, regionalFormMons, altFormMonsWithExclusiveEMs, babiesOfGen1Pokemon, babiesOfGen2Pokemon, babiesOfGen3Pokemon} = require('./../../infoconstants.js')
+import gen1Info from '../aprimonAPI/gen1info.js'
+import gen2Info from '../aprimonAPI/gen2info.js'
+import gen3Info from '../aprimonAPI/gen3info.js'
+import gen4Info from '../aprimonAPI/gen4info.js'
+import gen5Info from '../aprimonAPI/gen5info.js'
+import gen6Info from '../aprimonAPI/gen6info.js'
+import gen7Info from '../aprimonAPI/gen7info.js'
+import gen8Info from '../aprimonAPI/gen8info.js'
+import gen9Info from '../aprimonAPI/gen9info.js'
+import {incenseBabiesWithExclusiveEMs, incenseAdultsWithExclusiveEMs, regionalFormMons, altFormMonsWithExclusiveEMs, babiesOfGen1Pokemon, babiesOfGen2Pokemon, babiesOfGen3Pokemon, findGenByDexNum} from './../../infoconstants.js'
 
 
 function selectPokemonInfo(name, pokeGen, natDexNum) {
@@ -18,20 +18,21 @@ function selectPokemonInfo(name, pokeGen, natDexNum) {
     } else if (babiesOfGen3Pokemon.includes(name)) {
         return gen3Info.filter(p => (p.info.special !== undefined) && p.info.special.child.name === name.toLowerCase())[0]
     } else {
-        const genInfoArr = pokeGen === 1 ? gen1Info : 
-            pokeGen === 2 ? gen2Info : 
-            pokeGen === 3 ? gen3Info : 
-            pokeGen === 4 ? gen4Info :
-            pokeGen === 5 ? gen5Info :
-            pokeGen === 6 ? gen6Info : 
-            pokeGen === 7 ? gen7Info :
-            pokeGen === 8 ? gen8Info :
-            pokeGen === 9 && gen9Info
+        const genOfPokemon = findGenByDexNum(natDexNum)
+        const genInfoArr = genOfPokemon === 1 ? gen1Info : 
+                genOfPokemon === 2 ? gen2Info : 
+                genOfPokemon === 3 ? gen3Info : 
+                genOfPokemon === 4 ? gen4Info :
+                genOfPokemon === 5 ? gen5Info :
+                genOfPokemon === 6 ? gen6Info : 
+                genOfPokemon === 7 ? gen7Info :
+                genOfPokemon === 8 ? gen8Info :
+                genOfPokemon === 9 && gen9Info
         return genInfoArr.filter(pokemon => 
-            pokemon.info.natDexNum === natDexNum ||
-            (pokemon.info.special !== undefined && pokemon.info.special.child.natDexNum === natDexNum)
+                pokemon.info.natDexNum === natDexNum ||
+                (pokemon.info.special !== undefined && pokemon.info.special.child.natDexNum === natDexNum)
             )[0]
-    }
+    }            
 }
 
 function exclusiveEMs(emsPath) {
@@ -127,7 +128,7 @@ const handleGen8EMs = (eggMovePath, normEMs, game) => {
     return normEMs.concat(gameExclusiveMoves)
 }
 
-module.exports =  {
+export {
     handleGen8EMs, 
     handleDifferentFormEMs, 
     selectPokemonInfo

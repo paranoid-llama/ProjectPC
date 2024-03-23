@@ -29,7 +29,8 @@ const gen7Info = [{
             hasHA: true,
             name: {reg: "Scrappy"}
         },
-        evolvedRegionalForm: true
+        evolvedRegionalForm: true,
+        species: 'Decidueye'
     },
     specificGenInfo: {
         gen9: {
@@ -1791,4 +1792,4 @@ const gen7Info = [{
     }
 }]
 
-module.exports = gen7Info
+export default gen7Info
