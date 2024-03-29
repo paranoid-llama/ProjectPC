@@ -50,7 +50,9 @@ export default function ImportSelection({handleChange, cssClass, goBackStep, col
         // console.log(apiRequestQuery)
         setImportScreen('preview')
         const importedCollection = await importCollection(formData.spreadsheetId, apiRequestQuery, collectionSubTypeValue)
-        setImportedCollectionDisplay(importedCollection)
+        setTimeout(() => {
+            setImportedCollectionDisplay(importedCollection)
+        }, 500)
     }
 
     const bottomBar = importScreen === 'import' ? {right: '45%'} : {}

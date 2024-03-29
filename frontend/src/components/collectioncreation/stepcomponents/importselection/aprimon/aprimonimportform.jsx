@@ -204,7 +204,6 @@ export default function AprimonImportForm({handleSubmit}) {
             setError({id: false, sheetName: false, rowSpanFrom: false, rowSpanTo: false, nameCol: false, ballColFrom: false, ballColTo: false, ballOrder: false})
             handleSubmit(e, formData)
         }
-
     }
 
     const ballColOrderNoError = (error.ballOrder !== true && error.ballColFrom !== true && error.ballColFrom !== 'true' && error.ballColTo !== true && error.ballColTo !== 'true')

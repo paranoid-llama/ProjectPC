@@ -65,11 +65,31 @@ app.get('/collections', catchAsync(async(req, res) => {
 
 app.post('/collections/new/import', catchAsync(async(req, res) => {
     const {spreadsheetId, apiRequestQueries, collectionTypeValue} = req.body
-    const {dexNum, names, balls, HA, EM1, EM2, EM3, EM4, emColors, rowStart} = apiRequestQueries
+    const {dexNum, names, balls, HA, EM1, EM2, EM3, EM4, emColors, rowStart, rawRequiredFormData} = apiRequestQueries
     const noDexNums = dexNum === undefined
     const noHAColImport = HA === undefined || typeof HA === 'object'
     const noEMsColImport = EM1 === undefined //must populate all EM fields or they don't import
     const noEMColorImport = emColors === undefined
+
+    const missingRequiredFormData = Object.values(rawRequiredFormData).includes('') || rawRequiredFormData.ballOrder.length === 0
+
+    if (missingRequiredFormData) {
+        const requiredFields = [{display: 'Sheet Name', formKey: 'sheetName'}, {display: 'Row Span From', formKey: 'rowSpanFrom'}, {display: 'Row Span To', formKey: 'rowSpanTo'}, {display: 'Names', formKey: 'nameCol'}, {display: 'Ball Column From', formKey: 'ballColFrom'}, {display: 'Ball Column To', formKey: 'ballColTo'}, {display: 'Ball Order', formKey: 'ballOrder'}]
+        const missingFields = requiredFields.filter((field) => (rawRequiredFormData[field.formKey] === '' || rawRequiredFormData[field.formKey].length === 0)).map((missingField) => missingField.display)
+        if (spreadsheetId === '') {
+            missingFields.unshift('Spreadsheet ID')
+        }
+        return res.json({missingInfo: true, missingFields})
+    }
+
+    const numBetweenBallCols = (lton(rawRequiredFormData.ballColTo.toUpperCase())-(lton(rawRequiredFormData.ballColFrom.toUpperCase())-1))
+    const notLeftToRight = numBetweenBallCols < 1
+    const moreThan11Balls = numBetweenBallCols > 11
+    const mismatchBallColsAndOrder = numBetweenBallCols !== rawRequiredFormData.ballOrder.length
+
+    if (mismatchBallColsAndOrder || notLeftToRight || moreThan11Balls) {
+        return res.json({ballColIssue: true, type: notLeftToRight ? 'notLeftToRight' : moreThan11Balls ? 'moreThan11Balls' : mismatchBallColsAndOrder && 'mismatchBallColsAndOrder'})
+    }
     //console.log(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values:batchGet?key=${APIKEY}dexNum: ${formatImportQuery(dexNum)} nameRange: ${names}& ballRange: ${balls.range} HArange: ${formatImportQuery(HA)} EMQueries: ${setEMQueries(EM1, EM2, EM3, EM4, formatImportQuery(HA) === '')}`)
     //console.log(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values:batchGet?key=${APIKEY}${formatImportQuery(dexNum)}${names}&${balls.range}${formatImportQuery(HA, EM1 === undefined)}${setEMQueries(EM1, EM2, EM3, EM4, formatImportQuery(HA) === '')}`)
 

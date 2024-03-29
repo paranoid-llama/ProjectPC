@@ -12,7 +12,7 @@ const importCollection = async(spreadsheetId, apiRequestQueries, collectionTypeV
 }
 
 const createRange = (rangeInfo, col, multipleCols=false, col2) => {
-    return `ranges=${rangeInfo.sheetName}!${col}${rangeInfo.from}:${multipleCols ? col2 : col}${rangeInfo.to}`
+    return `ranges=${rangeInfo.sheetName}!${col.toUpperCase()}${rangeInfo.from}:${multipleCols ? col2.toUpperCase() : col.toUpperCase()}${rangeInfo.to}`
 }
 
 const formatApiRequestLink = (formData) => {
@@ -46,7 +46,8 @@ const formatApiRequestLink = (formData) => {
         balls: {range: createRange(rangeInfo, formData.ballColSpan.from, true, formData.ballColSpan.to), order: formData.ballColSpan.order},
         rowStart: parseInt(formData.rowSpan.from),
         ...haColImport,
-        ...emColImport
+        ...emColImport,
+        rawRequiredFormData: {sheetName: formData.sheetName, rowSpanFrom: formData.rowSpan.from, rowSpanTo: formData.rowSpan.to, nameCol: formData.nameCol, ballColFrom: formData.ballColSpan.from, ballColTo: formData.ballColSpan.to, ballOrder: formData.ballColSpan.order}
     }
     return importInfo
 }

@@ -101,7 +101,7 @@ const detectBadRanges = (data) => {
 //the Regional Form Pokemon (RFP) (ex Galarian Meowth) name import and Original Form of Regional Form Pokemon (OFRFP) (ex regular Meowth).
 //Supporting these naming conventions can continue indefinitely, but first letter importing (ex Meowth-K and Meowth-A or K-Meowth) wont continue if theres any overlap in the first letters
 //but ONLY if they overlap WITHIN OFRFP regions or RFP regions
-// ex if a future region name is Paltura with Palturan pokemon, we can't support first letter importing since it overlaps with Paldea. However, OFRFP importing remains unchanged 
+// ex if a future region name is Paltura with Palturan pokemon, we can't support RFP first letter importing since it overlaps with Paldea. However, OFRFP importing remains unchanged 
 // As of March 2024, the set of RFP regions (alola, galar, hisui, paldea) and OFRFP regions (kanto, johto, hoenn, unova, alola(alola only has one and thats decidueye))
 // have no internal first letter overlaps. 
 
