@@ -38,12 +38,13 @@ const formatApiRequestLink = (formData) => {
                 EM3: createRange(rangeInfo, formData.emImport.cols[2]), 
                 EM4: createRange(rangeInfo, formData.emImport.cols[3])
             } : 
-        (formData.emImport.colors !== undefined && !formData.emImport.colors.includes('')) && {'4EM': formData.emImport.colors} : {}
+        (formData.emImport.colors !== undefined && !formData.emImport.colors.includes('')) && {emColors: formData.emImport.colors} : {}
 
     const importInfo = {
         ...dexColImport, 
         names: createRange(rangeInfo, formData.nameCol), 
         balls: {range: createRange(rangeInfo, formData.ballColSpan.from, true, formData.ballColSpan.to), order: formData.ballColSpan.order},
+        rowStart: parseInt(formData.rowSpan.from),
         ...haColImport,
         ...emColImport
     }

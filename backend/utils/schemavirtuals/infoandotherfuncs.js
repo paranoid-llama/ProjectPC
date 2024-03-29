@@ -12,7 +12,7 @@ import {incenseBabiesWithExclusiveEMs, incenseAdultsWithExclusiveEMs, regionalFo
 
 function selectPokemonInfo(name, pokeGen, natDexNum) {
     if (babiesOfGen1Pokemon.includes(name)) {
-        return gen1Info.filter(p => (p.info.special !== undefined) && p.info.special.child.name === name.toLowerCase())[0]
+        return gen1Info.filter(p => (p.info.special !== undefined) && p.info.special.child.name.toLowerCase() === name.toLowerCase())[0]
     } else if (babiesOfGen2Pokemon.includes(name)) {
         return gen2Info.filter(p => (p.info.special !== undefined) && p.info.special.child.name === name.toLowerCase())[0]
     } else if (babiesOfGen3Pokemon.includes(name)) {
@@ -39,6 +39,10 @@ function exclusiveEMs(emsPath) {
     return emsPath !== undefined ? emsPath : []
 }
 
+function capitalizeFirstLetter(word) {
+    return `${word.charAt(0).toUpperCase()}${word.slice(1)}`
+}
+
 function handleIncenseMonEMs(eggMoves, game, key) {
     const isBDSP = game === 'bdsp'
     const usumOnlyEMs = game === '7' && eggMoves[`usumAnd${key}FormOnly`] !== undefined ? eggMoves[`usumAnd${key}FormOnly`] : [] //currently not separating collections by SM or USUM so just putting all USUM moves in gen 7 collections, though I could
@@ -50,7 +54,7 @@ function handleIncenseMonEMs(eggMoves, game, key) {
 
 function handleMeowthEMs(eggMoves, name, game) { //meowth EMs get a little confusing when he has 3 regionals and certain EMs can be learned on each one or by 2 of them, etc. and it all depends on the gen
     const isBDSP = game === 'bdsp'
-    const isGen7 = game === '7'
+    const isGen7 = `${game}` === '7'
     if (name === 'Meowth') {
         return isBDSP ? [...eggMoves.regFormOnly, ...eggMoves.regAndRegionalForm1Only, ...bdspOnly] : [...eggMoves.regFormOnly, ...eggMoves.regAndRegionalForm1Only]
     }
@@ -131,5 +135,6 @@ const handleGen8EMs = (eggMovePath, normEMs, game) => {
 export {
     handleGen8EMs, 
     handleDifferentFormEMs, 
-    selectPokemonInfo
+    selectPokemonInfo,
+    capitalizeFirstLetter
 }

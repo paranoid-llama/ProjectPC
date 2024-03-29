@@ -74,7 +74,7 @@ const gen5Info = [{
     },
     specificGenInfo: {
         gen7: {
-            eggmoves: {moves: ['Copycat', 'Detect', 'Air Slash', 'Assurance', 'Brine', 'Night Slash', 'Trump Card', 'Screech'], bdspOnly: ['Sacred Sword']},
+            eggmoves: {moves: ['Copycat', 'Detect', 'Air Slash', 'Assurance', 'Brine', 'Night Slash', 'Trump Card', 'Screech'], usumOnly: ['Sacred Sword']},
             balls: {
                 apriball: {isLegal: true, haIsLegal: true},
                 safari: {isLegal: false, haIsLegal: false},

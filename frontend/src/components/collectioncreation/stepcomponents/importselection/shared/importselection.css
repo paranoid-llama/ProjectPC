@@ -53,6 +53,17 @@
     }
 }
 
+@keyframes stay-in-display {
+    0% {
+        transform: translateX(-100%);
+        visibility: visible
+    }
+    100% {
+        transform: translateX(-100%);
+        visibility: visible
+    }
+}
+
 .slide-import-screen-right-1 {
     animation: slide-import-screen-right-1 0.5s forwards
 }
@@ -67,6 +78,10 @@
 
 .slide-import-screen-left-2 {
     animation: slide-import-screen-left-2 0.5s forwards
+}
+
+.stay-in-display {
+    animation: stay-in-display 0.1s forwards
 }
 
 .screen-fade-in {

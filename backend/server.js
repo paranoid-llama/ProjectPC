@@ -1,9 +1,10 @@
 import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
-import {formatImportQuery, setEMQueries, formatImportedValues, setCollection} from './utils/CreateCollection/importCollection.js'
+import {formatImportQuery, setEMQueries, formatImportedValues, setCollection, detectBadRanges} from './utils/CreateCollection/importCollection.js'
 // require('dotenv').config()
 import dotenv from 'dotenv'
+import lton from 'letter-to-number'
 dotenv.config()
 
 function newObjectId() {
@@ -64,7 +65,7 @@ app.get('/collections', catchAsync(async(req, res) => {
 
 app.post('/collections/new/import', catchAsync(async(req, res) => {
     const {spreadsheetId, apiRequestQueries, collectionTypeValue} = req.body
-    const {dexNum, names, balls, HA, EM1, EM2, EM3, EM4, emColors} = apiRequestQueries
+    const {dexNum, names, balls, HA, EM1, EM2, EM3, EM4, emColors, rowStart} = apiRequestQueries
     const noDexNums = dexNum === undefined
     const noHAColImport = HA === undefined || typeof HA === 'object'
     const noEMsColImport = EM1 === undefined //must populate all EM fields or they don't import
@@ -93,6 +94,20 @@ app.post('/collections/new/import', catchAsync(async(req, res) => {
         },
     }).then((data) => data.json())
 
+    if (data.error !== undefined) {
+        return res.json(data)
+    }
+
+    const dataRangeIssue = detectBadRanges(data)
+    const ballDataRangeIssue = detectBadRanges(ballData)
+    const ranges = [dexNum, names, !noHAColImport ? HA : undefined, EM1, EM2, EM3, EM4]
+    const rangeNames = ['Dex Number', 'Names', 'Hidden Ability', 'Egg Move 1', 'Egg Move 2', 'Egg Move 3', 'Egg Move 4']
+
+    if (dataRangeIssue.issue !== 'none' || ballDataRangeIssue.issue !== 'none') {
+        const badRangeNames = [...dataRangeIssue.ranges.map(range => rangeNames[ranges.indexOf(range)]), ...ballDataRangeIssue.ranges.length !== 0 ? 'balls' : []]
+        return res.json({rangeIssue: true, badRanges: badRangeNames})
+    }
+
     const namesDataIdx = noDexNums ? 0 : 1
     const HADataIdx = noDexNums ? 1 : 2
     const EMDataIdxs = {
@@ -107,17 +122,13 @@ app.post('/collections/new/import', catchAsync(async(req, res) => {
     const importedDexNumArr = noDexNums ? [] : formatImportedValues('dexNum', data.valueRanges[0].values, gapRowIdxs)
     const importedNamesArr = formatImportedValues('names', data.valueRanges[namesDataIdx].values, gapRowIdxs)
     const importedBallInfoArr = formatImportedValues('balls', ballData.valueRanges[0].values, gapRowIdxs)
-    const importedHAInfoArr = HA !== undefined && formatImportedValues('HA', noHAColImport ? colorData.sheets[0].data[0].rowData : data.valueRanges[HADataIdx].values, gapRowIdxs, 'none', noHAColImport && HA)
-    const importedEMCountInfoArr = !noEMColorImport && formatImportedValues('emColor', colorData.sheets[0].data[0].rowData, gapRowIdxs, 'none', emColors)
-    const importedEMsInfoArr = !noEMsColImport && formatImportedValues('EMs', data.valueRanges[EMDataIdxs.EM1], gapRowIdxs, 'none', [], {EM2: data.valueRanges[EMDataIdxs.EM2], EM3: data.valueRanges[EMDataIdxs.EM3], EM4: data.valueRanges[EMDataIdxs.EM4]})
-    // console.log(HA)
-    // console.log(importedHAInfoArr)
-    const newCollection = setCollection(noDexNums ? importedNamesArr : importedDexNumArr, importedNamesArr, importedBallInfoArr, gapRowIdxs, balls.order, collectionTypeValue, HA !== undefined ? importedHAInfoArr : undefined, noHAColImport ? 'colors' : 'col', importedEMCountInfoArr, importedEMsInfoArr)
-    // console.log(data.valueRanges[ballsDataIdx].values)
-
-    // console.log(data.valueRanges[1].values)
-
-    res.json(newCollection)
+    const importedHAInfoArr = HA !== undefined && formatImportedValues('HA', noHAColImport ? colorData.sheets[0].data[0].rowData : data.valueRanges[HADataIdx].values, gapRowIdxs, 'none', noHAColImport ? HA : [])
+    const importedEMCountInfoArr = !noEMColorImport ? formatImportedValues('emColors', colorData.sheets[0].data[0].rowData, gapRowIdxs, 'none', emColors) : undefined
+    const importedEMsInfoArr = !noEMsColImport ? formatImportedValues('EMs', data.valueRanges[EMDataIdxs.EM1].values, gapRowIdxs, 'none', [], {EM2: data.valueRanges[EMDataIdxs.EM2].values, EM3: data.valueRanges[EMDataIdxs.EM3].values, EM4: data.valueRanges[EMDataIdxs.EM4].values}) : undefined
+ 
+    const newCollection = setCollection(noDexNums ? importedNamesArr : importedDexNumArr, importedNamesArr, importedBallInfoArr, gapRowIdxs, balls.order, collectionTypeValue, rowStart, HA !== undefined ? importedHAInfoArr : undefined, noHAColImport ? 'colors' : 'col', importedEMCountInfoArr, importedEMsInfoArr)
+    
+    res.json(newCollection)    
 }))
 
 

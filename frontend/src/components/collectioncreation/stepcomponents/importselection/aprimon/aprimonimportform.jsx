@@ -1,4 +1,5 @@
-import {Box, Typography, TextField, InputAdornment, styled, Button, Tabs, Tab, ToggleButton, ToggleButtonGroup} from '@mui/material'
+import {Box, Typography, TextField, InputAdornment, styled, Button, Tabs, Tab, ToggleButton, ToggleButtonGroup, CircularProgress} from '@mui/material'
+import lton from 'letter-to-number'
 import NameFormatModal from '../shared/nameformatmodal';
 import {NumericFormat} from 'react-number-format'
 import Tooltip, {tooltipClasses} from '@mui/material/Tooltip'
@@ -10,6 +11,7 @@ import AprimonImportNotice from './aprimonimportnotice'
 import ColorSelection from './colorselection';
 import ImgData from '../../../../collectiontable/tabledata/imgdata'
 import { aprimonImportFormTemplate } from '../../../../../importinfoconstants'
+
 import { useDebouncedCallback } from 'use-debounce';
 import './aprimonimportform.css'
 
@@ -22,10 +24,34 @@ export default function AprimonImportForm({handleSubmit}) {
     // }, [])
     const [nameFormatModal, setNameFormatModal] = useState(false)
     const [formState, setFormState] = useState({ballOrder: [], haImport: {type: 'color-coded', colors: [''], col: ''}, emImport: {type: ['color-coded'], colors: [''], cols: ['', '', '', '']}})
+    const [error, setError] = useState({id: false, sheetName: false, rowSpanFrom: false, rowSpanTo: false, nameCol: false, ballColFrom: false, ballColTo: false, ballOrder: false})
     const [importData, setImportData] = useState(aprimonImportFormTemplate)
 
     const noticeClassName = notice === 'transitioning' ? 'fade-notice-out' : ''
     const formClassName = notice === 'transitioning' ? 'fade-form-in' : ''
+
+    const formHelperTextProps = {
+        sx: {position: 'absolute', top: '85%', fontSize: '11px'}
+    }
+
+    const setErrorProps = (isError) =>  {
+        if (isError || isError === 'true') { //using string ver of isError to only return error prop and not helper text
+            return isError === true ? {
+                error: true,
+                helperText: 'Required',
+                FormHelperTextProps: formHelperTextProps
+            } : {error: true}
+        }
+    }
+
+    const setBallOrderErrorProps = (isError) => {
+        if (isError) {
+            return {
+                color: 'red',
+                borderColor: 'red'
+            }
+        }
+    }
 
     const removeNotice = () => {
         setNotice('transitioning')
@@ -81,7 +107,8 @@ export default function AprimonImportForm({handleSubmit}) {
 
     const updateHaEmCols = (e, field, emIdx) => {
         const newValue = e.target.value
-        if (newValue.length > 2) {
+        const letterValues = /[a-zA-Z]/
+        if (newValue.length > 2 || (!letterValues.test(newValue)) && newValue !== '') {
             null
         } else if (field === 'ha') {
             setFormState({...formState, haImport: {...formState.haImport, col: newValue}})
@@ -94,7 +121,8 @@ export default function AprimonImportForm({handleSubmit}) {
 
     const handleImportDataChange = (e, changedField, colField=false, nestedField=undefined) => {
         const newValue = e.target.value
-        if (newValue.length > 2 && colField) {
+        const letterValues = /[a-zA-Z]/
+        if (colField && (newValue.length > 2 || (!letterValues.test(newValue)) && newValue !== '')) {
             null
         } else {
             const newState = nestedField !== undefined ? {...importData, [nestedField]: {...importData[nestedField], [changedField]: newValue}} : {...importData, [changedField]: newValue}
@@ -107,25 +135,85 @@ export default function AprimonImportForm({handleSubmit}) {
         const untouchedEmImportFields = (formState.emImport.colors.filter(color => color !== '').length === 0 && formState.emImport.cols.filter(col => col !== '').length === 0)
         const haImportFields = untouchedHaImportFields ? {} : 
             formState.haImport.type === 'color-coded' ? {colors: formState.haImport.colors.filter(color => color !== '')} : 
-            formState.haImport.type === 'column-info' && {col: formState.haImport.col}
+            formState.haImport.type === 'column-info' && {col: formState.haImport.col.toUpperCase()}
         const emImportFields = untouchedEmImportFields ? {} : 
-            (formState.emImport.type.includes('color-coded') && formState.emImport.type.includes('column-info')) && {colors: formState.emImport.colors.filter(color => color !== ''), cols: formState.emImport.cols}
+            (formState.emImport.type.includes('color-coded') && formState.emImport.type.includes('column-info')) ? {colors: formState.emImport.colors.filter(color => color !== ''), cols: formState.emImport.cols.map((col) => col.toUpperCase())} :
             formState.emImport.type.includes('color-coded') ? {colors: formState.emImport.colors.filter(color => color !== '')} : 
-            formState.emImport.type.includes('column-info') && {cols: formState.emImport.cols}   
+            formState.emImport.type.includes('column-info') && {cols: formState.emImport.cols.map((col) => col.toUpperCase())}   
         const formattedImportData = {
             ...importData,
-            ballColSpan: {...importData.ballColSpan, order: formState.ballOrder},
+            ballColSpan: {from: importData.ballColSpan.from.toUpperCase(), to: importData.ballColSpan.to.toUpperCase(), order: formState.ballOrder},
             haImport: {import: !untouchedHaImportFields, assumeAll: untouchedHaImportFields, ...haImportFields},
             emImport: {import: !untouchedEmImportFields, ...emImportFields}
         }
         return formattedImportData
     }
 
+    const validateAndSubmit = (e, formData) => {
+        const requiredFields = ['id', 'sheetName', 'rowSpanFrom', 'rowSpanTo', 'nameCol', 'ballColFrom', 'ballColTo', 'ballOrder']
+        const importDataField = ['spreadsheetId', 'sheetName', 'rowSpan[from]', 'rowSpan[to]', 'nameCol', 'ballCol[from]', 'ballCol[to]', 'ballOrder']
+        const ballFromEmpty = importData.ballColSpan.from === ''
+        const ballToEmpty = importData.ballColSpan.to === ''
+        const obj = {}
+        for (let field of requiredFields.slice(0, 5)) {
+            if (field.includes('rowSpan')) {
+                const nestedFieldKey = field.slice(field.indexOf('n')+1, field.length).toLowerCase()
+                obj[field] = importData.rowSpan[nestedFieldKey] === ''
+            } else {
+                obj[field] = importData[importDataField[requiredFields.indexOf(field)]] === ''
+            }
+        }
+        if (ballFromEmpty || ballToEmpty) {
+            if (ballFromEmpty && ballToEmpty) {
+                obj['ballColFrom'] = true
+                obj['ballColTo'] = true
+            }
+            if (ballFromEmpty) {
+                obj['ballColFrom'] = true
+            }
+            if (ballToEmpty) {
+                obj['ballColTo'] = true
+            }
+        } else {
+            const num1 = lton(importData.ballColSpan.from.toUpperCase())
+            const num2 = lton(importData.ballColSpan.to.toUpperCase())
+            const numOfColBalls = num2 > num1 ? num2 - (num1-1) : 0
+            if (numOfColBalls > 11) {
+                obj['ballColFrom'] = 'true'
+                obj['ballColTo'] = 'true'
+            } else {
+                obj['ballColFrom'] = false
+                obj['ballColTo'] = false
+            }
+        }
+        if (formState.ballOrder.length === 0 && (obj.ballColFrom === false && obj.ballColFrom === false)) {
+            obj['ballOrder'] = true
+        } else if (formState.ballOrder.length !== 0 && (obj.ballColFrom === false && obj.ballColFrom === false)) {
+            const num1 = lton(importData.ballColSpan.from.toUpperCase())
+            const num2 = lton(importData.ballColSpan.to.toUpperCase())
+            const numOfColBalls = num2 > num1 ? num2 - (num1-1) : 0
+            if (numOfColBalls !== formState.ballOrder.length) {
+                obj['ballOrder'] = true
+            } else {
+                obj['ballOrder'] = false
+            }
+        }
+        if (Object.values(obj).filter((error) => error !== false).length !== 0) {
+            setError(obj)
+        } else {
+            setError({id: false, sheetName: false, rowSpanFrom: false, rowSpanTo: false, nameCol: false, ballColFrom: false, ballColTo: false, ballOrder: false})
+            handleSubmit(e, formData)
+        }
+
+    }
+
+    const ballColOrderNoError = (error.ballOrder !== true && error.ballColFrom !== true && error.ballColFrom !== 'true' && error.ballColTo !== true && error.ballColTo !== 'true')
+
     const spreadSheetIdToolTip = 'Your spreadsheet ID is in the link: https://docs.google.com/spreadsheets/d/(SPREADSHEET_ID)/edit#gid=123456789 Make sure anyone with the link can view the spreadsheet!'
     const rowSpanToolTip = 'The range of rows your collection encompasses. First value will be the first pokemon, and the second one will be the last pokemon. Ensure most of the imported fields spans this range!'
     const identifierToolTip = "These are used to associate data with a particular pokemon. National Dex # is not required, but you have to make sure all your pokemon are spelled correctly if you don't import it!"
     const haImportToolTip = "The data on whether or not a specific pokemon/ball combo you own has their hidden ability as well. You can leave this blank and it will be assumed that they all have their hidden abilities (if applicable)"
-    const emImportToolTip = "The data on whether or not a specific pokemon/ball combo you own has egg moves, and what those egg moves are. Color coded only imports whether they have 4/Max EMs, while Column Info imports the EM data but applies it to all owned combos."
+    const emImportToolTip = "The data on whether or not a specific pokemon/ball combo you own has egg moves, and what those egg moves are. Color coded only imports whether they have 4/Max EMs, while Column Info imports the EM data but applies it to all owned combos. You can include both types."
 
     return (
         <Box sx={{width: '100%', height: '95%'}}>
@@ -134,9 +222,10 @@ export default function AprimonImportForm({handleSubmit}) {
             <Box sx={{width: '100%', height: '100%', position: 'relative'}} className={formClassName}>
                 <Box sx={{position: 'absolute', width: '100%', height: '100%',  display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
                     <Box sx={{width: '100%', height: '25%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', mb: 1}}>
-                        <Box sx={{width: '50%', height: '50%', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
+                        <Box sx={{width: '50%', height: '50%', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', position: 'relative'}}>
                             <TextField 
-                                fullWidth size='small' 
+                                fullWidth 
+                                size='small' 
                                 label='Spreadsheet ID'
                                 value={importData.spreadsheetId}
                                 onChange={(e) => handleImportDataChange(e, 'spreadsheetId')}
@@ -147,17 +236,20 @@ export default function AprimonImportForm({handleSubmit}) {
                                                     </CustomWidthTooltip> 
                                                   </InputAdornment>
                                 }}
+                                {...setErrorProps(error.id)}
                             />
                         </Box>
                         <Box sx={{width: '100%', height: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                             <Box sx={{width: '50%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                                <Box sx={{width: '75%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>  
+                                <Box sx={{width: '75%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative'}}>  
                                     <TextField
                                         fullWidth
                                         size='small'
                                         label='Sheet Name'
                                         value={importData.sheetName}
                                         onChange={(e) => handleImportDataChange(e, 'sheetName')}
+                                        FormHelperTextProps={formHelperTextProps}
+                                        {...setErrorProps(error.sheetName)}
                                     />
                                 </Box>
                             </Box>
@@ -165,6 +257,7 @@ export default function AprimonImportForm({handleSubmit}) {
                                 <Box sx={{width: '90%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}> 
                                     <Typography sx={{fontSize: '16px', fontWeight: 700, mr: 3}}>Row Span:</Typography>
                                     <NumericFormat 
+                                        sx={{position: 'relative'}}
                                         customInput={TextField} 
                                         size='small' 
                                         label='From' 
@@ -172,9 +265,11 @@ export default function AprimonImportForm({handleSubmit}) {
                                         decimalScale={0}
                                         value={importData.rowSpan.from}
                                         onChange={(e) => handleImportDataChange(e, 'from', false, 'rowSpan')}
+                                        {...setErrorProps(error.rowSpanFrom)}
                                     />
                                     <Typography sx={{fontSize: '16px', fontWeight: 700, mx: 1}}>-</Typography>
                                     <NumericFormat 
+                                        sx={{position: 'relative'}}
                                         customInput={TextField} 
                                         size='small' 
                                         label='To' 
@@ -182,6 +277,7 @@ export default function AprimonImportForm({handleSubmit}) {
                                         decimalScale={0}
                                         value={importData.rowSpan.to}
                                         onChange={(e) => handleImportDataChange(e, 'to', false, 'rowSpan')}
+                                        {...setErrorProps(error.rowSpanTo)}
                                     />
                                     <Box sx={{marginLeft: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', ':hover': {cursor: 'pointer'}, color: 'rgba(0, 0, 0, 0.54)'}}>
                                         <Tooltip title={rowSpanToolTip} arrow>
@@ -210,13 +306,14 @@ export default function AprimonImportForm({handleSubmit}) {
                                         onChange={(e) => handleImportDataChange(e, 'dexNumCol', true)}
                                     />
                                 </Box>
-                                <Box sx={{width: '100%', height: '30%', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
+                                <Box sx={{width: '100%', height: '30%', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', mb: 1}}>
                                     <Typography sx={{fontSize: '14px', marginRight: 1}}>Name Column:</Typography>
                                     <TextField 
                                         placeholder='E.g. C' 
                                         size='small'
                                         value={importData.nameCol}
                                         onChange={(e) => handleImportDataChange(e, 'nameCol', true)}
+                                        {...setErrorProps(error.nameCol)}
                                     />
                                 </Box>
                                 <Button sx={{fontSize: '10px'}} onClick={openNameFormatModal}>
@@ -224,7 +321,7 @@ export default function AprimonImportForm({handleSubmit}) {
                                 </Button>
                                 <NameFormatModal open={nameFormatModal} handleClose={closeNameFormatModal}/>
                             </Box>
-                            <Box sx={{width: '60%', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', marginLeft: 1}}>
+                            <Box sx={{width: '60%', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', marginLeft: 1, mb: 1}}>
                                 <Typography sx={{fontSize: '16px', fontWeight: 700, mb: 0.1, position: 'relative'}}>
                                     Owned Ball Combos
                                 </Typography>
@@ -236,6 +333,7 @@ export default function AprimonImportForm({handleSubmit}) {
                                         size='small'
                                         value={importData.ballColSpan.from}
                                         onChange={(e) => handleImportDataChange(e, 'from', true, 'ballColSpan')}
+                                        {...setErrorProps(error.ballColFrom)}
                                     />
                                     <Typography sx={{fontSize: '16px', fontWeight: 700, mx: 1}}>-</Typography>
                                     <TextField 
@@ -244,6 +342,7 @@ export default function AprimonImportForm({handleSubmit}) {
                                         size='small'
                                         value={importData.ballColSpan.to}
                                         onChange={(e) => handleImportDataChange(e, 'to', true, 'ballColSpan')}
+                                        {...setErrorProps(error.ballColTo)}
                                     />
                                 </Box>
                                 <Box sx={{width: '100%', height: '40%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
@@ -265,7 +364,7 @@ export default function AprimonImportForm({handleSubmit}) {
                                                     value={ball}
                                                     selected={formState.ballOrder.includes(ball)}
                                                     onChange={(e) => changeBallOrder(e, formState.ballOrder.includes(ball))}
-                                                    sx={{padding: 0, display: 'flex', flexDirection: 'column', justifyContent: 'end', mx: 0.2, position: 'relative'}}
+                                                    sx={{padding: 0, display: 'flex', flexDirection: 'column', justifyContent: 'end', mx: 0.2, position: 'relative', ...setBallOrderErrorProps(error.ballOrder)}}
                                                 >
                                                     {formState.ballOrder.includes(ball) && 
                                                     <Typography 
@@ -287,8 +386,10 @@ export default function AprimonImportForm({handleSubmit}) {
                                     </Box>
                                 </Box>
                                 <Box sx={{width: '100%', height: '10%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                                    <Typography sx={{fontSize: '11px'}}>
-                                        If you are not collecting a particular ball, you can leave it unselected
+                                    <Typography sx={{fontSize: '11px', color: ballColOrderNoError ? 'black' : 'red'}}>
+                                        {ballColOrderNoError && 'If you are not collecting a particular ball, you can leave it unselected'}
+                                        {error.ballOrder === true && 'Number of selected balls does not match the number between the column spans'}
+                                        {(error.ballColFrom === 'true' || error.ballColTo === 'true') && 'Column Spans are greater than the total allowed balls (11)'}
                                     </Typography>
                                 </Box>
                             </Box>
@@ -410,7 +511,7 @@ export default function AprimonImportForm({handleSubmit}) {
                         </Box>
                     </Box>
                 <Box sx={{position: 'absolute', top: '108%', width: '217.625px', height: '36px', right: '3%', zIndex: 2}}>
-                    <Button onClick={(e) => handleSubmit(e, formatData())}>
+                    <Button onClick={(e) => validateAndSubmit(e, formatData())}>
                         <Typography sx={{mx: 2, fontSize: '14px'}}>Submit and Import</Typography>
                         <ArrowForwardIcon/>
                     </Button>

@@ -51,9 +51,18 @@ const gapIdentifiers = [...regions, ...otherGapTextValues]
 
 
 //this is the accepted formats for regional form/alternate form names when importing, whether its the regional form or the original form of the pokemon. 
-//alolan is in both arrays as decidueye has a regional form, so its original may be called alolan decidueye
+
 const regionalFormNameIdentifiers = ['alola', 'alolan', '-a', 'a-', 'galar', 'galarian', '-g', 'g-', 'hisui', 'hisuian', '-h', 'h-', 'paldea', 'paldean', '-p', 'p-']
-const originalRegionalFormNameIdentifiers = ['kanto', 'kantonian', '-k', 'k-', 'johto', 'johtonian', '-j', 'j-', 'hoenn', 'hoennian', '-h', 'h-', 'unova', 'unovan', '-u', 'u-', 'alola', 'alolan', '-a', 'a-']
+const originalRegionalFormNameIdentifiers = ['kanto', 'kantonian', '-k', 'k-', 'johto', 'johtonian', '-j', 'j-', 'hoenn', 'hoennian', '-h', 'h-', 'unova', 'unovan', '-u', 'u-']
+
+//these are additional original region identifiers which may be allowed for specific pokemon. our aprimon collection creator technically doesnt allow alolan decidueye
+//to be collected, but this will be useful for other types of collections like living dex and is overall the way going forward for pokemon of regions that have 
+//regional forms (alola+) that get a regional form in a later gen, since we cant include it in the originalRegionalFormNameIdentifiers arr else it messes things up
+//for other pokemon
+//object key is in the name format as appears in our collection creation.
+const additionalOriginRegionalFormNameIdentifiers = {
+    'Decidueye': ['alolan', '-a', 'a-']
+}
 
 //these are alt form pokemon with first letter allowed (no overlap). If a new form is introduced to any of these mons and screws it up this needs to be updated
 const firstLetterAllowedAltForms = ['Nidoran♂', 'Nidoran♀', 'Burmy', 'Shellos', 'Basculin', 'Flabébé', 'Minior', 'Indeedee', 'Squawkabilly', 'Tatsugiri']
@@ -74,6 +83,6 @@ export {
     regionalFormMons, multipleRegionalFormMons,
     allAltFormMons, interchangeableAltFormMons, allowedAprimonMultipleDexNums, allowedAprimonDuplicateNum,
     apriballs, apriballLiterals, specialBalls, shopballs, generations, findGenByDexNum,
-    gapIdentifiers, regionalFormNameIdentifiers, originalRegionalFormNameIdentifiers, firstLetterAllowedAltForms, regions,
+    gapIdentifiers, regionalFormNameIdentifiers, originalRegionalFormNameIdentifiers, additionalOriginRegionalFormNameIdentifiers, firstLetterAllowedAltForms, regions,
     uniqueAlternateFormPokemon, uniqueRegionalFormPokemon
 }

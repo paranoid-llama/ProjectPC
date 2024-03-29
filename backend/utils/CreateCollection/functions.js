@@ -163,8 +163,8 @@ function handleBasculin(altForms, name, pokemonInfo, ownedBallList, gen, importi
 function handleRockruff(altForms, name, pokemonInfo, ownedBallList, gen, importing=false) {
     const multiplePokemon = []
     const importAltIdentifier = importing ? {originalPokemon: name} : {}
-    altForms.forEach(form => {
-        if (form === 'Dusk') {
+    altForms.forEach((form) => {
+        if (pokemonInfo.info.alternateForm.name[form] === 'Dusk') {
             const copyOfOwnedBallList = JSON.parse(JSON.stringify(ownedBallList))
             Object.keys(ownedBallList).forEach(ball => {
                 delete copyOfOwnedBallList[ball].isHA
@@ -183,6 +183,7 @@ function handleRockruff(altForms, name, pokemonInfo, ownedBallList, gen, importi
             multiplePokemon.push(
                 {
                     name: name + ' ' + `(${pokemonInfo.info.alternateForm.name[form]})`,
+                    displayName: '',
                     natDexNum: pokemonInfo.info.natDexNum,
                     gen: pokemonInfo.gen,
                     balls: JSON.parse(JSON.stringify(ownedBallList)),
