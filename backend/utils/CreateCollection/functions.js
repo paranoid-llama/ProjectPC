@@ -236,7 +236,7 @@ function handleVivillon(patterns, name, pokemonInfo, ownedBallList, gen, importi
     patterns.forEach(pattern => {
         multiplePokemon.push(
             {
-                name: name + ' ' + `(${pattern})`,
+                name: name + ' ' + `(${pokemonInfo.info.alternateForm.name[pattern]})`,
                 displayName: '',
                 natDexNum: pokemonInfo.info.natDexNum,
                 gen: pokemonInfo.gen,

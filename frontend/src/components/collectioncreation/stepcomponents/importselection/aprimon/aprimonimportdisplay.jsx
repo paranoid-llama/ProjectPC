@@ -1,7 +1,7 @@
 import {Box, Typography, CircularProgress} from '@mui/material'
 import AprimonPreviewImport from './aprimonpreviewimport'
 
-export default function AprimonImportDisplay({data}) {
+export default function AprimonImportDisplay({data, numOfBalls}) {
     const noData = Object.keys(data).length === 0
     const apiCallError = data.error !== undefined
     const apiCallErrorCode = apiCallError && data.error.code
@@ -76,6 +76,6 @@ export default function AprimonImportDisplay({data}) {
             </Typography>
         </Box> :
         ballColIssue ? setBallColIssue(data.type) : 
-        <AprimonPreviewImport data={data}/>
+        <AprimonPreviewImport data={data} numOfBalls={numOfBalls}/>
     )
 }

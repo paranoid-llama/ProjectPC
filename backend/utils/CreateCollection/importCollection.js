@@ -11,7 +11,7 @@ from '../../infoconstants.js'
 import {setOwnedPokemonList} from './../createCollection.js'
 import allPokemon from '../aprimonAPI/allpokemoninfo.js'
 import rgbHex from 'rgb-hex'
-import { getPossibleEggMoves } from '../schemavirtuals/collectionvirtuals.js'
+import { getPossibleEggMoves, getImgLink } from '../schemavirtuals/collectionvirtuals.js'
 import { capitalizeFirstLetter } from '../schemavirtuals/infoandotherfuncs.js'
 
 function formatImportQuery(query, lastItem=false) {
@@ -118,7 +118,7 @@ const detectRFPInNameImport = (basePokemonName, namesArr, pokemonName, isTauros=
     }).filter(item => item !== undefined)[0]
     const regionalFormPokemonInNames = namesArr.filter((name, idx) => {
         const hasRegionalIdentifier = regionalFormNameIdentifiers.map((identifier) => (name.toLowerCase().includes(identifier)) && (isMultipleRegionalFormMon ? name.toLowerCase().includes(regionOfMultipleRegionalFormMon) : true)).includes(true)
-        const isPokemon = name.includes(basePokemonName)
+        const isPokemon = name.toLowerCase().includes(basePokemonName.toLowerCase())
         const hasBreedIdentifier = isTauros && breed.map(breedId => name.toLowerCase().includes(breedId.toLowerCase())).includes(true)
         const isNotOtherBreeds = !(otherBreeds.map(breedId => name.toLowerCase().includes(breedId.toLowerCase())).includes(true))
         const isRegionalPokemon = isTauros ? 
@@ -159,6 +159,7 @@ const detectOFRFPInNameImport = (pokemonName, namesArr) => {
 
 const detectAltFormsInNameImport = (basePokemonName, namesArr, pokemonName, identifier, otherIdentifiers, canFirstLetter) => {
     const nameFormats = canFirstLetter ? [identifier.toLowerCase(), `-${identifier[0].toLowerCase()}`, `${identifier[0].toLowerCase()}-`, ...otherIdentifiers] : [identifier.toLowerCase(), ...otherIdentifiers]
+    const otherGender = nameFormats[0] === 'male' ? 'female' : undefined
     const importedIdx = []
     const setDisplay = {}
     const alternateFormPokemonInNames = namesArr.filter((name, idx) => {
@@ -166,9 +167,9 @@ const detectAltFormsInNameImport = (basePokemonName, namesArr, pokemonName, iden
             if (basePokemonName === 'Minior' && format === 'r-') { //I have to include this if since it catches other forms of minior if formatted like Minior-Blue, and i still want to catch formatting like R-Minior (red minior)
                 return (name.toLowerCase().includes(format) && name.indexOf('-') === 1)
             }
-            return name.toLowerCase().includes(format)
+            return otherGender !== undefined ? (name.toLowerCase().includes(format) && !name.toLowerCase().includes(otherGender)) : name.toLowerCase().includes(format)
         }).includes(true)
-        const isPokemon = name.includes(basePokemonName)
+        const isPokemon = name.toLowerCase().includes(basePokemonName.toLowerCase())
         const isAltFormPokemon = isPokemon && hasIdentifier
         // if (isPokemon) {
         //     console.log('IS POKEMON!')
@@ -415,7 +416,6 @@ const setCollection = (identifier, names, ballData, gapRows, ballOrder, collecti
     const possibleEggMoves = (emColorData !== undefined || EMData !== undefined) && getPossibleEggMoves(setCollectionScope, collectionGen)
     
     formattedNames.forEach((pokemonName, idx) => {
-        // console.log(pokemonName)
         const dexNum = !noDexNums ? identifier[idx] : undefined
         const allowedToHaveDuplicateDexNums = allowedAprimonMultipleDexNums.includes(dexNum)
         const errorInfo = setCollectionScope.map((collectionPokemon) => {
@@ -447,7 +447,7 @@ const setCollection = (identifier, names, ballData, gapRows, ballOrder, collecti
                                     `Detected #${nameDexMismatchObj.dexNum} in the imported dex # column, but they had the wrong name/an unidentified name (${names[idx]}, expected ${nameDexMismatchObj.collectionName}). Double-check that it imported correctly and, if not, that the name and dex # are correct and matching.`
             possibleUnsuccessfulImportRows.push({row: formatImportRow(idx, trueGapRows, rowStart), pokemonName: names[idx], errorMessage})
         } else if (!noDexNums && dexNumNotFound) {
-            const errorMessage = `Used Dex #${dexNum} to find the pokemon, but it did not match a pokemon in our database. Double check that the dex number matches ${names[idx]}.`
+            const errorMessage =  `Used Dex #${dexNum} to find the pokemon, but it did not match a pokemon in our database, or it is a pokemon that is unsupported in aprimon collections. Double check that the dex number matches the name ${names[idx]}.` 
             possibleUnsuccessfulImportRows.push({row: formatImportRow(idx, trueGapRows, rowStart), pokemonName: names[idx], errorMessage})
         } else if (nameNotFound) {
             const errorMessage = `Used Name '${names[idx]}' to find the pokemon, but it did not match a pokemon in our database. Double check that the name is spelled correctly and conforms to the name format.`
@@ -490,7 +490,7 @@ const setCollection = (identifier, names, ballData, gapRows, ballOrder, collecti
         const EMsThatDontImport = specificEMData !== false && EMData[pokemonIdx].filter(em => em !== undefined).filter((em) => !pokemonPossibleEggMoves.map(pem => pem.toLowerCase()).includes(em.toLowerCase())).filter(em => em.toLowerCase() !== 'n/a')
         
         if (specificEMData !== undefined && EMsThatDontImport.length !== 0 && !noEMs) {
-            possibleUnsuccessfulEMImportRows.push({pokemonName: useDisplayName ? pokemon.displayName : pokemon.name, EMs: EMsThatDontImport})
+            possibleUnsuccessfulEMImportRows.push({row: formatImportRow(pokemonIdx, trueGapRows, rowStart), pokemonName: useDisplayName ? pokemon.displayName : pokemon.name, EMs: EMsThatDontImport})
         }
         
         const peripheryFieldsImport = {notImportingHAInfo, isHAInfoType: HADataType, isHAInfo: specificIsHAData,
@@ -504,6 +504,14 @@ const setCollection = (identifier, names, ballData, gapRows, ballOrder, collecti
             pokemon.balls = newBallInfo
             return pokemon
         }
+    })
+
+    //set temporary info
+    setBallInfo.forEach((p) => {
+        if (p.originalPokemon !== undefined) {
+            delete p.originalPokemon
+        }
+        p.imgLink = getImgLink(p)
     })
     
     return {collection: setBallInfo, successfulRows: successfulImportRows.sort((a, b) => a>b ? 1 : -1), possibleUnsuccessfulRows: possibleUnsuccessfulImportRows, possibleUnsuccessfulEMs: !notImportingEMs ? possibleUnsuccessfulEMImportRows : undefined}

@@ -50,7 +50,7 @@ function setOwnedPokemonList(gen, pokemonScope, importing=false) {
                     gen: childGen,
                     balls: newOwnedBallListRef
                 } : {}
-                if (pokemon.info.alternateForm !== undefined || (importing && pokemon.info.specialAlternateForms !== undefined)) {
+                if (pokemon.info.alternateForm !== undefined || (importing && pokemon.info.specialAlternateForms !== undefined)) { //special alternate forms refers to sinistea/poltchageist
                     const isntSpecialAltForm = pokemon.info.alternateForm !== undefined
                     if ((isntSpecialAltForm && pokemon.info.alternateForm.originalIsForm) || interchangeableAltFormMons.includes(pokename)) { //there is an option to just have a one of an interchangeable alt form mon. this just gets singled out if they have all of them, though.
                         return [originalPokemon, handleAlternateForms(pokemon, ownedBallList, pokename, parsedGen, true)]

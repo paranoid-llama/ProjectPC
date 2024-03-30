@@ -2656,7 +2656,9 @@ const gen5Info = [{
         HA: {
             hasHA: true,
             name: {reg: "Tinted Lens"}
-        }
+        },
+        evolvedRegionalForm: true,
+        species: 'Braviary'
     },
     specificGenInfo: {
         gen9: {

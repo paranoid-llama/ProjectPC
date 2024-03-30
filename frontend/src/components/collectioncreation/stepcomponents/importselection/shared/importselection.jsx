@@ -51,7 +51,7 @@ export default function ImportSelection({handleChange, cssClass, goBackStep, col
         setImportScreen('preview')
         const importedCollection = await importCollection(formData.spreadsheetId, apiRequestQuery, collectionSubTypeValue)
         setTimeout(() => {
-            setImportedCollectionDisplay(importedCollection)
+            setImportedCollectionDisplay({data: importedCollection, numOfBalls: formData.ballColSpan.order.length})
         }, 500)
     }
 
@@ -78,7 +78,7 @@ export default function ImportSelection({handleChange, cssClass, goBackStep, col
                     </Box>
                     <Box sx={{width: '100%', height: '100%', position: 'absolute', right: '-100%', visibility: 'hidden', display: 'flex', alignItems: 'center', flexDirection: 'column'}} className={fadeClass.screen3}>
                         {/* change this to show different display screens depending on type (once more collection types are added)*/}
-                        <AprimonImportDisplay data={importedCollectionDisplay}/>
+                        <AprimonImportDisplay data={importedCollectionDisplay.data === undefined ? {} : importedCollectionDisplay.data} numOfBalls={importedCollectionDisplay.numOfBalls}/>
                     </Box>
                 </Box>
             </Box>
