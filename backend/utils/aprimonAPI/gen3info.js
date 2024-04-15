@@ -795,7 +795,7 @@ const gen3Info = [{
             balls: {
                 apriball: {isLegal: false, haIsLegal: false},
                 safari: {isLegal: false, haIsLegal: false},
-                sport: {isLegal: false, haIsLegal: false},
+                sport: {isLegal: true, haIsLegal: false},
                 beast: {isLegal: false, haIsLegal: false},
                 dream: {isLegal: true, haIsLegal: true}
             }
@@ -805,7 +805,7 @@ const gen3Info = [{
             balls: {
                 apriball: {isLegal: false, haIsLegal: false},
                 safari: {isLegal: false, haIsLegal: false},
-                sport: {isLegal: false, haIsLegal: false},
+                sport: {isLegal: true, haIsLegal: true},
                 beast: {isLegal: false, haIsLegal: false},
                 dream: {isLegal: true, haIsLegal: true}
             }
@@ -1935,12 +1935,13 @@ const gen3Info = [{
         gen8: {
             eggmoves: {moves: ['Encore', 'Disable', 'Baton Pass', 'Wish', 'Trick', 'Fake Out', 'Role Play', 'Psycho Cut', 'Fake Tears', 'Rapid Spin', 'Icy Wind', 'Psycho Shift', 'Guard Split']},
             balls: {
+                //as of April 2024 (time of writing this), spinda can be caught in BDSP but not transferred between BDSP-Home. So the legality is actually lesser than previous gens.
                 bdsp: {
                     apriball: {isLegal: true, haIsLegal: true},
-                    safari: {isLegal: true, haIsLegal: true},
+                    safari: {isLegal: false, haIsLegal: false},
                     sport: {isLegal: false, haIsLegal: false},
-                    beast: {isLegal: true, haIsLegal: true},
-                    dream: {isLegal: true, haIsLegal: true}
+                    beast: {isLegal: false, haIsLegal: false},
+                    dream: {isLegal: false, haIsLegal: false}
                 }
             }
         }

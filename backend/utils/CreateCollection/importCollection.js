@@ -321,6 +321,7 @@ const setCollection = (identifier, names, ballData, gapRows, ballOrder, collecti
     const possibleUnsuccessfulEMImportRows = []
     const formattedNames = names.map((name) => name.toLowerCase().trim())
     const listOrderRef = names.map((name, idx) => {return {name, order: idx}})
+    
     const dexNumOrderRef = identifierType === 'dexNums' ? identifier.map((dexNum, idx) => {return {dexNum, order: idx}}) : formattedNames.map((name, idx) => {return {name, order: idx}})
     const trueGapRows = gapRows.map((gapRow) => gapRow+rowStart)
     // console.log(collection.slice(350))
@@ -387,6 +388,12 @@ const setCollection = (identifier, names, ballData, gapRows, ballOrder, collecti
         }
         if (isInterchangeableAltFormMon) {
             const isPokemonInImportedNamesList = formattedNames.includes(pokemon.name.toLowerCase())
+            const hasOtherFormsInList = !noDexNums ? identifier.filter(dexNum => dexNum === pokemon.natDexNum).length > 1 : formattedNames.filter((name) => name.includes(pokemon.name.toLowerCase())).length > 1
+            if (isPokemonInImportedNamesList && hasOtherFormsInList) { //this checks if, for example, the user has 'Oricorio' in their list but also has 'Oricorio (Baile)', and causes 'Oricorio' to fail since the form is unidentified AND other forms are present. the error gets reported in the forEach
+                const errorMessage = `Detected ${pokemon.name} (Changeable Alternate Form Pokemon) with an unidentified form name, and other forms of the same pokemon is present. Remove other form names if you want to have any form, or identify the form name.`
+                // possibleUnsuccessfulImportRows.push({row: formatImportRow(idx, trueGapRows, rowStart), pokemonName: pokemon.name, errorMessage})
+                return false
+            }
             if (isPokemonInImportedNamesList === true) {
                 const idx = formattedNames.indexOf(pokemon.name.toLowerCase())
                 successfulImportRows.push(formatImportRow(idx, trueGapRows, rowStart))
@@ -418,6 +425,7 @@ const setCollection = (identifier, names, ballData, gapRows, ballOrder, collecti
     formattedNames.forEach((pokemonName, idx) => {
         const dexNum = !noDexNums ? identifier[idx] : undefined
         const allowedToHaveDuplicateDexNums = allowedAprimonMultipleDexNums.includes(dexNum)
+        const isAnyFormInterchangeableAltFormMon = interchangeableAltFormMons.map(mon => mon.toLowerCase()).includes(pokemonName.toLowerCase())
         const errorInfo = setCollectionScope.map((collectionPokemon) => {
             const isAltFormMon = collectionPokemon.displayName !== undefined
             const useDisplayName = isAltFormMon && collectionPokemon.displayName !== '' 
@@ -440,7 +448,7 @@ const setCollection = (identifier, names, ballData, gapRows, ballOrder, collecti
         
         const dexNumNotFound = errorInfo.filter(info => info.dexNumIsInList !== undefined && info.dexNumIsInList !== false).length === 0
         const multipleSameDexNum = errorInfo.filter(info => (info.dexNumIsInList !== undefined && info.dexNumIsInList !== false) && info.nameIsInList !== false).length !== 1
-        const nameNotFound = errorInfo.filter(info => info.nameIsInList !== false).length === 0
+        const nameNotFound = errorInfo.filter(info => info.nameIsInList !== false).length === 0 
         // console.log(`name: ${pokemonName} dexNumNotFound: ${dexNumNotFound} nameNotFound: ${nameNotFound} nameDexMismatch: ${nameDexMismatchObj}`)
         if (!noDexNums && nameDexMismatchObj !== undefined && nameDexMismatchObj.nameAndDexNumMismatch === true) {
             const errorMessage = nameDexMismatchObj.misMatchInfo === 'rightNameWrongNum' ? `Detected ${nameDexMismatchObj.collectionName} in the imported names column, but they had the wrong dex number (#${dexNum}, expected #${nameDexMismatchObj.dexNum}). Double-check that it imported correctly.` : 
@@ -450,8 +458,13 @@ const setCollection = (identifier, names, ballData, gapRows, ballOrder, collecti
             const errorMessage =  `Used Dex #${dexNum} to find the pokemon, but it did not match a pokemon in our database, or it is a pokemon that is unsupported in aprimon collections. Double check that the dex number matches the name ${names[idx]}.` 
             possibleUnsuccessfulImportRows.push({row: formatImportRow(idx, trueGapRows, rowStart), pokemonName: names[idx], errorMessage})
         } else if (nameNotFound) {
-            const errorMessage = `Used Name '${names[idx]}' to find the pokemon, but it did not match a pokemon in our database. Double check that the name is spelled correctly and conforms to the name format.`
-            possibleUnsuccessfulImportRows.push({row: formatImportRow(idx, trueGapRows, rowStart), pokemonName: names[idx], errorMessage})
+            if (isAnyFormInterchangeableAltFormMon) {
+                const errorMessage = `Detected '${names[idx]}' (Changeable Alternate Form Pokemon) with an unidentified form name, and other forms of the same pokemon is present. Remove other form names if you want to have any form, or identify the form name.`
+                possibleUnsuccessfulImportRows.push({row: formatImportRow(idx, trueGapRows, rowStart), pokemonName: names[idx], errorMessage})
+            } else {
+                const errorMessage = `Used Name '${names[idx]}' to find the pokemon, but it did not match a pokemon in our database. Double check that the name is spelled correctly and conforms to the name format.`
+                possibleUnsuccessfulImportRows.push({row: formatImportRow(idx, trueGapRows, rowStart), pokemonName: names[idx], errorMessage})
+            }
         } else if (!noDexNums && multipleSameDexNum) {
             const numOfSameDexNum = identifier.filter((num) => num === dexNum).length 
             
@@ -472,6 +485,15 @@ const setCollection = (identifier, names, ballData, gapRows, ballOrder, collecti
     const checkboxBallData = ballData[0].includes(false) || ballData[0].includes(true)
  
     const setBallInfo = setCollectionScope.map((pokemon, idx) => {
+
+        const allAllowedBallsNotInBallScope = !(Object.keys(pokemon.balls).map(ball => ballOrder.includes(ball)).includes(true))
+
+        if (allAllowedBallsNotInBallScope) {
+            const errorMessage = `${capitalizeFirstLetter(pokemon.name)}'s only legal ball combos are balls that you have excluded (${Object.keys(pokemon.balls).map((ball, idx) => `${idx !== 0 ? ' ' : ''}${capitalizeFirstLetter(ball)}`)}), so the import failed.`
+            possibleUnsuccessfulImportRows.push({row: formatImportRow(idx, trueGapRows, rowStart), pokemonName: pokemon.name, errorMessage})
+            return undefined
+        }
+
         const useName = pokemon.displayName !== undefined
         const useDisplayName = useName && pokemon.displayName !== ''
         const useDexNums = !noDexNums && !useDisplayName && !useName
@@ -504,13 +526,10 @@ const setCollection = (identifier, names, ballData, gapRows, ballOrder, collecti
             pokemon.balls = newBallInfo
             return pokemon
         }
-    })
+    }).filter(p => p !== undefined)
 
     //set temporary info
     setBallInfo.forEach((p) => {
-        if (p.originalPokemon !== undefined) {
-            delete p.originalPokemon
-        }
         p.imgLink = getImgLink(p)
     })
     

@@ -592,7 +592,8 @@ const gen8Info = [{
             hasHA: true,
             name: {reg: "Cursed Body"}
         },
-        specialAlternateForms: {
+        alternateForm: {
+            nonBreedable: true,
             name: {1: 'Phony', 2: 'Antique'}
         }
     },
@@ -730,8 +731,9 @@ const gen8Info = [{
             name: {reg: "Aroma Veil"}
         },
         alternateForm: {
+            alcremie: true,
             sweets: ['Strawberry', 'Berry', 'Love', 'Star', 'Clover', 'Flower', 'Ribbon'], 
-            creams: ['Vanilla Cream', ' Ruby Cream', 'Matcha Cream', 'Mint Cream', 'Lemon Cream', 'Salted Cream', 'Ruby Swirl', 'Caramel Swirl', 'Rainbow Swirl']
+            creams: ['Vanilla Cream', 'Ruby Cream', 'Matcha Cream', 'Mint Cream', 'Lemon Cream', 'Salted Cream', 'Ruby Swirl', 'Caramel Swirl', 'Rainbow Swirl']
         }
     },
     specificGenInfo: {

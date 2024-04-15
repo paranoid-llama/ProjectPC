@@ -487,6 +487,7 @@ const gen4Info = [{
             name: {reg: "Overcoat"}
         },
         alternateForm: {
+            interchangeable: true,
             name: {1: 'Plant', 2: 'Sandy', 3: 'Trash'}
         }
     },

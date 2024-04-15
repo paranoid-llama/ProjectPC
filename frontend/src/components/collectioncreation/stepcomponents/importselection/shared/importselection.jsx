@@ -5,6 +5,7 @@ import Header from '../../../../titlecomponents/subcomponents/header'
 import AprimonImportForm from '../aprimon/aprimonimportform'
 import AprimonImportDisplay from '../aprimon/aprimonimportdisplay'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowForward from '@mui/icons-material/ArrowForward'
 import { formatApiRequestLink } from '../../../../../../utils/functions/backendrequests/import'
 import { importCollection } from '../../../../../../utils/functions/backendrequests/import'
 import './importselection.css'
@@ -45,13 +46,13 @@ export default function ImportSelection({handleChange, cssClass, goBackStep, col
     //     setImporstData({...importData, [changedField]: newValue})
     // }
 
-    const handleSubmit = async(e, formData) => {
+    const handleSubmitImportFormData = async(e, formData) => {
         const apiRequestQuery = formatApiRequestLink(formData)
         // console.log(apiRequestQuery)
         setImportScreen('preview')
         const importedCollection = await importCollection(formData.spreadsheetId, apiRequestQuery, collectionSubTypeValue)
         setTimeout(() => {
-            setImportedCollectionDisplay({data: importedCollection, numOfBalls: formData.ballColSpan.order.length})
+            setImportedCollectionDisplay({data: importedCollection, numOfBalls: formData.ballColSpan.order.length, ballScope: formData.ballColSpan.order})
         }, 500)
     }
 
@@ -69,12 +70,12 @@ export default function ImportSelection({handleChange, cssClass, goBackStep, col
                             <Button size='large' sx={{fontSize: '20px'}} onClick={(e) => changeScreen(e, 1)}>Import Collection from Google Sheets</Button>
                         </Box>
                         <Box sx={{margin: 5, height: '10%'}}><Typography sx={{fontSize: '16px'}}>or</Typography></Box>
-                        <Box sx={{height: '20%'}}><Button size='large' sx={{fontSize: '20px'}}>Start from Scratch</Button></Box> 
+                        <Box sx={{height: '20%'}}><Button size='large' sx={{fontSize: '20px'}} onClick={(e) => handleChange(e, {})}>Start from Scratch</Button></Box> 
                     </Box>
             
                     <Box sx={{width: '100%', height: '90%', mt: 1, position: 'absolute', visibility: 'hidden'}} className={fadeClass.screen2}>
                         {/* change this to show different import forms depending on type (once more collection types are added)*/}
-                        <AprimonImportForm handleSubmit={handleSubmit}/>
+                        <AprimonImportForm handleSubmit={handleSubmitImportFormData}/>
                     </Box>
                     <Box sx={{width: '100%', height: '100%', position: 'absolute', right: '-100%', visibility: 'hidden', display: 'flex', alignItems: 'center', flexDirection: 'column'}} className={fadeClass.screen3}>
                         {/* change this to show different display screens depending on type (once more collection types are added)*/}
@@ -91,13 +92,13 @@ export default function ImportSelection({handleChange, cssClass, goBackStep, col
                             <Typography sx={{mx: 2, fontSize: '14px'}}>{importScreen === 'select' ? goBackStep.stepName : importScreen === 'import' ? 'Import Select' : importScreen === 'preview' && 'Import Form'}</Typography>
                         </Button>
                     </Box>
-                    {/* {(importScreen === 'import') &&
+                    {(importScreen === 'preview' && importedCollectionDisplay.data !== undefined) &&
                     <Box sx={{width: '50%', display: 'flex', justifyContent: 'end'}}>
-                        <Button>
-                            <Typography sx={{mx: 2, fontSize: '14px'}}>{importScreen === 'import' ? 'Submit and Import' : 'Start from Scratch Instead'}</Typography>
-                            <ImgData type='gender' linkKey='arrowright' size='8px'/>
+                        <Button onClick={(e) => handleChange(e, importedCollectionDisplay.data.collection, importedCollectionDisplay.ballScope)}>
+                            <Typography sx={{mx: 2, fontSize: '14px'}}>Next Step</Typography>
+                            <ArrowForward/>
                         </Button>
-                    </Box>} */}
+                    </Box>}
                     
                 </Box>
             </Box>

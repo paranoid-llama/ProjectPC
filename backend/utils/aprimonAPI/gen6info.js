@@ -204,6 +204,7 @@ const gen6Info =[{
             name: {reg: "Friend Guard"}
         },
         alternateForm: {
+            vivillon: true,
             name: ['Meadow', 'Polar', 'Tundra', 'Continental', 'Garden', 'Elegant', 'Icy Snow', 'Modern', 'Marine', 'Archipelago', 'High Plains', 'Sandstorm', 
             'River', 'Monsoon', 'Savanna', 'Sun', 'Ocean', 'Jungle', 'Fancy']
         }

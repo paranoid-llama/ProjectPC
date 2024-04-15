@@ -7,6 +7,7 @@ const babiesOfGen3Pokemon = ['Budew', 'Chingling']
 
 
 //regional info
+const regionalFormRegions = ['Alola', 'Galar', 'Hisui', 'Paldea']
 const alolanFormMons = ['Rattata', 'Raichu', 'Sandshrew', 'Vulpix', 'Diglett', 'Meowth', 'Geodude', 'Grimer', 'Exeggutor', 'Marowak']
 const galarianFormMons = ['Meowth', 'Ponyta', 'Slowpoke', "Farfetch'd", 'Weezing', 'Mr. Mime', 'Corsola', 'Zigzagoon', 'Darumaka', 'Yamask', 'Stunfisk', 'Articuno', 'Zapdos', 'Moltres']
 const hisuianFormMons = ['Growlithe', 'Voltorb', 'Typhlosion', 'Qwilfish', 'Sneasel', 'Samurott', 'Lilligant', 'Zorua', 'Braviary', 'Sliggoo', 'Goodra', 'Avalugg', 'Decidueye']
@@ -17,6 +18,7 @@ const multipleRegionalFormMons = ['Meowth']
 const allAltFormMons = ['Nidoran', 'Paldean Tauros', 'Burmy', 'Shellos', 'Basculin', 'Deerling', 'Flabébé', 'Pumpkaboo', 'Rockruff', 'Oricorio', 'Minior', 'Indeedee', 'Squawkabilly', 'Tatsugiri']
 const genderAltFormMons = ['Nidoran', 'Indeedee']
 const interchangeableAltFormMons = ['Burmy', 'Deerling', 'Oricorio']
+const nonBreedableAltFormMons = ['Sinistea', 'Poltchageist']
 
 //below is dexnums that are allowed to be duplicate. used for importing collections to check if theres unauthorized overlaps to give the user a warning.
 const allowedAprimonMultipleDexNums = [19, 27, 37, 50, 52, 58, 74, 77, 79, 83, 88, 100, 122, 128, 144, 145, 146, 194, 211, 215, 222, 263, 554, 562, 570, 618, 412, 422, 550, 585, 666, 669, 710, 741, 744, 774, 854, 869, 876, 931, 978, 1012]
@@ -28,7 +30,10 @@ const apriballs = ['fast', 'friend', 'heavy', 'level', 'love', 'lure', 'moon', '
 const apriballLiterals = ['fast', 'friend', 'heavy', 'level', 'love', 'lure', 'moon'] //used for setting ball info based on apriball (only) legality
 const specialBalls = ['beast', 'dream', 'safari', 'sport']//used for setting ball info based on other ball legality
 const shopballs = ['poke', 'great', 'ultra', 'premier', 'repeat', 'timer', 'nest', 'net', 'luxury', 'dive', 'quick', 'heal', 'dusk'] //currently unused
+
+//generations and game info/funcs
 const generations = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+const genGames = [{gen: 8, games: ['swsh', 'bdsp']}] //only put games here if there is significant difference in the aprimon scope (ex dont put ultra sun/ultra moon cuz theres no difference)
 
 const findGenByDexNum = (dexNum) => {
     const gen = (1 <= dexNum && dexNum <= 151) ? 1 :
@@ -42,7 +47,6 @@ const findGenByDexNum = (dexNum) => {
                 (906 <= dexNum && dexNum <= 1025) && 9
     return gen
 }
-
 
 //used to filter out breaks in spreadsheets for collection import
 const regions = ['kanto', 'johto', 'hoenn', 'sinnoh', 'unova', 'kalos', 'alola', 'galar', 'hisui', 'paldea']
@@ -77,12 +81,21 @@ const uniqueAlternateFormPokemon = ['Basculin', 'Vivillon', 'Flabébé', 'Rockru
 const uniqueRegionalFormPokemon = ['Tauros']
 //paldean tauros is unique as it has 3 different alternate forms.
 
+const pokemonNamesWithSpaces = [
+    'Mr. Mime', 'Mime Jr.', 
+    'Tapu Koko', 'Tapu Lele', 'Tapu Bulu', 'Tapu Fini',
+    'Great Tusk', 'Scream Tail', 'Brute Bonnet', 'Flutter Mane', 'Slither Wing', 'Sandy Shocks', 'Roaring Moon',
+    'Iron Treads', 'Iron Bundle', 'Iron Hands', 'Iron Jugulis', 'Iron Moth', 'Iron Thorns', 'Iron Valiant',
+    'Walking Wake', 'Iron Leaves', 
+    'Gouging Fire', 'Raging Bolt', 'Iron Boulder', 'Iron Crown'
+]
+
 export {
     incenseBabiesWithExclusiveEMs, incenseAdultsWithExclusiveEMs, altFormMonsWithExclusiveEMs, 
     babiesOfGen1Pokemon, babiesOfGen2Pokemon, babiesOfGen3Pokemon,
-    regionalFormMons, multipleRegionalFormMons,
-    allAltFormMons, interchangeableAltFormMons, allowedAprimonMultipleDexNums, allowedAprimonDuplicateNum,
-    apriballs, apriballLiterals, specialBalls, shopballs, generations, findGenByDexNum,
+    regionalFormRegions, regionalFormMons, multipleRegionalFormMons,
+    allAltFormMons, interchangeableAltFormMons, nonBreedableAltFormMons, allowedAprimonMultipleDexNums, allowedAprimonDuplicateNum,
+    apriballs, apriballLiterals, specialBalls, shopballs, generations, genGames, findGenByDexNum,
     gapIdentifiers, regionalFormNameIdentifiers, originalRegionalFormNameIdentifiers, additionalOriginRegionalFormNameIdentifiers, firstLetterAllowedAltForms, regions,
-    uniqueAlternateFormPokemon, uniqueRegionalFormPokemon
+    uniqueAlternateFormPokemon, uniqueRegionalFormPokemon, pokemonNamesWithSpaces
 }

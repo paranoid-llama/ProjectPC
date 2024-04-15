@@ -1,10 +1,10 @@
 import {handleGen8EMs, handleDifferentFormEMs, selectPokemonInfo} from './infoandotherfuncs.js'
-import {incenseBabiesWithExclusiveEMs, incenseAdultsWithExclusiveEMs, altFormMonsWithExclusiveEMs} from './../../infoconstants.js'
+import {incenseBabiesWithExclusiveEMs, incenseAdultsWithExclusiveEMs, altFormMonsWithExclusiveEMs, regionalFormRegions, pokemonNamesWithSpaces} from './../../infoconstants.js'
 
 function getImgLink(p) {
     if (p.name) {
-        if (p.name.includes(' ') && p.name !== ('Mr. Mime' || 'Mime Jr.')) {
-            if (p.name.includes('Alolan') || p.name.includes('Galarian') || p.name.includes('Hisuian') || p.name.includes('Paldean')) {
+        if (p.name.includes(' ') && !pokemonNamesWithSpaces.includes(p.name)) {
+            if (regionalFormRegions.map((region) => p.name.includes(region)).includes(true)) {
                 if (p.name.includes('Tauros')) {
                     if (p.name.includes('(')) {
                         return `128-p-${p.name.charAt(16).toLowerCase()}`
@@ -34,6 +34,20 @@ function getImgLink(p) {
                     else {
                         return p.natDexNum + `-${p.name.charAt(startIndex).toLowerCase()}`
                     }
+                } else if (p.name.includes('Alcremie')) {
+                    //Alcremie (Strawberry Matcha Cream)
+                    //        ^           ^      ^
+                    //      startindex   2ndspac 3rdspace
+                    const indexOfSecondSpace = p.name.indexOf(' ', startIndex)
+                    
+                    const indexOfThirdSpace = p.name.indexOf(' ', indexOfSecondSpace+1)
+                    const sweetName = p.name.slice(startIndex, indexOfSecondSpace).toLowerCase()
+                    const creamName = p.name.slice(indexOfSecondSpace+1, indexOfThirdSpace).toLowerCase()
+                    const creamSwirlId = p.name.slice(indexOfThirdSpace+1, indexOfThirdSpace+2).toLowerCase()
+
+                    return `869-${sweetName}${creamName}${creamSwirlId}`
+                } else if (p.name.includes('Vivillon')) {
+                    return `666-${p.name.slice(startIndex, p.name.length-1).toLowerCase().replace(' ', '-')}`
                 } else {
                     return p.natDexNum + `-${p.name.charAt(startIndex).toLowerCase()}`
                 }

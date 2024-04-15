@@ -128,7 +128,7 @@ export default function AprimonPreviewImport({data, numOfBalls}) {
                         key={`${row.imgLink}-${col.label}`}
                         label={row[col.dataKey]} 
                         styles={listStyles.collection} 
-                        alignment={{'@media only screen and (max-width: 1500px)': {paddingLeft: '10px'}}}
+                        alignment={{'@media only screen and (max-width: 1500px)': {paddingLeft: '5px'}, '@media only screen and (min-width: 1501px)': {paddingLeft: '0px'}}}
                         isEditMode={false}
                         leftMostCell={true}
                         isSelected={false}
@@ -166,8 +166,8 @@ export default function AprimonPreviewImport({data, numOfBalls}) {
                                         <ImgData type='ball' linkKey={ball}/>
                                         {detailed &&
                                         <Box sx={{height: '50%', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center', my: 0, padding: 0}}>
-                                                <Typography sx={{fontSize: '12px', width: '50%', borderTop: '1px solid white', fontWeight: hasHA ? 700 : 400, opacity: hasHA ? 1 : 0.5, width: '100%'}}>{!cantHaveHA && 'HA'}</Typography>
-                                                <Typography sx={{fontSize: '12px', width: '50%', fontWeight: hasNoEMs ? 400 : 700, opacity: hasNoEMs ? 0.5 : 1, width: '100%'}}>{!cantHaveEMs && `${row[col.dataKey][ball].emCount}EMs`}</Typography>
+                                                <Typography sx={{fontSize: '12px', width: '100%', borderTop: '1px solid white', fontWeight: hasHA ? 700 : 400, opacity: hasHA ? 1 : 0.5}}>{!cantHaveHA && 'HA'}</Typography>
+                                                <Typography sx={{fontSize: '12px', width: '100%', fontWeight: hasNoEMs ? 400 : 700, opacity: hasNoEMs ? 0.5 : 1}}>{!cantHaveEMs && `${row[col.dataKey][ball].emCount}EMs`}</Typography>
                                         </Box>
                                         }
                                     </Box> 

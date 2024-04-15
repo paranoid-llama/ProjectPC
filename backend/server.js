@@ -1,7 +1,9 @@
 import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
+import allPokemon from './utils/aprimonAPI/allpokemoninfo.js';
 import {formatImportQuery, setEMQueries, formatImportedValues, setCollection, detectBadRanges} from './utils/CreateCollection/importCollection.js'
+import { getPokemonGroups } from './utils/pokemongroups/getpokemongroups.js';
 // require('dotenv').config()
 import dotenv from 'dotenv'
 import lton from 'letter-to-number'
@@ -61,6 +63,12 @@ app.post('/users/new', catchAsync(async(req, res) => {
 app.get('/collections', catchAsync(async(req, res) => {
     const collections = await Collection.find({}).populate({path: 'owner'})
     res.json(collections)
+}))
+
+app.post('/collections/pokemongroups', catchAsync(async(req, res) => {
+    const {gen} = req.body
+    const pokemonGroups = getPokemonGroups(gen)
+    res.json(pokemonGroups)
 }))
 
 app.post('/collections/new/import', catchAsync(async(req, res) => {

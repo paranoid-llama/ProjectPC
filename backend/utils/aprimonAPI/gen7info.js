@@ -237,6 +237,7 @@ const gen7Info = [{
             hasHA: false
         },
         alternateForm: {
+            interchangeable: true,
             name: {1: 'Baile', 2: 'Pom-Pom', 3: "Pa'u", 4: 'Sensu'}
         }
     },
@@ -1289,6 +1290,15 @@ const gen7Info = [{
         legendary: true
     },
     specificGenInfo: {
+        gen7: {
+            balls: {
+                apriball: {isLegal: true, haIsLegal: false},
+                safari: {isLegal: false, haIsLegal: false},
+                sport: {isLegal: false, haIsLegal: false},
+                beast: {isLegal: true, haIsLegal: false},
+                dream: {isLegal: false, haIsLegal: false}
+            }
+        },
         gen8: {
             balls: {
                 swsh: {
@@ -1313,6 +1323,15 @@ const gen7Info = [{
         legendary: true
     },
     specificGenInfo: {
+        gen7: {
+            balls: {
+                apriball: {isLegal: true, haIsLegal: false},
+                safari: {isLegal: false, haIsLegal: false},
+                sport: {isLegal: false, haIsLegal: false},
+                beast: {isLegal: true, haIsLegal: false},
+                dream: {isLegal: false, haIsLegal: false}
+            }
+        },
         gen8: {
             balls: {
                 swsh: {
@@ -1337,6 +1356,15 @@ const gen7Info = [{
         legendary: true
     },
     specificGenInfo: {
+        gen7: {
+            balls: {
+                apriball: {isLegal: true, haIsLegal: false},
+                safari: {isLegal: false, haIsLegal: false},
+                sport: {isLegal: false, haIsLegal: false},
+                beast: {isLegal: true, haIsLegal: false},
+                dream: {isLegal: false, haIsLegal: false}
+            }
+        },
         gen8: {
             balls: {
                 swsh: {
@@ -1361,6 +1389,15 @@ const gen7Info = [{
         legendary: true
     },
     specificGenInfo: {
+        gen7: {
+            balls: {
+                apriball: {isLegal: true, haIsLegal: false},
+                safari: {isLegal: false, haIsLegal: false},
+                sport: {isLegal: false, haIsLegal: false},
+                beast: {isLegal: true, haIsLegal: false},
+                dream: {isLegal: false, haIsLegal: false}
+            }
+        },
         gen8: {
             balls: {
                 swsh: {
@@ -1384,6 +1421,15 @@ const gen7Info = [{
         legendary: true
     },
     specificGenInfo: {
+        gen7: {
+            balls: {
+                apriball: {isLegal: true, haIsLegal: false},
+                safari: {isLegal: false, haIsLegal: false},
+                sport: {isLegal: false, haIsLegal: false},
+                beast: {isLegal: true, haIsLegal: false},
+                dream: {isLegal: false, haIsLegal: false}
+            }
+        },
         gen8: {
             balls: {
                 swsh: {
@@ -1416,6 +1462,15 @@ const gen7Info = [{
         legendary: true
     },
     specificGenInfo: {
+        gen7: {
+            balls: {
+                apriball: {isLegal: true, haIsLegal: false},
+                safari: {isLegal: false, haIsLegal: false},
+                sport: {isLegal: false, haIsLegal: false},
+                beast: {isLegal: true, haIsLegal: false},
+                dream: {isLegal: false, haIsLegal: false}
+            }
+        },
         gen8: {
             balls: {
                 swsh: {
@@ -1679,6 +1734,15 @@ const gen7Info = [{
         legendary: true
     },
     specificGenInfo: {
+        gen7: {
+            balls: {
+                apriball: {isLegal: true, haIsLegal: false},
+                safari: {isLegal: false, haIsLegal: false},
+                sport: {isLegal: false, haIsLegal: false},
+                beast: {isLegal: true, haIsLegal: false},
+                dream: {isLegal: false, haIsLegal: false}
+            }
+        },
         gen8: {
             balls: {
                 swsh: {

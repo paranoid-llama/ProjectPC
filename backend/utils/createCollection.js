@@ -1,18 +1,16 @@
 import allPokemon from './aprimonAPI/allpokemoninfo.js'
 import {handleAlternateForms, handleRegionalForms, handleIncenseAndBabyMons, setBallInfo, setOwnedBallList} from './CreateCollection/functions.js'
 import {interchangeableAltFormMons} from './../infoconstants.js'
+import { genGames } from './../infoconstants.js'
+import { getGenNum } from './infogathering/gens.js'
 
 //Note for pokemon groups/scope
 //data structure: 
 //pokemonScope: {
-//   exclude: [(list of pokemon (names or dexnums, dont know yet) to exclude)], 
-//   useBabyMon: {num[dexnumofrelevantadultmon]: boolean, ...othernums)}} OR boolean (if they want all or none),
-//   useIncenseMon: {num[dexnumofrelevantincenseadult]: boolean, ...othernums} OR boolean (if they want all or none),
-//   includeInterchangeableAltForms: {num[dexnumofrelevantpokemon]: boolean, ...othernums} OR boolean (if they want all or none),
-//   includeNonBreedables: {num[dexnumofrelevantpokemon]: boolean, ...othernums} OR boolean (if they want all or none),
-//   includeNonBreedableAltForms: {num[dexnumofrelevantpokemon]: boolean, ...othernums} OR boolean (if they want all or none) ---- this applies to sinistea and poltchageist
-//   includeVivillonForms: [arr of vivillon patterns] OR boolean (if they want all or none)
-//   includeAlcremieForms: [arr of alcremie forms] OR boolean (if they want all or none)
+//   breedables: {num[dexnumofrelevantpokemon]: boolean, ...othernums} OR boolean (if they want all or none)
+//   alternateForms: {interchangeable: {num[dexnumofrelevantpokemon]: boolean}, breedable: {...}, nonBreedable: {...} ---> this applies only to sinistea and poltchageist, vivillon: {...}, alcremie: {...}}
+//   babyAdultMons: {regular: {num[dexnumofrelevantadultpokemon]: boolean}, incense: {num[dexnumofrelevantincenseadult]: boolean}}
+//   includeNonBreedables: {regular: {num[dexnumofrelevantmon]: boolean}, ultraBeasts: {...}, paradox: {...} --> latter two groups only if applicable}
 //   includeLegendaries: {num[dexnumofrelevantpokemon]: boolean, ...othernums} OR boolean (if they want all or none),
 //   includeEvolvedRegionals: {num[dexnumofrelevantpokemon]: boolean, ...othernums} OR boolean (if they want all or none)
 //}
@@ -20,8 +18,8 @@ import {interchangeableAltFormMons} from './../infoconstants.js'
 function setOwnedPokemonList(gen, pokemonScope, importing=false) {
     return (
         allPokemon.map((pokemon) => {
-            const parsedGen = gen === 'swsh' || gen === 'bdsp' ? 8 : parseInt(gen) //gen comes as a string, since "swsh" and "bdsp" are used instead of 8. this parses it into a number
-            const game = gen === 'swsh' || gen === 'bdsp' ? gen : "" //this retains what game it is (if there is one)
+            const parsedGen = getGenNum(gen) //gen comes as a string, since "swsh" and "bdsp" are used instead of 8. this parses it into a number
+            const game = isNaN(parseInt(gen)) ? gen : "" //this retains what game it is (if there is one)
             const formattedGen = `gen${parsedGen}` //this formats gen to how its organized in the database
             const pokemonInGen = (parsedGen !== 8 && pokemon.specificGenInfo[formattedGen] !== undefined) || (parsedGen === 8 && pokemon.specificGenInfo[formattedGen] !== undefined && pokemon.specificGenInfo[formattedGen].balls[game] !== undefined) //have to break gen 8 check in 2 since they could have no gen 8 combos
             // console.log(`name: ${pokemon.name}, pokemonInGen: ${pokemonInGen}`)
@@ -50,9 +48,9 @@ function setOwnedPokemonList(gen, pokemonScope, importing=false) {
                     gen: childGen,
                     balls: newOwnedBallListRef
                 } : {}
-                if (pokemon.info.alternateForm !== undefined || (importing && pokemon.info.specialAlternateForms !== undefined)) { //special alternate forms refers to sinistea/poltchageist
-                    const isntSpecialAltForm = pokemon.info.alternateForm !== undefined
-                    if ((isntSpecialAltForm && pokemon.info.alternateForm.originalIsForm) || interchangeableAltFormMons.includes(pokename)) { //there is an option to just have a one of an interchangeable alt form mon. this just gets singled out if they have all of them, though.
+                if (pokemon.info.alternateForm !== undefined && (pokemon.info.alternateForm.nonBreedable === undefined || importing)) { //non breedable alternate forms refers to sinistea/poltchageist
+                    const breedableAltForm = pokemon.info.alternateForm.nonBreedable === undefined
+                    if ((breedableAltForm && pokemon.info.alternateForm.originalIsForm) || interchangeableAltFormMons.includes(pokename)) { //there is an option to just have a one of an interchangeable alt form mon. this just gets singled out if they have all of them, though.
                         return [originalPokemon, handleAlternateForms(pokemon, ownedBallList, pokename, parsedGen, true)]
                     }
                     const multiplePokemon = handleAlternateForms(pokemon, ownedBallList, pokename, parsedGen, true) 
