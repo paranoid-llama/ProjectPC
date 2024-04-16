@@ -63,7 +63,7 @@ export default function CollectionTypeSelection({handleChange, cssClass}) {
                 return (
                     <CollectionTypeCard 
                         key={`${type}-collection-type-card`}
-                        collectionType={type} 
+                        collectionType={type}
                         idx={idx} 
                         subTypes={subTypesArr} 
                         subTypeValues={subTypeValues}

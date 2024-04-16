@@ -1,11 +1,12 @@
-import {Box, Typography, Button, LinearProgress, Grid, styled} from '@mui/material'
+import {Box, Typography, Button, LinearProgress, Grid, styled, Paper} from '@mui/material'
 import MuiToggleButton from '@mui/material/ToggleButton'
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef} from 'react'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import Header from '../../../../titlecomponents/subcomponents/header'
 import { pokemonGroups, pokemonSubGroups, apriballLiterals } from '../../../../../infoconstants'
 import { getPokemonGroups } from '../../../../../../utils/functions/backendrequests/getpokemongroups'
 import ImgData from '../../../../collectiontable/tabledata/imgdata'
+import PokemonBallCombosModal from './pokemonballcombosmodal'
 import PokemonGroupCardArea from './pokemongroupcardarea'
 
 export default function ScopeSelection({collectionType, collectionGen, importedCollection, scope, ballScopeInit, goBackStep, cssClass}) {
@@ -16,33 +17,71 @@ export default function ScopeSelection({collectionType, collectionGen, importedC
         }
     })
 
+    const firstNoticeRender = importedCollection === undefined
+    const inheritScopeFromImportNotice = firstNoticeRender ? false : Object.values(importedCollection).length !== 0
+    const [showImportScopeNotice, setShowImportScopeNotice] = useState('firstRender')
+    const showNotice = showImportScopeNotice === 'firstRender' && inheritScopeFromImportNotice 
+
+    const closeNotice = () => {
+        setShowImportScopeNotice(false)
+    }
+
     const [pokemonGroupsFormData, setPokemonGroupsFormData] = useState({
         pokemon: scope === undefined ? {} : scope.formData, 
-        balls: ballScopeInit === undefined ? [] : ballScopeInit
+        balls: ballScopeInit === undefined ? [] : ballScopeInit.formData,
+        excludedCombos: {}
     })
+    const [pokemonBallComboModal, setPokemonBallComboModal] = useState({selected: '', open: false})
+
+    const toggleModal = () => {
+        const newStatus = !pokemonBallComboModal.open
+        setPokemonBallComboModal({selected: {}, open: newStatus})
+    }
+
+    const selectPokemonBallCombo = (pokemonId) => {
+        setPokemonBallComboModal({...pokemonBallComboModal, selected: pokemonId})
+    }
+
     const gettingGroups = scope === undefined
     const gettingBallData = ballScopeInit === undefined
     const groupKeys = !gettingGroups && Object.keys(scope.total)
     const firstPokemonScopeRender = Object.keys(pokemonGroupsFormData.pokemon).length === 0
     const firstBallScopeRender = pokemonGroupsFormData.balls.length === 0
 
+    const Item = styled(Paper)(() => ({
+        backgroundColor:'#222222',
+        boxShadow: '0px 2px 1px -1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 1px 3px 0px rgba(0,0,0,0.12)',
+        padding: '8px',
+        textAlign: 'center',
+        color: 'white',
+        fontFamily: 'Arial'
+    }));
+      
+
+    //a bit weird what we do below. long explanation for this and for the conditional state initialization above:
+    //scope and ballscopeinit are initialized after an async function to get data from backend. first few renders of this component, it comes out undefined,
+    //which sets the state as empty objects. to prevent component from throwing an error for trying to get a nested item from an undefined object, we add these conditionals
+    // and use that data for the first state update since the state was already initialized as empty objects. this has no bad effect since you can't actually
+    // change any of the states until the data comes out due to the "gettingGroups" and "gettingBallData" preventing any interactable forms from rendering on the page. 
+    const pokemonFormData = firstPokemonScopeRender ? scope !== undefined && scope.formData : pokemonGroupsFormData.pokemon
+    const ballScopeData = firstBallScopeRender ? ballScopeInit !== undefined && ballScopeInit.formData : pokemonGroupsFormData.balls
+
     // console.log(!gettingGroups && scope.oneArrTotal)
 
-    const togglePokemon = (e, groupInfo, imgLink, fullFormData={}) => {
+    const togglePokemon = (e, groupInfo, imgLink) => {
         const {group, subGroup} = groupInfo
-        
-        const formData = Object.keys(pokemonGroupsFormData.pokemon).length === 0 ? fullFormData : pokemonGroupsFormData.pokemon
+
         const hasSubGroup = subGroup !== undefined
-        const selected = hasSubGroup ? formData[group][subGroup].includes(imgLink) : formData[group].includes(imgLink)
+        const selected = hasSubGroup ? pokemonFormData[group][subGroup].includes(imgLink) : pokemonFormData[group].includes(imgLink)
         if (selected) {
             const newGroupData = hasSubGroup ? 
-                {...pokemonGroupsFormData, pokemon: {...formData, [group]: {...formData[group], [subGroup]: formData[group][subGroup].filter(id => id !== imgLink)}}} :
-                {...pokemonGroupsFormData, pokemon: {...formData, [group]: formData[group].filter(id => id !== imgLink)}}
+                {...pokemonGroupsFormData, pokemon: {...pokemonFormData, [group]: {...pokemonFormData[group], [subGroup]: pokemonFormData[group][subGroup].filter(id => id !== imgLink)}}} :
+                {...pokemonGroupsFormData, pokemon: {...pokemonFormData, [group]: pokemonFormData[group].filter(id => id !== imgLink)}}
             setPokemonGroupsFormData(newGroupData)
         } else {
             const newGroupData = hasSubGroup ? 
-                {...pokemonGroupsFormData, pokemon: {...formData, [group]: {...formData[group], [subGroup]: [...formData[group][subGroup], imgLink]}}} :
-                {...pokemonGroupsFormData, pokemon: {...formData, [group]: [...formData[group], imgLink]}}
+                {...pokemonGroupsFormData, pokemon: {...pokemonFormData, [group]: {...pokemonFormData[group], [subGroup]: [...pokemonFormData[group][subGroup], imgLink]}}} :
+                {...pokemonGroupsFormData, pokemon: {...pokemonFormData, [group]: [...pokemonFormData[group], imgLink]}}
             if (subGroup === 'interchangeable') {
                 const dexNum = scope.total.alternateForms.interchangeable.filter((mon) => !isNaN(mon.imgLink)).map((mon) => mon.imgLink).filter(link => imgLink.includes(link))[0]
                 const selectingAny = dexNum === imgLink
@@ -57,28 +96,23 @@ export default function ScopeSelection({collectionType, collectionGen, importedC
         }
     }
 
-    const massTogglePokemon = (e, groupInfo, fullFormData, type) => {
+    const massTogglePokemon = (e, groupInfo, type) => {
         const {group, subGroup} = groupInfo
         //type --- all (include all), none (include none), Babies (include all babies), Adults (include all Adults), 
         //         any (include all 'any' in interchangeable alt forms), allForms (include all forms in interchangeable alt forms)
 
         const adjustedSubGroup = group === 'babyAdultMons' ? `${subGroup}${type}` : subGroup
 
-        const otherSubGroup = group === 'babyAdultMons' ? `${subGroup}${type === 'Babies' ? 'Adults' : 'Babies'}` : ''
-        const formData = Object.keys(pokemonGroupsFormData).length === 0 ? fullFormData : pokemonGroupsFormData.pokemon
-        //must specify formData since state starts off as empty obj (while formData gets initialized). left side only gets utilized when the comp first mounts.
-
         const hasSubGroup = subGroup !== undefined
 
         if (group === 'babyAdultMons' && type === 'none') {
-            const newGroupData = {...formData, [group]: {...formData[group], [`${subGroup}Babies`]: [], [`${subGroup}Adults`]: []}} 
+            const newGroupData = {...pokemonGroupsFormData, pokemon: {...pokemonFormData, [group]: {...pokemonFormData[group], [`${subGroup}Babies`]: [], [`${subGroup}Adults`]: []}}}
             setPokemonGroupsFormData(newGroupData)
             return
         }
 
-        const useBallScope = firstBallScopeRender ? ballScopeInit : pokemonGroupsFormData.balls
         const filterLegalBalls = (totalList) => {
-            const currentBallsLegality = useBallScope.map(ball => apriballLiterals.includes(ball) ? 'apriball' : ball)
+            const currentBallsLegality = ballScopeData.map(ball => apriballLiterals.includes(ball) ? 'apriball' : ball)
             const currentBallsFormatted = currentBallsLegality.filter((ball, idx) => currentBallsLegality.indexOf(ball) === idx)
             const filteredMons = totalList.filter(mon => mon.legalBalls.map(lB => currentBallsFormatted.includes(lB)).includes(true))
             return filteredMons
@@ -89,19 +123,19 @@ export default function ScopeSelection({collectionType, collectionGen, importedC
             type === 'allForms' ? filterLegalBalls(scope.total[group][adjustedSubGroup]).map(mon => mon.imgLink).filter(link => link.includes('-')) : 
             filterLegalBalls(scope.total[group][adjustedSubGroup]).map(mon => mon.imgLink) : filterLegalBalls(scope.total[group]).map(mon => mon.imgLink)
 
-        const formDataPath = hasSubGroup ? 
-            type === 'any' ? formData[group][adjustedSubGroup].filter(link => !link.includes('-')) :
-            type === 'allForms' ? formData[group][adjustedSubGroup].filter(link => link.includes('-')):
-            formData[group][adjustedSubGroup] : formData[group]
+        const pokemonFormDataPath = hasSubGroup ? 
+            type === 'any' ? pokemonFormData[group][adjustedSubGroup].filter(link => !link.includes('-')) :
+            type === 'allForms' ? pokemonFormData[group][adjustedSubGroup].filter(link => link.includes('-')):
+            pokemonFormData[group][adjustedSubGroup] : pokemonFormData[group]
 
-        const doNothing = type === 'none' ? formDataPath.length === 0 : totalPath.length === formDataPath.length
+        const doNothing = type === 'none' ? pokemonFormDataPath.length === 0 : totalPath.length === pokemonFormDataPath.length
 
         if (doNothing) {
             null
         } else if (type === 'all' || (type === 'Babies' || type === 'Adults') || (type === 'any' || type === 'allForms')) {
             const newGroupData = hasSubGroup ? 
-                {...pokemonGroupsFormData, pokemon: {...formData, [group]: {...formData[group], [adjustedSubGroup]: totalPath}}} : 
-                {...pokemonGroupsFormData, pokemon: {...formData, [group]: totalPath}}
+                {...pokemonGroupsFormData, pokemon: {...pokemonFormData, [group]: {...pokemonFormData[group], [adjustedSubGroup]: totalPath}}} : 
+                {...pokemonGroupsFormData, pokemon: {...pokemonFormData, [group]: totalPath}}
 
             // if (type === 'any' || type === 'allForms') {
             //     newGroupData.pokemon.alternateForms.interchangeable = newGroupData.pokemon.alternateForms.interchangeable.filter(id => type === 'any' ? !id.includes('-') : id.includes('-'))
@@ -110,11 +144,13 @@ export default function ScopeSelection({collectionType, collectionGen, importedC
             setPokemonGroupsFormData(newGroupData)
         } else if (type === 'none') {
             const newGroupData = hasSubGroup ? 
-                {...pokemonGroupsFormData, pokemon: {...formData, [group]: {...formData[group], [adjustedSubGroup]: []}}} : 
-                {...pokemonGroupsFormData, pokemon: {...formData, [group]: []}}
+                {...pokemonGroupsFormData, pokemon: {...pokemonFormData, [group]: {...pokemonFormData[group], [adjustedSubGroup]: []}}} : 
+                {...pokemonGroupsFormData, pokemon: {...pokemonFormData, [group]: []}}
             setPokemonGroupsFormData(newGroupData)
         }
     }
+
+    
 
     const toggleBall = (e, ball) => {
         const ballArr = firstBallScopeRender ? ballScopeInit.formData : pokemonGroupsFormData.balls
@@ -145,12 +181,28 @@ export default function ScopeSelection({collectionType, collectionGen, importedC
                             newFormData[pokemon.group] = valuePath.filter(id => id !== pokemon.imgLink)
                         }
                     })
-                    setPokemonGroupsFormData({pokemon: newFormData, balls: newBallArr})
+                    setPokemonGroupsFormData({...pokemonGroupsFormData, pokemon: newFormData, balls: newBallArr})
                     return
                 }
             }
         }
         setPokemonGroupsFormData({...pokemonGroupsFormData, balls: newBallArr})
+    }
+
+    const togglePokemonBallCombo = (monInfo, ball) => {
+        const firstMonExclusion = pokemonGroupsFormData.excludedCombos[monInfo.name] === undefined
+        const monCombosState = firstMonExclusion ? {natDexNum: monInfo.natDexNum, imgLink: monInfo.imgLink, excludedBalls: [ball]} : 
+            pokemonGroupsFormData.excludedCombos[monInfo.name].excludedBalls.includes(ball) ? 
+                {...pokemonGroupsFormData.excludedCombos[monInfo.name], excludedBalls: pokemonGroupsFormData.excludedCombos[monInfo.name].excludedBalls.filter(b => b !== ball)} : 
+                {...pokemonGroupsFormData.excludedCombos[monInfo.name], excludedBalls: [...pokemonGroupsFormData.excludedCombos[monInfo.name].excludedBalls, ball]} 
+
+        if (monCombosState.excludedBalls.length === 0) {
+            const fullExcludedCombosState = {...pokemonGroupsFormData.excludedCombos}
+            delete fullExcludedCombosState[monInfo.name]
+            setPokemonGroupsFormData({...pokemonGroupsFormData, excludedCombos: fullExcludedCombosState})
+        } else {
+            setPokemonGroupsFormData({...pokemonGroupsFormData, excludedCombos: {...pokemonGroupsFormData.excludedCombos, [monInfo.name]: monCombosState}})
+        }
     }
 
     // console.log(scope)
@@ -160,7 +212,7 @@ export default function ScopeSelection({collectionType, collectionGen, importedC
         <Box sx={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', mt: 1, height: '581px', position: 'relative'}} className={cssClass}>
             <Header additionalStyles={{color: 'black', paddingBottom: '2px', height: '32px'}}>Set Collection Scope</Header>
             <Typography sx={{fontSize: '12px'}}>{collectionType}</Typography>
-            <Box sx={{width: '100%', height: '95%', position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+            <Box sx={{width: '100%', height: '95%', position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', filter: showNotice ? 'blur(4px)' : 'none', opacity: showNotice ? 0.5 : 1}}>
                 <Typography variant='h6' sx={{fontSize: '16px', fontWeight: 700, mt: 2}}>Select Pokemon Groups</Typography>
                 <Typography sx={{fontSize: '12px'}}>Select which groups of pokemon you want in your collection. Click on a group to see details.</Typography>
                 <Box sx={{width: '80%', height: '27%', display: 'flex', flexDirection: 'column'}}>
@@ -172,8 +224,8 @@ export default function ScopeSelection({collectionType, collectionGen, importedC
                     <Box sx={{width: '100%', height: '100%', display: 'flex', justifyContent: 'center', mt: 1, gap: 1}}>
                         <PokemonGroupCardArea 
                             typeTotalMons={scope.total} 
-                            formData={firstPokemonScopeRender ? scope.formData : pokemonGroupsFormData.pokemon} 
-                            ballScope={firstBallScopeRender ? scope.ballScopeInit : pokemonGroupsFormData.balls}
+                            formData={pokemonFormData} 
+                            ballScope={ballScopeData}
                             groupKeys={groupKeys} 
                             handleChange={togglePokemon}
                             handleMassChange={massTogglePokemon}
@@ -199,7 +251,7 @@ export default function ScopeSelection({collectionType, collectionGen, importedC
                                         <Grid item xs={2} key={`${ball}-ball-scope-selection`}>
                                             <ToggleButton 
                                                 sx={{height: '40px', px: 0.5}}
-                                                selected={firstBallScopeRender ? ballScopeInit.formData.includes(ball) : pokemonGroupsFormData.balls.includes(ball)}
+                                                selected={ballScopeData.includes(ball)}
                                                 value={ball}
                                                 onChange={(e) => toggleBall(e, ball)}
                                             >
@@ -217,11 +269,41 @@ export default function ScopeSelection({collectionType, collectionGen, importedC
                         </>
                         }
                     </Box>
-                    <Box sx={{width: '20%', height: '90%', display: 'flex', flexDirection: 'row'}}>
-
+                    <Box sx={{width: '20%', height: '90%', display: 'flex', flexDirection: 'column', justifyContent: 'center'}}>
+                        <Typography variant='h6' sx={{fontSize: '16px', fontWeight: 700, mt: 2}}>Exclude Pokemon/Ball Combos</Typography>
+                        <Typography sx={{fontSize: '12px'}}>Exclude certain pokemon/ball combos you don't want to collect</Typography>
+                        {gettingGroups ?
+                            <></> :
+                            <>
+                            <Button sx={{padding: 0, margin: 0, textTransform: 'none'}} onClick={toggleModal}>
+                                <Item>
+                                    Change Pokemon/Ball Combos
+                                </Item>
+                            </Button>
+                            <PokemonBallCombosModal
+                                isOpen={pokemonBallComboModal.open}
+                                totalList={scope.oneArrTotal}
+                                selectedMon={pokemonBallComboModal.selected}
+                                ballComboData={pokemonGroupsFormData.excludedCombos}
+                                formData={pokemonFormData}
+                                ballScope={ballScopeData}
+                                allPossibleBalls={ballScopeInit.total}
+                                toggleModal={toggleModal}
+                                changePokemonSelection={selectPokemonBallCombo}
+                                handleChange={togglePokemonBallCombo}
+                            />
+                            </>
+                        }
                     </Box>
                 </Box>
+                
             </Box>
+            {showNotice &&
+            <Box sx={{width: '100%', height: '50%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', position: 'absolute'}}>
+                <Typography sx={{fontSize: '32px', fontWeight: 700}}>Inheriting Scope from Import</Typography>
+                <Button onClick={() => closeNotice()}>Change Scope Anyway</Button>
+            </Box>
+            }
             <Box sx={{width: '100%', display: 'flex', justifyContent: 'start', flexDirection: 'column', alignItems: 'center', position: 'absolute', top: '95%', zIndex: 1}}>
                 <Box sx={{display: 'flex', width: '90%'}}>
                     <Box sx={{width: '50%', display: 'flex', justifyContent: 'start'}}>

@@ -118,33 +118,33 @@ export default function PokemonGroupCardArea({typeTotalMons, formData, ballScope
     const generateButtons = () => {
         return babyAdultMonGroupActive ? 
             <>
-               <Button onClick={(e) => handleMassChange(e, groupInfo, formData, 'Babies')}>
+               <Button onClick={(e) => handleMassChange(e, groupInfo, 'Babies')}>
                     Include All Babies
                 </Button>
-                <Button onClick={(e) => handleMassChange(e, groupInfo, formData, 'none')}>
+                <Button onClick={(e) => handleMassChange(e, groupInfo, 'none')}>
                     Include None
                 </Button> 
-                <Button onClick={(e) => handleMassChange(e, groupInfo, formData, 'Adults')}>
+                <Button onClick={(e) => handleMassChange(e, groupInfo, 'Adults')}>
                     Include All Adults
                 </Button>
             </> : 
             interchangeableAltFormGroupActive ? 
             <>
-                <Button onClick={(e) => handleMassChange(e, groupInfo, formData, 'any')} size='small'>
+                <Button onClick={(e) => handleMassChange(e, groupInfo, 'any')} size='small'>
                     Include Any Forms
                 </Button>
-                <Button onClick={(e) => handleMassChange(e, groupInfo, formData, 'none')} size='small'>
+                <Button onClick={(e) => handleMassChange(e, groupInfo, 'none')} size='small'>
                     Include None
                 </Button> 
-                <Button onClick={(e) => handleMassChange(e, groupInfo, formData, 'allForms')} size='small'>
+                <Button onClick={(e) => handleMassChange(e, groupInfo, 'allForms')} size='small'>
                     Include All Forms
                 </Button>
             </> :
             <>
-                <Button onClick={(e) => handleMassChange(e, groupInfo, formData, 'all')}>
+                <Button onClick={(e) => handleMassChange(e, groupInfo, 'all')}>
                     Include All
                 </Button>
-                <Button onClick={(e) => handleMassChange(e, groupInfo, formData, 'none')}>
+                <Button onClick={(e) => handleMassChange(e, groupInfo, 'none')}>
                     Include None
                 </Button>
             </>
@@ -239,7 +239,6 @@ export default function PokemonGroupCardArea({typeTotalMons, formData, ballScope
                             ballScope={ballScope}
                             isInterchangeableAltFormSelection={activeSubGroupKey === 'interchangeable'}
                             groupInfo={groupInfo}
-                            fullFormData={formData}
                             handleChange={handleChange}
                         />
                     </Box>

@@ -44,10 +44,10 @@ const router = createBrowserRouter([
     path: "/collections/:id",
     element: (
       <>
-      <Provider store={store}>
+      
         <Outlet/>
         <ShowCollection listStyles={listStyles}/>
-      </Provider>
+      
       </>
     ),
     loader: collectionLoader,
@@ -64,11 +64,13 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <AlertsProvider>
-      <Box sx={{width: '100%', display: 'flex', flexDirection: 'column', minHeight: '100vh', margin: 0}}>
-        <NavBar />
-        <RouterProvider router={router}/>
-        <Footer />
-      </Box>
+      <Provider store={store}>
+        <Box sx={{width: '100%', display: 'flex', flexDirection: 'column', minHeight: '100vh', margin: 0}}>
+          <NavBar />
+          <RouterProvider router={router}/>
+          <Footer />
+        </Box>
+      </Provider>
     </AlertsProvider>
   </React.StrictMode>
 )

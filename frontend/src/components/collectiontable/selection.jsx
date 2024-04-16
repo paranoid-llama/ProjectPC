@@ -5,9 +5,8 @@ import listStyles from './../../../utils/styles/componentstyles/liststyles'
 import modalStyles from './../../../utils/styles/componentstyles/modalstyles'
 import {deselect} from './../../app/slices/editmode'
 
-export default function Selection({height='76px', modal=false, onhandSelection=false}) {
+export default function Selection({height='76px', modal=false, onhandSelection=false, deselectFunc}) {
     const selectionBoxStyles = modal ? modalStyles.selectionBox : listStyles.collection.selectionBox
-    const dispatch = useDispatch()
     return (
         <Box sx={{
             position: 'absolute', 
@@ -19,9 +18,12 @@ export default function Selection({height='76px', modal=false, onhandSelection=f
                 top: onhandSelection ? '-15px' : selectionBoxStyles.top, 
                 border: selectionBoxStyles.border,
                 height, 
+                ':hover': {
+                    cursor: 'pointer'
+                },
                 ...selectionBoxStyles.widthScaling
             }}
-                onClick={modal ? undefined : () => dispatch(deselect())}
+                onClick={deselectFunc}
             >
             </Box>
         </Box>

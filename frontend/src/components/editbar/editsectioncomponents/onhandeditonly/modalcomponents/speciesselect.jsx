@@ -3,10 +3,11 @@ import {Virtuoso} from 'react-virtuoso'
 import ImgData from './../../../../collectiontable/tabledata/imgdata'
 import modalStyles from './../../../../../../utils/styles/componentstyles/modalstyles'
 
-export default function SpeciesSelect({searchOnChange, pokemonData, listItemContent, totalCount, height='60%'}) {
+export default function SpeciesSelect({searchOnChange, pokemonData, listItemContent, totalCount, height='60%', onlyList=false, otherStyles={}, virtuosoStyles={border: '1px solid black'}}) {
     
     return (
-        <Box sx={{...modalStyles.onhand.modalElementBg, height, display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
+        <Box sx={{...modalStyles.onhand.modalElementBg, height, display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', ...otherStyles}}>
+            {!onlyList && 
             <Box sx={{width: '40%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
                 <Box sx={{height: '5%', paddingBottom: '10px'}}>
                     <Typography sx={{fontSize: '18px', textDecoration: 'underline'}}>
@@ -37,11 +38,11 @@ export default function SpeciesSelect({searchOnChange, pokemonData, listItemCont
                         Select a pokemon from the table to add/change pokemon species. Table only contains pokemon that have at least one owned apriball.
                     </Typography>
                 </Box>
-                
             </Box>
-            <Box sx={{width: '60%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+            }
+            <Box sx={{width: onlyList ? '100%' : '60%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                 <Virtuoso 
-                    style={{height: '90%', width: '90%', border: '1px solid black', borderRadius: '10px'}} 
+                    style={{height: '90%', width: '90%', borderRadius: '10px', ...virtuosoStyles}} 
                     totalCount={totalCount}
                     itemContent={(index) => listItemContent(index)}
                 />

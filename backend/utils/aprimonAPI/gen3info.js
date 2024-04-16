@@ -3359,7 +3359,7 @@ const gen3Info = [{
         gen6: {
             balls: {
                 apriball: {isLegal: false, haIsLegal: false},
-                safari: {isLegal: false, haIsLegal: false},
+                safari: {isLegal: true, haIsLegal: false},
                 sport: {isLegal: false, haIsLegal: false},
                 beast: {isLegal: false, haIsLegal: false},
                 dream: {isLegal: true, haIsLegal: true}
@@ -3368,7 +3368,7 @@ const gen3Info = [{
         gen7: {
             balls: {
                 apriball: {isLegal: true, haIsLegal: true},
-                safari: {isLegal: false, haIsLegal: false},
+                safari: {isLegal: true, haIsLegal: false},
                 sport: {isLegal: false, haIsLegal: false},
                 beast: {isLegal: true, haIsLegal: true},
                 dream: {isLegal: true, haIsLegal: true}

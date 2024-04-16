@@ -13,6 +13,7 @@ import ScopeSelection from "../components/collectioncreation/stepcomponents/scop
 import { selectAdjArrItem, capitalizeFirstLetter } from "../../utils/functions/misc";
 import { getPokemonGroups } from "../../utils/functions/backendrequests/getpokemongroups";
 import { ballIntros, apriballs, genGames } from "../infoconstants";
+import { sortByDexNum } from "../../utils/functions/sortfilterfunctions/sortingfunctions";
 import './newCollection.css'
 
 export default function NewCollection(userid) {
@@ -168,7 +169,9 @@ export default function NewCollection(userid) {
             totalPokemonData.push(pokemonGroups[gK].map(mon => {return {...mon, group: gK}}))
         }) 
 
-        return totalPokemonData.flat()
+        
+
+        return sortByDexNum('NatDexNumL2H', totalPokemonData.flat())
     }
 
     const setScopeState = async(importedCollection, collectionGen, ballScope) => {
@@ -207,8 +210,6 @@ export default function NewCollection(userid) {
     }
 
     const transitionOccuring = Object.values(slideClasses).filter(className => className !== 'none').length !== 0
-    
-    // console.log(formData)
 
     return (
         <BodyWithBanner bodySx={{overflowX: 'hidden', overflowY: 'hidden', height: '100%', mt: 2, mb: 0}} bannerSx={{backgroundColor: '#26BCC9', color: 'black'}} text='Create New Collection'>

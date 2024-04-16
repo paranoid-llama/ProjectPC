@@ -68,4 +68,4 @@ const sortList = (sortKey, list) => {
     }
 }
 
-export {sortList}
+export {sortList, sortByDexNum}

@@ -1,13 +1,14 @@
 import {Box, Typography, styled, TextField, ToggleButtonGroup} from '@mui/material'
 import { useLoaderData } from 'react-router'
 import { useSelector, useDispatch } from 'react-redux'
-import { setFilters } from '../../../app/slices/listdisplay' 
+import { setFilters, filterSearch } from '../../../app/slices/listdisplay' 
 import { deselect } from '../../../app/slices/editmode'
 import { generations, genRomans, apriballs } from '../../../infoconstants'
 import { checkForTypeOfFilter } from '../../../../utils/functions/sortfilterfunctions/filterfunctions'
 import MuiToggleButton from '@mui/material/ToggleButton'
 import ImgData from '../tabledata/imgdata'
-import ListSearch from './listsearch'
+import ListSearch from '../../functionalcomponents/listsearch'
+import {useDebouncedCallback} from 'use-debounce'
 
 export default function Filter({listType}) {
     const dispatch = useDispatch()
@@ -108,6 +109,19 @@ export default function Filter({listType}) {
         dispatch(setFilters({filterKey, listType, listState, totalList, reFilterList, noFilters, prevActiveFilters: activeFilters, specificCategoryFilters, currentSortKey, changingTagBallFilters: changingBetweenTagAndBallFilters, switchingTags}))
     }
 
+    const handleSearchChange = (query, reFilterList) => {
+        debouncedSearch(query, reFilterList)
+    }   
+
+    const debounceFunction = (query, reFilterList) => {
+        dispatch(filterSearch({searchQuery: query, listState, listType, reFilterList, totalList}))
+    }
+
+    const debouncedSearch = useDebouncedCallback(
+        debounceFunction,
+        500
+    )
+
     return (
         <Box sx={{width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'start', marginLeft: '10px'}}>
             <Box sx={{height: '20%', width: '100%', display: 'flex', alignItems: 'start'}}>
@@ -152,7 +166,15 @@ export default function Filter({listType}) {
                     </Box>
                 </Box>}
                 <Box sx={{width: '50%'}}>
-                    <ListSearch listState={listState} listType={listType} totalList={totalList}/>
+                    <ListSearch 
+                        queryFunc={handleSearchChange} 
+                        textFieldProps={{
+                            label: 'Search Pokemon',
+                            variant: 'outlined',
+                            size: 'small', 
+                            InputLabelProps: {sx: {color: 'white'}},
+                            InputProps: {sx: {color: 'white'}}}}
+                    />
                 </Box>
             </Box>
         </Box>

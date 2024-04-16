@@ -10,13 +10,15 @@ export default function DataCell({label, styles, alignment='none', isEditMode, i
     const blackSquareStyles = blackSquare ? {backgroundColor: 'black'} : {}
     const noInfo = label === '(No Info)'
     const otherTextStyles = noInfo ? {opacity: 0.5} : {}
+    const dispatch = useDispatch()
+    const deselectFunc = () => dispatch(deselect())
     return (
         <TableCell 
             padding='none' 
             sx={!(blackSquare) ? styles.tableCell : blackSquareStyles}
             onClick={isEditMode ? onClickFunc : null}
         >
-            {(leftMostCell === true && isSelected === true) && <Selection height={onhandCells ? '71.016px' : '76px'} onhandSelection={onhandCells}/>}
+            {(leftMostCell === true && isSelected === true) && <Selection height={onhandCells ? '71.016px' : '76px'} onhandSelection={onhandCells} deselectFunc={deselectFunc}/>}
             <Box sx={!(blackSquare) ? {...alignment, ...styles.bodyColor} : {}}>
                 {isImg ? 
                 <ImgData type={imgType} size={imgSize} linkKey={imgLinkKey}/> :
