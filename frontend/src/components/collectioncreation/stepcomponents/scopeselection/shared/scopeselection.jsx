@@ -2,6 +2,7 @@ import {Box, Typography, Button, LinearProgress, Grid, styled, Paper} from '@mui
 import MuiToggleButton from '@mui/material/ToggleButton'
 import { useEffect, useState, useRef} from 'react'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
+import ArrowForward from '@mui/icons-material/ArrowForward'
 import Header from '../../../../titlecomponents/subcomponents/header'
 import { pokemonGroups, pokemonSubGroups, apriballLiterals } from '../../../../../infoconstants'
 import { getPokemonGroups } from '../../../../../../utils/functions/backendrequests/getpokemongroups'
@@ -9,7 +10,7 @@ import ImgData from '../../../../collectiontable/tabledata/imgdata'
 import PokemonBallCombosModal from './pokemonballcombosmodal'
 import PokemonGroupCardArea from './pokemongroupcardarea'
 
-export default function ScopeSelection({collectionType, collectionGen, importedCollection, scope, ballScopeInit, goBackStep, cssClass}) {
+export default function ScopeSelection({collectionType, collectionGen, importedCollection, scope, ballScopeInit, goBackStep, cssClass, handleChange}) {
 
     const ToggleButton = styled(MuiToggleButton)({
         '&.Mui-selected': {
@@ -68,28 +69,28 @@ export default function ScopeSelection({collectionType, collectionGen, importedC
 
     // console.log(!gettingGroups && scope.oneArrTotal)
 
-    const togglePokemon = (e, groupInfo, imgLink) => {
+    const togglePokemon = (e, groupInfo, imgLink, name, natDexNum) => {
         const {group, subGroup} = groupInfo
 
         const hasSubGroup = subGroup !== undefined
-        const selected = hasSubGroup ? pokemonFormData[group][subGroup].includes(imgLink) : pokemonFormData[group].includes(imgLink)
+        const selected = hasSubGroup ? pokemonFormData[group][subGroup].map(mon => mon.id).includes(imgLink) : pokemonFormData[group].map(mon => mon.id).includes(imgLink)
         if (selected) {
             const newGroupData = hasSubGroup ? 
-                {...pokemonGroupsFormData, pokemon: {...pokemonFormData, [group]: {...pokemonFormData[group], [subGroup]: pokemonFormData[group][subGroup].filter(id => id !== imgLink)}}} :
-                {...pokemonGroupsFormData, pokemon: {...pokemonFormData, [group]: pokemonFormData[group].filter(id => id !== imgLink)}}
+                {...pokemonGroupsFormData, pokemon: {...pokemonFormData, [group]: {...pokemonFormData[group], [subGroup]: pokemonFormData[group][subGroup].filter(poke => poke.id !== imgLink)}}} :
+                {...pokemonGroupsFormData, pokemon: {...pokemonFormData, [group]: pokemonFormData[group].filter(poke => poke.id !== imgLink)}}
             setPokemonGroupsFormData(newGroupData)
         } else {
             const newGroupData = hasSubGroup ? 
-                {...pokemonGroupsFormData, pokemon: {...pokemonFormData, [group]: {...pokemonFormData[group], [subGroup]: [...pokemonFormData[group][subGroup], imgLink]}}} :
-                {...pokemonGroupsFormData, pokemon: {...pokemonFormData, [group]: [...pokemonFormData[group], imgLink]}}
+                {...pokemonGroupsFormData, pokemon: {...pokemonFormData, [group]: {...pokemonFormData[group], [subGroup]: [...pokemonFormData[group][subGroup], {name, natDexNum, id: imgLink}]}}} :
+                {...pokemonGroupsFormData, pokemon: {...pokemonFormData, [group]: [...pokemonFormData[group], {name, natDexNum, id: imgLink}]}}
             if (subGroup === 'interchangeable') {
                 const dexNum = scope.total.alternateForms.interchangeable.filter((mon) => !isNaN(mon.imgLink)).map((mon) => mon.imgLink).filter(link => imgLink.includes(link))[0]
                 const selectingAny = dexNum === imgLink
                 const selectingForm = dexNum !== imgLink && imgLink.includes(dexNum)
                 if (selectingAny) {
-                    newGroupData.pokemon.alternateForms.interchangeable = newGroupData.pokemon.alternateForms.interchangeable.filter(id => (!id.includes(dexNum) || (id.includes(dexNum) && id === dexNum)))
+                    newGroupData.pokemon.alternateForms.interchangeable = newGroupData.pokemon.alternateForms.interchangeable.filter(poke => (!poke.id.includes(dexNum) || (poke.id.includes(dexNum) && poke.id === dexNum)))
                 } else if (selectingForm) {
-                    newGroupData.pokemon.alternateForms.interchangeable = newGroupData.pokemon.alternateForms.interchangeable.filter(id => id !== dexNum)
+                    newGroupData.pokemon.alternateForms.interchangeable = newGroupData.pokemon.alternateForms.interchangeable.filter(poke => poke.id !== dexNum)
                 }
             }
             setPokemonGroupsFormData(newGroupData)
@@ -119,13 +120,13 @@ export default function ScopeSelection({collectionType, collectionGen, importedC
         }
 
         const totalPath = hasSubGroup ? 
-            type === 'any' ? filterLegalBalls(scope.total[group][adjustedSubGroup]).map(mon => mon.imgLink).filter(link => !link.includes('-')) :
-            type === 'allForms' ? filterLegalBalls(scope.total[group][adjustedSubGroup]).map(mon => mon.imgLink).filter(link => link.includes('-')) : 
-            filterLegalBalls(scope.total[group][adjustedSubGroup]).map(mon => mon.imgLink) : filterLegalBalls(scope.total[group]).map(mon => mon.imgLink)
+            type === 'any' ? filterLegalBalls(scope.total[group][adjustedSubGroup]).map(mon => {return {name: mon.name, id: mon.imgLink}}).filter(poke => !poke.id.includes('-')) :
+            type === 'allForms' ? filterLegalBalls(scope.total[group][adjustedSubGroup]).map(mon => {return {name: mon.name, id: mon.imgLink}}).filter(poke => poke.id.includes('-')) : 
+            filterLegalBalls(scope.total[group][adjustedSubGroup]).map(mon => {return {name: mon.name, id: mon.imgLink}}) : filterLegalBalls(scope.total[group]).map(mon => {return {name: mon.name, id: mon.imgLink}})
 
         const pokemonFormDataPath = hasSubGroup ? 
-            type === 'any' ? pokemonFormData[group][adjustedSubGroup].filter(link => !link.includes('-')) :
-            type === 'allForms' ? pokemonFormData[group][adjustedSubGroup].filter(link => link.includes('-')):
+            type === 'any' ? pokemonFormData[group][adjustedSubGroup].filter(poke => !poke.id.includes('-')) :
+            type === 'allForms' ? pokemonFormData[group][adjustedSubGroup].filter(poke => poke.id.includes('-')):
             pokemonFormData[group][adjustedSubGroup] : pokemonFormData[group]
 
         const doNothing = type === 'none' ? pokemonFormDataPath.length === 0 : totalPath.length === pokemonFormDataPath.length
@@ -176,9 +177,9 @@ export default function ScopeSelection({collectionType, collectionGen, importedC
                     pokemonToRemove.forEach((pokemon) => {
                         const valuePath = pokemon.subGroup === undefined ? newFormData[pokemon.group] : newFormData[pokemon.group][pokemon.subGroup]
                         if (pokemon.subGroup !== undefined) {
-                            newFormData[pokemon.group][pokemon.subGroup] = valuePath.filter(id => id !== pokemon.imgLink)
+                            newFormData[pokemon.group][pokemon.subGroup] = valuePath.filter(p => p.id !== pokemon.imgLink)
                         } else {
-                            newFormData[pokemon.group] = valuePath.filter(id => id !== pokemon.imgLink)
+                            newFormData[pokemon.group] = valuePath.filter(p => p.id !== pokemon.imgLink)
                         }
                     })
                     setPokemonGroupsFormData({...pokemonGroupsFormData, pokemon: newFormData, balls: newBallArr})
@@ -234,7 +235,7 @@ export default function ScopeSelection({collectionType, collectionGen, importedC
                     }
                     
                 </Box>
-                <Box sx={{width: '90%', height: '55%', display: 'flex', flexDirection: 'row', justifyContent: 'center', gap: 3}}>
+                <Box sx={{width: '90%', height: '50%', display: 'flex', flexDirection: 'row', justifyContent: 'center', gap: 3}}>
                     <Box sx={{width: '60%', height: '90%', display: 'flex', flexDirection: 'column'}}>
                         <Typography variant='h6' sx={{fontSize: '16px', fontWeight: 700, mt: 2}}>Select Ball Scope</Typography>
                         <Typography sx={{fontSize: '12px'}}>Select which apri/special balls you want to collect </Typography>
@@ -296,7 +297,7 @@ export default function ScopeSelection({collectionType, collectionGen, importedC
                         }
                     </Box>
                 </Box>
-                
+                <Typography sx={{fontSize: '14px', fontWeight: 700}}>You can change all of these settings later on.</Typography>
             </Box>
             {showNotice &&
             <Box sx={{width: '100%', height: '50%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', position: 'absolute'}}>
@@ -304,6 +305,7 @@ export default function ScopeSelection({collectionType, collectionGen, importedC
                 <Button onClick={() => closeNotice()}>Change Scope Anyway</Button>
             </Box>
             }
+            
             <Box sx={{width: '100%', display: 'flex', justifyContent: 'start', flexDirection: 'column', alignItems: 'center', position: 'absolute', top: '95%', zIndex: 1}}>
                 <Box sx={{display: 'flex', width: '90%'}}>
                     <Box sx={{width: '50%', display: 'flex', justifyContent: 'start'}}>
@@ -312,6 +314,13 @@ export default function ScopeSelection({collectionType, collectionGen, importedC
                             <Typography sx={{mx: 2, fontSize: '14px'}}>{goBackStep.stepName}</Typography>
                         </Button>
                     </Box>
+                    {!gettingGroups && 
+                    <Box sx={{width: '50%', display: 'flex', justifyContent: 'end'}}>
+                        <Button onClick={(e) => handleChange(e, pokemonFormData, ballScopeData, pokemonGroupsFormData.excludedCombos)}>
+                            <Typography sx={{mx: 2, fontSize: '14px'}}>Options</Typography>
+                            <ArrowForward/>
+                        </Button>
+                    </Box>}
                 </Box>
             </Box>
         </Box>

@@ -59,15 +59,15 @@ export default function PokemonGroupCardArea({typeTotalMons, formData, ballScope
         typeTotalMons[activeGroup][activeSubGroupKey] : typeTotalMons[activeGroup]
 
     const selectedPokemonInGroup = hasSubGroups ? 
-        (babyAdultMonGroupActive) ? {babies: formData.babyAdultMons[`${activeSubGroupKey}Babies`], adults: formData.babyAdultMons[`${activeSubGroupKey}Adults`]} : 
-        formData[activeGroup][activeSubGroupKey] : formData[activeGroup]
+        (babyAdultMonGroupActive) ? {babies: formData.babyAdultMons[`${activeSubGroupKey}Babies`].map(p => p.id), adults: formData.babyAdultMons[`${activeSubGroupKey}Adults`].map(p => p.id)} : 
+        formData[activeGroup][activeSubGroupKey].map(p => p.id) : formData[activeGroup].map(p => p.id)
 
     const totalMonsActiveSubGroupLength = Object.values(totalPokemonInGroup).flat().length
     const formDataActiveSubGroupLength = Object.values(selectedPokemonInGroup).flat().length
 
     const amountIncluded = totalMonsActiveSubGroupLength === formDataActiveSubGroupLength || 
         (interchangeableAltFormGroupActive && (
-            typeTotalMons.alternateForms.interchangeable.filter(mon => mon.imgLink.includes('-')).length === formData.alternateForms.interchangeable.filter(imgLink => imgLink.includes('-')).length)) ? 'All' :
+            typeTotalMons.alternateForms.interchangeable.filter(mon => mon.imgLink.includes('-')).length === formData.alternateForms.interchangeable.filter(mon => mon.id.includes('-')).length)) ? 'All' :
         formDataActiveSubGroupLength === 0 ? 'None' : 'Some'
 
     // const activeSubGroupLabels = (hasSubGroups && !babyAdultMonGroupActive) ? 

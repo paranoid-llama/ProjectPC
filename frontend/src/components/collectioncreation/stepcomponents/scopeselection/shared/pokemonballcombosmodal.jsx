@@ -123,8 +123,8 @@ export default function PokemonBallCombosModal({isOpen, totalList, selectedMon, 
 
     return (
         <Modal
-            aria-labelledby='pokemon-groups-info'
-            aria-describedby='check the details of pokemon groups'
+            aria-labelledby='select-pokemon-ball-combos'
+            aria-describedby='exclude specific unwanted pokemon/ball combinations'
             open={isOpen}
             onClose={toggleModal}
             closeAfterTransition

@@ -28,6 +28,7 @@ import CollectionClass from './utils/createCollection.js'
 //models
 import Collection from './models/collections.js'
 import User from './models/users.js'
+import Trade from './models/trades.js'
 
 //database connection
 mongoose.connect("mongodb://127.0.0.1:27017/ProjectPC", {

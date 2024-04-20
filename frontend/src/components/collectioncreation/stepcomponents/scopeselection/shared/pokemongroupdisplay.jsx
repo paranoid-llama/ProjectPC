@@ -94,7 +94,7 @@ const generateOneOrOtherContent = (option1, option2, activePokemon, handleChange
                     sx={{width: '50%'}} 
                     value={option1.imgLink} 
                     selected={activePokemon.includes(option1.imgLink)}
-                    onChange={(e) => handleChange(e, isBabyAdultSelection ? {...groupInfo, subGroup: `${groupInfo.subGroup}Babies`} : groupInfo, option1.imgLink)}
+                    onChange={(e) => handleChange(e, isBabyAdultSelection ? {...groupInfo, subGroup: `${groupInfo.subGroup}Babies`} : groupInfo, option1.imgLink, option1.name, option1.natDexNum)}
                 >
                     <Item sx={{boxShadow: 'none'}}>
                         <Typography sx={{fontSize: '10px'}}>#{option1.natDexNum}</Typography>
@@ -151,7 +151,7 @@ const generateOneOrOtherContent = (option1, option2, activePokemon, handleChange
                         key={`${option.imgLink}-selection`}
                         value={option.imgLink} 
                         selected={activePokemon.includes(option.imgLink)}
-                        onChange={(e) => handleChange(e, groupInfo, option.imgLink)}
+                        onChange={(e) => handleChange(e, groupInfo, option.imgLink, option.name, option.natDexNum)}
                     >
                         <Item sx={{boxShadow: 'none'}}>
                             <Typography sx={{fontSize: '10px'}}>#{option.natDexNum}</Typography>
@@ -203,7 +203,7 @@ const generateOneOrOtherContent = (option1, option2, activePokemon, handleChange
                     sx={{width: '50%'}} 
                     value={option2.imgLink} 
                     selected={activePokemon.includes(option2.imgLink)}
-                    onChange={(e) => handleChange(e, isBabyAdultSelection ? {...groupInfo, subGroup: `${groupInfo.subGroup}Adults`} : groupInfo, option2.imgLink)}
+                    onChange={(e) => handleChange(e, isBabyAdultSelection ? {...groupInfo, subGroup: `${groupInfo.subGroup}Adults`} : groupInfo, option2.imgLink, option2.name, option2.natDexNum)}
                 >
                     <Item sx={{boxShadow: 'none'}}>
                         <Typography sx={{fontSize: '10px'}}>#{option2.natDexNum}</Typography>
@@ -305,7 +305,7 @@ export default function PokemonGroupDisplay({totalPokemon, activePokemon, ballSc
                         sx={{width: '100%', zIndex: 100, position: 'relative'}} 
                         value={totalPokemon[index].imgLink} 
                         selected={activePokemon.includes(totalPokemon[index].imgLink)} 
-                        onChange={(e) => handleChange(e, groupInfo, totalPokemon[index].imgLink)}
+                        onChange={(e) => handleChange(e, groupInfo, totalPokemon[index].imgLink, totalPokemon[index].name, totalPokemon[index].natDexNum)}
                     >
                             <Item sx={{padding: '5%', width: '90%', backgroundColor: '#283f57', position: 'relative', zIndex: -1}}>
                                 <Typography sx={{fontSize: '10px'}}>#{totalPokemon[index].natDexNum}</Typography>

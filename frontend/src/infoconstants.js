@@ -38,6 +38,9 @@ const collectionSubTypes = {
     ['living dex']: ['Regular', 'Shiny', 'Alternate Forms']
 }
 
+//this information is only used for sorting operations. multiple pokemon with the same dex number (alt or regional forms) && their name has a space in it
+const multipleDexNumAndSpaceHavingPokemon = ['Mr. Mime']
+
 //collection creation options
 
 const pokeBabies = ['Pichu', 'Cleffa', 'Igglybuff', 'Smoochum', 'Elekid', 'Magby', 'Togepi', 'Riolu', 'Toxel'] //tyrogue is purposefully excluded since i made it that you cannot decide to display their evolutions instead
@@ -99,6 +102,32 @@ const getAllAlcremieFormsArr = () => {
     return allAlcremieForms
 }
 
+//item info for item trading
+const items = [
+    {value: 'fast', display: 'Fast Ball'}, {value: 'friend', display: 'Friend Ball'}, {value: 'heavy', display: 'Heavy Ball'}, 
+    {value: 'level', display: 'Level Ball'}, {value: 'love', display: 'Love Ball'}, {value: 'lure', display: 'Lure Ball'}, {value: 'moon', display: 'Moon Ball'}, 
+    {value: 'dream', display: 'Dream Ball'}, {value: 'beast', display: 'Beast Ball'}, {value: 'safari', display: 'Safari Ball'}, {value: 'sport', display: 'Sport Ball'},
+    {value: 'capsule', display: 'Ability Capsule'}, {value: 'bottlecap', display: 'Bottle Cap'}, {value: 'goldbottlecap', display: 'Gold Bottle Cap'},
+    {value: 'patch', display: 'Ability Patch'}, {value: 'maxmushroom', display: 'Max Mushroom'}, {value: 'candyL', display: 'Exp. Candy L'}, {value: 'candyXL', display: 'Exp. Candy XL'},
+]
+
+const notInGenItems = {
+    6: ['all'],
+    7: ['dream', 'beast', 'safari', 'sport', 'patch', 'maxmushroom', 'candyL', 'candyXL'], //while beast is in gen 7, its not valuable enough to trade (you can buy it)
+    'swsh': [],
+    'bdsp': ['beast', 'dream', 'safari', 'sport', 'maxmushroom', 'candyL', 'candyXL'],
+    9: ['maxmushroom'],
+    'home': ['all'] //no item trading with home collection
+}
+
+const getPossibleItems = (gen) => {
+    const itemsInGen = items.filter(item => {
+        return notInGenItems[gen].includes('all') ? false : 
+                !notInGenItems[gen].includes(item.value)
+    })
+    return itemsInGen
+}
+
 export {
     generations, 
     genRomans, genGames,
@@ -108,7 +137,9 @@ export {
     collectionTypes, 
     collectionDescription, 
     collectionSubTypes,
+    multipleDexNumAndSpaceHavingPokemon,
     pokeBabies, pokeAdults, pokeIncenseBabies, pokeIncenseAdults,
     pokemonGroups, pokemonSubGroups,
-    differentRegionalFormEvolutions, vivillonForms, getAllAlcremieFormsArr
+    differentRegionalFormEvolutions, vivillonForms, getAllAlcremieFormsArr,
+    getPossibleItems
 }

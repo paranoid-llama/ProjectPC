@@ -1,3 +1,5 @@
+import { multipleDexNumAndSpaceHavingPokemon } from "../../../src/infoconstants"
+
 const sortByDexNum = (order='NatDexNumL2H', list) => {
     if (order === 'NatDexNumL2H') {
         const sortedList = list.slice().sort((a, b) =>  {
@@ -7,20 +9,17 @@ const sortByDexNum = (order='NatDexNumL2H', list) => {
             if (a.natDexNum < b.natDexNum) {
                 return -1
             }
-            return 0
-        }).sort((a, b) => {
-            const num1 = a.natDexNum
-            const num2 = b.natDexNum
-            if (num1 === num2) {
+            if (a.natDexNum === b.natDexNum) {//ensures regional and alternate form pokemon are listed after their regular forms
                 if (a.name.includes(" ") && b.name.includes(" ")) {
-                    return a.name === "Mr. Mime" ? -1 : a.name.localeCompare(b.name)
+                    return multipleDexNumAndSpaceHavingPokemon.includes(a.name) ? -1 : a.name.localeCompare(b.name)
                 } else if (b.name.includes(" ")){
                     return -1
                 } else {
                     return 1
                 }
-            } 
-        }) //ensures regional and alternate form pokemon are listed after their regular forms
+            }
+            return 0
+        })
         return sortedList
     } else {
         const sortedList = list.slice().sort((a, b) =>  {
@@ -29,6 +28,15 @@ const sortByDexNum = (order='NatDexNumL2H', list) => {
             }
             if (a.natDexNum < b.natDexNum) {
                 return 1
+            }
+            if (a.natDexNum === b.natDexNum) {//ensures regional and alternate form pokemon are listed BEFORE their regular forms (UNTESTED)
+                if (a.name.includes(" ") && b.name.includes(" ")) {
+                    return multipleDexNumAndSpaceHavingPokemon.includes(a.name) ? 1 : b.name.localeCompare(a.name)
+                } else if (b.name.includes(" ")){
+                    return 1
+                } else {
+                    return -1
+                }
             }
             return 0
         })

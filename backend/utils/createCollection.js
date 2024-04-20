@@ -61,7 +61,7 @@ function setOwnedPokemonList(gen, pokemonScope, importing=false) {
                     originalPokemon.displayName = ''
                 }
                 if (pokemon.info.regionalForm && game !== "bdsp") { 
-                    const multiplePokemon = handleRegionalForms(pokemon, ownedBallList, pokename, parsedGen, childPokemon.name ? [originalPokemon, childPokemon] : [originalPokemon], true)
+                    const multiplePokemon = handleRegionalForms(pokemon, ownedBallList, pokemon.name, parsedGen, childPokemon.name ? [originalPokemon, childPokemon] : [originalPokemon], true)
                     return multiplePokemon
                 }
                 return childPokemon.name ? [originalPokemon, childPokemon] : originalPokemon

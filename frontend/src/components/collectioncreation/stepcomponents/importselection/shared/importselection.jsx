@@ -95,7 +95,7 @@ export default function ImportSelection({handleChange, cssClass, goBackStep, col
                     {(importScreen === 'preview' && importedCollectionDisplay.data !== undefined) &&
                     <Box sx={{width: '50%', display: 'flex', justifyContent: 'end'}}>
                         <Button onClick={(e) => handleChange(e, importedCollectionDisplay.data.collection, importedCollectionDisplay.ballScope)}>
-                            <Typography sx={{mx: 2, fontSize: '14px'}}>Next Step</Typography>
+                            <Typography sx={{mx: 2, fontSize: '14px'}}>Scope</Typography>
                             <ArrowForward/>
                         </Button>
                     </Box>}
