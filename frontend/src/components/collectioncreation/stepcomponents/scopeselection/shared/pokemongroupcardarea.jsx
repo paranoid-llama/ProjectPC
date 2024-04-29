@@ -156,8 +156,8 @@ export default function PokemonGroupCardArea({typeTotalMons, formData, ballScope
             {groupKeys.map((gK, idx) => {
                 const gridNum = idx+1
                 const groupInfo = pokemonGroups.filter((group) => group.key === gK)[0]
-                const totalMonsGroupLength = Object.values(typeTotalMons[gK]).flat().length
-                const formDataGroupLength = Object.values(formData[gK]).flat().length
+                const totalMonsGroupLength = gK === 'alternateForms' ? Object.values(typeTotalMons[gK]).flat().filter(mon => mon.name.includes('(')).length : Object.values(typeTotalMons[gK]).flat().length
+                const formDataGroupLength = gK === 'alternateForms' ? Object.values(formData[gK]).flat().filter(mon => mon.name.includes('(')).length : Object.values(formData[gK]).flat().length
                 const amount = totalMonsGroupLength === formDataGroupLength ? 'All' :
                     formDataGroupLength === 0 ? 'None' : 'Some'
                 return (

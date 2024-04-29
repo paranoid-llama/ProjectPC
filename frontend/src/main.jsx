@@ -22,6 +22,7 @@ import store from './app/store'
 import {Provider} from 'react-redux'
 import AlertsProvider from './alerts/alerts-context.jsx'
 import { resizeEvent } from 'redux-window'
+import TestList from './routes/testlist.jsx'
 
 //can add a bit of debounce by adding number parameter in case the event causes performance issues
 resizeEvent(store)
@@ -58,6 +59,10 @@ const router = createBrowserRouter([
         loader: collectionLoader
       }
     ]
+  },
+  {
+    path: "/testlist",
+    element: <TestList/>
   }
 ])
 

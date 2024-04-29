@@ -31,10 +31,16 @@ export default function PokemonBallCombosModal({isOpen, totalList, selectedMon, 
         500
     )
 
+    useEffect(() => {
+        if (isOpen === false) {
+            setFilteredList(totalList)
+        }
+    }, [isOpen])
+
     const listPokemonSelect = (index) => {
         const pokemon = filteredList[index]
         const isSelected = pokemon.imgLink === selectedMon.imgLink
-        const disabledSelection = pokemon.subGroup !== undefined ? !formData[pokemon.group][pokemon.subGroup].includes(pokemon.imgLink) : !formData[pokemon.group].includes(pokemon.imgLink)
+        const disabledSelection = pokemon.subGroup !== undefined ? !formData[pokemon.group][pokemon.subGroup].map(mon => mon.id).includes(pokemon.imgLink) : !formData[pokemon.group].map(mon => mon.id).includes(pokemon.imgLink)
         return (
             <>
             {isSelected && <Selection height='36px' modal={true} deselectFunc={() => changePokemonSelection('')}/>}

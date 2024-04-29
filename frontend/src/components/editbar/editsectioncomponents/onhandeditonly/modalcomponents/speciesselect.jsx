@@ -1,10 +1,14 @@
 import {Box, Typography, TextField} from '@mui/material'
+import styled from '@emotion/styled'
 import {Virtuoso} from 'react-virtuoso'
+import {useRef} from 'react'
 import ImgData from './../../../../collectiontable/tabledata/imgdata'
 import modalStyles from './../../../../../../utils/styles/componentstyles/modalstyles'
+import './speciesselect.css'
 
-export default function SpeciesSelect({searchOnChange, pokemonData, listItemContent, totalCount, height='60%', onlyList=false, otherStyles={}, virtuosoStyles={border: '1px solid black'}}) {
-    
+export default function SpeciesSelect({searchOnChange, pokemonData, listItemContent, totalCount, height='60%', onlyList=false, otherStyles={}, otherSubContainerStyles={}, virtuosoStyles={border: '1px solid black'}, onHoverStyles=false, virtuosoProps={}}) {
+
+
     return (
         <Box sx={{...modalStyles.onhand.modalElementBg, height, display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', ...otherStyles}}>
             {!onlyList && 
@@ -40,13 +44,16 @@ export default function SpeciesSelect({searchOnChange, pokemonData, listItemCont
                 </Box>
             </Box>
             }
-            <Box sx={{width: onlyList ? '100%' : '60%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+            <Box sx={{width: onlyList ? '100%' : '60%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', ...otherSubContainerStyles}}>
                 <Virtuoso 
-                    style={{height: '90%', width: '90%', borderRadius: '10px', ...virtuosoStyles}} 
+                    {...virtuosoProps}
+                    className={onHoverStyles ? 'virtuosohover' : 'none'}
+                    style={{height: '90%', width: '90%', borderRadius: '10px', ...virtuosoStyles}}
                     totalCount={totalCount}
                     itemContent={(index) => listItemContent(index)}
                 />
             </Box>
+            
         </Box>
     )
 }

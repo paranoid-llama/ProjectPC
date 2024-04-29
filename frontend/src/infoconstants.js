@@ -24,6 +24,28 @@ const ballIntros = {
     beast: 7
 }
 
+const getGenNum = (genStr) => {
+    const isGameGenStr = isNaN(parseInt(genStr))
+    const gen = isGameGenStr ? genGames.filter((genGame) => {
+        let isGame = false
+        genGame.games.forEach(gameName => {
+            if (gameName === genStr) {
+                isGame = true
+            }
+        })
+        return isGame
+    }).map(genGame => genGame.gen)[0] : parseInt(genStr)
+    return genStr === 'home' ? 'home' : gen
+}
+
+const getBallsInGen = (collectionGen) => {
+    const genNum = getGenNum(collectionGen)
+    if (genNum === 'home') {
+        return apriballs
+    }
+    return apriballs.filter(ball => ballIntros[ball] === undefined || ballIntros[ball] <= genNum)
+}
+
 //update this array if theres ever a new shopball to collect
 
 const shopballs = ['poke', 'great', 'ultra', 'premier', 'repeat', 'timer', 'nest', 'net', 'luxury', 'dive', 'quick', 'heal', 'dusk']
@@ -128,11 +150,13 @@ const getPossibleItems = (gen) => {
     return itemsInGen
 }
 
+const regionIdentifiers = ['Alolan', 'Galarian', 'Hisuian', 'Paldean']
+
 export {
     generations, 
     genRomans, genGames,
     apriballs, apriballLiterals, ballIntros,
-    shopballs, 
+    shopballs, getBallsInGen,
     findGenByDexNum, 
     collectionTypes, 
     collectionDescription, 
@@ -141,5 +165,5 @@ export {
     pokeBabies, pokeAdults, pokeIncenseBabies, pokeIncenseAdults,
     pokemonGroups, pokemonSubGroups,
     differentRegionalFormEvolutions, vivillonForms, getAllAlcremieFormsArr,
-    getPossibleItems
+    items, getPossibleItems, regionIdentifiers
 }

@@ -1,0 +1,11 @@
+.virtuosohover:hover {
+    cursor: pointer; 
+    box-shadow: 0px 5px 4px -4px rgba(0,0,0,0.2), 0px 5px 5px 0px rgba(0,0,0,0.14), 0px 5px 7px 0px rgba(0,0,0,0.12)
+}
+
+.wrapperdiv {
+    width: inherit;
+    height: inherit;
+    display: flex;
+    justify-content: center;
+}

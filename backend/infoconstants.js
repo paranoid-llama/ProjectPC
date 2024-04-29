@@ -76,7 +76,7 @@ const uniqueAlternateFormPokemon = ['Basculin', 'Vivillon', 'Flabébé', 'Rockru
 //basculin is unique in that his white striped form is exclusive to gen 9+. 
 //Flabebe is unique as her blue flower form in gen 7 specifically is unavailable to have HA, due to a bug in the code that was never fixed (blue flower floette never calls for SOS).
 //Rockruff is unique as his dusk form not only calls for the original to be placed as well (kinda like a regional form), but does not have HA. 
-//vivillon and alcremie are special for obvious reasons
+//vivillon and alcremie are special for obvious reasons (SO. MANY. FORMS.)
 
 const uniqueRegionalFormPokemon = ['Tauros']
 //paldean tauros is unique as it has 3 different alternate forms.

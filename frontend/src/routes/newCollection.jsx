@@ -11,6 +11,7 @@ import CollectionTypeSelection from "../components/collectioncreation/stepcompon
 import ImportSelection from "../components/collectioncreation/stepcomponents/importselection/shared/importselection";
 import ScopeSelection from "../components/collectioncreation/stepcomponents/scopeselection/shared/scopeselection";
 import OptionSelection from "../components/collectioncreation/stepcomponents/optionsselection/shared/optionselection";
+import ReviewFinalizeBase from "../components/collectioncreation/stepcomponents/finalize/shared/reviewfinalizebase";
 import { selectAdjArrItem, capitalizeFirstLetter } from "../../utils/functions/misc";
 import { getPokemonGroups } from "../../utils/functions/backendrequests/getpokemongroups";
 import { ballIntros, apriballs, genGames } from "../infoconstants";
@@ -207,7 +208,6 @@ export default function NewCollection(userid) {
         const customSortState = (!userImportedCollection || !unchangedScope) ? {customSort : getOneArrData(pokemonScope, false)} : {} 
             //if the user imported a collection AND the scope is unchanged, then the sort state doesnt update itself (it is set if they imported a collection in setScopeState)
 
-
         setFormData({...formData, ballScope: {...formData.ballScope, formData: ballScope}, scope: {...formData.scope, formData: pokemonScope, excludedCombos}, ...customSortState})
     }
 
@@ -217,6 +217,25 @@ export default function NewCollection(userid) {
         setTimeout(() => {
             setFormBodyProgress(75)
         }, 500)
+    }
+
+    const setOptionsFinalState = (options, collectionName) => {
+        const newCustomSort = [...options.sorting.customSort, ...options.sorting.holdPokemon]
+        options.sorting.customSort = newCustomSort
+        options.sorting.holdPokemon = []
+        options.collectionName = collectionName === '' ? `twentyfourcharacteryesno's ${formData.collectionType.subType} ${capitalizeFirstLetter(formData.collectionType.type)} Collection` : collectionName
+        setFormData({...formData, options})
+    }
+
+    const handleOptionsSelection = (e, options, collectionName) => { 
+        setOptionsFinalState(options, collectionName)
+        setCreationProgress(100)
+        setTimeout(() => {
+            setFormBodyProgress(100)
+        }, 500)
+    }
+
+    const finalizeCreation = () => {
     }
 
     const goBackStep = () => {
@@ -266,11 +285,22 @@ export default function NewCollection(userid) {
                 {(formBodyProgress === 75 || slideClasses.step4 !== 'none') &&
                     <OptionSelection 
                         collectionType={`${formData.collectionType.subType} ${capitalizeFirstLetter(formData.collectionType.type)} Collection`}
+                        formOptionsData={formData.options}
                         collectionGen={formData.collectionType.subTypeValue}
                         cssClass={slideClasses.step4} 
                         ballOrderInit={formData.ballScope.formData}
                         customSort={formData.customSort}
                         goBackStep={{stepName: 'Scope Selection', func: goBackStep}} 
+                        handleChange={handleOptionsSelection}
+                    />
+                }
+                {(formBodyProgress === 100 || slideClasses.step5 !== 'none') &&
+                    <ReviewFinalizeBase
+                        collectionType={`${formData.collectionType.subType} ${capitalizeFirstLetter(formData.collectionType.type)} Collection`}
+                        formData={formData}
+                        cssClass={slideClasses.step5}
+                        goBackStep={{stepName: 'Options Selection', func: goBackStep}}
+                        handleChange={finalizeCreation}
                     />
                 }
             </Box>

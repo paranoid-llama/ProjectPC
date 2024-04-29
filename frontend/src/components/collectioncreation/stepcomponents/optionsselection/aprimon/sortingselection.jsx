@@ -1,6 +1,69 @@
 import {Box, Typography, ToggleButton, Button, Select, MenuItem} from '@mui/material'
+import OnHandSortSettingsModal from './onhandsortsettingsmodal'
+import CustomSortModal from './customsortmodal'
+import SpeciesSelect from '../../../../editbar/editsectioncomponents/onhandeditonly/modalcomponents/speciesselect'
+import ImgData from '../../../../collectiontable/tabledata/imgdata'
+import { sortList } from '../../../../../../utils/functions/sortfilterfunctions/sortingfunctions'
+import { useState, forwardRef } from 'react'
 
-export default function SortingSelection({sortData, handleChange}) {
+export default function SortingSelection({sortData, handleChange, handleCustomSortChange, totalBalls, tentativeBallOrder, holdPokemon}) {
+    const [modalStates, setModalStates] = useState({onhandSortSettings: {open: false}, collectionSort: {open: false}})
+
+    const openModal = (type) => {
+        setModalStates({...modalStates, [type]: {...modalStates[type], open: true}})
+    }
+    const closeModal = (type) => {
+        setModalStates({...modalStates, [type]: {...modalStates[type], open: false}})
+    }
+
+    const handleOnhandBallOrderChange = (e, newBall) => {
+        const newArr = sortData.onhand.ballOrder.includes(newBall) ? sortData.onhand.ballOrder.filter(b => b !== newBall) : [...sortData.onhand.ballOrder, newBall]
+        handleChange(e, 'onhand', 'ballOrder', newArr)
+    }
+
+    const parseHandleSortChangeData = (result) => {
+        const draggedPokemonData = result.source.droppableId === 'customSort' ? sortData.customSort.filter(p => p.id === result.draggableId)[0] : holdPokemon.filter(p => p.id === result.draggableId)[0]
+        if (result.destination.droppableId === "holdList") {
+            const newCustomSortState = result.source.droppableId === 'customSort' ? sortData.customSort.filter(p => p.id !== result.draggableId) : sortData.customSort
+            const newHoldListState = result.source.droppableId === 'customSort' ? [...holdPokemon, draggedPokemonData] : [...holdPokemon]
+            handleCustomSortChange(newCustomSortState, newHoldListState)
+        } else if (result.destination.droppableId === 'customSort') {
+            const newHoldListState = result.source.droppableId === 'holdList' ? holdPokemon.filter(p => p.id !== result.draggableId) : holdPokemon
+            const newCustomSortState = result.source.droppableId === 'holdList' ? [...sortData.customSort] : sortData.customSort.filter(p => p.id !== result.draggableId)
+            newCustomSortState.splice(result.destination.index, 0, draggedPokemonData)
+            handleCustomSortChange(newCustomSortState, newHoldListState)
+        }
+    }
+
+    const handleCollectionSortByKey = (key) => {
+        const newCustomSortState = sortList(key, sortData.customSort)
+        handleCustomSortChange(newCustomSortState)
+    }
+
+    const totalCollectionSortDisplay = [...sortData.customSort, ...holdPokemon]
+
+    const listCustomSortItem = (index) => {
+        const pokemon = totalCollectionSortDisplay[index]
+        return (
+            <>
+            <Box sx={{display: 'flex', alignItems: 'center', backgroundColor: '#283f57', borderRadius: '10px', marginBottom: '3px', marginTop: '3px'}}>
+                <Box sx={{height: '100%', width: '7%', mx: 1, pointerEvents: 'none'}}>
+                    <ImgData linkKey={pokemon.id}/>
+                </Box>
+                <Box sx={{height: '100%', width: '8%', ml: 1, pointerEvents: 'none'}}>
+                    <Typography sx={{fontSize: '10px'}}>#{pokemon.natDexNum}</Typography>
+                </Box>
+                <Box sx={{height: '100%', width: '35%', ml: 1, pointerEvents: 'none'}}>
+                    <Typography sx={{fontSize: '12px'}}>{pokemon.name}</Typography>
+                </Box>
+                <Box sx={{height: '100%', width: '40%', display: 'flex', justifyContent: 'flex-end', alignItems: 'center', mr: 4, pointerEvents: 'none'}}>
+                    <Typography sx={{fontSize: '12px', width: '70%', ml: 2}}>Position {index+1}</Typography>
+                </Box>
+            </Box> 
+            </>
+        )
+    }
+
 
     const disabledCollectionResortEffect = sortData.collection.reorder === false ? {pointerEvents: 'none', opacity: 0.5} : {}
     const disabledOnhandResortEffect = sortData.onhand.reorder === false ? {pointerEvents: 'none', opacity: 0.5} : {}
@@ -45,8 +108,8 @@ export default function SortingSelection({sortData, handleChange}) {
                             >
                                 <MenuItem value='NatDexNumL2H'>Dex # - Lowest to Highest</MenuItem>
                                 <MenuItem value='NatDexNumH2L'>Dex # - Highest to Lowest</MenuItem>
-                                <MenuItem value='NameA2Z'>Name - A to Z</MenuItem>
-                                <MenuItem value='NameZ2A'>Name - Z to A</MenuItem>
+                                <MenuItem value='A2Z'>Name - A to Z</MenuItem>
+                                <MenuItem value='Z2A'>Name - Z to A</MenuItem>
                             </Select>
                         </Box>
                     </Box>
@@ -81,19 +144,47 @@ export default function SortingSelection({sortData, handleChange}) {
                             >
                                 <MenuItem value='NatDexNumL2H'>Dex # - Lowest to Highest</MenuItem>
                                 <MenuItem value='NatDexNumH2L'>Dex # - Highest to Lowest</MenuItem>
-                                <MenuItem value='NameA2Z'>Name - A to Z</MenuItem>
-                                <MenuItem value='NameZ2A'>Name - Z to A</MenuItem>
+                                <MenuItem value='A2Z'>Name - A to Z</MenuItem>
+                                <MenuItem value='Z2A'>Name - Z to A</MenuItem>
                             </Select>
                         </Box>
-                        <Box sx={{width: '100%', height: '20%', display: 'flex', justifyContent: 'center', alignItems: 'center', mt: 0.5}}>
-                            <Button>
+                        <Box sx={{width: '100%', height: '20%', display: 'flex', justifyContent: 'center', alignItems: 'center', mt: 0.5, ...disabledOnhandResortEffect}}>
+                            <Button onClick={() => openModal('onhandSortSettings')}>
                                 Other On-Hand Sort Settings
                             </Button>
+                            <OnHandSortSettingsModal 
+                                onhandSortSettings={sortData.onhand} 
+                                open={modalStates.onhandSortSettings.open} 
+                                closeModal={closeModal} 
+                                handleBallOrderChange={handleOnhandBallOrderChange}
+                                totalBalls={totalBalls}
+                                tentativeBallOrder={tentativeBallOrder}
+                                handleChange={handleChange}
+                            />
                         </Box>
                     </Box>
                 </Box>
                 <Box sx={{width: '60%', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'start', alignItems: 'center'}}>
-
+                    <Typography sx={{fontSize: '14px', fontWeight: 700}}>Custom Sort Collection List</Typography>
+                    <SpeciesSelect
+                        listItemContent={(index) => listCustomSortItem(index, false)}
+                        totalCount={totalCollectionSortDisplay.length}
+                        height='70%'
+                        onlyList={true}
+                        otherStyles={{width: '100%', mt: 1, backgroundColor: 'none'}}
+                        virtuosoStyles={{backgroundColor: 'rgb(30, 47, 65)', border: '1px solid black'}}
+                        onHoverStyles={true}
+                        virtuosoProps={{onClick: () => openModal('collectionSort')}}
+                    />
+                    <Typography sx={{fontSize: '12px'}}>Click to enlarge and edit</Typography>
+                    <CustomSortModal 
+                        open={modalStates.collectionSort.open}
+                        closeModal={closeModal}
+                        customSortState={sortData.customSort}
+                        holdPokemon={holdPokemon}
+                        handleChange={parseHandleSortChangeData}
+                        handleChangeBySortKey={handleCollectionSortByKey}
+                    />
                 </Box>
             </Box>
         </Box>

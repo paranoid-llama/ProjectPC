@@ -30,7 +30,7 @@ export default function ScopeSelection({collectionType, collectionGen, importedC
     const [pokemonGroupsFormData, setPokemonGroupsFormData] = useState({
         pokemon: scope === undefined ? {} : scope.formData, 
         balls: ballScopeInit === undefined ? [] : ballScopeInit.formData,
-        excludedCombos: {}
+        excludedCombos: scope === undefined ? {} : scope.excludedCombos
     })
     const [pokemonBallComboModal, setPokemonBallComboModal] = useState({selected: '', open: false})
 
@@ -120,9 +120,9 @@ export default function ScopeSelection({collectionType, collectionGen, importedC
         }
 
         const totalPath = hasSubGroup ? 
-            type === 'any' ? filterLegalBalls(scope.total[group][adjustedSubGroup]).map(mon => {return {name: mon.name, id: mon.imgLink}}).filter(poke => !poke.id.includes('-')) :
-            type === 'allForms' ? filterLegalBalls(scope.total[group][adjustedSubGroup]).map(mon => {return {name: mon.name, id: mon.imgLink}}).filter(poke => poke.id.includes('-')) : 
-            filterLegalBalls(scope.total[group][adjustedSubGroup]).map(mon => {return {name: mon.name, id: mon.imgLink}}) : filterLegalBalls(scope.total[group]).map(mon => {return {name: mon.name, id: mon.imgLink}})
+            type === 'any' ? filterLegalBalls(scope.total[group][adjustedSubGroup]).map(mon => {return {name: mon.name, natDexNum: mon.natDexNum, id: mon.imgLink}}).filter(poke => !poke.id.includes('-')) :
+            type === 'allForms' ? filterLegalBalls(scope.total[group][adjustedSubGroup]).map(mon => {return {name: mon.name, natDexNum: mon.natDexNum, id: mon.imgLink}}).filter(poke => poke.id.includes('-')) : 
+            filterLegalBalls(scope.total[group][adjustedSubGroup]).map(mon => {return {name: mon.name, natDexNum: mon.natDexNum, id: mon.imgLink}}) : filterLegalBalls(scope.total[group]).map(mon => {return {name: mon.name, natDexNum: mon.natDexNum, id: mon.imgLink}})
 
         const pokemonFormDataPath = hasSubGroup ? 
             type === 'any' ? pokemonFormData[group][adjustedSubGroup].filter(poke => !poke.id.includes('-')) :
