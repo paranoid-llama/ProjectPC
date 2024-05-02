@@ -150,6 +150,31 @@ const getPossibleItems = (gen) => {
     return itemsInGen
 }
 
+//display info for trade preferences keys
+const tradePreferenceDisplay = {
+    'status': {
+        'open': 'Accepting trade offers!',
+        'closed': 'Not accepting offers'
+    },
+    'size': {
+        'any': 'Any Size',
+        'small preferred': 'Small Trades Preferred',
+        'small only': 'Small Trades Only',
+        'large preferred': 'Large Trades Preferred',
+        'large only': 'Large Trades Only'
+    },
+    'onhandOnly': {
+        'yes': 'On-Hand Only',
+        'no': 'Any List',
+        'preferred': 'On-Hand Preferred'
+    },
+    'items': {
+        'lf': 'LF Items',
+        'ft': 'Items FT',
+        'lf/ft': 'LF/FT Items'
+    }
+}
+
 const regionIdentifiers = ['Alolan', 'Galarian', 'Hisuian', 'Paldean']
 
 export {
@@ -165,5 +190,5 @@ export {
     pokeBabies, pokeAdults, pokeIncenseBabies, pokeIncenseAdults,
     pokemonGroups, pokemonSubGroups,
     differentRegionalFormEvolutions, vivillonForms, getAllAlcremieFormsArr,
-    items, getPossibleItems, regionIdentifiers
+    items, getPossibleItems, tradePreferenceDisplay, regionIdentifiers
 }

@@ -249,7 +249,7 @@ export default function AprimonPreviewImport({data, numOfBalls}) {
                         }}
                     >
                         <Fade in={openDataModal}> 
-                            <Box sx={{...modalStyles.onhand.modalContainer, height: '665px', width: '70%', maxWidth: '800px', display: 'flex', alignItems: 'center'}}>
+                            <Box sx={{...modalStyles.onhand.modalContainer, height: '665px', width: '95%', maxWidth: '800px', display: 'flex', alignItems: 'center'}}>
                                 <Box sx={{...modalStyles.onhand.modalElementBg, width: '95%', height: '99%'}}>
                                     <Typography variant='h5' align='center' sx={{paddingTop: '10px', fontSize: '24px', fontWeight: 700, mb: 3}}>Imported Data</Typography>
                                     <Paper style={{height: '80%', margin: 0}}>
@@ -297,7 +297,7 @@ export default function AprimonPreviewImport({data, numOfBalls}) {
                         }}
                     >
                         <Fade in={openErrorModal}> 
-                            <Box sx={{...modalStyles.onhand.modalContainer, height: '665px', width: '70%', maxWidth: '800px', display: 'flex', alignItems: 'center'}}>
+                            <Box sx={{...modalStyles.onhand.modalContainer, height: '665px', width: '95%', maxWidth: '800px', display: 'flex', alignItems: 'center'}}>
                                 <Box sx={{...modalStyles.onhand.modalElementBg, width: '95%', height: '99%', position: 'relative'}}>
                                     <Typography variant='h5' align='center' sx={{paddingTop: '10px', fontSize: '24px', fontWeight: 700, mb: 3}}>Import Errors</Typography>
                                     {data.possibleUnsuccessfulEMs !== undefined &&

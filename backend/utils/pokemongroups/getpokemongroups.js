@@ -11,7 +11,7 @@ function getPokemonTypes (gen) {
     const pokemonTypes = allPokemon.map((p) => {
         const isInGen = hasGame ? (p.specificGenInfo.gen8 !== undefined && p.specificGenInfo.gen8.balls[gen] !== undefined) : p.specificGenInfo[parsedGen] !== undefined
         if (isInGen) {
-            const {childName, adultChildType, childNatDexNum, childGen, adultName, adultNatDexNum, adultGen, pokename, pokeNatDexNum, pokeGen} = handleIncenseAndBabyMons(p, {}, {}, true)
+            const {childName, adultChildType, childNatDexNum, childGen, adultName, adultNatDexNum, adultGen, pokename, pokeNatDexNum, pokeGen} = handleIncenseAndBabyMons(p)
             const originalPokemon = pokename === undefined ? {
                 name: adultName,
                 natDexNum: adultNatDexNum,

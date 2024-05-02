@@ -66,7 +66,7 @@ export default function IndividualRateSelection({rate, rateIdx, possibleItems1, 
             {rate.add === undefined &&
             <RateItem sx={{padding: 0.5, width: '90%', position: 'relative'}}>
                 {!isOriginalOnHandRate &&
-                <Button sx={{position: 'absolute', top: '50%', right: '-5%', padding: 0, borderRadius: '50%'}} onClick={(e) => handleChange(e, rateIdx, false, undefined, undefined, true)}>
+                <Button sx={{position: 'absolute', top: '50%', right: '0px', padding: 0, borderRadius: '50%'}} onClick={(e) => handleChange(e, rateIdx, false, undefined, undefined, true)}>
                     <CancelTwoToneIcon/>
                 </Button>
                 }

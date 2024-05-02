@@ -5,7 +5,7 @@ import
     regionalFormMons, multipleRegionalFormMons,
     originalRegionalFormNameIdentifiers, additionalOriginRegionalFormNameIdentifiers,
     firstLetterAllowedAltForms, 
-    interchangeableAltFormMons,
+    allAltFormMons, interchangeableAltFormMons, nonBreedableAltFormMons, nonBreedableAltRegIdentifiers,
     allowedAprimonMultipleDexNums, allowedAprimonDuplicateNum, apriballs}
 from '../../infoconstants.js'
 import {setOwnedPokemonList} from './../createCollection.js'
@@ -167,9 +167,18 @@ const detectAltFormsInNameImport = (basePokemonName, namesArr, pokemonName, iden
             if (basePokemonName === 'Minior' && format === 'r-') { //I have to include this if since it catches other forms of minior if formatted like Minior-Blue, and i still want to catch formatting like R-Minior (red minior)
                 return (name.toLowerCase().includes(format) && name.indexOf('-') === 1)
             }
+            if (nonBreedableAltFormMons.includes(pokemonName)) { //this function takes "Sinistea" and "Poltchageist" (phony forms), which needs to be handled accordingly
+                return name.toLowerCase().includes(format) || name.toLowerCase() === basePokemonName.toLowerCase()
+            }
             return otherGender !== undefined ? (name.toLowerCase().includes(format) && !name.toLowerCase().includes(otherGender)) : name.toLowerCase().includes(format)
         }).includes(true)
+        
         const isPokemon = name.toLowerCase().includes(basePokemonName.toLowerCase())
+        // if (basePokemonName === 'Sinistea' && isPokemon) {
+        //     console.log(pokemonName)
+        //     console.log(name)
+        //     console.log(hasIdentifier)
+        // }
         const isAltFormPokemon = isPokemon && hasIdentifier
         // if (isPokemon) {
         //     console.log('IS POKEMON!')
@@ -310,7 +319,8 @@ const formatImportRow = (importIdx, gapRows, rowStart) => {
 }
 
 const setCollection = (identifier, names, ballData, gapRows, ballOrder, collectionGen, rowStart, isHAData=undefined, HADataType, emColorData=undefined, EMData=undefined) => {
-    const collection = setOwnedPokemonList(collectionGen, {}, true).flat().flat().filter(p => p !== undefined)
+    const collection = setOwnedPokemonList(collectionGen, [], [], {}, true).flat().flat().filter(p => p !== undefined)
+    // console.log(collection.slice(300, collection.length))
     const identifierType = typeof identifier[0] === 'number' ? 'dexNums' : 'names'
     const notImportingHAInfo = isHAData === undefined
     const notImportingEMColors = emColorData === undefined
@@ -321,14 +331,13 @@ const setCollection = (identifier, names, ballData, gapRows, ballOrder, collecti
     const possibleUnsuccessfulEMImportRows = []
     const formattedNames = names.map((name) => name.toLowerCase().trim())
     const listOrderRef = names.map((name, idx) => {return {name, order: idx}})
-    
     const dexNumOrderRef = identifierType === 'dexNums' ? identifier.map((dexNum, idx) => {return {dexNum, order: idx}}) : formattedNames.map((name, idx) => {return {name, order: idx}})
     const trueGapRows = gapRows.map((gapRow) => gapRow+rowStart)
     // console.log(collection.slice(350))
     const setCollectionScope = collection.filter((pokemon, idx) => {
         // console.log(pokemon.name)
         const isRegionalFormMon = regionalFormMons.map((regionalMon) => pokemon.name.includes(regionalMon)).includes(true)
-        const isAltForm = pokemon.name.includes("(") || pokemon.name.includes('♀') || pokemon.name.includes('♂')
+        const isAltForm = pokemon.name.includes("(") || pokemon.name.includes('♀') || pokemon.name.includes('♂') || nonBreedableAltFormMons.includes(pokemon.name)
         const isInterchangeableAltFormMon = !isAltForm && interchangeableAltFormMons.includes(pokemon.name) // this is singled out as we support interchangeable alt form mons just being a singular entity in collections
         // console.log(`name: ${pokemon.name} isRegionalFormMon: ${isRegionalFormMon}`)
         if (isRegionalFormMon) {
@@ -372,12 +381,14 @@ const setCollection = (identifier, names, ballData, gapRows, ballOrder, collecti
             const formIdentifier = pokemon.name.includes('♀') ? 'Female' : 
                 pokemon.name.includes('♂') ? 'Male' : 
                 pokemon.name.includes('Basculin') ? pokemon.name.slice(pokemon.name.indexOf('(') + 1, pokemon.name.indexOf('-')) :
+                nonBreedableAltFormMons.includes(pokemon.name) ? nonBreedableAltRegIdentifiers[pokemon.name] : 
                 pokemon.name.slice(pokemon.name.indexOf('(') + 1, pokemon.name.indexOf(')'))
             const otherIdentifiers = pokemon.name.includes('♀') ? ['♀', '-♀', '♀-'] : pokemon.name.includes('♂') ? ['♂', '-♂', '♂-'] : []
-            // console.log(formIdentifier)
             const isNidoran = pokemon.name.includes('Nidoran')
-            const canFirstLetter = firstLetterAllowedAltForms.includes(pokemon.originalPokemon) || (isNidoran && firstLetterAllowedAltForms.includes(pokemon.name))  
-            const isPokemonInImportedNamesList = detectAltFormsInNameImport(isNidoran ? 'Nidoran' : pokemon.originalPokemon, names, pokemon.name, formIdentifier, otherIdentifiers, canFirstLetter)
+            const originalPokemon = isNidoran ? 'Nidoran' : nonBreedableAltFormMons.includes(pokemon.name) ? pokemon.name : pokemon.originalPokemon
+            // console.log(formIdentifier)
+            const canFirstLetter = firstLetterAllowedAltForms.includes(originalPokemon)
+            const isPokemonInImportedNamesList = detectAltFormsInNameImport(originalPokemon, names, pokemon.name, formIdentifier, otherIdentifiers, canFirstLetter)
             if (isPokemonInImportedNamesList.importedIdx !== undefined) {
                 successfulImportRows.push(formatImportRow(isPokemonInImportedNamesList.importedIdx, trueGapRows, rowStart))
             }
@@ -407,8 +418,9 @@ const setCollection = (identifier, names, ballData, gapRows, ballOrder, collecti
         }
         return isPokemonInImportedNamesList
     }).sort((a,b) => {
-        const aName = (!noDexNums && (a.displayName === undefined)) ? a.natDexNum : (a.displayName !== undefined && a.displayName !== '') ? a.displayName.toLowerCase().trim() : a.name.toLowerCase()
-        const bName = (!noDexNums && (b.displayName === undefined)) ? b.natDexNum : (b.displayName !== undefined && b.displayName !== '') ? b.displayName.toLowerCase().trim() : b.name.toLowerCase()
+        const aName = (!noDexNums && (a.displayName === undefined)) ? a.natDexNum : (a.displayName !== undefined && a.displayName !== '') ? a.displayName.toLowerCase().trim() : a.name.toLowerCase().trim()
+        const bName = (!noDexNums && (b.displayName === undefined)) ? b.natDexNum : (b.displayName !== undefined && b.displayName !== '') ? b.displayName.toLowerCase().trim() : b.name.toLowerCase().trim()
+        // console.log(aName)
         const aRef = (!noDexNums && (a.displayName === undefined)) ? dexNumOrderRef[identifier.indexOf(aName)].order : listOrderRef[formattedNames.indexOf(aName)].order
         const bRef = (!noDexNums && (b.displayName === undefined)) ? dexNumOrderRef[identifier.indexOf(bName)].order : listOrderRef[formattedNames.indexOf(bName)].order
         if (aRef < bRef) {
@@ -455,15 +467,21 @@ const setCollection = (identifier, names, ballData, gapRows, ballOrder, collecti
                                     `Detected #${nameDexMismatchObj.dexNum} in the imported dex # column, but they had the wrong name/an unidentified name (${names[idx]}, expected ${nameDexMismatchObj.collectionName}). Double-check that it imported correctly and, if not, that the name and dex # are correct and matching.`
             possibleUnsuccessfulImportRows.push({row: formatImportRow(idx, trueGapRows, rowStart), pokemonName: names[idx], errorMessage})
         } else if (!noDexNums && dexNumNotFound) {
+            const hitmonErrorMessage = `Evolved forms of the Tyrogue line are unsupported in aprimon collections.`
             const errorMessage =  `Used Dex #${dexNum} to find the pokemon, but it did not match a pokemon in our database, or it is a pokemon that is unsupported in aprimon collections. Double check that the dex number matches the name ${names[idx]}.` 
-            possibleUnsuccessfulImportRows.push({row: formatImportRow(idx, trueGapRows, rowStart), pokemonName: names[idx], errorMessage})
+            const useHitmonMessage = pokemonName.toLowerCase().includes('hitmon')
+            possibleUnsuccessfulImportRows.push({row: formatImportRow(idx, trueGapRows, rowStart), pokemonName: names[idx], errorMessage: useHitmonMessage ? hitmonErrorMessage : errorMessage})
         } else if (nameNotFound) {
             if (isAnyFormInterchangeableAltFormMon) {
                 const errorMessage = `Detected '${names[idx]}' (Changeable Alternate Form Pokemon) with an unidentified form name, and other forms of the same pokemon is present. Remove other form names if you want to have any form, or identify the form name.`
                 possibleUnsuccessfulImportRows.push({row: formatImportRow(idx, trueGapRows, rowStart), pokemonName: names[idx], errorMessage})
             } else {
+                const hitmonErrorMessage = `Evolved forms of the Tyrogue line are unsupported in aprimon collections.`
+                const altFormIdentifierMissing = `This pokemon has non-interchangeable alternate forms, and the form name is missing or unidentified. Double-check that it is present, correctly spelled, and conforms to the name format.`
                 const errorMessage = `Used Name '${names[idx]}' to find the pokemon, but it did not match a pokemon in our database. Double check that the name is spelled correctly and conforms to the name format.`
-                possibleUnsuccessfulImportRows.push({row: formatImportRow(idx, trueGapRows, rowStart), pokemonName: names[idx], errorMessage})
+                const useHitmonMessage = pokemonName.toLowerCase().includes('hitmon')
+                const useAltFormIdentifierMissing = allAltFormMons.map(mon => mon.toLowerCase()).includes(pokemonName)
+                possibleUnsuccessfulImportRows.push({row: formatImportRow(idx, trueGapRows, rowStart), pokemonName: names[idx], errorMessage: useHitmonMessage ? hitmonErrorMessage : useAltFormIdentifierMissing ? altFormIdentifierMissing : errorMessage})
             }
         } else if (!noDexNums && multipleSameDexNum) {
             const numOfSameDexNum = identifier.filter((num) => num === dexNum).length 
@@ -498,9 +516,11 @@ const setCollection = (identifier, names, ballData, gapRows, ballOrder, collecti
         const useDisplayName = useName && pokemon.displayName !== ''
         const useDexNums = !noDexNums && !useDisplayName && !useName
         const idxIdentifier = useDexNums ? pokemon.natDexNum : useDisplayName ? pokemon.displayName.toLowerCase() : pokemon.name.toLowerCase()
+        
         const pokemonIdx = useDexNums ? identifier.indexOf(idxIdentifier) : formattedNames.indexOf(idxIdentifier)
 
         const importedBallInfo = ballData[pokemonIdx]
+
         const actualBallInfo = importedBallInfo !== undefined && importedBallInfo
         const noBallData = !checkboxBallData && importedBallInfo !== undefined && importedBallInfo.length === 0
 

@@ -57,7 +57,8 @@ export default function ScopeSelection({collectionType, collectionGen, importedC
         color: 'white',
         fontFamily: 'Arial'
     }));
-      
+    
+    const tyroguePresent = scope !== undefined && (Array.isArray(scope.total.breedables) ? scope.total.breedables.filter(mon => mon.id === '236').length !== 0 : scope.total.breedables.regular.filter(mon => mon.id === '236').length !== 0)
 
     //a bit weird what we do below. long explanation for this and for the conditional state initialization above:
     //scope and ballscopeinit are initialized after an async function to get data from backend. first few renders of this component, it comes out undefined,
@@ -230,6 +231,7 @@ export default function ScopeSelection({collectionType, collectionGen, importedC
                             groupKeys={groupKeys} 
                             handleChange={togglePokemon}
                             handleMassChange={massTogglePokemon}
+                            tyroguePresent={tyroguePresent}
                         />
                     </Box>
                     }

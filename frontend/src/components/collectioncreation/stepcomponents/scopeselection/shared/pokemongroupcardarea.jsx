@@ -5,7 +5,7 @@ import PokemonGroupDisplay from './pokemongroupdisplay'
 import modalStyles from '../../../../../../utils/styles/componentstyles/modalstyles'
 // import PokemonGroupCard from './pokemongroupcard'
 
-export default function PokemonGroupCardArea({typeTotalMons, formData, ballScope, groupKeys, handleChange, handleMassChange}) {
+export default function PokemonGroupCardArea({typeTotalMons, formData, ballScope, groupKeys, handleChange, handleMassChange, tyroguePresent}) {
     //only 6 possible groups (with their own sub groups) available.
     const groupKeysWithSubGroups = groupKeys.filter((groupKey) => !Array.isArray(typeTotalMons[groupKey]))
     const subGroupModalInit = {subGroup: {}}
@@ -240,6 +240,7 @@ export default function PokemonGroupCardArea({typeTotalMons, formData, ballScope
                             isInterchangeableAltFormSelection={activeSubGroupKey === 'interchangeable'}
                             groupInfo={groupInfo}
                             handleChange={handleChange}
+                            tyroguePresent={tyroguePresent}
                         />
                     </Box>
                 </Box>

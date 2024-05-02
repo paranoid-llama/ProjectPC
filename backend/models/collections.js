@@ -113,6 +113,7 @@ const collectionSchema = new Schema ({
             type: Object,
             fast: {
                 _id: false,
+                disabled: Boolean,
                 isOwned: Boolean,
                 isHA: Boolean,
                 EMs: Array,
@@ -123,6 +124,7 @@ const collectionSchema = new Schema ({
             },
             friend: {
                 _id: false,
+                disabled: Boolean,
                 isOwned: Boolean,
                 isHA: Boolean,
                 EMs: Array,
@@ -133,6 +135,7 @@ const collectionSchema = new Schema ({
             },
             heavy: {
                 _id: false,
+                disabled: Boolean,
                 isOwned: Boolean,
                 isHA: Boolean,
                 EMs: Array,
@@ -143,6 +146,7 @@ const collectionSchema = new Schema ({
             },
             level: {
                 _id: false,
+                disabled: Boolean,
                 isOwned: Boolean,
                 isHA: Boolean,
                 EMs: Array,
@@ -153,6 +157,7 @@ const collectionSchema = new Schema ({
             },
             love: {
                 _id: false,
+                disabled: Boolean,
                 isOwned: Boolean,
                 isHA: Boolean,
                 EMs: Array,
@@ -163,6 +168,7 @@ const collectionSchema = new Schema ({
             },
             lure: {
                 _id: false,
+                disabled: Boolean,
                 isOwned: Boolean,
                 isHA: Boolean,
                 EMs: Array,
@@ -173,6 +179,7 @@ const collectionSchema = new Schema ({
             },
             moon: {
                 _id: false,
+                disabled: Boolean,
                 isOwned: Boolean,
                 isHA: Boolean,
                 EMs: Array,
@@ -183,6 +190,7 @@ const collectionSchema = new Schema ({
             },
             beast: {
                 _id: false,
+                disabled: Boolean,
                 isOwned: Boolean,
                 isHA: Boolean,
                 EMs: Array,
@@ -193,6 +201,7 @@ const collectionSchema = new Schema ({
             },
             dream: {
                 _id: false,
+                disabled: Boolean,
                 isOwned: Boolean,
                 isHA: Boolean,
                 EMs: Array,
@@ -203,6 +212,7 @@ const collectionSchema = new Schema ({
             },
             safari: {
                 _id: false,
+                disabled: Boolean,
                 isOwned: Boolean,
                 isHA: Boolean,
                 EMs: Array,
@@ -213,6 +223,7 @@ const collectionSchema = new Schema ({
             },
             sport: {
                 _id: false,
+                disabled: Boolean,
                 isOwned: Boolean,
                 isHA: Boolean,
                 EMs: Array,

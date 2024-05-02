@@ -57,9 +57,14 @@ function TableRowGrouping({columns, row, id, collectionId, ownerId, styles, isSe
         usePutRequest(key, newValue, {pokename, ballname}, 'collection', collectionID, ownerID)
     }
 
-    const blackTableCellStyles = {
+    const blackTableCellStyles = { //for illegal ball combos
         color: 'white',
         backgroundColor: 'black'
+    }
+
+    const disabledTableCellStyles = { //for disabled ball combos (which the user purposefully doesn't wanna collect)
+        color: 'white',
+        backgroundColor: 'grey'
     }
 
     return (
@@ -93,6 +98,9 @@ function TableRowGrouping({columns, row, id, collectionId, ownerId, styles, isSe
                         />:
                     row.balls[c.dataKey] === undefined ? 
                         <TableCell sx={blackTableCellStyles} key={`${row.imgLink}-${c.label}`}>
+                        </TableCell> :
+                    row.balls[c.dataKey].disabled === true ? 
+                        <TableCell sx={disabledTableCellStyles} key={`${row.imgLink}-${c.label}`}>
                         </TableCell> :
                     <IsOwnedCheckbox
                         key={`${row.imgLink}-${c.label}`} 

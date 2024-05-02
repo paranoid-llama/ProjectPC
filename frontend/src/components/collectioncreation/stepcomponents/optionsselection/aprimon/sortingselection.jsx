@@ -101,10 +101,10 @@ export default function SortingSelection({sortData, handleChange, handleCustomSo
                         <Box sx={{width: '100%', height: '50%', display: 'flex', justifyContent: 'center', alignItems: 'center', mt: 1, gap: 2, ...disabledCollectionResortEffect}}>
                             <Typography sx={{fontSize: '14px'}}>Sort By:</Typography>
                             <Select 
-                                value={sortData.collection.defaultSortKey}
+                                value={sortData.collection.default}
                                 sx={{'&.MuiInputBase-root': {width: '70%'}, '& .MuiSelect-select': {fontSize: '12px', py: 0}}}
                                 size='small'
-                                onChange={(e, newVal) => handleChange(e, 'collection', 'defaultSortKey', newVal.props.value)}
+                                onChange={(e, newVal) => handleChange(e, 'collection', 'default', newVal.props.value)}
                             >
                                 <MenuItem value='NatDexNumL2H'>Dex # - Lowest to Highest</MenuItem>
                                 <MenuItem value='NatDexNumH2L'>Dex # - Highest to Lowest</MenuItem>
@@ -137,10 +137,10 @@ export default function SortingSelection({sortData, handleChange, handleCustomSo
                         <Box sx={{width: '100%', height: '30%', display: 'flex', justifyContent: 'center', alignItems: 'center', mt: 1, gap: 2, ...disabledOnhandResortEffect}}>
                             <Typography sx={{fontSize: '14px'}}>Sort By:</Typography>
                             <Select 
-                                value={sortData.onhand.defaultSortKey}
+                                value={sortData.onhand.default}
                                 sx={{'&.MuiInputBase-root': {width: '70%'}, '& .MuiSelect-select': {fontSize: '12px'}}}
                                 size='small'
-                                onChange={(e, newVal) => handleChange(e, 'onhand', 'defaultSortKey', newVal.props.value)}
+                                onChange={(e, newVal) => handleChange(e, 'onhand', 'default', newVal.props.value)}
                             >
                                 <MenuItem value='NatDexNumL2H'>Dex # - Lowest to Highest</MenuItem>
                                 <MenuItem value='NatDexNumH2L'>Dex # - Highest to Lowest</MenuItem>

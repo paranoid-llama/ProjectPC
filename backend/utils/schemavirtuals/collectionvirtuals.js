@@ -36,7 +36,7 @@ function getImgLink(p) {
                     }
                 } else if (p.name.includes('Alcremie')) {
                     //Alcremie (Strawberry Matcha Cream)
-                    //        ^           ^      ^
+                    //         ^          ^      ^
                     //      startindex   2ndspac 3rdspace
                     const indexOfSecondSpace = p.name.indexOf(' ', startIndex)
                     

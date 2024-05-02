@@ -112,6 +112,13 @@ const sortOnHandList = (firstSort='pokemon', pokemonSortKey, ballOrder, list) =>
     return sortedList
 }
 
+const customSortCollectionListLogic = (a, b, customSortOrder) => {
+    const customSortOrderIdxs = customSortOrder.map((p, idx) => {return {...p, idx}})
+    const aIdx = customSortOrderIdxs.filter(mon => mon.id === a.imgLink)[0].idx
+    const bIdx = customSortOrderIdxs.filter(mon => mon.id === b.imgLink)[0].idx
+    return aIdx > bIdx ? 1 : -1
+}
+
 const sortList = (sortKey, list) => {
     if (sortKey === 'A2Z' || sortKey === 'Z2A') {
         return sortByName(sortKey, list)
@@ -120,4 +127,4 @@ const sortList = (sortKey, list) => {
     }
 }
 
-export {sortList, sortByDexNum, sortByName, sortOnHandList}
+export {sortList, sortByDexNum, sortByName, sortOnHandList, customSortCollectionListLogic}

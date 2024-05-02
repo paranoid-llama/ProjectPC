@@ -7,6 +7,7 @@ import { getPokemonGroups } from './utils/pokemongroups/getpokemongroups.js';
 // require('dotenv').config()
 import dotenv from 'dotenv'
 import lton from 'letter-to-number'
+import bodyParser from 'body-parser';
 dotenv.config()
 
 function newObjectId() {
@@ -47,7 +48,8 @@ const app = express();
 
 //middleware
 app.use(cors())
-app.use(express.json())
+app.use(express.json({ limit: '500kb' }))
+app.use(bodyParser.json({ limit: '500kb' }))
 
 //routes
 
@@ -56,7 +58,7 @@ app.get('/message', (req, res) => {
 })
 
 app.post('/users/new', catchAsync(async(req, res) => {
-    const user = new User({username: 'llama', password: 'rfgwgw', email: 'fgwfgvw'})
+    const user = new User({username: 'paranoid-llama', password: 'rgdbdfbnasuia', email: 'qwqfafasfewwe'})
     await user.save()
     res.send('ok, made new user!')
 }))
@@ -162,11 +164,14 @@ app.post('/collections/new/import', catchAsync(async(req, res) => {
 
 
 app.post('/collections/new', catchAsync(async(req, res) => {
-    const {gen, includeBabyMon, includeIncenseMon, owner, interchangeableAltForms} = req.body
-    const collectionData = new CollectionClass(gen, includeBabyMon, includeIncenseMon, owner, interchangeableAltForms)
+    const {newCollectionInfo, type} = req.body
+    //type refers to 'aprimon', 'livingdex', etc. useful for when newer types of collection are supported
+
+    const collectionData = new CollectionClass(undefined, newCollectionInfo)
     const collection = new Collection(collectionData)
     await collection.save()
-    res.end()
+
+    res.json(collection._id)
 }))
 
 app.get('/collections/:id', catchAsync(async(req, res) => {

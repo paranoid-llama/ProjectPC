@@ -19,10 +19,12 @@ const aprimonSpecificIdentifiers = [
     {category: 'Rockruff', imgLink: ['744'], id: "'Dusk' or 'Own Tempo'", canFirstLetter: false}, 
     {category: 'Oricorio', imgLink: ['741-p', '741-b', '741-s', '741-pau'], id: 'Style Name', canFirstLetter: false},
     {category: 'Minior', imgLink: ['774-r', '774-o', '774-y', '774-g', '774-b', '774-i', '774-v'], id: 'Core Color', canFirstLetter: true},
+    {category: 'Sinistea', imgLink: ['854'], id: 'Authenticity (Phony / Antique)', canFirstLetter: true},
     {category: 'Alcremie', imgLink: ['869'], id: 'Sweet and Cream/Swirl Names', canFirstLetter: false},
     {category: 'Indeedee', imgLink: ['876-f', '876-m'], id: 'Gender', canFirstLetter: true},
     {category: 'Squawkabilly', imgLink: ['931-w', '931-y', '931-g', '931-b'], id: 'Plumage Color', canFirstLetter: true},
-    {category: 'Tatsugiri', imgLink: ['978-s', '978-d', '978-c'], id: 'Form Name', canFirstLetter: true}
+    {category: 'Tatsugiri', imgLink: ['978-s', '978-d', '978-c'], id: 'Form Name', canFirstLetter: true},
+    {category: 'Poltchageist', imgLink: ['1012'], id: 'Authenticity (Counterfeit / Artisan)', canFirstLetter: true}
 ]
 
 //other info to include with the associated field
@@ -36,7 +38,9 @@ const aprimonAsideInfo = {
     ['Rockruff']: {id: 'Do not have an identifier for the original form!', canFirstLetter: 'Two different naming conventions'},
     ['Oricorio']: {canFirstLetter: 'Multiple form names have the same first letter'},
     ['Alcremie']: {id: 'Must include "Cream" and "Swirl" in the names', canFirstLetter: 'Too many forms'},
-    ['Indeedee']: {id: 'Can do gender symbol instead'}
+    ['Sinistea']: {id: 'You do not need an identifier for the Phony form'},
+    ['Indeedee']: {id: 'Can do gender symbol instead'},
+    ['Poltchageist']: {id: 'You do not need an identifier for the Counterfeit form'}
 }
 
 const generalImportFormTemplate = {

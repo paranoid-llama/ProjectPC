@@ -101,10 +101,10 @@ export default function AprimonReviewFinalize({formData}) {
                 </Box>
                 <Box sx={{width: '100%', height: '20%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
                     <Typography sx={{fontSize: '14px', fontWeight: 700}}>Sorting Options</Typography>
-                    <Typography sx={{fontSize: '11px'}}><b>Auto-Sort Collection List:</b> {formData.options.sorting.collection.reorder === true ? `Yes, by ${reorderDisplays[formData.options.sorting.collection.defaultSortKey]}` : 'No'}</Typography>
+                    <Typography sx={{fontSize: '11px'}}><b>Auto-Sort Collection List:</b> {formData.options.sorting.collection.reorder === true ? `Yes, by ${reorderDisplays[formData.options.sorting.collection.default]}` : 'No'}</Typography>
                     <Typography sx={{fontSize: '11px'}}><b>Auto-Sort On-Hand List: </b> 
                         {formData.options.sorting.onhand.reorder === true ? 
-                            `Yes, first by ${capitalizeFirstLetter(formData.options.sorting.onhand.sortFirstBy)}${formData.options.sorting.onhand.sortFirstBy === 'pokemon' ? ` (${reorderDisplays[formData.options.sorting.onhand.defaultSortKey]})` : ''}, then by ${otherOnHandSortBy[formData.options.sorting.onhand.sortFirstBy]}${otherOnHandSortBy[formData.options.sorting.onhand.sortFirstBy] === 'Pokemon' ? ` (${reorderDisplays[formData.options.sorting.onhand.defaultSortKey]})` : ''}` : 'No'}</Typography>
+                            `Yes, first by ${capitalizeFirstLetter(formData.options.sorting.onhand.sortFirstBy)}${formData.options.sorting.onhand.sortFirstBy === 'pokemon' ? ` (${reorderDisplays[formData.options.sorting.onhand.default]})` : ''}, then by ${otherOnHandSortBy[formData.options.sorting.onhand.sortFirstBy]}${otherOnHandSortBy[formData.options.sorting.onhand.sortFirstBy] === 'Pokemon' ? ` (${reorderDisplays[formData.options.sorting.onhand.default]})` : ''}` : 'No'}</Typography>
                 </Box>
             </Box> 
         </Box>

@@ -83,7 +83,7 @@ export default function ShowCollection({colorStyles, listStyles}) {
             <BodyWrapper>
                 {/* <h1>Collection info</h1>
                 <h2>Owner: {collection.owner && collection.owner.username}</h2> */}
-                <ShowCollectionTitle collectionID={collectionId}/>
+                <ShowCollectionTitle collectionID={collectionId} options={collection.options}/>
                 <FilterSortArea/>
                 <Box sx={{flexGrow: 1, margin: 0, width: '100%', display: 'flex'}}>
                     <Tabs 

@@ -15,7 +15,7 @@ import ReviewFinalizeBase from "../components/collectioncreation/stepcomponents/
 import { selectAdjArrItem, capitalizeFirstLetter } from "../../utils/functions/misc";
 import { getPokemonGroups } from "../../utils/functions/backendrequests/getpokemongroups";
 import { ballIntros, apriballs, genGames } from "../infoconstants";
-import { sortByDexNum } from "../../utils/functions/sortfilterfunctions/sortingfunctions";
+import { sortByDexNum, customSortCollectionListLogic } from "../../utils/functions/sortfilterfunctions/sortingfunctions";
 import './newCollection.css'
 
 export default function NewCollection(userid) {
@@ -181,7 +181,7 @@ export default function NewCollection(userid) {
         const pokemonGroups = await getPokemonGroups(collectionGen)
         const scopeFormData = getScopeFormData(importedCollection, pokemonGroups, collectionGen)
         const oneArrTotal = getOneArrData(pokemonGroups)
-        const customSortState = Object.values(importedCollection).length !== 0 ? {customSort: importedCollection.map(mon => {return {name: mon.name, natDexNum: mon.natDexNum, id: mon.id}})} : {}
+        const customSortState = Object.values(importedCollection).length !== 0 ? {customSort: importedCollection.map(mon => {return {name: mon.name, natDexNum: mon.natDexNum, id: mon.imgLink}})} : {}
         setFormData({...formData, importedCollection, ballScope, scope: {gen: collectionGen, total: pokemonGroups, formData: scopeFormData, oneArrTotal}, ...customSortState})
     }
 
@@ -189,10 +189,10 @@ export default function NewCollection(userid) {
         setCreationProgress(50)
         const genNum = typeof formData.collectionType.subTypeValue === 'string' && formData.collectionType.subTypeValue !== 'home' ? genGames.filter(data => data.games.includes(formData.collectionType.subTypeValue))[0].gen : formData.collectionType.subTypeValue
         const baseBalls = formData.collectionType.subTypeValue !== 'home' ? apriballs.filter(ball => ballIntros[ball] !== undefined ? ballIntros[ball] <= genNum : true) : apriballs
-        const fullBallScope = {total: baseBalls, formData: ballScope.length === 0 ? baseBalls : ballScope}
+        const fullBallScope = {total: baseBalls, importedBallScope: ballScope, formData: ballScope.length === 0 ? baseBalls : ballScope}
         setTimeout(() => {
             if (formData.scope === undefined || formData.scope.gen !== formData.collectionType.subTypeValue) {
-                // console.log('UPDATING GROUPS')
+                //if they go to the scope selection screen and go back to change the collection gen, this updates it as scope obj keeps track of its gen
                 setScopeState(data, formData.collectionType.subTypeValue, fullBallScope)
                 
             }
@@ -207,8 +207,9 @@ export default function NewCollection(userid) {
         const userImportedCollection = Object.values(formData.importedCollection).length !== 0
         const customSortState = (!userImportedCollection || !unchangedScope) ? {customSort : getOneArrData(pokemonScope, false)} : {} 
             //if the user imported a collection AND the scope is unchanged, then the sort state doesnt update itself (it is set if they imported a collection in setScopeState)
-
-        setFormData({...formData, ballScope: {...formData.ballScope, formData: ballScope}, scope: {...formData.scope, formData: pokemonScope, excludedCombos}, ...customSortState})
+        const newFormDataState = formData.options !== undefined ? {...formData, ballScope: {...formData.ballScope, formData: ballScope}, scope: {...formData.scope, formData: pokemonScope, excludedCombos, unchangedScope}, options: {...formData.options, sorting: {...formData.options.sorting, ...customSortState}}} : 
+            {...formData, ballScope: {...formData.ballScope, formData: ballScope}, scope: {...formData.scope, formData: pokemonScope, excludedCombos, unchangedScope}, ...customSortState}
+        setFormData(newFormDataState)
     }
 
     const handleScopeSelection = (e, pokemonScope, ballScope, excludedCombos) => {
@@ -235,7 +236,34 @@ export default function NewCollection(userid) {
         }, 500)
     }
 
-    const finalizeCreation = () => {
+    const finalizeCreation = async() => {
+        const backendOptionsFormat = {
+            sorting: {collection: formData.options.sorting.collection, onhand: formData.options.sorting.onhand},
+            tradePreferences: {...formData.options.tradePreferences, rates: {pokemonOffers: formData.options.rates.pokemonOffers.filter(off => off.add === undefined), itemOffers: formData.options.rates.itemOffers.filter(off => off.add === undefined)}}
+        }
+        //below variable only matters for imported collections, since if it is completely unchanged then we just take the imported collection as is and don't 
+        //redo the collection creation function
+        const completelyUnchangedScope = (Object.keys(formData.scope.excludedCombos).length === 0) && (formData.scope.unchangedScope === true) && (!formData.ballScope.importedBallScope.map(ball => formData.ballScope.formData.includes(ball)).includes(false) && formData.ballScope.importedBallScope.length === formData.ballScope.formData.length)
+        const importedOwnedPokemonList = Object.keys(formData.importedCollection).length !== 0 ? formData.importedCollection.sort((a, b) => customSortCollectionListLogic(a, b, formData.options.sorting.customSort)) : undefined
+
+        const newCollectionInfo = {
+            ownedPokemonList: importedOwnedPokemonList,
+            remakeList: (Object.keys(formData.importedCollection).length !== 0 && !completelyUnchangedScope),
+            gen: formData.collectionType.subTypeValue,
+            pokemonScope: formData.scope.formData,
+            ballScope: formData.ballScope.formData,
+            excludedCombos: formData.scope.excludedCombos,
+            options: backendOptionsFormat,
+            customSort: formData.options.sorting.customSort,
+            collectionName: formData.options.collectionName,
+            owner: "663313a050e7aacd52eb2d54"
+        }
+
+        const collectionId = await createNewCollection(newCollectionInfo, formData.collectionType.type)
+        setTimeout(() => {
+            setFormData({...formData, redirectLink: collectionId})
+        }, 250)
+
     }
 
     const goBackStep = () => {
@@ -250,7 +278,6 @@ export default function NewCollection(userid) {
         }, 500)
     }
 
-    const transitionOccuring = Object.values(slideClasses).filter(className => className !== 'none').length !== 0
     // console.log(formData)
 
     return (
@@ -300,6 +327,7 @@ export default function NewCollection(userid) {
                         formData={formData}
                         cssClass={slideClasses.step5}
                         goBackStep={{stepName: 'Options Selection', func: goBackStep}}
+                        redirectLink={formData.redirectLink}
                         handleChange={finalizeCreation}
                     />
                 }

@@ -19,6 +19,9 @@ const allAltFormMons = ['Nidoran', 'Paldean Tauros', 'Burmy', 'Shellos', 'Bascul
 const genderAltFormMons = ['Nidoran', 'Indeedee']
 const interchangeableAltFormMons = ['Burmy', 'Deerling', 'Oricorio']
 const nonBreedableAltFormMons = ['Sinistea', 'Poltchageist']
+//below is needed as regularly the collection is generated without these identifiers, so theres no place where its shown in the collection list 
+const nonBreedableAltRegIdentifiers = {'Sinistea': 'phony', 'Poltchageist': 'counterfeit'}
+
 
 //below is dexnums that are allowed to be duplicate. used for importing collections to check if theres unauthorized overlaps to give the user a warning.
 const allowedAprimonMultipleDexNums = [19, 27, 37, 50, 52, 58, 74, 77, 79, 83, 88, 100, 122, 128, 144, 145, 146, 194, 211, 215, 222, 263, 554, 562, 570, 618, 412, 422, 550, 585, 666, 669, 710, 741, 744, 774, 854, 869, 876, 931, 978, 1012]
@@ -69,7 +72,7 @@ const additionalOriginRegionalFormNameIdentifiers = {
 }
 
 //these are alt form pokemon with first letter allowed (no overlap). If a new form is introduced to any of these mons and screws it up this needs to be updated
-const firstLetterAllowedAltForms = ['Nidoran♂', 'Nidoran♀', 'Burmy', 'Shellos', 'Basculin', 'Flabébé', 'Minior', 'Indeedee', 'Squawkabilly', 'Tatsugiri']
+const firstLetterAllowedAltForms = ['Nidoran♂', 'Nidoran♀', 'Burmy', 'Shellos', 'Basculin', 'Flabébé', 'Minior', 'Sinistea', 'Indeedee', 'Squawkabilly', 'Tatsugiri', 'Poltchageist']
 
 //these are alternate and regional form pokemon who have special cases when creating ball list for them.
 const uniqueAlternateFormPokemon = ['Basculin', 'Vivillon', 'Flabébé', 'Rockruff', 'Alcremie']
@@ -94,7 +97,7 @@ export {
     incenseBabiesWithExclusiveEMs, incenseAdultsWithExclusiveEMs, altFormMonsWithExclusiveEMs, 
     babiesOfGen1Pokemon, babiesOfGen2Pokemon, babiesOfGen3Pokemon,
     regionalFormRegions, regionalFormMons, multipleRegionalFormMons,
-    allAltFormMons, interchangeableAltFormMons, nonBreedableAltFormMons, allowedAprimonMultipleDexNums, allowedAprimonDuplicateNum,
+    allAltFormMons, interchangeableAltFormMons, nonBreedableAltFormMons, nonBreedableAltRegIdentifiers, allowedAprimonMultipleDexNums, allowedAprimonDuplicateNum,
     apriballs, apriballLiterals, specialBalls, shopballs, generations, genGames, findGenByDexNum,
     gapIdentifiers, regionalFormNameIdentifiers, originalRegionalFormNameIdentifiers, additionalOriginRegionalFormNameIdentifiers, firstLetterAllowedAltForms, regions,
     uniqueAlternateFormPokemon, uniqueRegionalFormPokemon, pokemonNamesWithSpaces

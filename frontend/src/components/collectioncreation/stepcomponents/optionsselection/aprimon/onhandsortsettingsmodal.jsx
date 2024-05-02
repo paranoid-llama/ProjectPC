@@ -36,7 +36,7 @@ export default function OnHandSortSettingsModal({onhandSortSettings, open, close
         {name: 'Milcery', natDexNum: 868, imgLink: '868', ball: totalBallsIncludesBall('lure')},
     ]
 
-    const sortedExampleList = sortOnHandList(onhandSortSettings.sortFirstBy, onhandSortSettings.defaultSortKey, tentativeBallOrder, exampleList)
+    const sortedExampleList = sortOnHandList(onhandSortSettings.sortFirstBy, onhandSortSettings.default, tentativeBallOrder, exampleList)
 
     const listPokemonSelect = (index) => {
         const pokemon = sortedExampleList[index]
@@ -94,10 +94,10 @@ export default function OnHandSortSettingsModal({onhandSortSettings, open, close
                             <Box sx={{width: '50%', display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 1}}>
                                 <Typography sx={{fontSize: '14px', marginRight: 2}}>Sort Pokemon By:</Typography>
                                 <Select 
-                                    value={onhandSortSettings.defaultSortKey}
+                                    value={onhandSortSettings.default}
                                     sx={{'&.MuiInputBase-root': {width: '70%'}, '& .MuiSelect-select': {fontSize: '12px', color: 'white'}}}
                                     size='small'
-                                    onChange={(e, newVal) => handleChange(e, 'onhand', 'defaultSortKey', newVal.props.value)}
+                                    onChange={(e, newVal) => handleChange(e, 'onhand', 'default', newVal.props.value)}
                                 >
                                     <MenuItem value='NatDexNumL2H'>Dex # - Lowest to Highest</MenuItem>
                                     <MenuItem value='NatDexNumH2L'>Dex # - Highest to Lowest</MenuItem>

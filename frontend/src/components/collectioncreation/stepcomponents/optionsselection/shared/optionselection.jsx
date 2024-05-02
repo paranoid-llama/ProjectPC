@@ -25,8 +25,8 @@ export default function OptionSelection({collectionType, formOptionsData, collec
             ftItems: {}
         },
         sorting: {
-            collection: {defaultSortKey: 'NatDexNumL2H', reorder: false},
-            onhand: {defaultSortKey: 'NatDexNumL2H', reorder: true, ballOrder: [], sortFirstBy: 'pokemon'},
+            collection: {default: 'NatDexNumL2H', reorder: false},
+            onhand: {default: 'NatDexNumL2H', reorder: true, ballOrder: [], sortFirstBy: 'pokemon'},
             customSort,
             holdPokemon: []
         }, 
@@ -86,6 +86,7 @@ export default function OptionSelection({collectionType, formOptionsData, collec
                                 py: 0.5
                             }
                         }}
+                        defaultValue={optionsFormData.collectionName}
                         charLimit={60}
                     />
                 </Box>
@@ -133,7 +134,7 @@ export default function OptionSelection({collectionType, formOptionsData, collec
                     </Box>
                     <Box sx={{width: '50%', display: 'flex', justifyContent: 'end'}}>
                         <Button onClick={(e) => handleChange(e, optionsFormData, collectionNameRef.current.value)}>
-                            <Typography sx={{mx: 2, fontSize: '14px'}}>Finalize</Typography>
+                            <Typography sx={{mx: 2, fontSize: '14px'}}>Review</Typography>
                             <ArrowForward/>
                         </Button>
                     </Box>

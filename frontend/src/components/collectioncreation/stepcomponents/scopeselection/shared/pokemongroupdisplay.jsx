@@ -48,13 +48,16 @@ const gridComponents = {
 
 const generateOneOrOtherContent = (option1, option2, activePokemon, handleChange, isBabyAdultSelection, groupInfo, ballScope) => {
     const multipleOption2 = Array.isArray(option2)
-    const noLegalBalls = !option1.legalBalls.map(ball => (
+    const noLegalBalls = !option1 === undefined && (!option1.legalBalls.map(ball => (
         ball === 'apriball' ?
         apriballLiterals.map(b => ballScope.includes(b)).includes(true) : 
         ballScope.includes(ball)
-    )).includes(true)
+    )).includes(true))
+    const tyrogueInfo = option1 === undefined
     return (
-        <Item sx={{width: '95%', mb: 1, display: 'flex', flexDirection: 'row', padding: '8px', backgroundColor: '#283f57'}}>
+        <Item sx={{width: '95%', mb: 1, display: 'flex', flexDirection: 'row', padding: '8px', backgroundColor: '#283f57', justifyContent: 'center'}}>
+            {!tyrogueInfo &&
+            <>
             <Box sx={{display: 'flex', justifyContent: 'start', alignItems: 'center', width: '50%'}}>
                 {noLegalBalls ? 
                 <Tooltip 
@@ -218,11 +221,26 @@ const generateOneOrOtherContent = (option1, option2, activePokemon, handleChange
                 </ToggleButton>
                 }
             </Box>
+            </>}
+            {tyrogueInfo && 
+            <Box sx={{display: 'flex', width: '50%', height: '100%', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', opacity: 0.5}}>
+                <Box sx={{display: 'flex', width: '100%', height: '50%', justifyContent: 'center', alignItems: 'center'}}>
+                    <Typography sx={{fontSize: '12px'}}>
+                        #236 <ImgData type='poke' linkKey='236'/> Tyrogue's
+                    </Typography>
+                </Box>
+                <Box sx={{display: 'flex', width: '100%', height: '50%'}}>
+                    <Typography sx={{fontSize: '12px'}}>
+                        evolved forms are unsupported. You can find Tyrogue in the Breedables section.
+                    </Typography>
+                </Box>
+            </Box>
+            }
         </Item>
     )
 }
 
-export default function PokemonGroupDisplay({totalPokemon, activePokemon, ballScope, isInterchangeableAltFormSelection, groupInfo, handleChange}) {
+export default function PokemonGroupDisplay({totalPokemon, activePokemon, ballScope, isInterchangeableAltFormSelection, groupInfo, handleChange, tyroguePresent}) {
     const isBabyAdultSelection = !Array.isArray(totalPokemon)
     const fullBabyData = isBabyAdultSelection && {
         total: totalPokemon.babies,
@@ -249,7 +267,7 @@ export default function PokemonGroupDisplay({totalPokemon, activePokemon, ballSc
         (isBabyAdultSelection || isInterchangeableAltFormSelection) ? 
         <Virtuoso
             style={{height: '300px', width: '100%', display: 'flex', alignItems: 'center'}}
-            totalCount={isBabyAdultSelection ? totalPokemon.babies.length : reOrderedInterchangeableSel.length}
+            totalCount={isBabyAdultSelection ? (groupInfo.subGroup === 'regular') ? totalPokemon.babies.length+1 : totalPokemon.babies.length : reOrderedInterchangeableSel.length}
             itemContent={(index) => 
                 isBabyAdultSelection ? 
                 generateOneOrOtherContent(totalPokemon.babies[index], totalPokemon.adults[index], [...fullBabyData.active, ...fullAdultData.active], handleChange, true, groupInfo, ballScope) : 

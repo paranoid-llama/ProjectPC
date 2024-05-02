@@ -2,7 +2,30 @@ import {apriballLiterals, specialBalls, uniqueAlternateFormPokemon, uniqueRegion
 
 //JSON.parse(JSON.stringify(ownedBallList)) ---- this makes a new ref for the owned ball list allowing changes in one alt form to not affect the other
 
-function handleAlternateForms(pokemon, ownedBallList, pokename, parsedGen, importing=false, setType=false) {
+// function getGroupFromAPI(pokemon, collectionGen) {
+//     //gets a bit messy since the scope data is organized differently depending on the gen
+//     const breedableNonBreedableNoNested = collectionGen === 6 || collectionGen === 'bdsp'
+//     const info = pokemon.info
+//     if (info.regionalForm && info.special) { //currently only applies to Mr. Mime as of April 2024 (pokemon with regional form and baby pre-evolution)
+//         return {group: 'babyAdultMons', subGroup: info.special.incenseMon === true ? 'incense' : 'regular'}
+//     } else if (info.regionalForm) {
+//         //group: legendaries applies to the kanto bird trio, which will be caught in this section of the if stack. no other mons with regional form mons (and who
+//         //have .regionalForms in the info section) belong in groups other than breedables.
+//         return breedableNonBreedableNoNested ? {group: 'breedables'} :  info.legendary === true ? {group: 'legendaries'} : {group: 'breedables', subGroup: 'regionalForms'}
+//     } else if (info.special) {
+//         return {group: 'babyAdultMons', subGroup: info.special.incenseMon === true ? 'incense' : 'regular'}
+//     } else if (info.evolvedRegional && breedableNonBreedableNoNested) {
+//         return {group: 'babyAdultMons', subGroup: info.special.incenseMon === true ? 'incense' : 'regular'}
+//     } else if (info.legendary) {
+//         return {group: 'legendaries'}
+//     } else if (info.nonBreedable) {
+//         return breedableNonBreedableNoNested ? {group: 'nonBreedables'} : {group: 'nonBreedables', subGroup: info.ultraBeast === true ? 'ultraBeasts' : info.paradoxPokemon === true ? 'paradoxPokemon' : 'regular'}
+//     } else {
+//         return breedableNonBreedableNoNested {group: 'breedables'}
+//     }
+// }
+
+function handleAlternateForms(pokemon, ownedBallList, pokename, parsedGen, importing=false, setType=false, alternateFormScope={}, otherRequiredScope=[]) {
     const multiplePokemon = []
     const nonBreedableAltForm = pokemon.info.alternateForm.nonBreedable !== undefined
     const altForms = pokename !== 'Alcremie' && (pokemon.info.specialAlternateForms !== undefined ? Object.keys(pokemon.info.specialAlternateForms.name) : pokename === 'Vivillon' ? pokemon.info.alternateForm.name : Object.keys(pokemon.info.alternateForm.name))
@@ -18,9 +41,10 @@ function handleAlternateForms(pokemon, ownedBallList, pokename, parsedGen, impor
                                 pokename === 'Rockruff' ? handleRockruff : 
                                 pokename === 'Flabébé' ? handleFlabébé : 
                                 pokename === 'Vivillon' && handleVivillon
+        const specificScope = pokename === 'Vivillon' ? alternateFormScope.vivillon : pokename === 'Alcremie' ? alternateFormScope.alcremie : alternateFormScope.breedables
         return pokename === 'Alcremie' ? 
-            handleAlcremie(pokemon.info.alternateForm.sweets, pokemon.info.alternateForm.creams, pokename, pokemon, ownedBallList, parsedGen, importing, setType, altFormType, altFormNestedType) : 
-            handlerFunction(altForms, pokename, pokemon, ownedBallList, parsedGen, importing, setType, altFormType, altFormNestedType)
+            handleAlcremie(pokemon.info.alternateForm.sweets, pokemon.info.alternateForm.creams, pokename, pokemon, ownedBallList, parsedGen, importing, setType, altFormType, altFormNestedType, specificScope) : 
+            handlerFunction(altForms, pokename, pokemon, ownedBallList, parsedGen, importing, setType, altFormType, altFormNestedType, specificScope)
     } else {
         altForms.forEach((form, idx) => {
             const formName = pokemon.info.alternateForm.name[form]
@@ -28,51 +52,61 @@ function handleAlternateForms(pokemon, ownedBallList, pokename, parsedGen, impor
             //we add stipulation below since ppl collecting nonbreedable alt form (as of april 2024, only sinistea and poltchageist antiques) is very rare, so we mark
             //the phony form as just the regular pokemon
             //though we set the display name
-            const finalName = (nonBreedableAltForm && idx === 0) ? pokename : pokename + ' ' + `(${formName})` 
-            const displayName = setType ? {} : (nonBreedableAltForm && idx === 0) ? {displayName: pokename + ' ' + `(${formName})`} : {displayName: ''} 
-            const fullType = (nonBreedableAltForm && idx === 0) ? {type: 'breedables', nestedType: 'regular'} : {...altFormType, ...altFormNestedType}
-            multiplePokemon.push(
-                {
-                    name: finalName,
-                    ...displayName,
-                    natDexNum: pokemon.info.natDexNum,
-                    gen: pokemon.gen,
-                    ...balls,
-                    ...fullType,
-                    ...importAltIdentifier
-                }
-            )
+            const finalName = (nonBreedableAltForm && idx === 0) ? pokename : pokename + ' ' + `(${formName})`
+            const specificScope = nonBreedableAltForm ? (idx === 0 ? otherRequiredScope : alternateFormScope.nonBreedable) : pokemon.info.alternateForm.interchangeable !== undefined ? alternateFormScope.interchangeable : alternateFormScope.breedable
+            const includeMon = (importing || setType) ? true : specificScope.filter(mon => mon.name === finalName).length !== 0
+            // const displayName = (setType || !importing) ? {} : (nonBreedableAltForm && idx === 0) ? {displayName: pokename + ' ' + `(${formName})`} : {displayName: ''}
+            const displayName = (setType || !importing) ? {} : {displayName: ''}
+            const fullType = (nonBreedableAltForm && idx === 0 && setType) ? {type: 'breedables', nestedType: 'regular'} : {...altFormType, ...altFormNestedType}
+            if (includeMon) {
+                multiplePokemon.push(
+                    {
+                        name: finalName,
+                        ...displayName,
+                        natDexNum: pokemon.info.natDexNum,
+                        gen: pokemon.gen,
+                        ...balls,
+                        ...fullType,
+                        ...importAltIdentifier
+                    }
+                )
+            }
         })
     }
     return multiplePokemon
 }
 
-function handleRegionalForms(pokemonInfo, ownedBallList, pokename, gen, multiplePokemonArr, importing=false, setType=false) {
+function handleRegionalForms(pokemonInfo, ownedBallList, pokename, gen, multiplePokemonArr, importing=false, setType=false, regionalFormScope=[], regularFormScope=[]) {
     const copyOfArr = multiplePokemonArr
     const regionalForms = pokemonInfo.info.regionalForm.forms
     const importAltIdentifier = importing ? {originalPokemon: pokename} : {}
     const altFormType = setType ? {type: 'breedables'} : {}
     const altFormNestedType = setType ? {nestedType: 'regionalForms'} : {}
-    const displayName = setType ? {} : {displayName: ''}
-    const balls = setType ? {} : {balls: JSON.parse(JSON.stringify(ownedBallList))}
+    const displayName = (setType || !importing) ? {} : {displayName: ''}
     if (uniqueRegionalFormPokemon.includes(pokename)) {
         const handlerFunction = pokename === 'Tauros' && handlePaldeanTauros
-        return handlerFunction(regionalForms, pokename, pokemonInfo, ownedBallList, gen, multiplePokemonArr, importing, setType, altFormType, altFormNestedType)
+        const specificScope = pokename === 'Tauros' ? regionalFormScope.filter(mon => mon.name.includes('Tauros')) : []
+        return handlerFunction(regionalForms, pokename, pokemonInfo, ownedBallList, gen, multiplePokemonArr, importing, setType, altFormType, altFormNestedType, specificScope)
     } else {
         regionalForms.forEach((regionF) => {
-            gen >= regionF.gen ?
-            copyOfArr.push(
-                {
-                    name: regionF.name + " " + capitalizeFirstLetter(pokename),
-                    ...displayName,
-                    natDexNum: pokemonInfo.info.natDexNum,
-                    gen: pokemonInfo.gen,
-                    ...balls,
-                    ...altFormType,
-                    ...altFormNestedType,
-                    ...importAltIdentifier
-                }
-            ) : null
+            const formName = regionF.name + " " + capitalizeFirstLetter(pokename)
+            const balls = setType ? {} : {balls: JSON.parse(JSON.stringify(ownedBallList))}
+            const isInGen = gen >= regionF.gen
+            const includePokemon = ((importing || setType) && isInGen) ? true : (isInGen && regionalFormScope.filter(mon => mon.name === formName).length !== 0)
+            if (includePokemon) {
+                copyOfArr.push(
+                    {
+                        name: formName,
+                        ...displayName,
+                        natDexNum: pokemonInfo.info.natDexNum,
+                        gen: pokemonInfo.gen,
+                        ...balls,
+                        ...altFormType,
+                        ...altFormNestedType,
+                        ...importAltIdentifier
+                    }
+                )
+            }
         })
     }
     return copyOfArr
@@ -97,7 +131,7 @@ function capitalizeFirstLetter(pokename) {
 }
 
 //this function handles baby and incense mons - mons where the user needs to have one or the other. no overlap so i can separate both cases.
-function handleIncenseAndBabyMons(pokemon, babyMonScope, incenseMonScope, importing=false) {
+function handleIncenseAndBabyMons(pokemon) {
     if (pokemon.info.special === undefined) {
         const pokename = capitalizeFirstLetter(pokemon.name)
         const pokeNatDexNum = pokemon.info.natDexNum
@@ -105,9 +139,9 @@ function handleIncenseAndBabyMons(pokemon, babyMonScope, incenseMonScope, import
         return { pokename, pokeNatDexNum, pokeGen }
     }
     //when importing we make an instance of a collection with every pokemon, then filter by their name list. therefore we need both adult and baby.
-    if (importing) {
+    else {
+        const adultChildType = pokemon.info.special.hasBabyMon ? 'regular' : 'incense'
         const child = pokemon.info.special.child
-        const adultChildType = pokemon.info.special.hasBabyMon === true ? 'regular' : 'incense'
         const childName = capitalizeFirstLetter(child.name)
         const childNatDexNum = child.natDexNum
         const childGen = child.gen
@@ -115,21 +149,6 @@ function handleIncenseAndBabyMons(pokemon, babyMonScope, incenseMonScope, import
         const adultNatDexNum = pokemon.info.natDexNum
         const adultGen = pokemon.gen
         return {childName, childNatDexNum, childGen, adultName, adultNatDexNum, adultGen, adultChildType}
-    }
-    //if statements allow for the scope param to be a boolean (if including all baby mons) or object (if having some vers as adults and some babies). object consists of key names being dexnum of the adult and boolean meaning we use the baby version instead of the adult.
-    if (pokemon.info.special.hasBabyMon === true && (babyMonScope === true || (babyMonScope[`num${pokemon.info.natDexNum}`] === true))) { 
-        const child = pokemon.info.special.child
-        const pokename = capitalizeFirstLetter(child)
-        const pokeNatDexNum = child.natDexNum
-        const pokeGen = child.gen
-        return { pokename, pokeNatDexNum, pokeGen }
-    //if statement same logic as above.
-    } else if (pokemon.info.special.incenseMon === true && (incenseMonScope === true || (incenseMonScope[`num${pokemon.info.natDexNum}`] === true))) { 
-        const child = pokemon.info.special.child
-        const pokename = capitalizeFirstLetter(child)
-        const pokeNatDexNum = child.natDexNum
-        const pokeGen = child.gen
-        return { pokename, pokeNatDexNum, pokeGen }
     }
 }
 
@@ -155,72 +174,58 @@ function setOwnedBallList(genKey, ballLegality, fullPokemonInfo, onlyGettingLega
     return onlyGettingLegalBalls ? legalBalls : ownedBallList
 }
 
-//these functions apply to alternate form pokemon who have special cases, and must be singled out. see infoconstants/uniqueAlternateFormPokemon for more info. 
-function handleBasculin(altForms, name, pokemonInfo, ownedBallList, gen, importing=false, setType=false, altFormType={}, altFormNestedType={}) {
-    const multiplePokemon = []
-    const displayName = setType ? {} : {displayName: ''}
-    const balls = setType ? {} : {balls: JSON.parse(JSON.stringify(ownedBallList))}
-    const importAltIdentifier = importing ? {originalPokemon: name} : {}
-    altForms.forEach(form => {
-        gen === 9 ? 
-        multiplePokemon.push(
-            {
-                name: name + ' ' + `(${pokemonInfo.info.alternateForm.name[form]})`,
-                ...displayName,
-                natDexNum: pokemonInfo.info.natDexNum,
-                gen: pokemonInfo.gen,
-                ...balls,
-                ...altFormType,
-                ...altFormNestedType,
-                ...importAltIdentifier
+function removeBallsOutsideScope(pokemon, ballScope, excludedCombos, importedBallInfo) {
+    const newPokemon = pokemon
+    const useImportedBallInfo = importedBallInfo !== undefined
+    if (Array.isArray(newPokemon)) {
+        newPokemon.forEach((poke, idx) => {
+            const hasExcludedCombos = excludedCombos[poke.name] !== undefined
+            Object.keys(poke.balls).forEach(ball => {
+                if (useImportedBallInfo) {
+                    newPokemon[idx].balls[ball] = importedBallInfo.filter(pokeInfo => pokeInfo.name === poke.name)[0].balls[ball]
+                }
+                if (!ballScope.includes(ball)) {
+                    delete newPokemon[idx].balls[ball]
+                    return 
+                }
+                if (hasExcludedCombos && excludedCombos[poke.name].excludedBalls.includes(ball)) {
+                    newPokemon[idx].balls[ball].disabled = true
+                }
+            })
+        })
+    } else {
+        const hasExcludedCombos = excludedCombos[newPokemon.name] !== undefined
+        Object.keys(newPokemon.balls).forEach(ball => {
+            if (useImportedBallInfo) {
+                newPokemon.balls[ball] = importedBallInfo.balls[ball]
             }
-        ) : 
-        pokemonInfo.info.alternateForm.name[form] === 'White-Striped' ? 
-        null :
-        multiplePokemon.push(
-            {
-                name: name + ' ' + `(${pokemonInfo.info.alternateForm.name[form]})`,
-                ...displayName,
-                natDexNum: pokemonInfo.info.natDexNum,
-                gen: pokemonInfo.gen,
-                ...balls,
-                ...altFormType,
-                ...altFormNestedType,
-                ...importAltIdentifier
+            if (!ballScope.includes(ball)) {
+                delete newPokemon.balls[ball]
+                return 
             }
-        ) 
-    })
-    return multiplePokemon
+            if (hasExcludedCombos && excludedCombos[newPokemon.name].excludedBalls.includes(ball)) {
+                newPokemon.balls[ball].disabled = true
+            }
+        })
+    } 
+    return newPokemon
 }
 
-function handleRockruff(altForms, name, pokemonInfo, ownedBallList, gen, importing=false, setType=false, altFormType={}, altFormNestedType={}) {
+//these functions apply to alternate form pokemon who have special cases, and must be singled out. see infoconstants/uniqueAlternateFormPokemon for more info. 
+function handleBasculin(altForms, name, pokemonInfo, ownedBallList, gen, importing=false, setType=false, altFormType={}, altFormNestedType={}, breedableAltFormScope=[]) {
     const multiplePokemon = []
-    const displayName = setType ? {} : {displayName: ''} 
-    const balls = setType ? {} : {balls: JSON.parse(JSON.stringify(ownedBallList))}
+    const displayName = (setType || !importing) ? {} : {displayName: ''}
     const importAltIdentifier = importing ? {originalPokemon: name} : {}
-    altForms.forEach((form) => {
-        if (pokemonInfo.info.alternateForm.name[form] === 'Dusk') {
-            const copyOfOwnedBallList = JSON.parse(JSON.stringify(ownedBallList))
-            Object.keys(ownedBallList).forEach(ball => {
-                delete copyOfOwnedBallList[ball].isHA
-            })
-            const diffBalls = setType ? {} : {balls: copyOfOwnedBallList} 
+    altForms.forEach(form => {
+        const balls = setType ? {} : {balls: JSON.parse(JSON.stringify(ownedBallList))}
+        const formName = name + ' ' + `(${pokemonInfo.info.alternateForm.name[form]})`
+        const whiteStriped = formName.includes('White-Striped')
+        const includeWhiteStriped = (whiteStriped && gen >= 9)
+        const includeMon = (importing || setType) ? true : breedableAltFormScope.filter(mon => mon.name === formName).length !== 0
+        if (((whiteStriped && includeWhiteStriped) || (!whiteStriped)) && includeMon) {
             multiplePokemon.push(
                 {
-                    name: name + ' ' + `(${pokemonInfo.info.alternateForm.name[form]})`,
-                    ...displayName,
-                    natDexNum: pokemonInfo.info.natDexNum,
-                    gen: pokemonInfo.gen,
-                    ...diffBalls,
-                    ...altFormType,
-                    ...altFormNestedType,
-                    ...importAltIdentifier
-                }
-            )
-        } else {
-            multiplePokemon.push(
-                {
-                    name: name + ' ' + `(${pokemonInfo.info.alternateForm.name[form]})`,
+                    name: formName,
                     ...displayName,
                     natDexNum: pokemonInfo.info.natDexNum,
                     gen: pokemonInfo.gen,
@@ -235,13 +240,61 @@ function handleRockruff(altForms, name, pokemonInfo, ownedBallList, gen, importi
     return multiplePokemon
 }
 
-function handleFlabébé(altForms, name, pokemonInfo, ownedBallList, gen, importing=false, setType=false, altFormType={}, altFormNestedType={}) {
+function handleRockruff(altForms, name, pokemonInfo, ownedBallList, gen, importing=false, setType=false, altFormType={}, altFormNestedType={}, breedableAltFormScope=[]) {
     const multiplePokemon = []
-    const displayName = setType ? {} : {displayName: ''}
+    const displayName = (setType || !importing) ? {} : {displayName: ''} 
+    const balls = setType ? {} : {balls: JSON.parse(JSON.stringify(ownedBallList))}
+    const importAltIdentifier = importing ? {originalPokemon: name} : {}
+    altForms.forEach((form) => {
+        const formName = name + ' ' + `(${pokemonInfo.info.alternateForm.name[form]})`
+        const includeMon = (importing || setType) ? true : breedableAltFormScope.filter(mon => mon.name === formName).length !== 0
+        if (pokemonInfo.info.alternateForm.name[form] === 'Dusk' && includeMon) {
+            const copyOfOwnedBallList = JSON.parse(JSON.stringify(ownedBallList))
+            Object.keys(ownedBallList).forEach(ball => {
+                delete copyOfOwnedBallList[ball].isHA
+            })
+            const diffBalls = setType ? {} : {balls: copyOfOwnedBallList} 
+            multiplePokemon.push(
+                {
+                    name: formName,
+                    ...displayName,
+                    natDexNum: pokemonInfo.info.natDexNum,
+                    gen: pokemonInfo.gen,
+                    ...diffBalls,
+                    ...altFormType,
+                    ...altFormNestedType,
+                    ...importAltIdentifier
+                }
+            )
+        } else {
+            if (includeMon) {
+                multiplePokemon.push(
+                    {
+                        name: formName,
+                        ...displayName,
+                        natDexNum: pokemonInfo.info.natDexNum,
+                        gen: pokemonInfo.gen,
+                        ...balls,
+                        ...altFormType,
+                        ...altFormNestedType,
+                        ...importAltIdentifier
+                    }
+                )
+            }
+        }
+    })
+    return multiplePokemon
+}
+
+function handleFlabébé(altForms, name, pokemonInfo, ownedBallList, gen, importing=false, setType=false, altFormType={}, altFormNestedType={}, breedableAltFormScope=[]) {
+    const multiplePokemon = []
+    const displayName = (setType || !importing) ? {} : {displayName: ''}
     const balls = setType ? {} : {balls: JSON.parse(JSON.stringify(ownedBallList))}
     const importAltIdentifier = importing ? {originalPokemon: name} : {}
     altForms.forEach(form => {
-        if (gen === 7 && form === 'Blue') {
+        const formName = name + ' ' + `(${pokemonInfo.info.alternateForm.name[form]})`
+        const includeMon = (importing || setType) ? true : breedableAltFormScope.filter(mon => mon.name === formName).length !== 0
+        if (gen === 7 && form === 'Blue' && includeMon) {
             const copyOfOwnedBallList = JSON.parse(JSON.stringify(ownedBallList))
             Object.keys(ownedBallList).forEach(ball => {
                 delete copyOfOwnedBallList[ball].isHA
@@ -249,7 +302,7 @@ function handleFlabébé(altForms, name, pokemonInfo, ownedBallList, gen, import
             const diffBalls = setType ? {} : {balls: copyOfOwnedBallList}
             multiplePokemon.push(
                 {
-                    name: name + ' ' + `(${pokemonInfo.info.alternateForm.name[form]})`,
+                    name: formName,
                     ...displayName,
                     natDexNum: pokemonInfo.info.natDexNum,
                     gen: pokemonInfo.gen,
@@ -260,9 +313,38 @@ function handleFlabébé(altForms, name, pokemonInfo, ownedBallList, gen, import
                 }
             ) 
         } else {
+            if (includeMon) {
+                multiplePokemon.push(
+                    {
+                        name: formName,
+                        ...displayName,
+                        natDexNum: pokemonInfo.info.natDexNum,
+                        gen: pokemonInfo.gen,
+                        ...balls,
+                        ...altFormType,
+                        ...altFormNestedType,
+                        ...importAltIdentifier
+                    }
+                )
+            }
+        }
+    })
+    return multiplePokemon
+}
+
+function handleVivillon(patterns, name, pokemonInfo, ownedBallList, gen, importing=false, setType=false, altFormType={}, altFormNestedType={}, vivillonFormScope=[]) {
+    const multiplePokemon = []
+    const displayName = (setType || !importing) ? {} : {displayName: ''}
+    const balls = setType ? {} : {balls: JSON.parse(JSON.stringify(ownedBallList))}
+    const importAltIdentifier = importing ? {originalPokemon: name} : {}
+    const adjustedPatterns = gen === 7 ? patterns.filter(p => p !== 'Fancy') : patterns //fancy pattern is an event only pattern in gen 6/7, and when vivillon was reintroduced in scarlet/violet, it became the ONLY pattern obtainable. Funny.
+    adjustedPatterns.forEach(pattern => {
+        const formName = name + ' ' + `(${pattern})`
+        const includeMon = (importing || setType) ? true : vivillonFormScope.filter(mon => mon.name === formName).length !== 0
+        if (includeMon) {
             multiplePokemon.push(
                 {
-                    name: name + ' ' + `(${pokemonInfo.info.alternateForm.name[form]})`,
+                    name: formName,
                     ...displayName,
                     natDexNum: pokemonInfo.info.natDexNum,
                     gen: pokemonInfo.gen,
@@ -277,33 +359,10 @@ function handleFlabébé(altForms, name, pokemonInfo, ownedBallList, gen, import
     return multiplePokemon
 }
 
-function handleVivillon(patterns, name, pokemonInfo, ownedBallList, gen, importing=false, setType=false, altFormType={}, altFormNestedType={}) {
-    const multiplePokemon = []
-    const displayName = setType ? {} : {displayName: ''}
-    const balls = setType ? {} : {balls: JSON.parse(JSON.stringify(ownedBallList))}
-    const importAltIdentifier = importing ? {originalPokemon: name} : {}
-    const adjustedPatterns = gen === 7 ? patterns.filter(p => p !== 'Fancy') : patterns //fancy pattern is an event only pattern in gen 6/7, and when vivillon was reintroduced in scarlet/violet, it became the ONLY pattern obtainable. Funny.
-    adjustedPatterns.forEach(pattern => {
-        multiplePokemon.push(
-            {
-                name: name + ' ' + `(${pattern})`,
-                ...displayName,
-                natDexNum: pokemonInfo.info.natDexNum,
-                gen: pokemonInfo.gen,
-                ...balls,
-                ...altFormType,
-                ...altFormNestedType,
-                ...importAltIdentifier
-            }
-        )
-    })
-    return multiplePokemon
-}
-
-function handleAlcremie(sweets, creams, name, pokemonInfo, ownedBallList, gen, importing=false, setType=false, altFormType={}, altFormNestedType={}) {
+function handleAlcremie(sweets, creams, name, pokemonInfo, ownedBallList, gen, importing=false, setType=false, altFormType={}, altFormNestedType={}, alcremieFormScope) {
     const multiplePokemon = []
     const allAlcremieForms = []
-    const displayName = setType ? {} : {displayName: ''}
+    const displayName = (setType || !importing) ? {} : {displayName: ''}
     const balls = setType ? {} : {balls: JSON.parse(JSON.stringify(ownedBallList))}
     for (let sweet of sweets) {
         for (let cream of creams) {
@@ -312,34 +371,44 @@ function handleAlcremie(sweets, creams, name, pokemonInfo, ownedBallList, gen, i
     }
     const importAltIdentifier = importing ? {originalPokemon: name} : {}
     allAlcremieForms.forEach(alcremieForm => {
-        multiplePokemon.push(
-            {
-                name: name + ' ' + `(${alcremieForm})`,
-                ...displayName,
-                natDexNum: pokemonInfo.info.natDexNum,
-                gen: pokemonInfo.gen,
-                ...balls,
-                ...altFormType,
-                ...altFormNestedType,
-                ...importAltIdentifier
-            }
-        )
+        const formName = name + ' ' + `(${alcremieForm})`
+        const includeMon = (importing || setType) ? true : alcremieFormScope.filter(mon => mon.name === formName).length !== 0
+        if (includeMon) {
+            multiplePokemon.push(
+                {
+                    name: formName,
+                    ...displayName,
+                    natDexNum: pokemonInfo.info.natDexNum,
+                    gen: pokemonInfo.gen,
+                    ...balls,
+                    ...altFormType,
+                    ...altFormNestedType,
+                    ...importAltIdentifier
+                }
+            )
+        }
     })
     return multiplePokemon
 }
 
 
 //these functions apply to regional form pokemon who have special cases, and must be singled out. see infoconstants/uniqueRegionalFormPokemon for more info.
-function handlePaldeanTauros(regionalForms, name, pokemonInfo, ownedBallList, gen, multiplePokemonArr, importing=false, setType=false, altFormType={}, altFormNestedType={}) {
+function handlePaldeanTauros(regionalForms, name, pokemonInfo, ownedBallList, gen, multiplePokemonArr, importing=false, setType=false, altFormType={}, altFormNestedType={}, paldeanTaurosScope=[]) {
     const copyOfArr = multiplePokemonArr
     const importAltIdentifier = importing ? {originalPokemon: name} : {}
-    const displayName = setType ? {} : {displayName: ''}
-    const balls = setType ? {} : {balls: JSON.parse(JSON.stringify(ownedBallList))}
+    const displayName = (setType || !importing) ? {} : {displayName: ''}
     regionalForms.forEach((regionF) => {
         if (regionF.gen <= gen) {
-            copyOfArr.push(
-                {
-                    name: regionF.name + " " + capitalizeFirstLetter(name),
+            const formName1 = regionF.name + " " + capitalizeFirstLetter(name) //Paldean Tauros
+            const formName2 = regionF.name + " " + capitalizeFirstLetter(name) + " " + `(${regionF.special[0]})` //Paldean Tauros (Blaze)
+            const formName3 = regionF.name + " " + capitalizeFirstLetter(name) + " " + `(${regionF.special[1]})` //Paldean Tauros (Aqua)
+            const includeForm1 = (importing || setType) ? true : paldeanTaurosScope.filter(mon => mon.name === formName1).length !== 0
+            const includeForm2 = (importing || setType) ? true : paldeanTaurosScope.filter(mon => mon.name === formName2).length !== 0
+            const includeForm3 = (importing || setType) ? true : paldeanTaurosScope.filter(mon => mon.name === formName3).length !== 0
+            if (includeForm1) {
+                const balls = setType ? {} : {balls: JSON.parse(JSON.stringify(ownedBallList))}
+                copyOfArr.push({
+                    name: formName1,
                     ...displayName,
                     natDexNum: pokemonInfo.info.natDexNum,
                     gen: pokemonInfo.gen,
@@ -347,9 +416,12 @@ function handlePaldeanTauros(regionalForms, name, pokemonInfo, ownedBallList, ge
                     ...altFormType,
                     ...altFormNestedType,
                     ...importAltIdentifier
-                },
-                {
-                    name: regionF.name + " " + capitalizeFirstLetter(name) + " " + `(${regionF.special[0]})`,
+                })
+            }
+            if (includeForm2) {
+                const balls = setType ? {} : {balls: JSON.parse(JSON.stringify(ownedBallList))}
+                copyOfArr.push({
+                    name: formName2,
                     ...displayName,
                     natDexNum: pokemonInfo.info.natDexNum,
                     gen: pokemonInfo.gen,
@@ -357,9 +429,12 @@ function handlePaldeanTauros(regionalForms, name, pokemonInfo, ownedBallList, ge
                     ...altFormType,
                     ...altFormNestedType,
                     ...importAltIdentifier
-                },
-                {
-                    name: regionF.name + " " + capitalizeFirstLetter(name) + " " + `(${regionF.special[1]})`,
+                })
+            }
+            if (includeForm3) {
+                const balls = setType ? {} : {balls: JSON.parse(JSON.stringify(ownedBallList))}
+                copyOfArr.push({
+                    name: formName3,
                     ...displayName,
                     natDexNum: pokemonInfo.info.natDexNum,
                     gen: pokemonInfo.gen,
@@ -367,8 +442,8 @@ function handlePaldeanTauros(regionalForms, name, pokemonInfo, ownedBallList, ge
                     ...altFormType,
                     ...altFormNestedType,
                     ...importAltIdentifier
-                },
-            )
+                })
+            }
         }
     })
     return copyOfArr
@@ -376,4 +451,4 @@ function handlePaldeanTauros(regionalForms, name, pokemonInfo, ownedBallList, ge
 
 
 
-export {handleAlternateForms, handleRegionalForms, handleIncenseAndBabyMons, setBallInfo, setOwnedBallList}
+export {handleAlternateForms, handleRegionalForms, handleIncenseAndBabyMons, setBallInfo, setOwnedBallList, removeBallsOutsideScope}
