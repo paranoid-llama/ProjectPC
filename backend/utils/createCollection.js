@@ -4,7 +4,7 @@ import { customSortCollectionListLogic } from './CreateCollection/initialsort.js
 import {interchangeableAltFormMons} from './../infoconstants.js'
 import { genGames, nonBreedableAltFormMons } from './../infoconstants.js'
 import { getGenNum } from './infogathering/gens.js'
-import { getImgLink } from './schemavirtuals/collectionvirtuals.js'
+import { getImgLink, getPossibleGender } from './schemavirtuals/collectionvirtuals.js'
 
 //Note for pokemon groups/scope
 //data structure:
@@ -18,19 +18,15 @@ import { getImgLink } from './schemavirtuals/collectionvirtuals.js'
 //   evolvedRegionals: [arr]
 //}
 //ballScope: [arr of balls]
-//excludedCombos: {'pokemon name': [arr of excluded balls]}
-// function setOwnedPokemonList(gen, includeBabyMon, includeIncenseMon, interchangeableAltForms) {
+//excludedCombos: {'pokemon name': {natDexNum, id, excludedBalls: [arr of excludedBalls]}}
 function setOwnedPokemonList(gen, pokemonScope, ballScope, excludedCombos, importing=false, importedCollection=[]) {
     const userImportedCollection = importedCollection !== false
+    const parsedGen = getGenNum(gen) //gen comes as a string, since "swsh" and "bdsp" are used instead of 8. this parses it into a number
+    const game = isNaN(parseInt(gen)) ? gen : "" //this retains what game it is (if there is one)
+    const formattedGen = `gen${parsedGen}` //this formats gen to how its organized in the database
     return (
         allPokemon.map((pokemon) => {
-            const parsedGen = getGenNum(gen) //gen comes as a string, since "swsh" and "bdsp" are used instead of 8. this parses it into a number
-            const game = isNaN(parseInt(gen)) ? gen : "" //this retains what game it is (if there is one)
-            const formattedGen = `gen${parsedGen}` //this formats gen to how its organized in the database
             const pokemonInGen = (parsedGen !== 8 && pokemon.specificGenInfo[formattedGen] !== undefined) || (parsedGen === 8 && pokemon.specificGenInfo[formattedGen] !== undefined && pokemon.specificGenInfo[formattedGen].balls[game] !== undefined) //have to break gen 8 check in 2 since they could have no gen 8 combos
-            // const pokemonGroup
-            // console.log(`name: ${pokemon.name}, pokemonInGen: ${pokemonInGen}`)
-            // console.log(pokemonInGen)
             if (pokemonInGen) {
                 // console.log(pokemon.name)
                 const ballsPath = parsedGen === 8 ? pokemon.specificGenInfo[formattedGen].balls[game] : pokemon.specificGenInfo[formattedGen].balls
@@ -89,12 +85,13 @@ function setOwnedPokemonList(gen, pokemonScope, ballScope, excludedCombos, impor
                     //do note that mr. mime also belongs in the baby/adult if section, but the below boolean specifically handles mr. mime's situation.
                     //mr. mime is the only regional form pokemon who has a baby form, which means they are not in the breedables section of the scope.
                     //if there is ever more overlap, then we might need to change how this is organized.
-                    const originalFormScope = !importing && (pokemonScope.breedables.regular ? pokemonScope.breedables.regular : pokemonScope.breedables)
+                    const isLegendaryRegional = pokemon.info.legendary !== undefined //currently only applies to Articuno, Zapdos, and Moltres
+                    const originalFormScope = !importing && (isLegendaryRegional ? pokemonScope.legendaries : pokemonScope.breedables.regular ? pokemonScope.breedables.regular : pokemonScope.breedables)
                     const arrOfPokemon = childPokemon.name ? [originalPokemon, childPokemon] : [originalPokemon] //theres only ever a child for mr. mime
                     const filteredArrOfPokemon = importing ? arrOfPokemon : childPokemon.name ?
                         arrOfPokemon.filter((mon, idx) => idx === 0 && pokemonScope.babyAdultMons.incenseAdults.filter(aMon => aMon.name === mon.name).length !== 0 || idx === 1 && pokemonScope.babyAdultMons.incenseBabies.filter(bMon => bMon.name === mon.name).length !== 0) :
                         arrOfPokemon.filter(mon => originalFormScope.filter(sMon => sMon.name === mon.name).length !== 0)
-                    const multiplePokemon = handleRegionalForms(pokemon, ownedBallList, pokename === undefined ? adultName : pokename, parsedGen, filteredArrOfPokemon, importing, false, !importing ? pokemonScope.breedables.regionalForms : [])
+                    const multiplePokemon = handleRegionalForms(pokemon, ownedBallList, pokename === undefined ? adultName : pokename, parsedGen, filteredArrOfPokemon, importing, false, !importing ? isLegendaryRegional ? pokemonScope.legendaries : pokemonScope.breedables.regionalForms : [])
                     const filteredByBallScope = importing ? multiplePokemon : removeBallsOutsideScope(multiplePokemon, ballScope, excludedCombos, userImportedCollection ? importedCollection.filter(impMon => multiplePokemon.filter(mon => mon.name === impMon.name).length !== 0) : undefined)
                     return filteredByBallScope
                 }
@@ -124,39 +121,35 @@ function setOwnedPokemonList(gen, pokemonScope, ballScope, excludedCombos, impor
                 const finalPokemon = importing ? originalPokemon : includeMon ? removeBallsOutsideScope(originalPokemon, ballScope, excludedCombos, userImportedCollection ? importedCollection.filter(impMon => originalPokemon.name === impMon.name)[0] : undefined) : undefined
                 return finalPokemon
             }
-            // if (pokemonInGen && pokemon.info.nonBreedable === undefined && pokemon.info.legendary === undefined && pokemon.info.evolvedRegionalForm === undefined) {
-            //     const ballsPath = parsedGen === 8 ? pokemon.specificGenInfo[formattedGen].balls[game] : pokemon.specificGenInfo[formattedGen].balls
-            //     const ownedBallList = setOwnedBallList(parsedGen, ballsPath, pokemon)
-
-            //     const {pokename, pokeNatDexNum, pokeGen} = handleIncenseAndBabyMons(pokemon, pokemonScope.includeBabyMon, pokemonScope.includeIncenseMon)
-
-            //     const originalPokemon = {
-            //         name: pokename,
-            //         natDexNum: pokeNatDexNum,
-            //         gen: pokeGen,
-            //         balls: ownedBallList
-            //     }
-
-            //     if (pokemon.info.alternateForm) {
-            //         if (interchangeableAltFormMons.includes(pokename) && (pokemonScope.includeInterchangeableAltForms === false || pokemonScope.includeInterchangeableAltForms[`num${pokeNatDexNum}`] === false)) {  
-            //             return originalPokemon
-            //         }
-            //         if (pokemon.info.alternateForm.originalIsForm) { //handleAltForms func returns diff alternate forms of pokemon but not the original. Currently this if only applies to Rockruff and his Dusk form
-            //             return [originalPokemon, handleAlternateForms(pokemon, ownedBallList, pokename, parsedGen)]
-            //         }
-            //         return handleAlternateForms(pokemon, ownedBallList, pokename, parsedGen) 
-            //     }
-
-            //     if (pokemon.info.regionalForm !== undefined && game !== "bdsp") { //BDSP doesn't allow regional variants to be transferred over from HOME
-            //         const multiplePokemon = handleRegionalForms(pokemon, ownedBallList, pokename, parsedGen, [originalPokemon])
-            //         return multiplePokemon
-            //     } else {
-            //         return originalPokemon
-            //     }
-            // } else {
-            //     return 
-            // }
         })
+    )
+}
+
+function getIndividualPokemonInfo(gen, newPokemon, ballScope) {
+    const parsedGen = getGenNum(gen) //gen comes as a string, since "swsh" and "bdsp" are used instead of 8. this parses it into a number
+    const game = isNaN(parseInt(gen)) ? gen : "" //this retains what game it is (if there is one)
+    const formattedGen = `gen${parsedGen}` //this formats gen to how its organized in the database
+    return (
+        allPokemon.map(pokemon => {
+            const pokemonInNewPokemonArr = pokemon.info.special !== undefined ? (newPokemon.filter(nPoke => nPoke.natDexNum === pokemon.info.natDexNum || nPoke.natDexNum === pokemon.info.special.child.natDexNum)[0]) : newPokemon.filter(nPoke => nPoke.natDexNum === pokemon.info.natDexNum)[0]
+            const getPokemonInfo = pokemonInNewPokemonArr !== undefined
+            if (getPokemonInfo) {
+                const ballsPath = parsedGen === 8 ? pokemon.specificGenInfo[formattedGen].balls[game] : pokemon.specificGenInfo[formattedGen].balls
+                const isBabyPokemon = pokemon.info.special !== undefined && pokemon.info.special.child.natDexNum === pokemonInNewPokemonArr.natDexNum
+                const ownedBallList = setOwnedBallList(formattedGen, ballsPath, pokemon)
+                const pokemonInfo = {
+                    name: pokemonInNewPokemonArr.name,
+                    natDexNum: pokemonInNewPokemonArr.natDexNum,
+                    gen: isBabyPokemon ? pokemon.info.special.child.gen : pokemon.gen,
+                    balls: ownedBallList
+                }
+                pokemonInfo.imgLink = getImgLink(pokemonInfo)
+                pokemonInfo.possibleGender = getPossibleGender(pokemonInfo)
+                return removeBallsOutsideScope(pokemonInfo, ballScope, excludedCombos, undefined)
+            } else {
+                return undefined
+            }
+        }).filter(mon => mon !== undefined)
     )
 }
 
@@ -194,5 +187,5 @@ class Collection {
 
 export default Collection
 
-export {setOwnedPokemonList}
+export {setOwnedPokemonList, getIndividualPokemonInfo}
 

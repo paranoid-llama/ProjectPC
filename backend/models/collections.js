@@ -21,6 +21,7 @@ const collectionSchema = new Schema ({
     options: {
         _id: false,
         type: Object,
+        collectionBalls: {type: Array},
         sorting: {
             _id: false,
             type: Object,
@@ -108,6 +109,7 @@ const collectionSchema = new Schema ({
         displayName: String,
         natDexNum: Number,
         gen: Number,
+        disabled: Boolean,
         balls: {
             _id: false,
             type: Object,

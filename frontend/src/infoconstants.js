@@ -131,13 +131,14 @@ const items = [
     {value: 'dream', display: 'Dream Ball'}, {value: 'beast', display: 'Beast Ball'}, {value: 'safari', display: 'Safari Ball'}, {value: 'sport', display: 'Sport Ball'},
     {value: 'capsule', display: 'Ability Capsule'}, {value: 'bottlecap', display: 'Bottle Cap'}, {value: 'goldbottlecap', display: 'Gold Bottle Cap'},
     {value: 'patch', display: 'Ability Patch'}, {value: 'maxmushroom', display: 'Max Mushroom'}, {value: 'candyL', display: 'Exp. Candy L'}, {value: 'candyXL', display: 'Exp. Candy XL'},
+    {value: 'fsMochi', display: 'Fresh-Start Mochi'}
 ]
 
 const notInGenItems = {
     6: ['all'],
-    7: ['dream', 'beast', 'safari', 'sport', 'patch', 'maxmushroom', 'candyL', 'candyXL'], //while beast is in gen 7, its not valuable enough to trade (you can buy it)
-    'swsh': [],
-    'bdsp': ['beast', 'dream', 'safari', 'sport', 'maxmushroom', 'candyL', 'candyXL'],
+    7: ['dream', 'beast', 'safari', 'sport', 'patch', 'maxmushroom', 'candyL', 'candyXL', 'fsMochi'], //while beast is in gen 7, its not valuable enough to trade (you can buy it)
+    'swsh': ['fsMochi'],
+    'bdsp': ['beast', 'dream', 'safari', 'sport', 'maxmushroom', 'candyL', 'candyXL', 'fsMochi'],
     9: ['maxmushroom'],
     'home': ['all'] //no item trading with home collection
 }

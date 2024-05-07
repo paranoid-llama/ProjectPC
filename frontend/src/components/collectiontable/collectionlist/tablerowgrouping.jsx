@@ -21,8 +21,8 @@ import store from '../../../app/store'
 function TableRowGrouping({columns, row, id, collectionId, ownerId, styles, isSelected, setSelected}) {
     const dispatch = useDispatch()
     const isEditMode = useLocation().pathname.includes('edit')
-    const collection = useLoaderData()
-    const possibleEggMoves = collection.eggMoveInfo[row.name]
+    // const collection = useLoaderData()
+    const possibleEggMoves = useSelector((state) => state.listDisplay.eggMoveInfo[row.name])
     const maxEMs = possibleEggMoves.length > 4 ? 4 : possibleEggMoves.length
 
     const emCountSelectionList = setMaxEmArr(maxEMs)

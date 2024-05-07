@@ -21,6 +21,7 @@ import RenderOnHandEdit from './onhandlist/renderonhandedit'
         listType === 'collection' ? 'collectionEdit' :
         listType === 'onHand' && 'onHandEdit'
     const selectedBall = useSelector((state) => state.editmode.selectedBall)
+    const allEggMoves = useSelector((state) => state.listDisplay.eggMoveInfo)
 
     return (
         <>
@@ -31,8 +32,8 @@ import RenderOnHandEdit from './onhandlist/renderonhandedit'
             {/* {onHandNoSelection ? <Box sx={{width: '81.5136%', display: 'flex', justifyContent: 'end'}}><NothingSelected listType={listType}/></Box> : */}
             {noSelection ? <NothingSelected listType={listType}/> :
             showEditScreen === false ? <ShowSelectionConfirm listType={listType} pokemon={pokemon}/> :
-            listType === 'collection' ? <RenderCollectionEdit collectionId={collection._id} ownerId={ownerID} pokemon={pokemon} ballInfo={pokemonBallInfo} allEggMoves={collection.eggMoveInfo}/> :
-            listType === 'onHand' && <RenderOnHandEdit collectionId={collection._id} ownerId={ownerID} pokemon={pokemon} idxOfPokemon={idxOfPokemon} allEggMoves={collection.eggMoveInfo}/>
+            listType === 'collection' ? <RenderCollectionEdit collectionId={collection._id} ownerId={ownerID} pokemon={pokemon} ballInfo={pokemonBallInfo} allEggMoves={allEggMoves}/> :
+            listType === 'onHand' && <RenderOnHandEdit collectionId={collection._id} ownerId={ownerID} pokemon={pokemon} idxOfPokemon={idxOfPokemon} allEggMoves={allEggMoves}/>
             }
         </FlexAppBarContainer>
         <MiscButtonArea 

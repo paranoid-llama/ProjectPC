@@ -12,12 +12,18 @@ import { apriballs } from '../../infoconstants'
 
 const listDisplay = createSlice({
     name: 'listDisplay',
-    initialState: {collection: [], onhand: [], collectionFilters: {sort: 'NatDexNumL2H', filters: {ballFilters: [], genFilters: [], otherFilters: []}}, onhandFilters: {sort: ['NatDexNumL2H'], filters: {ballFilters: [], genFilters: [], otherFilters: []}}},
+    initialState: {collection: [], onhand: [], collectionFilters: {sort: '', filters: {ballFilters: [], genFilters: [], otherFilters: []}}, onhandFilters: {sort: [''], filters: {ballFilters: [], genFilters: [], otherFilters: []}}, eggMoveInfo: {}},
     reducers: {
         setListInitialState: (state, action) => {
-            const {collection, onhand} = action.payload
-            state.collection = collection
+            const {collection, onhand, resetCollectionFilters, updatedEggMoveInfo} = action.payload
+            state.collection = collection.filter(pokemon => pokemon.disabled === undefined)
             state.onhand = onhand
+            if (resetCollectionFilters) {
+                state.collectionFilters = {sort: '', filters: {ballFilters: [], genFilters: [], otherFilters: []}}
+            }
+            if (updatedEggMoveInfo !== undefined) {
+                state.eggMoveInfo = updatedEggMoveInfo
+            }
             return state
         },
         addOnHandPokemonToList: (state, action) => {

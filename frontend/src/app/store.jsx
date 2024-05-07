@@ -4,6 +4,7 @@ import onhand from './slices/onhand'
 import collection from './slices/collection'
 import editmode from './slices/editmode'
 import listDisplay from './slices/listdisplay'
+import options from './slices/options'
 import reduxWindow from 'redux-window'
 
 const store = configureStore({
@@ -12,6 +13,7 @@ const store = configureStore({
         onhand: onhand.reducer,
         collection: collection.reducer,
         editmode: editmode.reducer,
+        options: options.reducer,
         reduxWindow
     }
 })

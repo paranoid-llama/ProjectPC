@@ -5,6 +5,7 @@ import {Paper, Table, TableHead, TableRow, TableBody, TableContainer, TableCell,
 import {TableVirtuoso} from 'react-virtuoso'
 import TableRowGrouping from './tablerowgrouping'
 import './../../../routes/showCollection.css'
+import { capitalizeFirstLetter } from '../../../../utils/functions/misc';
 import {useSelector, useDispatch, connect} from 'react-redux'
 import {setCollectionInitialState} from '../../../app/slices/collection'
 import {setSelected} from '../../../app/slices/editmode'
@@ -12,6 +13,10 @@ import {setSelected} from '../../../app/slices/editmode'
 export default function ShowCollectionList({collection, styles}) {
 
     const listState = useSelector((state) => state.listDisplay.collection)
+    const ballScopeState = useSelector((state) => state.options.collectingBalls)
+
+    //apparently, on first render, this component loads faster than the initial state can initialize, meaning we have to use this.
+    const ballScopeDisplay = ballScopeState === undefined ? collection.options.collectingBalls : ballScopeState
 
     const scrollRef = useRef(null)
     const scrollPosition = useRef()
@@ -21,22 +26,36 @@ export default function ShowCollectionList({collection, styles}) {
             setTimeout(() => scrollRef.current.scrollTo({top: scrollPosition.current}), 1000)
         }
     })
+
+    const setBallCols = () => {
+        const cols = []
+        ballScopeDisplay.forEach(ball => {
+            cols.push({
+                label: capitalizeFirstLetter(ball),
+                dataKey: ball,
+                width: `${70/ballScopeDisplay.length}%`,
+                ball: true
+            })
+        })
+        return cols
+    }
     
     const columns = [
         {label: '#', dataKey: 'natDexNum', width: '5%'},
         {label: 'img', dataKey: 'natDexNum', width: '5%'},
         {label: 'Name', dataKey: 'name', width: '20%'},
-        {label: 'Fast', dataKey: 'fast', width: `${70/11}%`, ball: true},
-        {label: 'Friend', dataKey: 'friend', width: `${70/11}%`, ball: true},
-        {label: 'Heavy', dataKey: 'heavy', width: `${70/11}%`, ball: true},
-        {label: 'Level', dataKey: 'level', width: `${70/11}%`, ball: true},
-        {label: 'Love', dataKey: 'love', width: `${70/11}%`, ball: true},
-        {label: 'Lure', dataKey: 'lure', width: `${70/11}%`, ball: true},
-        {label: 'Moon', dataKey: 'moon', width: `${70/11}%`, ball: true},
-        {label: 'Beast', dataKey: 'beast', width: `${70/11}%`, ball: true},
-        {label: 'Dream', dataKey: 'dream', width: `${70/11}%`, ball: true},
-        {label: 'Safari', dataKey: 'safari', width: `${70/11}%`, ball: true},
-        {label: 'Sport', dataKey: 'sport', width: `${70/11}%`, ball: true}
+        ...setBallCols()
+        // {label: 'Fast', dataKey: 'fast', width: `${70/11}%`, ball: true},
+        // {label: 'Friend', dataKey: 'friend', width: `${70/11}%`, ball: true},
+        // {label: 'Heavy', dataKey: 'heavy', width: `${70/11}%`, ball: true},
+        // {label: 'Level', dataKey: 'level', width: `${70/11}%`, ball: true},
+        // {label: 'Love', dataKey: 'love', width: `${70/11}%`, ball: true},
+        // {label: 'Lure', dataKey: 'lure', width: `${70/11}%`, ball: true},
+        // {label: 'Moon', dataKey: 'moon', width: `${70/11}%`, ball: true},
+        // {label: 'Beast', dataKey: 'beast', width: `${70/11}%`, ball: true},
+        // {label: 'Dream', dataKey: 'dream', width: `${70/11}%`, ball: true},
+        // {label: 'Safari', dataKey: 'safari', width: `${70/11}%`, ball: true},
+        // {label: 'Sport', dataKey: 'sport', width: `${70/11}%`, ball: true}
     ]
 
     function setHeaders() {

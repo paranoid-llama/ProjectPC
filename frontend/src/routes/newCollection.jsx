@@ -16,6 +16,8 @@ import { selectAdjArrItem, capitalizeFirstLetter } from "../../utils/functions/m
 import { getPokemonGroups } from "../../utils/functions/backendrequests/getpokemongroups";
 import { ballIntros, apriballs, genGames } from "../infoconstants";
 import { sortByDexNum, customSortCollectionListLogic } from "../../utils/functions/sortfilterfunctions/sortingfunctions";
+import { creationInitializeScopeFormData } from "../../utils/functions/scope/statechanges";
+import { getOneArrData } from "../../utils/functions/scope/getonearrdata";
 import './newCollection.css'
 
 export default function NewCollection(userid) {
@@ -71,118 +73,13 @@ export default function NewCollection(userid) {
         }, 500)
     }
 
-    const getScopeFormData = (importedCollection, pokemonGroups, collectionGen) => {
-        const noImport = Object.values(importedCollection).length === 0
-        const pokemonGroupKeys = Object.keys(pokemonGroups)
-        const formData = {}
-        const noRegionalForms = collectionGen === 6 || collectionGen === 'bdsp'
-        pokemonGroupKeys.forEach((group) => {
-            const nestedGroups = Object.keys(pokemonGroups[group])
-            const hasNestedGroups = !Array.isArray(pokemonGroups[group])
-            if (hasNestedGroups) { //theres only 2 layers to these groups
-                formData[group] = {}
-                nestedGroups.forEach((nestedGroup) => {
-                    formData[group][nestedGroup] = []
-                })
-            } else {
-                formData[group] = []
-            }
-        })
-        if (noImport) {
-            const hasBabyAdultMonSection = pokemonGroups.babyAdultMons !== undefined //accounting for the possibility a gen does not have any baby/adult mons (though idk if thisll ever happen since pikachu exists)
-            const hasAlternateFormSection = pokemonGroups.alternateForms !== undefined 
-            if (pokemonGroups.breedables.regionalForms !== undefined) {
-                formData.breedables.regionalForms = pokemonGroups.breedables.regionalForms.map((pinfo) => {return {name: pinfo.name, natDexNum: pinfo.natDexNum, id: pinfo.imgLink}})  
-            }
-            if (Array.isArray(formData.breedables)) {
-                formData.breedables = pokemonGroups.breedables.map((pinfo) => {return {name: pinfo.name, natDexNum: pinfo.natDexNum, id: pinfo.imgLink}})
-            } else {
-                formData.breedables.regular = pokemonGroups.breedables.regular.map((pinfo) => {return {name: pinfo.name, natDexNum: pinfo.natDexNum, id: pinfo.imgLink}})
-            }
-            if (hasBabyAdultMonSection) {
-                if (pokemonGroups.babyAdultMons.regularBabies !== undefined) {
-                    formData.babyAdultMons.regularBabies = pokemonGroups.babyAdultMons.regularBabies.map((pinfo) => {return {name: pinfo.name, natDexNum: pinfo.natDexNum, id: pinfo.imgLink}})
-                }
-                if (pokemonGroups.babyAdultMons.incenseAdults !== undefined) {
-                    formData.babyAdultMons.incenseAdults = pokemonGroups.babyAdultMons.incenseAdults.map((pinfo) => {return {name: pinfo.name, natDexNum: pinfo.natDexNum, id: pinfo.imgLink}})
-                }
-            }
-            if (hasAlternateFormSection) {
-                if (pokemonGroups.alternateForms.breedable !== undefined) {
-                    formData.alternateForms.breedable = pokemonGroups.alternateForms.breedable.map((pinfo) => {return {name: pinfo.name, natDexNum: pinfo.natDexNum, id: pinfo.imgLink}})
-                }
-                if (pokemonGroups.alternateForms.interchangeable !== undefined) {
-                    formData.alternateForms.interchangeable = pokemonGroups.alternateForms.interchangeable.filter(pinfo => pinfo.name.includes('(')).map((pinfo) => {return {name: pinfo.name, natDexNum: pinfo.natDexNum, id: pinfo.imgLink}})
-                }
-            }
-            return formData
-        } else {
-            importedCollection.forEach((pokemon) => {
-                const fields = {field: ''}
-                Object.keys(pokemonGroups).forEach((groupName) => {
-                    const hasNestedGroups = !Array.isArray(pokemonGroups[groupName])
-                    if (hasNestedGroups) {
-                        const nestedGroupKeys = Object.keys(pokemonGroups[groupName])
-                        const nestedGroups = Object.values(pokemonGroups[groupName])
-                        nestedGroups.forEach((nestedGroup, nGrIdx) => {
-                            nestedGroup.forEach((pokemonInGroup) => {
-                                if (pokemonInGroup.name === pokemon.name) {
-                                    fields.field = groupName
-                                    fields.nestedField = nestedGroupKeys[nGrIdx]
-                                }
-                            })
-                        })
-                    } else {
-                        pokemonGroups[groupName].forEach((pokemonInGroup) => {
-                            if (pokemonInGroup.name === pokemon.name) {
-                                fields.field = groupName
-                            }
-                        })
-                    }
-                })
-                if (fields.nestedField !== undefined) {
-                    formData[fields.field][fields.nestedField].push({name: pokemon.name, natDexNum: pokemon.natDexNum, id: pokemon.imgLink})
-                } else {
-                    formData[fields.field].push({name: pokemon.name, natDexNum: pokemon.natDexNum, id: pokemon.imgLink})
-                }
-            })
-            return formData
-        }
-    }
-
-    //aggregates all pokemongroup data into one array and assigns group and subgroup keys to each pokemon. used for mass changes to particular pokemon (such
-    //as changing ball scope) which requires their group/subgroup data to change the form data.
-    const getOneArrData = (pokemonGroups, includeGroups=true, onlyIds=false) => {
-        const groupKeys = Object.keys(pokemonGroups)
-        const groupKeysWithSubGroups = groupKeys.filter(gK => !(Array.isArray(pokemonGroups[gK])))
-        const subGroupKeys = {}
-        groupKeysWithSubGroups.forEach(gK => {
-            subGroupKeys[gK] = Object.keys(pokemonGroups[gK])
-        })
-        const groupKeysWithoutSubGroups = groupKeys.filter(gK => !groupKeysWithSubGroups.includes(gK))
-
-        const totalPokemonData = []
-
-        groupKeysWithSubGroups.forEach((gK) => {
-            subGroupKeys[gK].forEach((sGK) => {
-                const groupInfo = includeGroups ? {group: gK, subGroup: sGK} : {}
-                totalPokemonData.push(pokemonGroups[gK][sGK].map(mon => {return onlyIds ? mon.id !== undefined ? mon.id : mon.imgLink : {...mon, ...groupInfo}}))
-            })
-        })
-        groupKeysWithoutSubGroups.forEach(gK => {
-            const groupInfo = includeGroups ? {group: gK} : {}
-            totalPokemonData.push(pokemonGroups[gK].map(mon => {return onlyIds ? mon.id !== undefined ? mon.id : mon.imgLink : {...mon, ...groupInfo}}))
-        })
-
-        return !onlyIds ? sortByDexNum('NatDexNumL2H', totalPokemonData.flat()) : totalPokemonData.flat()
-    }
-
     const setScopeState = async(importedCollection, collectionGen, ballScope) => {
         const pokemonGroups = await getPokemonGroups(collectionGen)
-        const scopeFormData = getScopeFormData(importedCollection, pokemonGroups, collectionGen)
+        const scopeFormData = creationInitializeScopeFormData(importedCollection, pokemonGroups, collectionGen)
         const oneArrTotal = getOneArrData(pokemonGroups)
+        const importedCollectionInitialScope = Object.keys(importedCollection).length !== 0 ? {importedCollectionInitScope: getOneArrData(scopeFormData, false, true)} : {}
         const customSortState = Object.values(importedCollection).length !== 0 ? {customSort: importedCollection.map(mon => {return {name: mon.name, natDexNum: mon.natDexNum, id: mon.imgLink}})} : {}
-        setFormData({...formData, importedCollection, ballScope, scope: {gen: collectionGen, total: pokemonGroups, formData: scopeFormData, oneArrTotal}, ...customSortState})
+        setFormData({...formData, importedCollection, ...importedCollectionInitialScope, ballScope, scope: {gen: collectionGen, total: pokemonGroups, formData: scopeFormData, oneArrTotal}, ...customSortState})
     }
 
     const handleImportedCollectionChange = (e, data, ballScope=[]) => {
@@ -202,13 +99,18 @@ export default function NewCollection(userid) {
     }
 
     const setOptionsInitialState = (pokemonScope, ballScope, excludedCombos) => {
-        const formattedFormDataScope = formData.scope.oneArrTotal.map(mon => mon.imgLink)
-        const unchangedScope = !getOneArrData(pokemonScope, false, true).map(id => formattedFormDataScope.includes(id)).includes(false)
         const userImportedCollection = Object.values(formData.importedCollection).length !== 0
+        const oldListOfIds = getOneArrData(formData.scope.formData, false, true)
+        const newListOfIds = getOneArrData(pokemonScope, false, true)
+        
+        const unchangedScope = !oldListOfIds.map(id => newListOfIds.includes(id)).includes(false) && oldListOfIds.length === newListOfIds.length
+        const sameScopeAsImport = userImportedCollection && (!newListOfIds.map(id => formData.importedCollectionInitScope.includes(id)).includes(false) && newListOfIds.length === formData.importedCollectionInitScope.length)
+
         const customSortState = (!userImportedCollection || !unchangedScope) ? {customSort : getOneArrData(pokemonScope, false)} : {} 
+        const sameScopeAsImportObj = userImportedCollection ? {sameScopeAsImport} : {}
             //if the user imported a collection AND the scope is unchanged, then the sort state doesnt update itself (it is set if they imported a collection in setScopeState)
-        const newFormDataState = formData.options !== undefined ? {...formData, ballScope: {...formData.ballScope, formData: ballScope}, scope: {...formData.scope, formData: pokemonScope, excludedCombos, unchangedScope}, options: {...formData.options, sorting: {...formData.options.sorting, ...customSortState}}} : 
-            {...formData, ballScope: {...formData.ballScope, formData: ballScope}, scope: {...formData.scope, formData: pokemonScope, excludedCombos, unchangedScope}, ...customSortState}
+        const newFormDataState = formData.options !== undefined ? {...formData, ballScope: {...formData.ballScope, formData: ballScope}, scope: {...formData.scope, formData: pokemonScope, excludedCombos, unchangedScope}, options: {...formData.options, sorting: {...formData.options.sorting, ...customSortState}}, ...sameScopeAsImportObj} : 
+            {...formData, ballScope: {...formData.ballScope, formData: ballScope}, scope: {...formData.scope, formData: pokemonScope, excludedCombos, unchangedScope}, ...customSortState, ...sameScopeAsImportObj}
         setFormData(newFormDataState)
     }
 
@@ -238,12 +140,13 @@ export default function NewCollection(userid) {
 
     const finalizeCreation = async() => {
         const backendOptionsFormat = {
+            collectingBalls: formData.ballScope.formData,
             sorting: {collection: formData.options.sorting.collection, onhand: formData.options.sorting.onhand},
             tradePreferences: {...formData.options.tradePreferences, rates: {pokemonOffers: formData.options.rates.pokemonOffers.filter(off => off.add === undefined), itemOffers: formData.options.rates.itemOffers.filter(off => off.add === undefined)}}
         }
         //below variable only matters for imported collections, since if it is completely unchanged then we just take the imported collection as is and don't 
         //redo the collection creation function
-        const completelyUnchangedScope = (Object.keys(formData.scope.excludedCombos).length === 0) && (formData.scope.unchangedScope === true) && (!formData.ballScope.importedBallScope.map(ball => formData.ballScope.formData.includes(ball)).includes(false) && formData.ballScope.importedBallScope.length === formData.ballScope.formData.length)
+        const completelyUnchangedScope = (Object.keys(formData.scope.excludedCombos).length === 0) && (formData.sameScopeAsImport === true) && (!formData.ballScope.importedBallScope.map(ball => formData.ballScope.formData.includes(ball)).includes(false) && formData.ballScope.importedBallScope.length === formData.ballScope.formData.length)
         const importedOwnedPokemonList = Object.keys(formData.importedCollection).length !== 0 ? formData.importedCollection.sort((a, b) => customSortCollectionListLogic(a, b, formData.options.sorting.customSort)) : undefined
 
         const newCollectionInfo = {

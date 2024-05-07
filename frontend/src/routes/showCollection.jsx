@@ -1,5 +1,5 @@
 import {useState, useEffect, useRef} from 'react';
-import {useLocation, useLoaderData, Link} from 'react-router-dom'
+import {useLoaderData, Link} from 'react-router-dom'
 import * as React from 'react';
 import Box from '@mui/material/Box'
 import {Tabs, Tab, Button} from '@mui/material'
@@ -15,13 +15,14 @@ import {useSelector, useDispatch} from 'react-redux'
 import {setCollectionInitialState} from './../app/slices/collection'
 import {setOnHandInitialState} from './../app/slices/onhand'
 import {setListInitialState} from './../app/slices/listdisplay'
-import {deselect, changeList, enterEditMode, leaveEditMode} from './../app/slices/editmode'
+import { setOptionsInitialState } from '../app/slices/options';
+import {deselect, changeList} from './../app/slices/editmode'
 
 export default function ShowCollection({colorStyles, listStyles}) {
     const list = useSelector(state => state.editmode.listType)
     // const isEditMode = useSelector(state => state.editmode.isEditMode)
-    const collectionId = useLocation().pathname.replace('/edit' && '/edit', '')
     const collection = useLoaderData()
+    const collectionId = collection._id
     // const collectionState = {...collection, ownedPokemon: 
     //     collection.ownedPokemon.map(p => {
     //         return {...p, selected: false}
@@ -41,7 +42,8 @@ export default function ShowCollection({colorStyles, listStyles}) {
     const dispatch = useDispatch()
     useEffect(() => {dispatch(setCollectionInitialState(collection.ownedPokemon))}, [])
     useEffect(() => {dispatch(setOnHandInitialState(collection.onHand))}, [])
-    useEffect(() => {dispatch(setListInitialState({collection: collection.ownedPokemon, onhand: collection.onHand}))}, [])
+    useEffect(() => {dispatch(setListInitialState({collection: collection.ownedPokemon, onhand: collection.onHand, updatedEggMoveInfo: collection.eggMoveInfo}))}, [])
+    useEffect(() => {dispatch(setOptionsInitialState(collection.options))}, [])
 
     useEffect(() => {dispatch(deselect())})
 
@@ -81,8 +83,6 @@ export default function ShowCollection({colorStyles, listStyles}) {
                 <Header additionalStyles={{backgroundColor: '#26BCC9', color: 'black'}}>{collectionName}</Header>
             </Box>
             <BodyWrapper>
-                {/* <h1>Collection info</h1>
-                <h2>Owner: {collection.owner && collection.owner.username}</h2> */}
                 <ShowCollectionTitle collectionID={collectionId} options={collection.options}/>
                 <FilterSortArea/>
                 <Box sx={{flexGrow: 1, margin: 0, width: '100%', display: 'flex'}}>

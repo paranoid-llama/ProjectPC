@@ -6,6 +6,7 @@ import ArrowForward from '@mui/icons-material/ArrowForward'
 import Header from '../../../../titlecomponents/subcomponents/header'
 import { pokemonGroups, pokemonSubGroups, apriballLiterals } from '../../../../../infoconstants'
 import { getPokemonGroups } from '../../../../../../utils/functions/backendrequests/getpokemongroups'
+import { scopeSingleChange, scopeMassChange, ballScopeChange, excludedCombosChange } from '../../../../../../utils/functions/scope/statechanges'
 import ImgData from '../../../../collectiontable/tabledata/imgdata'
 import PokemonBallCombosModal from './pokemonballcombosmodal'
 import PokemonGroupCardArea from './pokemongroupcardarea'
@@ -68,143 +69,34 @@ export default function ScopeSelection({collectionType, collectionGen, importedC
     const pokemonFormData = firstPokemonScopeRender ? scope !== undefined && scope.formData : pokemonGroupsFormData.pokemon
     const ballScopeData = firstBallScopeRender ? ballScopeInit !== undefined && ballScopeInit.formData : pokemonGroupsFormData.balls
 
-    // console.log(!gettingGroups && scope.oneArrTotal)
-
     const togglePokemon = (e, groupInfo, imgLink, name, natDexNum) => {
-        const {group, subGroup} = groupInfo
-
-        const hasSubGroup = subGroup !== undefined
-        const selected = hasSubGroup ? pokemonFormData[group][subGroup].map(mon => mon.id).includes(imgLink) : pokemonFormData[group].map(mon => mon.id).includes(imgLink)
-        if (selected) {
-            const newGroupData = hasSubGroup ? 
-                {...pokemonGroupsFormData, pokemon: {...pokemonFormData, [group]: {...pokemonFormData[group], [subGroup]: pokemonFormData[group][subGroup].filter(poke => poke.id !== imgLink)}}} :
-                {...pokemonGroupsFormData, pokemon: {...pokemonFormData, [group]: pokemonFormData[group].filter(poke => poke.id !== imgLink)}}
-            setPokemonGroupsFormData(newGroupData)
-        } else {
-            const newGroupData = hasSubGroup ? 
-                {...pokemonGroupsFormData, pokemon: {...pokemonFormData, [group]: {...pokemonFormData[group], [subGroup]: [...pokemonFormData[group][subGroup], {name, natDexNum, id: imgLink}]}}} :
-                {...pokemonGroupsFormData, pokemon: {...pokemonFormData, [group]: [...pokemonFormData[group], {name, natDexNum, id: imgLink}]}}
-            if (subGroup === 'interchangeable') {
-                const dexNum = scope.total.alternateForms.interchangeable.filter((mon) => !isNaN(mon.imgLink)).map((mon) => mon.imgLink).filter(link => imgLink.includes(link))[0]
-                const selectingAny = dexNum === imgLink
-                const selectingForm = dexNum !== imgLink && imgLink.includes(dexNum)
-                if (selectingAny) {
-                    newGroupData.pokemon.alternateForms.interchangeable = newGroupData.pokemon.alternateForms.interchangeable.filter(poke => (!poke.id.includes(dexNum) || (poke.id.includes(dexNum) && poke.id === dexNum)))
-                } else if (selectingForm) {
-                    newGroupData.pokemon.alternateForms.interchangeable = newGroupData.pokemon.alternateForms.interchangeable.filter(poke => poke.id !== dexNum)
-                }
-            }
-            setPokemonGroupsFormData(newGroupData)
-        }
+        const newPokemonScopeState = scopeSingleChange(groupInfo, {name, id: imgLink, natDexNum}, pokemonFormData)
+        setPokemonGroupsFormData({...pokemonGroupsFormData, pokemon: newPokemonScopeState})
     }
 
     const massTogglePokemon = (e, groupInfo, type) => {
-        const {group, subGroup} = groupInfo
-        //type --- all (include all), none (include none), Babies (include all babies), Adults (include all Adults), 
-        //         any (include all 'any' in interchangeable alt forms), allForms (include all forms in interchangeable alt forms)
-
-        const adjustedSubGroup = group === 'babyAdultMons' ? `${subGroup}${type}` : subGroup
-
-        const hasSubGroup = subGroup !== undefined
-
-        if (group === 'babyAdultMons' && type === 'none') {
-            const newGroupData = {...pokemonGroupsFormData, pokemon: {...pokemonFormData, [group]: {...pokemonFormData[group], [`${subGroup}Babies`]: [], [`${subGroup}Adults`]: []}}}
-            setPokemonGroupsFormData(newGroupData)
-            return
-        }
-
-        const filterLegalBalls = (totalList) => {
-            const currentBallsLegality = ballScopeData.map(ball => apriballLiterals.includes(ball) ? 'apriball' : ball)
-            const currentBallsFormatted = currentBallsLegality.filter((ball, idx) => currentBallsLegality.indexOf(ball) === idx)
-            const filteredMons = totalList.filter(mon => mon.legalBalls.map(lB => currentBallsFormatted.includes(lB)).includes(true))
-            return filteredMons
-        }
-
-        const totalPath = hasSubGroup ? 
-            type === 'any' ? filterLegalBalls(scope.total[group][adjustedSubGroup]).map(mon => {return {name: mon.name, natDexNum: mon.natDexNum, id: mon.imgLink}}).filter(poke => !poke.id.includes('-')) :
-            type === 'allForms' ? filterLegalBalls(scope.total[group][adjustedSubGroup]).map(mon => {return {name: mon.name, natDexNum: mon.natDexNum, id: mon.imgLink}}).filter(poke => poke.id.includes('-')) : 
-            filterLegalBalls(scope.total[group][adjustedSubGroup]).map(mon => {return {name: mon.name, natDexNum: mon.natDexNum, id: mon.imgLink}}) : filterLegalBalls(scope.total[group]).map(mon => {return {name: mon.name, natDexNum: mon.natDexNum, id: mon.imgLink}})
-
-        const pokemonFormDataPath = hasSubGroup ? 
-            type === 'any' ? pokemonFormData[group][adjustedSubGroup].filter(poke => !poke.id.includes('-')) :
-            type === 'allForms' ? pokemonFormData[group][adjustedSubGroup].filter(poke => poke.id.includes('-')):
-            pokemonFormData[group][adjustedSubGroup] : pokemonFormData[group]
-
-        const doNothing = type === 'none' ? pokemonFormDataPath.length === 0 : totalPath.length === pokemonFormDataPath.length
-
-        if (doNothing) {
+        const newPokemonScopeState = scopeMassChange(groupInfo, type, pokemonFormData, scope.total, ballScopeData)
+        if (newPokemonScopeState === 'doNothing') {
             null
-        } else if (type === 'all' || (type === 'Babies' || type === 'Adults') || (type === 'any' || type === 'allForms')) {
-            const newGroupData = hasSubGroup ? 
-                {...pokemonGroupsFormData, pokemon: {...pokemonFormData, [group]: {...pokemonFormData[group], [adjustedSubGroup]: totalPath}}} : 
-                {...pokemonGroupsFormData, pokemon: {...pokemonFormData, [group]: totalPath}}
-
-            // if (type === 'any' || type === 'allForms') {
-            //     newGroupData.pokemon.alternateForms.interchangeable = newGroupData.pokemon.alternateForms.interchangeable.filter(id => type === 'any' ? !id.includes('-') : id.includes('-'))
-            // }
-            
-            setPokemonGroupsFormData(newGroupData)
-        } else if (type === 'none') {
-            const newGroupData = hasSubGroup ? 
-                {...pokemonGroupsFormData, pokemon: {...pokemonFormData, [group]: {...pokemonFormData[group], [adjustedSubGroup]: []}}} : 
-                {...pokemonGroupsFormData, pokemon: {...pokemonFormData, [group]: []}}
-            setPokemonGroupsFormData(newGroupData)
+        } else {
+            setPokemonGroupsFormData({...pokemonGroupsFormData, pokemon: newPokemonScopeState})
         }
     }
 
-    
-
     const toggleBall = (e, ball) => {
-        const ballArr = firstBallScopeRender ? ballScopeInit.formData : pokemonGroupsFormData.balls
-        const ballSelected = ballArr.includes(ball)
-        const newBallArr = ballSelected ? ballArr.filter(b => b !== ball) : [...ballArr, ball]
-        if (newBallArr.length === 0) {
-            return
+        const newBallScope = ballScopeChange(ball, ballScopeData, pokemonFormData, scope.oneArrTotal)
+        if (newBallScope === 'doNothing') {
+            null
+        } else if (newBallScope.changePokemonScope) {
+            setPokemonGroupsFormData({...pokemonGroupsFormData, pokemon: newBallScope.newPokemonScopeData, balls: newBallScope.ballFormData})
+        } else {
+            setPokemonGroupsFormData({...pokemonGroupsFormData, balls: newBallScope.ballFormData})
         }
-        if (ballSelected) { //if we're removing a ball, this checks if the ball is the only legal combo for certain pokemon and excludes them
-            const currentBallsLegality = newBallArr.map(ball => apriballLiterals.includes(ball) ? 'apriball' : ball)
-            const currentBallsFormatted = currentBallsLegality.filter((ball, idx) => currentBallsLegality.indexOf(ball) === idx)
-            const hasNoApriballLiterals = !currentBallsFormatted.includes('apriball')
-            const hasNoSpecialBall = !currentBallsFormatted.includes(ball)
-            if (hasNoApriballLiterals || hasNoSpecialBall) {
-                const pokemonToRemove = scope.oneArrTotal.filter(mon => (
-                    // mon.legalBalls.length === 1 && mon.legalBalls[0] === 'apriball'
-                    !mon.legalBalls.map(lB => currentBallsFormatted.includes(lB)).includes(true)
-                ))
-                const removedPokemon = pokemonToRemove.length !== 0
-                if (removedPokemon) { 
-                    //below is used to remove any reference to the original obj, since we don't spread into it with this one. idk if this is necessary but i think itll avoid issues
-                    const newFormData = JSON.parse(JSON.stringify(firstPokemonScopeRender ? scope.formData : pokemonGroupsFormData.pokemon)) 
-                    pokemonToRemove.forEach((pokemon) => {
-                        const valuePath = pokemon.subGroup === undefined ? newFormData[pokemon.group] : newFormData[pokemon.group][pokemon.subGroup]
-                        if (pokemon.subGroup !== undefined) {
-                            newFormData[pokemon.group][pokemon.subGroup] = valuePath.filter(p => p.id !== pokemon.imgLink)
-                        } else {
-                            newFormData[pokemon.group] = valuePath.filter(p => p.id !== pokemon.imgLink)
-                        }
-                    })
-                    setPokemonGroupsFormData({...pokemonGroupsFormData, pokemon: newFormData, balls: newBallArr})
-                    return
-                }
-            }
-        }
-        setPokemonGroupsFormData({...pokemonGroupsFormData, balls: newBallArr})
     }
 
     const togglePokemonBallCombo = (monInfo, ball) => {
-        const firstMonExclusion = pokemonGroupsFormData.excludedCombos[monInfo.name] === undefined
-        const monCombosState = firstMonExclusion ? {natDexNum: monInfo.natDexNum, imgLink: monInfo.imgLink, excludedBalls: [ball]} : 
-            pokemonGroupsFormData.excludedCombos[monInfo.name].excludedBalls.includes(ball) ? 
-                {...pokemonGroupsFormData.excludedCombos[monInfo.name], excludedBalls: pokemonGroupsFormData.excludedCombos[monInfo.name].excludedBalls.filter(b => b !== ball)} : 
-                {...pokemonGroupsFormData.excludedCombos[monInfo.name], excludedBalls: [...pokemonGroupsFormData.excludedCombos[monInfo.name].excludedBalls, ball]} 
-
-        if (monCombosState.excludedBalls.length === 0) {
-            const fullExcludedCombosState = {...pokemonGroupsFormData.excludedCombos}
-            delete fullExcludedCombosState[monInfo.name]
-            setPokemonGroupsFormData({...pokemonGroupsFormData, excludedCombos: fullExcludedCombosState})
-        } else {
-            setPokemonGroupsFormData({...pokemonGroupsFormData, excludedCombos: {...pokemonGroupsFormData.excludedCombos, [monInfo.name]: monCombosState}})
-        }
+        const newCombosState = excludedCombosChange(monInfo, ball, pokemonGroupsFormData.excludedCombos)
+        setPokemonGroupsFormData({...pokemonGroupsFormData, excludedCombos: newCombosState})
     }
 
     // console.log(scope)

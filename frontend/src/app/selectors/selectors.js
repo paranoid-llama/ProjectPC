@@ -4,6 +4,10 @@ const selectCollectionList = (state) => {
     return state.collection
 }
 
+const selectEnabledPokemonInCollectionList = (state) => {
+    return state.collection[0] === undefined ? state.collection : state.collection.filter(mon => mon.disabled === undefined) 
+}
+
 const selectOnHandList = (state) => {
     return state.onhand
 }
@@ -33,7 +37,7 @@ const selectListFromListType = (state) => {
 }
 const selectPokemon = (state, pokemon) => pokemon
 const selectBall = (state, ball) => ball
-
+const selectScopeTotal = (state, scopeTotal) => scopeTotal
 
 const seeIfPokemonIsSelected = createSelector([seeSelectedId, selectPokemonIdentifier], (selectedId, id) => {
     return id === selectedId
@@ -52,7 +56,7 @@ const selectIdxOfMon = createSelector([selectListFromListType, selectPokemon], (
     return idx
 })
 
-const selectBallProgress = createSelector([selectCollectionList, selectBall], (list, ball) => {
+const selectBallProgress = createSelector([selectEnabledPokemonInCollectionList, selectBall], (list, ball) => {
     if (list.length === undefined) { //showCollection page sets initial state on launch which makes first render have an empty list array. this prevents the selector from throwing an error
         if (ball === 'total') {
             return '0/0'
@@ -63,7 +67,7 @@ const selectBallProgress = createSelector([selectCollectionList, selectBall], (l
         let totalToCollect = 0
         let totalCollected = 0
         list.forEach(p => {
-            const ballsToCollect = Object.keys(p.balls)
+            const ballsToCollect = Object.keys(p.balls).filter(ball => p.balls[ball].disabled !== true)
             for (let ball of ballsToCollect) {
                 totalToCollect +=1
                 if (p.balls[ball].isOwned === true) {
@@ -81,4 +85,27 @@ const selectBallProgress = createSelector([selectCollectionList, selectBall], (l
     return ballProgress
 })
 
-export {seeIfPokemonIsSelected, selectCollectionPokemon, selectOnHandPokemon, selectIdxOfMon, selectBallProgress}
+const selectScopeFormData = createSelector([selectEnabledPokemonInCollectionList, selectScopeTotal], (list, scopeTotal) => {
+    const listOfIds = list.filter(mon => mon.disabled === undefined).map(mon => mon.imgLink)
+    const formData = {}
+    const formDataMonFormat = (monInfo) => {return {name: monInfo.name, natDexNum: monInfo.natDexNum, id: monInfo.imgLink}}
+    Object.keys(scopeTotal).forEach(group => {
+        const hasSubGroups = !Array.isArray(scopeTotal[group])
+        const uninitializedGroup = formData[group] === undefined
+        if (uninitializedGroup && hasSubGroups) {
+            formData[group] = {}
+        }
+        if (hasSubGroups) {
+            Object.keys(scopeTotal[group]).forEach(subGroup => {
+                const selectedMonArr = scopeTotal[group][subGroup].filter(mon => listOfIds.includes(mon.imgLink)).map(monInfo => formDataMonFormat(monInfo))
+                formData[group][subGroup] = selectedMonArr
+            }) 
+        } else {
+            const selectedMonArr = scopeTotal[group].filter(mon => listOfIds.includes(mon.imgLink)).map(monInfo => formDataMonFormat(monInfo))
+            formData[group] = selectedMonArr
+        }
+    })
+    return formData
+})
+
+export {seeIfPokemonIsSelected, selectCollectionPokemon, selectOnHandPokemon, selectIdxOfMon, selectBallProgress, selectScopeFormData}

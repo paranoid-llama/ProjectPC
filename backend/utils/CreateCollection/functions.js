@@ -41,7 +41,7 @@ function handleAlternateForms(pokemon, ownedBallList, pokename, parsedGen, impor
                                 pokename === 'Rockruff' ? handleRockruff : 
                                 pokename === 'Flabébé' ? handleFlabébé : 
                                 pokename === 'Vivillon' && handleVivillon
-        const specificScope = pokename === 'Vivillon' ? alternateFormScope.vivillon : pokename === 'Alcremie' ? alternateFormScope.alcremie : alternateFormScope.breedables
+        const specificScope = pokename === 'Vivillon' ? alternateFormScope.vivillon : pokename === 'Alcremie' ? alternateFormScope.alcremie : alternateFormScope.breedable
         return pokename === 'Alcremie' ? 
             handleAlcremie(pokemon.info.alternateForm.sweets, pokemon.info.alternateForm.creams, pokename, pokemon, ownedBallList, parsedGen, importing, setType, altFormType, altFormNestedType, specificScope) : 
             handlerFunction(altForms, pokename, pokemon, ownedBallList, parsedGen, importing, setType, altFormType, altFormNestedType, specificScope)
@@ -176,12 +176,12 @@ function setOwnedBallList(genKey, ballLegality, fullPokemonInfo, onlyGettingLega
 
 function removeBallsOutsideScope(pokemon, ballScope, excludedCombos, importedBallInfo) {
     const newPokemon = pokemon
-    const useImportedBallInfo = importedBallInfo !== undefined
+    const noImportedBallInfo = importedBallInfo === undefined || Object.keys(importedBallInfo).length === 0
     if (Array.isArray(newPokemon)) {
         newPokemon.forEach((poke, idx) => {
             const hasExcludedCombos = excludedCombos[poke.name] !== undefined
             Object.keys(poke.balls).forEach(ball => {
-                if (useImportedBallInfo) {
+                if (!noImportedBallInfo) {
                     newPokemon[idx].balls[ball] = importedBallInfo.filter(pokeInfo => pokeInfo.name === poke.name)[0].balls[ball]
                 }
                 if (!ballScope.includes(ball)) {
@@ -196,7 +196,7 @@ function removeBallsOutsideScope(pokemon, ballScope, excludedCombos, importedBal
     } else {
         const hasExcludedCombos = excludedCombos[newPokemon.name] !== undefined
         Object.keys(newPokemon.balls).forEach(ball => {
-            if (useImportedBallInfo) {
+            if (!noImportedBallInfo) {
                 newPokemon.balls[ball] = importedBallInfo.balls[ball]
             }
             if (!ballScope.includes(ball)) {

@@ -28,7 +28,7 @@ export default function OnHandPokemonSelectionForm({speciesEditOnly=false, open,
     //usage in regular functions
     const dispatch = useDispatch()
 
-    const allEggMoveInfo = useLoaderData().eggMoveInfo
+    const allEggMoveInfo = useSelector((state) => state.listDisplay.eggMoveInfo)
     const collectionID = useLoaderData()._id
     const initialSelection = initialPokemonData.imgLink === undefined ? {} : selectCollectionPokemon(store.getState(), initialPokemonData.imgLink)
     const [pokemonData, setPokemonData] = useState({selection: {...initialSelection}, searchData: '', ball: initialPokemonData.ball, newOnHandData: {}})

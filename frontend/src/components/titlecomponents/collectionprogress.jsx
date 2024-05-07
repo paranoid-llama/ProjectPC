@@ -1,28 +1,29 @@
 import {Box, Typography, Button} from '@mui/material'
 import {useState} from 'react'
 import BallProgress from './subcomponents/ballprogress'
-import { apriballs as balls } from '../../infoconstants'
 import { selectScreenBreakpoint } from '../../app/selectors/windowsizeselectors'
 import { selectBallProgress } from '../../app/selectors/selectors'
 import { useSelector } from 'react-redux'
 import { setCirclePositionStyles, setRowXScaling } from '../../../utils/functions/ballprogresscircle/ballprogress'
 
-export default function CollectionProgress({}) {
+export default function CollectionProgress({ballScopeInit}) {
     const [selectedBall, setSelectedBall] = useState('')
     const breakpoint = useSelector((state) => selectScreenBreakpoint(state, 'ballprogress'))
     const totalProgress = useSelector((state) => selectBallProgress(state, 'total'))
 
-    const totalBalls = balls
-    const apriballs = balls.slice(0, 11)
+    const totalBallsState = useSelector((state) => state.options.collectingBalls)
+    //refer to showcollectionlist for why we do below
+    const totalBalls = totalBallsState === undefined ? ballScopeInit : totalBallsState
+    // const apriballs = balls.slice(0, 11)
     const setCircleLayout = totalBalls.length > 6 && breakpoint === 'md'
     const setRowLayout = (totalBalls.length <= 6 && breakpoint === 'md') || breakpoint === 'lg'
     
-    if (apriballs.length % 2 === 1 && selectedBall !== '') {
-        apriballs.splice(apriballs.indexOf(selectedBall), 1) 
+    if (totalBalls.length % 2 === 1 && selectedBall !== '') {
+        totalBalls.splice(totalBalls.indexOf(selectedBall), 1) 
     }
 
     const handleBallSelect = (e) => {
-        if (selectedBall === e.target.value && apriballs.length % 2 === 0) {
+        if (selectedBall === e.target.value && totalBalls.length % 2 === 0) {
             setSelectedBall('') 
             return
         }
@@ -78,8 +79,8 @@ export default function CollectionProgress({}) {
             })
             }
             {setCircleLayout && 
-            apriballs.map((ball, idx) => {
-                const positioning = setCirclePositionStyles(idx, apriballs.length)
+            totalBalls.map((ball, idx) => {
+                const positioning = setCirclePositionStyles(idx, totalBalls.length)
                 const selected = ball === selectedBall
                 return <BallProgress 
                             key={`progress-bar-${ball}-ball`} 
@@ -92,7 +93,7 @@ export default function CollectionProgress({}) {
                         />
             })
             }
-            {setCircleLayout && selectedBall === '' && <Typography sx={{position: 'absolute', top: '40px', fontWeight: 700}} variant='h4'>Total Progress</Typography>}
+            {setCircleLayout && selectedBall === '' && <Typography sx={{position: 'absolute', top: '60px', fontWeight: 700, fontSize: '32px'}} variant='h4'>Total Progress</Typography>}
             {setCircleLayout && selectedBall === '' && <Typography sx={{position: 'absolute', top: '100px', fontWeight: 700}} variant='h5'>{totalProgress}</Typography>}
             {(setCircleLayout && selectedBall !== '') && 
                 <BallProgress 

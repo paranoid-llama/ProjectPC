@@ -4,6 +4,8 @@ import mongoose from 'mongoose';
 import allPokemon from './utils/aprimonAPI/allpokemoninfo.js';
 import {formatImportQuery, setEMQueries, formatImportedValues, setCollection, detectBadRanges} from './utils/CreateCollection/importCollection.js'
 import { getPokemonGroups } from './utils/pokemongroups/getpokemongroups.js';
+import { getIndividualPokemonInfo } from './utils/createCollection.js';
+import { getPossibleEggMoves } from './utils/schemavirtuals/collectionvirtuals.js';
 // require('dotenv').config()
 import dotenv from 'dotenv'
 import lton from 'letter-to-number'
@@ -294,6 +296,32 @@ app.put('/collections/:id/edit/addonhand', catchAsync(async(req, res) => {
     collection.save()
 
     res.end()
+}))
+
+app.put('/collections/:id/edit/ownedpokemonedit', catchAsync(async(req, res) => {
+    //this route handles all scope changes (including ball scope changes) and custom sorting
+    const {id} = req.params
+    const {getPokemonInfo, newPokemon, gen, ballScope, newOwnedCollectionList, updateEggMoves, newCollectingBalls} = req.body
+
+    if (getPokemonInfo) {
+        const newPokemonArr = getIndividualPokemonInfo(gen, newPokemon, ballScope)
+        res.json(newPokemonArr)
+    } else {
+        const collection = await Collection.findById(id)
+        collection.ownedPokemon = newOwnedCollectionList
+        if (newCollectingBalls !== undefined) {
+            //note: you cannot reference a subdoc when updating data this way, only top level docs. 
+            collection.options = {...collection.options, collectingBalls: newCollectingBalls}
+        }
+        collection.save()
+        if (updateEggMoves) {
+            const updatedEggMoveInfo = getPossibleEggMoves(newOwnedCollectionList, gen)
+            res.json(updatedEggMoveInfo)
+        } else {
+            res.end()
+        }
+        
+    }
 }))
 
 app.delete('/collections/:id/edit/deleteonhand', catchAsync(async(req, res) => {

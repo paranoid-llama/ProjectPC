@@ -1,15 +1,23 @@
-import {Box, AppBar, Button} from '@mui/material'
+import {Box, AppBar, Button, ToggleButton, ToggleButtonGroup} from '@mui/material'
+import { useState } from 'react'
 import { useLoaderData } from 'react-router'
+import { useLocation } from 'react-router'
 import { Link } from 'react-router-dom'
 import Header from './subcomponents/header'
 import TextSpaceDouble from './subcomponents/textspacedouble'
 import TextSpaceSingle from './subcomponents/textspacesingle'
 import CollectionProgress from './collectionprogress'
+import RateDisplay from './ratedisplay'
+import ItemDisplay from './itemdisplay'
 import { tradePreferenceDisplay } from '../../infoconstants'
+import { useDispatch } from 'react-redux'
+import { changeModalState } from '../../app/slices/editmode'
 
 export default function ShowCollectionTitle({collectionID, options}) {
     const collectionInfo = useLoaderData()
-    console.log(options)
+    const dispatch = useDispatch()
+    const [displayScreen, setDisplayScreen] = useState('ballProgress')
+    const isEditMode = useLocation().pathname.includes('/edit')
     const gen8Collection = isNaN(parseInt(collectionInfo.gen))
     const collectionType = gen8Collection ? `${collectionInfo.gen.toUpperCase()} Aprimon Collection` : `Gen ${collectionInfo.gen} Aprimon Collection`
     const formattedTradePreferences = [tradePreferenceDisplay.onhandOnly[options.tradePreferences.onhandOnly], tradePreferenceDisplay.size[options.tradePreferences.size], tradePreferenceDisplay.items[options.tradePreferences.items]].filter(display => display !== undefined)
@@ -25,6 +33,8 @@ export default function ShowCollectionTitle({collectionID, options}) {
         textColor: 'black',
         labelBgColor: '#98830b'
     }
+
+    const changeDisplayScreen = (newVal) => {setDisplayScreen(newVal)}
    
     //breakpoints when the label wraps
     const tradeStatusLabelStyles = {
@@ -63,8 +73,14 @@ export default function ShowCollectionTitle({collectionID, options}) {
         gap: formattedTradePreferences.length === 3 ? 0.5 : 2
     }
 
+    const toggleButtonSelectedStyles = {
+        '&.Mui-selected': {backgroundColor: 'rgba(40,63,87,1)', color: 'white'},
+        '&.Mui-selected:hover': {backgroundColor: 'rgba(40,63,87,0.9)'},
+        ':hover': {backgroundColor: 'rgba(39, 38, 37, 0.9)'}
+    }
+
     return (
-        <Box sx={{display: 'flex', flexDirection: 'row', width: '100%', marginBottom: '1rem'}}>
+        <Box sx={{display: 'flex', flexDirection: 'row', width: '100%', marginBottom: '1rem', height: '200px'}}>
             <Box sx={{display: 'flex', flexDirection: 'column', width: '45%'}}>
                 {/* <TextSpaceDouble label1={'Type'} text1={collectionType} label2={'Owner'} text2={collectionInfo.owner.username} colorStyles={colorStyles} width='100%'/>
                 <TextSpaceDouble label1='Trade Status' text1={tradeStatus} text2={formattedTradePreferences} colorStyles={colorStyles} width='100%' isLast={true} otherTextStyles={tradeStatusStyles}/> */}
@@ -98,10 +114,22 @@ export default function ShowCollectionTitle({collectionID, options}) {
                     displayingTags={true}
                     width='100%'
                 />
-                <Button sx={{width: '30%', fontSize: '12px'}}><Link to={`${collectionID}/edit`}>Edit Mode</Link></Button>
+                <Box sx={{width: '100%', height: '20%', display: 'flex', justifyContent: 'center'}}>
+                    <ToggleButtonGroup exclusive sx={{mt: 0.5, mb: 0.5, width: '95%', '& .MuiToggleButton-root': {border: '1px solid rgba(40,63,87,1)', color: 'white', backgroundColor: '#272625'}}} size='small' value={displayScreen} onChange={(e, newVal) => changeDisplayScreen(newVal)}>
+                        <ToggleButton value='ballProgress' sx={{width: '40%', fontSize: '12px', padding: 0, ...toggleButtonSelectedStyles}}>Ball Progress</ToggleButton>
+                        <ToggleButton value='rates' sx={{width: '30%', fontSize: '12px', ...toggleButtonSelectedStyles}}>Rates</ToggleButton>
+                        <ToggleButton value='items' sx={{width: '30%', fontSize: '12px', ...toggleButtonSelectedStyles}}>Items</ToggleButton>
+                    </ToggleButtonGroup>
+                </Box>
+                <Box sx={{width: '100%', height: '15%', display: 'flex', justifyContent: 'center'}}>
+                    <Button sx={{width: '30%', fontSize: '12px'}}><Link to={`edit`}>Edit Mode</Link></Button>
+                    {isEditMode && <Button sx={{fontSize: '12px'}} onClick={() => dispatch(changeModalState({open: true, screen: 'main'}))}>Collection Options</Button>}
+                </Box>
             </Box>
-            <Box sx={{display: 'flex', alignItems: 'center', width: '55%'}}>
-                <CollectionProgress />
+            <Box sx={{display: 'flex', flexDirection: 'column', alignItems: 'center', width: '55%'}}>
+                {displayScreen === 'ballProgress' && <CollectionProgress ballScopeInit={options.collectingBalls}/>}
+                {displayScreen === 'rates' && <RateDisplay rates={collectionInfo.options.tradePreferences.rates} owner={collectionInfo.owner.username}/>}
+                {displayScreen === 'items' && <ItemDisplay collectionGen={collectionInfo.gen} itemTradeStatus={collectionInfo.options.tradePreferences.items} lfItems={collectionInfo.options.tradePreferences.lfItems} ftItems={collectionInfo.options.tradePreferences.ftItems}/>}
             </Box>
         </Box>
     )

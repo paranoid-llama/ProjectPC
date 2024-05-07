@@ -6,8 +6,8 @@ import store from './../app/store'
 import NothingSelected from '../components/editbar/selection/nothingselected.jsx'
 import FlexAppBarContainer from '../components/editbar/selection/components/flexappbarcontainer.jsx'
 import DisplaySelection from '../components/editbar/selection/displayselection.jsx'
-import {enterEditMode} from './../app/slices/editmode'
-import {setCollectionInitialState} from './../app/slices/collection'
+import { changeModalState } from '../app/slices/editmode.jsx'
+import CollectionOptionsModal from '../components/editbar/collectionoptions/collectionoptionsmodal.jsx'
 
 export default function EditCollection() {
     const dispatch = useDispatch()
@@ -41,6 +41,7 @@ export default function EditCollection() {
                 </FlexAppBarContainer>
                 <DisplaySelection collection={collection}/>
             </AppBar>
+            <CollectionOptionsModal collectionGen={collection.gen} collectionId={collection._id}/>
         </Box>
         </>
     )
