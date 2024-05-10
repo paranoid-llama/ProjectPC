@@ -103,7 +103,7 @@ const setRowXScaling = (idx, totalApriballs) => {
             return {left: `${(idx+1)*14}%`, size: 75}
         }
         case 5: {
-            return {left: `${((idx+1)*20)-10}%`, size: 80}
+            return {left: `${((idx+1)*20)-10}%`, size: 65}
         }
         case 4: {
             return {left: `${((idx+1)*25)-12.5}%`, size: 80}

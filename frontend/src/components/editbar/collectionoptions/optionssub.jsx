@@ -14,7 +14,7 @@ export default function OptionsSub({elementBg, screenType, collectionGen}) {
         screenType === 'sorting' ? [{screen: 'collectionSort', display: 'Collection Sorting Settings'}, {screen: 'onhandSort', display: 'On-Hand Sorting Settings'}, {screen: 'customSort', display: 'Custom Sort Collection'}] : 
         screenType === 'tradePreferences' && [{screen: 'preferences', display: 'Preferences'}, {screen: 'rates', display: 'Rates'}, {screen: 'items', display: 'Items'}]
 
-    const navIndicator = screenType === 'changeScope' ? 'Change Scope' : screenType === 'sorting' ? 'Sorting Settings' : screenType === 'tradePreferences' && 'Trade Preferences'
+    const navIndicator = screenType === 'changeScope' ? 'Change Scope' : screenType === 'sorting' ? 'Sorting Options' : screenType === 'tradePreferences' && 'Trade Preferences'
 
     const generateButtons = () => {
         return buttons.map((button) => {

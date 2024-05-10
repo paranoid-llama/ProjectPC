@@ -1,5 +1,5 @@
 import {Box, Typography} from '@mui/material'
-import ImgData from '../../../../collectiontable/tabledata/imgdata'
+import ImgData from '../../../../../collectiontable/tabledata/imgdata'
 import './droppablelist.css'
 
 export default function SortItem({provided, pokemon, isHoldList, index, snapshot}) {
@@ -10,7 +10,8 @@ export default function SortItem({provided, pokemon, isHoldList, index, snapshot
     return (
         <>
         <Box 
-            sx={{display: 'flex', alignItems: 'center', backgroundColor: '#283f57', borderRadius: '10px', marginBottom: '3px', marginTop: '3px', ...isDragginStyles}}
+            //, marginBottom: '3px', marginTop: '3px',
+            sx={{display: 'flex', alignItems: 'center', backgroundColor: '#283f57', borderRadius: '10px', ...isDragginStyles}}
             ref={provided.innerRef} 
             {...provided.draggableProps} 
             {...provided.dragHandleProps}
@@ -29,7 +30,6 @@ export default function SortItem({provided, pokemon, isHoldList, index, snapshot
                 <Typography sx={{fontSize: '10px', width: '70%', ml: 2}}>Position {index+1}</Typography>
             </Box>}
         </Box>
-        
         </>
     )
 }

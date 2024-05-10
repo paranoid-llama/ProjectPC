@@ -324,6 +324,20 @@ app.put('/collections/:id/edit/ownedpokemonedit', catchAsync(async(req, res) => 
     }
 }))
 
+app.put('/collections/:id/edit/optionsedit', catchAsync(async(req, res) => {
+    const {id} = req.params
+    const {optionType, listType, data, sortedList, addedRates, deletedRates, newPreferences} = req.body
+    if (optionType === 'sort') {
+        const setListModifier = sortedList !== undefined ? listType === 'collection' ? {'ownedPokemon': sortedList} : {'onHand': sortedList} : {}
+        await Collection.updateOne({_id: id}, { $set: {[`options.sorting.${listType}`]: data, ...setListModifier} })
+        res.end()
+    } else if (optionType === 'rate') {
+
+    } else if (optionType === 'preference') {
+
+    }
+}))
+
 app.delete('/collections/:id/edit/deleteonhand', catchAsync(async(req, res) => {
     const {pokemonId} = req.body
     const {id} = req.params

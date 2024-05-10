@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 import {getImgLink, getPossibleEggMoves, getPossibleGender} from './../utils/schemavirtuals/collectionvirtuals.js'
 
-const opts = {toJSON: {virtuals: true}}
+const opts = {toJSON: {virtuals: true}, minimize: false}
 
 const collectionSchema = new Schema ({
     owner: {
@@ -95,8 +95,9 @@ const collectionSchema = new Schema ({
                 }
             },
             lfItems: {type: Array}, //arr of items they're looking for if they are looking for any
-            ftItems: {_id: false, type: Object} //obj of items they're offering with keys being item names. validated thru frontend. could be validated here
-                                                //for more security but more work than is needed as of april 17 2024
+            ftItems: {_id: false, type: Object} 
+            //obj of items they're offering with keys being item names. validated thru frontend. could be validated here
+            //for more security but more work than is needed as of april 17 2024
         }
     },
     trades: {

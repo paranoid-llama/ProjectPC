@@ -242,6 +242,41 @@ const excludedCombosChange = (monInfo, ball, combosFormData) => {
     }
 }
 
+const getExcludedCombosChange = (oldExcludedCombos, newExcludedCombos) => {
+    const pokemonArr1 = Object.keys(oldExcludedCombos)
+    const pokemonArr2 = Object.keys(newExcludedCombos)
+    const uniquePokemon = {removedPokemon: [...pokemonArr1.filter(name => !pokemonArr2.includes(name))], addedPokemon: [...pokemonArr2.filter(name => !pokemonArr1.includes(name))]}
+    const oneArrUniqueMons = Object.values(uniquePokemon).flat()
+    const ballChanges = {}
+    pokemonArr1.forEach(mon => {
+        if (oneArrUniqueMons.includes(mon)) {
+            null
+        } else {
+            const oldBallsArr = oldExcludedCombos[mon].excludedBalls
+            const newBallsArr = newExcludedCombos[mon].excludedBalls
+            const uniqueBalls = {removedBalls: [...oldBallsArr.filter(ball => !newBallsArr.includes(ball))], addedBalls: [...newBallsArr.filter(ball => !oldBallsArr.includes(ball))]}
+            
+            const oneArrUniqueBalls = Object.values(uniqueBalls).flat()
+            if (oneArrUniqueBalls.length !== 0) {
+                const unchangedBalls = oldBallsArr.filter(ball => newBallsArr.includes(ball))
+                ballChanges[mon] = {natDexNum: oldExcludedCombos[mon].natDexNum, imgLink: oldExcludedCombos[mon].imgLink, ...uniqueBalls, unchangedBalls}
+            }
+        }
+    })
+    if ((oneArrUniqueMons.length !== 0) || (Object.keys(ballChanges).length !== 0)) {
+        return {
+            changed: true, 
+            pokemonChange: {
+                removedPokemon: uniquePokemon.removedPokemon.map(pName => {return {name: pName, ...oldExcludedCombos[pName]}}),
+                addedPokemon: uniquePokemon.addedPokemon.map(pName => {return {name: pName, ...newExcludedCombos[pName]}})
+            }, 
+            ballChange: Object.keys(ballChanges).map(pName => {return {name: pName, ...ballChanges[pName]}})
+        }
+    } else {
+        return {changed: false}
+    }
+}
+
 const creationInitializeScopeFormData = (importedCollection, pokemonGroups, collectionGen) => {
     const noImport = Object.values(importedCollection).length === 0
     const pokemonGroupKeys = Object.keys(pokemonGroups)
@@ -322,4 +357,4 @@ const creationInitializeScopeFormData = (importedCollection, pokemonGroups, coll
     }
 }
 
-export {scopeSingleChange, scopeMassChange, ballScopeChange, excludedCombosChange, creationInitializeScopeFormData}
+export {scopeSingleChange, scopeMassChange, ballScopeChange, excludedCombosChange, getExcludedCombosChange, creationInitializeScopeFormData}

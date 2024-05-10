@@ -26,11 +26,16 @@ const options = createSlice({
         setBallScope: (state, action) => {
             const newState = {...state, collectingBalls: action.payload}
             return newState
+        },
+        setSortingOptionsState: (state, action) => {
+            const {listType, data} = action.payload
+            state.sorting[listType] = data
+            return state
         }
 
     }
 })
 
-export const {setOptionsInitialState, setRate, setBallScope} = options.actions
+export const {setOptionsInitialState, setRate, setBallScope, setSortingOptionsState} = options.actions
 
 export default options

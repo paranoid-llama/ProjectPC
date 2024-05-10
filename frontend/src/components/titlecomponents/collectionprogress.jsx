@@ -13,7 +13,7 @@ export default function CollectionProgress({ballScopeInit}) {
 
     const totalBallsState = useSelector((state) => state.options.collectingBalls)
     //refer to showcollectionlist for why we do below
-    const totalBalls = totalBallsState === undefined ? ballScopeInit : totalBallsState
+    const totalBalls = totalBallsState === undefined ? ballScopeInit : JSON.parse(JSON.stringify(totalBallsState)) //need new reference as we mutate this variable
     // const apriballs = balls.slice(0, 11)
     const setCircleLayout = totalBalls.length > 6 && breakpoint === 'md'
     const setRowLayout = (totalBalls.length <= 6 && breakpoint === 'md') || breakpoint === 'lg'
@@ -75,7 +75,7 @@ export default function CollectionProgress({ballScopeInit}) {
                 const topRowBall = ((idx+1) % 2 === 0) && (totalBalls.length >= 6)
                 const topPosition = topRowBall ? '30%' : totalBalls.length >= 6 ? '70%' : '50%'
                 const position = {top: topPosition, left: scalingStyles.left}
-                return <BallProgress key={`progress-bar-${ball}-ball`} ball={ball} position={position} size={scalingStyles.size} lgScreen={true} addLabel={totalBalls.length < 6}/>
+                return <BallProgress key={`progress-bar-${ball}-ball`} ball={ball} position={position} size={scalingStyles.size} lgScreen={true} addLabel={totalBalls.length < 6} smallerSizeLabel={totalBalls.length < 6 && totalBalls.length === 5}/>
             })
             }
             {setCircleLayout && 
@@ -102,7 +102,7 @@ export default function CollectionProgress({ballScopeInit}) {
                   circleCenterBall={true}  
                 />
             }
-            {(setCircleLayout && totalBalls.length % 2 === 1 && selectedBall !== '') && 
+            {(setCircleLayout && totalBalls.length % 2 === 0 && selectedBall !== '') && 
                 <Button sx={{position: 'absolute', top: '-30px'}} size='small' onClick={seeTotalProgress}>
                     Total Progress
                 </Button>

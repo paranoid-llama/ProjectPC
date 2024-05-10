@@ -145,7 +145,7 @@ function getIndividualPokemonInfo(gen, newPokemon, ballScope) {
                 }
                 pokemonInfo.imgLink = getImgLink(pokemonInfo)
                 pokemonInfo.possibleGender = getPossibleGender(pokemonInfo)
-                return removeBallsOutsideScope(pokemonInfo, ballScope, excludedCombos, undefined)
+                return removeBallsOutsideScope(pokemonInfo, ballScope, {}, undefined)
             } else {
                 return undefined
             }

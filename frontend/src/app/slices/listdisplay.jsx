@@ -15,11 +15,18 @@ const listDisplay = createSlice({
     initialState: {collection: [], onhand: [], collectionFilters: {sort: '', filters: {ballFilters: [], genFilters: [], otherFilters: []}}, onhandFilters: {sort: [''], filters: {ballFilters: [], genFilters: [], otherFilters: []}}, eggMoveInfo: {}},
     reducers: {
         setListInitialState: (state, action) => {
-            const {collection, onhand, resetCollectionFilters, updatedEggMoveInfo} = action.payload
-            state.collection = collection.filter(pokemon => pokemon.disabled === undefined)
-            state.onhand = onhand
+            const {collection, onhand, resetCollectionFilters, resetOnHandFilters, updatedEggMoveInfo, onlyUpdateCollection, onlyUpdateOnHand} = action.payload
+            if (onlyUpdateOnHand === undefined) {
+                state.collection = collection.filter(pokemon => pokemon.disabled === undefined)
+            }
+            if (!onlyUpdateCollection) {
+                state.onhand = onhand
+            }
             if (resetCollectionFilters) {
                 state.collectionFilters = {sort: '', filters: {ballFilters: [], genFilters: [], otherFilters: []}}
+            }
+            if (resetOnHandFilters) {
+                state.onhandFilters = {sort: '', filters: {ballFilters: [], genFilters: [], otherFilters: []}}
             }
             if (updatedEggMoveInfo !== undefined) {
                 state.eggMoveInfo = updatedEggMoveInfo

@@ -119,6 +119,24 @@ const customSortCollectionListLogic = (a, b, customSortOrder) => {
     return aIdx > bIdx ? 1 : -1
 }
 
+//this is different since this is custom sorting AFTER a collection is created, where certain mons are enabled or disabled and stay in the list.
+//custom sort only sorts the enabled pokemon so we need extra logic to ensure the disabled mons stay relatively in the same position as before
+const customSortChanges = (customSortOrder, collectionList) => {
+    const onlyEnabledMons = collectionList.filter(mon => mon.disabled === undefined)
+    const onlyDisabledMons = collectionList.map((mon, idx) => {return {...mon, idx}}).filter(mon => mon.disabled === true)
+    const newCollectionList = onlyEnabledMons.sort((a, b) => {
+        const aSortOrder = customSortOrder.filter(mon => mon.id === a.imgLink)[0].idx
+        const bSortOrder = customSortOrder.filter(mon => mon.id === b.imgLink)[0].idx
+        return aSortOrder > bSortOrder ? 1 : -1
+    })
+    onlyDisabledMons.forEach(mon => {
+        const idxNum = mon.idx
+        delete mon.idx
+        newCollectionList.splice(idxNum, 0, mon)
+    })
+    return newCollectionList
+}
+
 const sortList = (sortKey, list) => {
     if (sortKey === 'A2Z' || sortKey === 'Z2A') {
         return sortByName(sortKey, list)
@@ -127,4 +145,4 @@ const sortList = (sortKey, list) => {
     }
 }
 
-export {sortList, sortByDexNum, sortByName, sortOnHandList, customSortCollectionListLogic}
+export {sortList, sortByDexNum, sortByName, sortOnHandList, customSortCollectionListLogic, customSortChanges}

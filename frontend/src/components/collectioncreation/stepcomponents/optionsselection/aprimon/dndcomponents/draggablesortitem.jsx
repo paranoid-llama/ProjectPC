@@ -1,6 +1,6 @@
 import {Box, Typography} from '@mui/material'
 import {useRef} from 'react'
-import ImgData from '../../../../collectiontable/tabledata/imgdata'
+import ImgData from '../../../../../collectiontable/tabledata/imgdata'
 import {Draggable} from 'react-beautiful-dnd';
 import SortItem from './sortitem';
 import './droppablelist.css'

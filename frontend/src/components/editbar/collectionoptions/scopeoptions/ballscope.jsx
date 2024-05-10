@@ -1,7 +1,7 @@
 import {Box, Typography, ToggleButton, Button, Grid} from '@mui/material'
 import ArrowForward from '@mui/icons-material/ArrowForward'
 import ImgData from '../../../collectiontable/tabledata/imgdata'
-import SaveChangesConfirmModal from './savechangesconfirmmodal'
+import SaveChangesConfirmModal from '../savechangesconfirmmodal'
 import { AlertsContext } from '../../../../alerts/alerts-context'
 import { useState, useEffect, useContext } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
@@ -22,7 +22,6 @@ export default function BallScope({elementBg, collectionGen, collectionId}) {
     const legalBallInfo = oneArrLegalBalls.filter(mon => useSelector((state) => state.listDisplay.collection).map(listMon => listMon.imgLink === mon.imgLink).includes(true))
     const ballScopeInit = useSelector((state) => state.options.collectingBalls)
     const collectionState = useSelector((state) => state.collection)
-    const onhandListState = useSelector((state) => state.listDisplay.onhand)
     const totalBalls = getBallsInGen(collectionGen)
     const [formData, setFormData] = useState({balls: ballScopeInit, removedPokemon: [], confirmChangesModal: false})
     const addedBalls = formData.balls.filter(ball => !ballScopeInit.includes(ball))
@@ -91,7 +90,7 @@ export default function BallScope({elementBg, collectionGen, collectionId}) {
             setTimeout(() => {
                 dispatch(setBallScope(formData.balls))
                 dispatch(setCollectionInitialState(newListState))
-                dispatch(setListInitialState({collection: newListState, onhand: onhandListState, resetCollectionFilters: true}))
+                dispatch(setListInitialState({collection: newListState, onlyUpdateCollection: true, resetCollectionFilters: true}))
 
                 //spawning alert
                 const alertMessage = `Updated Ball Scope!`

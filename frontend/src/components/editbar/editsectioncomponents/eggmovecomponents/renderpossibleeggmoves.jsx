@@ -57,7 +57,7 @@ export default function RenderPossibleEggMoves({possibleEggMoves, EMs, handleEMC
         return (
             Array.from(Array(numToFill).keys()).map(n => {
                 return (
-                    <Grid item xs={2}></Grid>
+                    <Grid key={`empty-em-fill-${n}`} item xs={2}></Grid>
                 )
             })
         )

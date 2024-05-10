@@ -3,7 +3,7 @@ import { ownedPokemonEdit } from "../backendrequests/ownedpokemonedit"
 import { apriballLiterals } from "../../../src/infoconstants"
 import { sortList } from "../sortfilterfunctions/sortingfunctions"
 
-const saveScopeChangesAndGetNewList = async(addedPokemon, removedPokemon, collectionState, collectionGen, collectionId, collectionAutoSort, collectionAutoSortKey, ballScope) => {
+const saveScopeChangesAndGetNewList = async(addedPokemon, removedPokemon, collectionState, collectionGen, collectionId, collectionAutoSort, collectionAutoSortKey, ballScope, ballLegalityInfo) => {
     const newListDisplayState = JSON.parse(JSON.stringify(collectionState))
     //only need to update the list display state, since we'll use that list to update the backend ownedPokemon list, and any disabled pokemon
     //in list display arr is never shown in the list anyway
@@ -22,11 +22,28 @@ const saveScopeChangesAndGetNewList = async(addedPokemon, removedPokemon, collec
             if (aPoke.id === poke.imgLink) {
                 backendRequestPokeInfo.pokemon = backendRequestPokeInfo.pokemon.filter(mon => mon.id !== aPoke.id)
                 delete newListDisplayState[idx].disabled
+                ballScope.forEach(ball => {
+                    const legalityBall = apriballLiterals.includes(ball) ? 'apriball' : ball
+                    const pokemonLegalBalls = ballLegalityInfo.filter(mon => mon.imgLink === poke.imgLink)[0].legalBalls
+                    if (pokemonLegalBalls.includes(legalityBall) && poke.balls[ball] === undefined) {
+                        const newBallObjRef = JSON.parse(JSON.stringify(pokemon.balls[Object.keys(pokemon.balls)[0]]))
+                        Object.keys(newBallObjRef).forEach((key) => {
+                            const accompanyingValue = key === 'isOwned' || key === 'isHA' ? false : key === 'emCount' ? 0 : key === 'EMs' && []
+                            newBallObjRef[key] = accompanyingValue
+                        })
+                        newListDisplayState[idx].balls[ball] = newBallObjRef
+                    }
+                })
+                Object.keys(newListDisplayState[idx].balls).forEach(ball => {
+                    if (newListDisplayState[idx].balls[ball].disabled === true) {
+                        delete newListDisplayState[idx].balls[ball].disabled //resets excluded ball info
+                    }
+                })
             } 
         })
     }
     if (backendRequestPokeInfo.pokemon.length !== 0) {
-        const newPokemonInfo = await ownedPokemonEdit(collectionGen, [], collectionId, true, backendRequestPokeInfo.pokemon, false, )
+        const newPokemonInfo = await ownedPokemonEdit(collectionGen, [], collectionId, true, backendRequestPokeInfo.pokemon, false, ballScope)
         const finalListState = collectionAutoSort === true ? sortList(collectionAutoSortKey, [...newListDisplayState, ...newPokemonInfo]) : [...newListDisplayState, ...newPokemonInfo]
         const backendListFormat = finalListState.map((mon) => {return mon.disabled ? {name: mon.name, natDexNum: mon.natDexNum, gen: mon.gen, disabled: true, balls: mon.balls} : {name: mon.name, natDexNum: mon.natDexNum, gen: mon.gen, balls: mon.balls}})
         const updatedEggMoveInfo = await ownedPokemonEdit(collectionGen, backendListFormat, collectionId, false, [], true)
@@ -83,4 +100,43 @@ const saveBallScopeChanges = (newBallScope, addedBalls, collectionListState, leg
     return newCollectionListState
 }
 
-export {saveScopeChangesAndGetNewList, saveBallScopeChanges}
+const saveExcludedCombos = (addedPokemon, removedPokemon, ballChangedPokemon,  collectionListState) => {
+    const newListRef = JSON.parse(JSON.stringify(collectionListState))
+
+    const newCollectionListState = newListRef.map((pokemon) => {
+        const isAddedMon = addedPokemon.filter(mon => mon.imgLink === pokemon.imgLink).length !== 0
+        const isRemovedMon = removedPokemon.filter(mon => mon.imgLink === pokemon.imgLink).length !== 0
+        const isBallChangedMon = ballChangedPokemon.filter(mon => mon.imgLink === pokemon.imgLink).length !== 0
+        if (isAddedMon) {
+            const excludedBalls = addedPokemon.filter(mon => mon.imgLink === pokemon.imgLink)[0].excludedBalls
+            Object.keys(pokemon.balls).forEach(ball => {
+                const disableBall = excludedBalls.includes(ball)
+                if (disableBall) {
+                    pokemon.balls[ball].disabled = true
+                }
+            })
+        } else if (isRemovedMon) {
+            Object.keys(pokemon.balls).forEach(ball => {
+                if (pokemon.balls[ball].disabled !== undefined) {
+                    delete pokemon.balls[ball].disabled
+                }
+            })
+        } else if (isBallChangedMon) {
+            const addedBalls = ballChangedPokemon.filter(mon => mon.imgLink === pokemon.imgLink)[0].addedBalls
+            const removedBalls = ballChangedPokemon.filter(mon => mon.imgLink === pokemon.imgLink)[0].removedBalls
+            Object.keys(pokemon.balls).forEach(ball => {
+                const reEnableBall = removedBalls.includes(ball)
+                const disableBall = addedBalls.includes(ball)
+                if (pokemon.balls[ball].disabled !== undefined && reEnableBall) {
+                    delete pokemon.balls[ball].disabled
+                } else if (pokemon.balls[ball].disabled === undefined && disableBall) {
+                    pokemon.balls[ball].disabled = true
+                }
+            })
+        }
+        return pokemon
+    })
+
+    return newCollectionListState
+}
+export {saveScopeChangesAndGetNewList, saveBallScopeChanges, saveExcludedCombos}

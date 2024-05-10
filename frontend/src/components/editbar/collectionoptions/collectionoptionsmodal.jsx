@@ -6,20 +6,32 @@ import OptionsMain from './optionsmain'
 import OptionsSub from './optionssub'
 import PokemonScope from './scopeoptions/pokemonscope'
 import BallScope from './scopeoptions/ballscope'
+import BallCombosScope from './scopeoptions/ballcombosscope'
+import CollectionSortingOptions from './sortingoptions/collectionsortingoptions'
+import OnHandSortingOptions from './sortingoptions/onhandsortingoptions'
+import CustomSortingOptions from './sortingoptions/customsortingoptions'
 
 export default function CollectionOptionsModal({collectionGen, collectionId}) {
     const dispatch = useDispatch()
     const modalState = useSelector((state) => state.editmode.collectionOptionsModal)
     const elementBg = modalStyles.onhand.modalElementBg
     const isOptionsSubScreen = modalState.screen === 'changeScope' || modalState.screen === 'sorting' || modalState.screen === 'tradePreferences'
-    const modalHeight = (modalState.screen === 'main' || isOptionsSubScreen || modalState.screen === 'ballScope') ? '450px' : modalState.screen === 'pokemonScope' ? '730px' : '700px'
+    const modalHeight = (
+        modalState.screen === 'main' || 
+        isOptionsSubScreen || 
+        modalState.screen === 'ballScope' || 
+        modalState.screen === 'collectionSort') ? 
+            '450px' : 
+        modalState.screen === 'pokemonScope' ? '730px' : '700px'
+    const makeChangesScreens = modalState.screen === 'pokemonScope' || modalState.screen === 'ballScope' || modalState.screen === 'excludedCombos' ||
+        modalState.screen === 'collectionSort' || modalState.screen === 'onhandSort' || modalState.screen === 'customSort'
 
     return (
         <Modal 
             aria-labelledby='collection-options'
             aria-describedby="change collection options"
             open={modalState.open}
-            onClose={modalState.screen === 'pokemonScope' ? null : () => dispatch(changeModalState({open: false}))}
+            onClose={makeChangesScreens ? null : () => dispatch(changeModalState({open: false}))}
             closeAfterTransition
             slots={{backdrop: Backdrop}}
             slotProps={{
@@ -35,7 +47,11 @@ export default function CollectionOptionsModal({collectionGen, collectionId}) {
                     {isOptionsSubScreen && <OptionsSub elementBg={elementBg} screenType={modalState.screen} collectionGen={collectionGen}/>}
                     {modalState.screen === 'pokemonScope' && <PokemonScope elementBg={elementBg} collectionGen={collectionGen} collectionId={collectionId}/>}
                     {modalState.screen === 'ballScope' && <BallScope elementBg={elementBg} collectionGen={collectionGen} collectionId={collectionId}/>}
-                </Box>
+                    {modalState.screen === 'excludedCombos' && <BallCombosScope elementBg={elementBg} collectionGen={collectionGen} collectionId={collectionId}/>}
+                    {modalState.screen === 'collectionSort' && <CollectionSortingOptions elementBg={elementBg} collectionGen={collectionGen} collectionId={collectionId}/>}
+                    {modalState.screen === 'onhandSort' && <OnHandSortingOptions elementBg={elementBg} collectionGen={collectionGen} collectionId={collectionId}/>}
+                    {modalState.screen === 'customSort' && <CustomSortingOptions elementBg={elementBg} collectionGen={collectionGen} collectionId={collectionId}/>}
+               </Box>
             </Fade>
         </Modal>
     )

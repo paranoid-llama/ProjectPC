@@ -8,8 +8,8 @@ import { pokemonGroups, pokemonSubGroups, apriballLiterals } from '../../../../.
 import { getPokemonGroups } from '../../../../../../utils/functions/backendrequests/getpokemongroups'
 import { scopeSingleChange, scopeMassChange, ballScopeChange, excludedCombosChange } from '../../../../../../utils/functions/scope/statechanges'
 import ImgData from '../../../../collectiontable/tabledata/imgdata'
-import PokemonBallCombosModal from './pokemonballcombosmodal'
-import PokemonGroupCardArea from './pokemongroupcardarea'
+import PokemonBallCombosModal from '../aprimon/pokemonballcombosmodal'
+import PokemonGroupCardArea from '../aprimon/pokemongroupcardarea'
 
 export default function ScopeSelection({collectionType, collectionGen, importedCollection, scope, ballScopeInit, goBackStep, cssClass, handleChange}) {
 

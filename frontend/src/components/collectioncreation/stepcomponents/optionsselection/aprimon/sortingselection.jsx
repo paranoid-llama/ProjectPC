@@ -16,13 +16,16 @@ export default function SortingSelection({sortData, handleChange, handleCustomSo
         setModalStates({...modalStates, [type]: {...modalStates[type], open: false}})
     }
 
-    const handleOnhandBallOrderChange = (e, newBall) => {
+    const handleOnhandBallOrderChange = (newBall) => {
         const newArr = sortData.onhand.ballOrder.includes(newBall) ? sortData.onhand.ballOrder.filter(b => b !== newBall) : [...sortData.onhand.ballOrder, newBall]
-        handleChange(e, 'onhand', 'ballOrder', newArr)
+        handleChange('ballOrder', newArr, 'onhand')
     }
 
     const parseHandleSortChangeData = (result) => {
         const draggedPokemonData = result.source.droppableId === 'customSort' ? sortData.customSort.filter(p => p.id === result.draggableId)[0] : holdPokemon.filter(p => p.id === result.draggableId)[0]
+        if (result.destination === null) {
+            return
+        }
         if (result.destination.droppableId === "holdList") {
             const newCustomSortState = result.source.droppableId === 'customSort' ? sortData.customSort.filter(p => p.id !== result.draggableId) : sortData.customSort
             const newHoldListState = result.source.droppableId === 'customSort' ? [...holdPokemon, draggedPokemonData] : [...holdPokemon]
@@ -85,7 +88,7 @@ export default function SortingSelection({sortData, handleChange, handleCustomSo
                                 sx={{padding: 1, py: 0}} 
                                 value={true} 
                                 selected={sortData.collection.reorder === true} 
-                                onChange={(e) => handleChange(e, 'collection', 'reorder', true)}
+                                onChange={(e) => handleChange('reorder', true, 'collection')}
                             >
                                 Yes
                             </ToggleButton>
@@ -93,7 +96,7 @@ export default function SortingSelection({sortData, handleChange, handleCustomSo
                                 sx={{padding: 1, py: 0}} 
                                 value={false}
                                 selected={sortData.collection.reorder === false} 
-                                onChange={(e) => handleChange(e, 'collection', 'reorder', false)}
+                                onChange={(e) => handleChange('reorder', false, 'collection')}
                             >
                                 No
                             </ToggleButton>
@@ -104,7 +107,7 @@ export default function SortingSelection({sortData, handleChange, handleCustomSo
                                 value={sortData.collection.default}
                                 sx={{'&.MuiInputBase-root': {width: '70%'}, '& .MuiSelect-select': {fontSize: '12px', py: 0}}}
                                 size='small'
-                                onChange={(e, newVal) => handleChange(e, 'collection', 'default', newVal.props.value)}
+                                onChange={(e, newVal) => handleChange('default', newVal.props.value, 'collection')}
                             >
                                 <MenuItem value='NatDexNumL2H'>Dex # - Lowest to Highest</MenuItem>
                                 <MenuItem value='NatDexNumH2L'>Dex # - Highest to Lowest</MenuItem>
@@ -121,7 +124,7 @@ export default function SortingSelection({sortData, handleChange, handleCustomSo
                                 sx={{padding: 1, py: 0.5}} 
                                 value={true} 
                                 selected={sortData.onhand.reorder === true} 
-                                onChange={(e) => handleChange(e, 'onhand', 'reorder', true)}
+                                onChange={(e) => handleChange('reorder', true, 'onhand')}
                             >
                                 Yes
                             </ToggleButton>
@@ -129,7 +132,7 @@ export default function SortingSelection({sortData, handleChange, handleCustomSo
                                 sx={{padding: 1, py: 0.5}} 
                                 value={false}
                                 selected={sortData.onhand.reorder === false} 
-                                onChange={(e) => handleChange(e, 'onhand', 'reorder', false)}
+                                onChange={(e) => handleChange('reorder', false, 'onhand')}
                             >
                                 No
                             </ToggleButton>
@@ -140,7 +143,7 @@ export default function SortingSelection({sortData, handleChange, handleCustomSo
                                 value={sortData.onhand.default}
                                 sx={{'&.MuiInputBase-root': {width: '70%'}, '& .MuiSelect-select': {fontSize: '12px'}}}
                                 size='small'
-                                onChange={(e, newVal) => handleChange(e, 'onhand', 'default', newVal.props.value)}
+                                onChange={(e, newVal) => handleChange('default', newVal.props.value, 'onhand')}
                             >
                                 <MenuItem value='NatDexNumL2H'>Dex # - Lowest to Highest</MenuItem>
                                 <MenuItem value='NatDexNumH2L'>Dex # - Highest to Lowest</MenuItem>

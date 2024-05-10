@@ -8,6 +8,8 @@ const selectEnabledPokemonInCollectionList = (state) => {
     return state.collection[0] === undefined ? state.collection : state.collection.filter(mon => mon.disabled === undefined) 
 }
 
+
+
 const selectOnHandList = (state) => {
     return state.onhand
 }
@@ -108,4 +110,24 @@ const selectScopeFormData = createSelector([selectEnabledPokemonInCollectionList
     return formData
 })
 
-export {seeIfPokemonIsSelected, selectCollectionPokemon, selectOnHandPokemon, selectIdxOfMon, selectBallProgress, selectScopeFormData}
+const selectExcludedBallCombos = createSelector([selectEnabledPokemonInCollectionList], (filteredList) => {
+    const excludedBallCombos = {}
+    filteredList.forEach(mon => {
+        Object.keys(mon.balls).forEach(ball => {
+            if (mon.balls[ball].disabled === true) {
+                if (excludedBallCombos[mon.name] === undefined) {
+                    excludedBallCombos[mon.name] = {natDexNum: mon.natDexNum, imgLink: mon.imgLink, excludedBalls: [ball]}
+                } else {
+                    excludedBallCombos[mon.name].excludedBalls = [...excludedBallCombos[mon.name].excludedBalls, ball]
+                }
+            }
+        })
+    })
+    return excludedBallCombos
+})
+
+const selectCustomSortData = createSelector([selectEnabledPokemonInCollectionList], (filteredList) => {
+    return filteredList.map(mon => {return {name: mon.name, natDexNum: mon.natDexNum, id: mon.imgLink}})
+})
+
+export {seeIfPokemonIsSelected, selectCollectionPokemon, selectOnHandPokemon, selectIdxOfMon, selectBallProgress, selectScopeFormData, selectExcludedBallCombos, selectCustomSortData}

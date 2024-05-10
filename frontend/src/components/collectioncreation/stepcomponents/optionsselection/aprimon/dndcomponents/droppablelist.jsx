@@ -8,7 +8,7 @@ export default function DroppableList({totalCount, listContent, isHoldList, onHo
 
     const HeightPreservingItem = ({children, ...props}) => {
         return (
-            <Box sx={{height: '36px'}} {...props}>
+            <Box sx={{height: '36px', py: 0.25}} {...props}>
                 {children}
             </Box>
         )

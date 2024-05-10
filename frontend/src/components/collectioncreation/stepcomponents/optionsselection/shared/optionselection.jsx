@@ -53,8 +53,8 @@ export default function OptionSelection({collectionType, formOptionsData, collec
         setOptionsFormData({...optionsFormData, rates: {...optionsFormData.rates, [`${offerType}Offers`]: newValue}})
     }
 
-    const handleSortDataChange = (e, field, nestedField, newValue) => {
-        setOptionsFormData({...optionsFormData, sorting: {...optionsFormData.sorting, [field]: {...optionsFormData.sorting[field], [nestedField]: newValue}}})
+    const handleSortDataChange = (field, newValue, listType) => {
+        setOptionsFormData({...optionsFormData, sorting: {...optionsFormData.sorting, [listType]: {...optionsFormData.sorting[listType], [field]: newValue}}})
     }
 
     const handleCustomSortChange = (customSort, holdPokemon) => {
@@ -133,7 +133,7 @@ export default function OptionSelection({collectionType, formOptionsData, collec
                         </Button>
                     </Box>
                     <Box sx={{width: '50%', display: 'flex', justifyContent: 'end'}}>
-                        <Button onClick={(e) => handleChange(e, optionsFormData, collectionNameRef.current.value)}>
+                        <Button onClick={(e) => handleChange(e, optionsFormData, collectionNameRef.current.value, totalBalls)}>
                             <Typography sx={{mx: 2, fontSize: '14px'}}>Review</Typography>
                             <ArrowForward/>
                         </Button>

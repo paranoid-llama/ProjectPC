@@ -122,16 +122,19 @@ export default function NewCollection(userid) {
         }, 500)
     }
 
-    const setOptionsFinalState = (options, collectionName) => {
+    const setOptionsFinalState = (options, collectionName, totalBalls) => {
         const newCustomSort = [...options.sorting.customSort, ...options.sorting.holdPokemon]
         options.sorting.customSort = newCustomSort
         options.sorting.holdPokemon = []
         options.collectionName = collectionName === '' ? `twentyfourcharacteryesno's ${formData.collectionType.subType} ${capitalizeFirstLetter(formData.collectionType.type)} Collection` : collectionName
+        if (totalBalls.length !== options.sorting.onhand.ballOrder.length) {
+            options.sorting.onhand.ballOrder = [...options.sorting.onhand.ballOrder, ...totalBalls.filter(ball => !options.sorting.onhand.ballOrder.includes(ball))]
+        }
         setFormData({...formData, options})
     }
 
-    const handleOptionsSelection = (e, options, collectionName) => { 
-        setOptionsFinalState(options, collectionName)
+    const handleOptionsSelection = (e, options, collectionName, totalBalls) => { 
+        setOptionsFinalState(options, collectionName, totalBalls)
         setCreationProgress(100)
         setTimeout(() => {
             setFormBodyProgress(100)

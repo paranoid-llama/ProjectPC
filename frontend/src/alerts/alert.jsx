@@ -40,7 +40,8 @@ const CustomAlert = ({
                     }} 
                     sx={{
                         marginTop: '5px',
-                        animation: `${timeout}s ${fadeoutDelay}s 1 fade-out`
+                        animation: `${timeout}s ${fadeoutDelay}s 1 fade-out`,
+                        pointerEvents: 'all'
                     }}
                 >
                     {message}

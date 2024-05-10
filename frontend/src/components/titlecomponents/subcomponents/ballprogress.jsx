@@ -5,7 +5,7 @@ import ImgData from '../../collectiontable/tabledata/imgdata'
 import { capitalizeFirstLetter } from '../../../../utils/functions/misc'
 import './../../../../utils/styles/componentstyles/ballprogress.css'
 
-export default function BallProgress({ball, position, className, size, lgScreen, circleOrientation, selected, handleBallChange, circleCenterBall, addLabel}) {
+export default function BallProgress({ball, position, className, size, lgScreen, circleOrientation, selected, handleBallChange, circleCenterBall, addLabel, smallerSizeLabel}) {
 
     const ballProgress = useSelector((state) => selectBallProgress(state, ball))
     const iconSize = size !== undefined ? size : circleCenterBall ? 100 : 40
@@ -23,7 +23,7 @@ export default function BallProgress({ball, position, className, size, lgScreen,
                     onChange={(e) => handleBallChange(e)}
                 />
             }
-            {(circleCenterBall || addLabel) && <Typography sx={{position: 'absolute', fontSize: addLabel ? '15px':'20px', top: addLabel ? '-65px':'-80px', width: '120px', height: '25px', fontWeight: 700}}>{`${capitalizeFirstLetter(ball)} Ball`}</Typography>}
+            {(circleCenterBall || addLabel) && <Typography sx={{position: 'absolute', fontSize: smallerSizeLabel ? '13px' : addLabel ? '15px':'20px', top: smallerSizeLabel ? '-55px' : addLabel ? '-65px':'-80px', width: '120px', height: '25px', fontWeight: 700}}>{`${capitalizeFirstLetter(ball)} Ball`}</Typography>}
             <CircularProgress sx={{position: 'absolute', opacity: 0.2}} variant='determinate' value={100} size={iconSize}/>
             <CircularProgress sx={{position: 'absolute'}} variant='determinate' value={ballProgress.percent} size={iconSize}/>
             <ImgData type='ball' linkKey={ball} setAbsolutePosition={true} size={`${iconSize-8}px`}/>
