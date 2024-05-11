@@ -10,6 +10,10 @@ import BallCombosScope from './scopeoptions/ballcombosscope'
 import CollectionSortingOptions from './sortingoptions/collectionsortingoptions'
 import OnHandSortingOptions from './sortingoptions/onhandsortingoptions'
 import CustomSortingOptions from './sortingoptions/customsortingoptions'
+import TradePreferenceOptions from './preferenceoptions/tradepreferenceoptions'
+import RateOptions from './preferenceoptions/rateoptions'
+import ItemOptions from './preferenceoptions/itemoptions'
+import OtherOptions from './otheroptions'
 
 export default function CollectionOptionsModal({collectionGen, collectionId}) {
     const dispatch = useDispatch()
@@ -20,11 +24,15 @@ export default function CollectionOptionsModal({collectionGen, collectionId}) {
         modalState.screen === 'main' || 
         isOptionsSubScreen || 
         modalState.screen === 'ballScope' || 
-        modalState.screen === 'collectionSort') ? 
+        modalState.screen === 'collectionSort' || 
+        modalState.screen === 'preferences' || 
+        modalState.screen === 'other') ? 
             '450px' : 
         modalState.screen === 'pokemonScope' ? '730px' : '700px'
     const makeChangesScreens = modalState.screen === 'pokemonScope' || modalState.screen === 'ballScope' || modalState.screen === 'excludedCombos' ||
-        modalState.screen === 'collectionSort' || modalState.screen === 'onhandSort' || modalState.screen === 'customSort'
+        modalState.screen === 'collectionSort' || modalState.screen === 'onhandSort' || modalState.screen === 'customSort' || modalState.screen === 'preferences'
+
+    const collectionTypeText = typeof collectionGen === 'string' ? `${collectionGen.toUpperCase()} Aprimon Collection` : `Gen ${collectionGen} Aprimon Collection`
 
     return (
         <Modal 
@@ -51,6 +59,10 @@ export default function CollectionOptionsModal({collectionGen, collectionId}) {
                     {modalState.screen === 'collectionSort' && <CollectionSortingOptions elementBg={elementBg} collectionGen={collectionGen} collectionId={collectionId}/>}
                     {modalState.screen === 'onhandSort' && <OnHandSortingOptions elementBg={elementBg} collectionGen={collectionGen} collectionId={collectionId}/>}
                     {modalState.screen === 'customSort' && <CustomSortingOptions elementBg={elementBg} collectionGen={collectionGen} collectionId={collectionId}/>}
+                    {modalState.screen === 'preferences' && <TradePreferenceOptions elementBg={elementBg} collectionId={collectionId}/>}
+                    {modalState.screen === 'rates' && <RateOptions elementBg={elementBg} collectionGen={collectionGen} collectionId={collectionId}/>}
+                    {modalState.screen === 'items' && <ItemOptions elementBg={elementBg} collectionGen={collectionGen} collectionId={collectionId}/>}
+                    {modalState.screen === 'other' && <OtherOptions elementBg={elementBg} collectionId={collectionId} collectionType={collectionTypeText}/>}
                </Box>
             </Fade>
         </Modal>

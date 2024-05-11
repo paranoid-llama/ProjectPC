@@ -20,12 +20,12 @@ export default function TradePreferencesSelection({formData, handleChange, total
         setItemSelectionModal({...itemSelectionModal, ftSelectedItem: newVal.props.value})
     }
 
-    const handleLfItemsChange = (e, newItem) => {
+    const handleLfItemsChange = (newItem) => {
         const newLfItems = formData.lfItems.includes(newItem) ? formData.lfItems.filter(item => item !== newItem) : [...formData.lfItems, newItem]
-        handleChange(e, 'lfItems', newLfItems)
+        handleChange('lfItems', newLfItems)
     }
-
-    const handleFtItemsChange = (e, item, changingQty, newQty) => {
+    
+    const handleFtItemsChange = (item, changingQty, newQty) => {
         const copyOfFt = {...formData.ftItems}
         if (Object.keys(copyOfFt).includes(item)) {
             if (changingQty) {
@@ -41,7 +41,7 @@ export default function TradePreferencesSelection({formData, handleChange, total
             copyOfFt[item] = 0
             setItemSelectionModal({...itemSelectionModal, ftSelectedItem: item})
         }
-        handleChange(e, 'ftItems', copyOfFt)
+        handleChange('ftItems', copyOfFt)
     }
 
     const disabledItemTabStyles = formData.items === 'none' ? {opacity: 0.5, pointerEvents: 'none'} : {}
@@ -67,37 +67,37 @@ export default function TradePreferencesSelection({formData, handleChange, total
                 <Box sx={{width: '50%', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'start', alignItems: 'center'}}>
                     <Typography sx={{fontSize: '14px', fontWeight: 700}}>Trade Status:</Typography>
                     <Box sx={{width: '100%', height: '10%', display: 'flex', justifyContent: 'center', gap: 4}}>
-                        <ToggleButton value='open' selected={formData.status === 'open'} onChange={(e, newValue) => handleChange(e, 'status', newValue)}>
+                        <ToggleButton value='open' selected={formData.status === 'open'} onChange={(e, newValue) => handleChange('status', newValue)}>
                             Open
                         </ToggleButton>
-                        <ToggleButton value='closed' selected={formData.status === 'closed'} onChange={(e, newValue) => handleChange(e, 'status', newValue)}>
+                        <ToggleButton value='closed' selected={formData.status === 'closed'} onChange={(e, newValue) => handleChange('status', newValue)}>
                             Closed
                         </ToggleButton>
                     </Box>
                     <Typography sx={{fontSize: '14px', fontWeight: 700, mt: 1}}>Trade Size:</Typography>
                     <Grid container sx={{width: '100%', height: '40%', display: 'flex', justifyContent: 'center'}}>
                         <Grid item xs={4} sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                            <ToggleButton sx={{padding: 1, fontSize: '12px'}} value='any' selected={formData.size === 'any'} onChange={(e, newValue) => handleChange(e, 'size', newValue)}>
+                            <ToggleButton sx={{padding: 1, fontSize: '12px'}} value='any' selected={formData.size === 'any'} onChange={(e, newValue) => handleChange('size', newValue)}>
                                 Any
                             </ToggleButton>
                         </Grid>
                         <Grid item xs={4} sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                            <ToggleButton sx={{padding: 1, fontSize: '12px'}} value='small preferred' selected={formData.size === 'small preferred'} onChange={(e, newValue) => handleChange(e, 'size', newValue)}>
+                            <ToggleButton sx={{padding: 1, fontSize: '12px'}} value='small preferred' selected={formData.size === 'small preferred'} onChange={(e, newValue) => handleChange('size', newValue)}>
                                 Small Preferred
                             </ToggleButton>
                         </Grid>
                         <Grid item xs={4} sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                            <ToggleButton sx={{padding: 1, fontSize: '12px'}} value='small only' selected={formData.size === 'small only'} onChange={(e, newValue) => handleChange(e, 'size', newValue)}>
+                            <ToggleButton sx={{padding: 1, fontSize: '12px'}} value='small only' selected={formData.size === 'small only'} onChange={(e, newValue) => handleChange('size', newValue)}>
                                 Small Only
                             </ToggleButton>
                         </Grid>
                         <Grid item xs={4} sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                            <ToggleButton sx={{padding: 1, fontSize: '12px'}} value='large preferred' selected={formData.size === 'large preferred'} onChange={(e, newValue) => handleChange(e, 'size', newValue)}>
+                            <ToggleButton sx={{padding: 1, fontSize: '12px'}} value='large preferred' selected={formData.size === 'large preferred'} onChange={(e, newValue) => handleChange('size', newValue)}>
                                 Large Preferred
                             </ToggleButton>
                         </Grid>
                         <Grid item xs={4} sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                            <ToggleButton sx={{padding: 1, fontSize: '12px'}} value='large only' selected={formData.size === 'large only'} onChange={(e, newValue) => handleChange(e, 'size', newValue)}>
+                            <ToggleButton sx={{padding: 1, fontSize: '12px'}} value='large only' selected={formData.size === 'large only'} onChange={(e, newValue) => handleChange('size', newValue)}>
                                 Large Only
                             </ToggleButton>
                         </Grid>
@@ -109,13 +109,13 @@ export default function TradePreferencesSelection({formData, handleChange, total
                         </Tooltip>
                     </Typography>
                     <Box sx={{width: '100%', height: '10%', display: 'flex', justifyContent: 'center', gap: 4}}>
-                        <ToggleButton value='yes' selected={formData.onhandOnly === 'yes'} onChange={(e, newValue) => handleChange(e, 'onhandOnly', newValue)}>
+                        <ToggleButton value='yes' selected={formData.onhandOnly === 'yes'} onChange={(e, newValue) => handleChange('onhandOnly', newValue)}>
                             Yes
                         </ToggleButton>
-                        <ToggleButton value='no' selected={formData.onhandOnly === 'no'} onChange={(e, newValue) => handleChange(e, 'onhandOnly', newValue)}>
+                        <ToggleButton value='no' selected={formData.onhandOnly === 'no'} onChange={(e, newValue) => handleChange('onhandOnly', newValue)}>
                             No
                         </ToggleButton>
-                        <ToggleButton value='preferred' selected={formData.onhandOnly === 'preferred'} onChange={(e, newValue) => handleChange(e, 'onhandOnly', newValue)}>
+                        <ToggleButton value='preferred' selected={formData.onhandOnly === 'preferred'} onChange={(e, newValue) => handleChange('onhandOnly', newValue)}>
                             Preferred
                         </ToggleButton>
                     </Box>
@@ -125,7 +125,7 @@ export default function TradePreferencesSelection({formData, handleChange, total
                         <Typography sx={{fontSize: '14px', fontWeight: 700, mt: 1}}>Item Trading:</Typography>
                         <Select 
                             value={formData.items}
-                            onChange={(e, newValue) => handleChange(e, 'items', newValue)}
+                            onChange={(e, newValue) => handleChange('items', newValue)}
                             sx={{width: '80%', height: '100%', '& .MuiSelect-select': {padding: 0.5}}}
                         >
                             <MenuItem value='none'>Not looking to trade items</MenuItem>

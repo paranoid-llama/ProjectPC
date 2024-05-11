@@ -155,7 +155,7 @@ const getPossibleItems = (gen) => {
 const tradePreferenceDisplay = {
     'status': {
         'open': 'Accepting trade offers!',
-        'closed': 'Not accepting offers'
+        'closed': 'Not accepting offers!'
     },
     'size': {
         'any': 'Any Size',

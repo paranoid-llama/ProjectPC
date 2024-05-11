@@ -15,7 +15,7 @@ export default function OptionsMain({elementBg}) {
                 <Button size='large' sx={{color: 'white', fontSize: '24px', fontWeight: 700}} onClick={() => dispatch(changeModalState({screen: 'changeScope'}))}>Change Scope</Button>
                 <Button size='large' sx={{color: 'white', fontSize: '24px', fontWeight: 700}} onClick={() => dispatch(changeModalState({screen: 'sorting'}))}>Sorting Options</Button>
                 <Button size='large' sx={{color: 'white', fontSize: '24px', fontWeight: 700}} onClick={() => dispatch(changeModalState({screen: 'tradePreferences'}))}>Trade Preferences</Button>
-                <Button size='large' sx={{color: 'white', fontSize: '24px', fontWeight: 700}} onClick={() => dispatch(changeModalState({screen: 'otherOptions'}))}>Other Options</Button>
+                <Button size='large' sx={{color: 'white', fontSize: '24px', fontWeight: 700}} onClick={() => dispatch(changeModalState({screen: 'other'}))}>Other Options</Button>
             </Box>
         </Box>
         </>

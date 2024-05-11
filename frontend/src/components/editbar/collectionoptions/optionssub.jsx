@@ -9,6 +9,7 @@ export default function OptionsSub({elementBg, screenType, collectionGen}) {
     const dispatch = useDispatch()
     const [isPending, startTransition] = useTransition()
     const scopeTotal = useSelector((state) => state.editmode.pokemonScopeTotal)
+    const itemsState = useSelector((state) => state.options.tradePreferences.items)
 
     const buttons = screenType === 'changeScope' ? [{screen: 'pokemonScope', display: 'Pokemon Scope'}, {screen: 'ballScope', display: 'Ball Scope'}, {screen: 'excludedCombos', display: 'Excluded Ball Combos'}] : 
         screenType === 'sorting' ? [{screen: 'collectionSort', display: 'Collection Sorting Settings'}, {screen: 'onhandSort', display: 'On-Hand Sorting Settings'}, {screen: 'customSort', display: 'Custom Sort Collection'}] : 
@@ -18,16 +19,23 @@ export default function OptionsSub({elementBg, screenType, collectionGen}) {
 
     const generateButtons = () => {
         return buttons.map((button) => {
+            const disableButton = button.screen === 'items' && itemsState === 'none'
             const initializeScopeTotal = (button.screen === 'pokemonScope' || button.screen === 'ballScope' || button.screen === 'excludedCombos')
             const onClickFunc = isPending ? null : initializeScopeTotal ? () => initializePokemonGroups(button.screen) : () => dispatch(changeModalState({screen: button.screen}))
             return (
                 <Button 
                     size='large'
-                    sx={{color: 'white', fontSize: '24px', fontWeight: 700}}
+                    sx={{color: 'white', fontSize: '24px', fontWeight: 700, position: 'relative', '&.Mui-disabled': {opacity: 0.3, color: 'white'}}}
                     key={`change-${button.display}`}
+                    disabled={disableButton}
                     onClick={onClickFunc}
                 >
                     {button.display}
+                    {disableButton && 
+                        <Typography sx={{position: 'absolute', fontSize: '12px', textTransform: 'none', top: '95%', width: '140px'}}>
+                            Item Trading is disabled. Re-enable it in Preferences.
+                        </Typography>
+                    }
                 </Button>
             )
         })

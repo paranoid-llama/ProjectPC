@@ -8,7 +8,7 @@ export default function RateSelection({rateData, items, handleChange}) {
         setOfferType(offerType === 'pokemon' ? 'item' : 'pokemon')
     }
 
-    const handleRateChange = (e, rateIdx, creatingNew, person, itemValue, removing=false) => {
+    const handleRateChange = (rateIdx, creatingNew, person, itemValue, removing=false) => {
         const newRateData = [...rateData[rateOfferPath]]
         const newItem = itemValue !== undefined && itemValue.props.value
         const updatingQuantity = !isNaN(parseInt(newItem))
@@ -22,7 +22,7 @@ export default function RateSelection({rateData, items, handleChange}) {
             if ((finalRateData.filter(rate => rate.add === undefined)).length === 7) {
                 finalRateData.push({add: true})
             }
-            handleChange(e, offerType, finalRateData)
+            handleChange(offerType, finalRateData)
             return
         } else if (updatingQuantity) {
             const userRate = person === 'user' ? newItem : newRateData[rateIdx].rate[0]
@@ -33,7 +33,7 @@ export default function RateSelection({rateData, items, handleChange}) {
             const traderItem = person === 'trader' ? newItem : newRateData[rateIdx].items[1]
             newRateData[rateIdx] = {...newRateData[rateIdx], items: [userItem, traderItem]}
         }
-        handleChange(e, offerType, newRateData)
+        handleChange(offerType, newRateData)
     }
 
     const rateOfferPath = offerType === 'pokemon' ? 'pokemonOffers' : 'itemOffers'

@@ -44,12 +44,12 @@ export default function OptionSelection({collectionType, formOptionsData, collec
         setOptionTab(val)
     }
 
-    const handleTradePreferenceChange = (e, field, newValue) => {
+    const handleTradePreferenceChange = (field, newValue) => {
         const adjustedNewVal = field === 'items' ? newValue.props.value : newValue
         setOptionsFormData({...optionsFormData, tradePreferences: {...optionsFormData.tradePreferences, [field]: adjustedNewVal}})
     }
 
-    const handleRateDataChange = (e, offerType, newValue) => {
+    const handleRateDataChange = (offerType, newValue) => {
         setOptionsFormData({...optionsFormData, rates: {...optionsFormData.rates, [`${offerType}Offers`]: newValue}})
     }
 

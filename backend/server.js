@@ -326,15 +326,23 @@ app.put('/collections/:id/edit/ownedpokemonedit', catchAsync(async(req, res) => 
 
 app.put('/collections/:id/edit/optionsedit', catchAsync(async(req, res) => {
     const {id} = req.params
-    const {optionType, listType, data, sortedList, addedRates, deletedRates, newPreferences} = req.body
+    const {optionType, listType, data, sortedList, newRates, newPreferences, lfItems, ftItems, name} = req.body
     if (optionType === 'sort') {
         const setListModifier = sortedList !== undefined ? listType === 'collection' ? {'ownedPokemon': sortedList} : {'onHand': sortedList} : {}
         await Collection.updateOne({_id: id}, { $set: {[`options.sorting.${listType}`]: data, ...setListModifier} })
         res.end()
-    } else if (optionType === 'rate') {
-
-    } else if (optionType === 'preference') {
-
+    } else if (optionType === 'rates') {
+        await Collection.updateOne({_id: id}, { $set: {'options.tradePreferences.rates': newRates} })
+        res.end()
+    } else if (optionType === 'preferences') {
+        await Collection.updateOne({_id: id}, { $set: {'options.tradePreferences': newPreferences} })
+        res.end()
+    } else if (optionType === 'items') {
+        await Collection.updateOne({_id: id}, { $set: {'options.tradePreferences.lfItems': lfItems, 'options.tradePreferences.ftItems': ftItems} })
+        res.end()
+    } else if (optionType === 'name') {
+        await Collection.updateOne({_id: id}, { $set: {'name': name} })
+        res.end()
     }
 }))
 

@@ -11,11 +11,16 @@ export default function SaveChangesConfirmModal({open, modalScreen, saveButtonSe
         modalScreen === 'ballScope' ? 'ball scope' : 
         modalScreen === 'excludedCombos' ? 'excluded ball combos' : 
         modalScreen === 'collectionSort' ? 'collection auto-sort options' :
-        modalScreen === 'onhandSort' && 'on-hand auto-sort options'
+        modalScreen === 'onhandSort' ? 'on-hand auto-sort options' : 
+        modalScreen === 'customSort' ? 'custom sort options' :
+        modalScreen === 'preferences' ? 'trade preferences' : 
+        modalScreen === 'rates' ? 'trade rates' : 
+        modalScreen === 'items' ? 'item trading options' : 
+        modalScreen === 'other' && 'other options'
 
     const noChangesSection = modalScreen === 'collectionSort' ||
-        modalScreen === 'onhandSort' || modalScreen === 'customSort'
-        modalScreen === 'tradePreferences'
+        modalScreen === 'onhandSort' || modalScreen === 'customSort' || 
+        modalScreen === 'preferences' || modalScreen === 'rates' || modalScreen === 'items' || modalScreen === 'other'
     const {addedPokemon, removedPokemon, collectionAutoSort, collectionSortOrder} = pokemonScopeData
     const {addedBalls, removedBalls, newBallScope, fullBalls, removedPokemonBallScope} = ballScopeData
     const {addedPokemonCombos, removedPokemonCombos, ballChanges} = excludedCombosData

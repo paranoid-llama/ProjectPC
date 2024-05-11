@@ -1,7 +1,7 @@
 import {Box, Typography, Button, Select, MenuItem, Paper, styled} from '@mui/material'
 import CancelTwoToneIcon from '@mui/icons-material/CancelTwoTone';
 
-export default function IndividualRateSelection({rate, rateIdx, possibleItems1, possibleItems2, handleChange, isOriginalOnHandRate}) {
+export default function IndividualRateSelection({rate, rateIdx, possibleItems1, possibleItems2, handleChange, isOriginalOnHandRate, divideFactor=4}) {
 
     const RateItem = styled(Paper)(() => ({
         backgroundColor:'#222222',
@@ -45,7 +45,7 @@ export default function IndividualRateSelection({rate, rateIdx, possibleItems1, 
                 <Select
                     sx={{'& .MuiSelect-select': {paddingY: 0, color: 'white'}}}
                     value={rate.rate[0]}
-                    onChange={(e, newVal) => handleChange(e, rateIdx, false, 'user', newVal)}
+                    onChange={(e, newVal) => handleChange(rateIdx, false, 'user', newVal)}
                 >
                     {generateNumberRanges('user')}
                 </Select>
@@ -53,7 +53,7 @@ export default function IndividualRateSelection({rate, rateIdx, possibleItems1, 
                 <Select
                     sx={{'& .MuiSelect-select': {paddingY: 0, color: 'white'}}}
                     value={rate.rate[1]}
-                    onChange={(e, newVal) => handleChange(e, rateIdx, false, 'trader', newVal)}
+                    onChange={(e, newVal) => handleChange(rateIdx, false, 'trader', newVal)}
                 >
                     {generateNumberRanges('user')}
                 </Select>
@@ -62,11 +62,11 @@ export default function IndividualRateSelection({rate, rateIdx, possibleItems1, 
     }
 
     return (
-        <Box sx={{width: '100%', height: `${100/4}%`, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+        <Box sx={{width: '100%', height: `${100/divideFactor}%`, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
             {rate.add === undefined &&
             <RateItem sx={{padding: 0.5, width: '90%', position: 'relative'}}>
                 {!isOriginalOnHandRate &&
-                <Button sx={{position: 'absolute', top: '50%', right: '0px', padding: 0, borderRadius: '50%'}} onClick={(e) => handleChange(e, rateIdx, false, undefined, undefined, true)}>
+                <Button sx={{position: 'absolute', top: '50%', right: '0px', padding: 0, borderRadius: '50%'}} onClick={(e) => handleChange(rateIdx, false, undefined, undefined, true)}>
                     <CancelTwoToneIcon/>
                 </Button>
                 }
@@ -79,7 +79,7 @@ export default function IndividualRateSelection({rate, rateIdx, possibleItems1, 
                         <Select 
                             sx={{'& .MuiSelect-select': {paddingY: 0, color: 'white', fontSize: '12px'}, '&.MuiInputBase-root': {width: '45%'}}}
                             value={rate.items[0]}
-                            onChange={(e, newVal) => handleChange(e, rateIdx, false, 'user', newVal)}
+                            onChange={(e, newVal) => handleChange(rateIdx, false, 'user', newVal)}
                         >
                             {generateOptions('user')}
                         </Select>
@@ -87,7 +87,7 @@ export default function IndividualRateSelection({rate, rateIdx, possibleItems1, 
                         <Select 
                             sx={{'& .MuiSelect-select': {paddingY: 0, color: 'white', fontSize: '12px'}, '&.MuiInputBase-root': {width: '45%'}}}
                             value={rate.items[1]}
-                            onChange={(e, newVal) => handleChange(e, rateIdx, false, 'trader', newVal)}
+                            onChange={(e, newVal) => handleChange(rateIdx, false, 'trader', newVal)}
                         >
                             {generateOptions('trader')}
                         </Select>
@@ -101,7 +101,7 @@ export default function IndividualRateSelection({rate, rateIdx, possibleItems1, 
             </RateItem>
             }
             {rate.add !== undefined && 
-            <Button onClick={(e) => handleChange(e, rateIdx, true)}>
+            <Button onClick={(e) => handleChange(rateIdx, true)}>
                 Add Rate
             </Button>
             }

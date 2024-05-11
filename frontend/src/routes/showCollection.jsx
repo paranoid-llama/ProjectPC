@@ -33,17 +33,12 @@ export default function ShowCollection({colorStyles, listStyles}) {
     //     })
     // }
     const gen8Collection = isNaN(parseInt(collection.gen))
-    const collectionName = collection.name !== undefined ? collection.name : 
-        gen8Collection ? 
-        // `${collectionInfo.owner.username}'s ${collectionInfo.gen.toUpperCase()} Aprimon Collection` 
-        `SixteenCharacter's ${collection.gen.toUpperCase()} Aprimon Collection`    : 
-        // `${collectionInfo.owner.username}'s Gen ${collectionInfo.gen} Aprimon Collection`
-        `SixteenCharacter's Gen ${collection.gen} Aprimon Collection`
+    const collectionName = collection.name
     const dispatch = useDispatch()
     useEffect(() => {dispatch(setCollectionInitialState(collection.ownedPokemon))}, [])
     useEffect(() => {dispatch(setOnHandInitialState(collection.onHand))}, [])
     useEffect(() => {dispatch(setListInitialState({collection: collection.ownedPokemon, onhand: collection.onHand, updatedEggMoveInfo: collection.eggMoveInfo}))}, [])
-    useEffect(() => {dispatch(setOptionsInitialState(collection.options))}, [])
+    useEffect(() => {dispatch(setOptionsInitialState({...collection.options, collectionName: collection.name}))}, [])
 
     useEffect(() => {dispatch(deselect())})
 
@@ -74,13 +69,14 @@ export default function ShowCollection({colorStyles, listStyles}) {
     //         dispatch(enterEditMode())
     //     }
     // }
+    const collectionNameState = useSelector((state) => state.options.collectionName)
 
     return (
         <>
         {/* <EditCollection /> */}
         <Box sx={{flex: 1}}>
             <Box sx={{flexGrow: 1, width: '100%', alignItems: 'center'}}>
-                <Header additionalStyles={{backgroundColor: '#26BCC9', color: 'black'}}>{collectionName}</Header>
+                <Header additionalStyles={{backgroundColor: '#26BCC9', color: 'black'}}>{collectionNameState === undefined ? collectionName : collectionNameState}</Header>
             </Box>
             <BodyWrapper>
                 <ShowCollectionTitle collectionID={collectionId} options={collection.options}/>
