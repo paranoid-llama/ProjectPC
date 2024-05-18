@@ -159,14 +159,16 @@ class Collection {
         //on it (which requires re-initiating a new instance of the collection class)
         const {ownedPokemonList, remakeList, gen, pokemonScope, ballScope, excludedCombos, options, customSort, collectionName, owner} = newCollectionInfo
         this.owner = owner
+        this.type = 'aprimon'
         this.name = collectionName
         this.gen = gen
         this.options = options
         this.trades = []
-        this.ownedPokemon = ((ownedPokemonList !== undefined && remakeList) || (ownedPokemonList === undefined)) ? setOwnedPokemonList(gen, pokemonScope, ballScope, excludedCombos, false, ownedPokemonList !== undefined ? ownedPokemonList : false)
+        this.ownedPokemon = ((ownedPokemonList !== undefined && remakeList) || (ownedPokemonList === undefined)) ? setOwnedPokemonList(gen, pokemonScope, ballScope, excludedCombos, true, ownedPokemonList !== undefined ? ownedPokemonList : false)
                                 .flat()
                                 .filter(e => e !== undefined)
-                                .sort((a, b) => customSortCollectionListLogic(a, b, customSort)) : ownedPokemonList.map((mon) => {return {name: mon.name, natDexNum: mon.natDexNum, gen: mon.gen, balls: mon.balls}})
+                                // .sort((a, b) => customSortCollectionListLogic(a, b, customSort)) 
+                                : ownedPokemonList.map((mon) => {return {name: mon.name, natDexNum: mon.natDexNum, gen: mon.gen, balls: mon.balls}})
                                 // .sort((a, b) => a.natDexNum > b.natDexNum ? 1 : -1)
                                 // .sort((a, b) => {
                                 //     const num1 = a.natDexNum

@@ -105,4 +105,22 @@ function getPossibleGender(p) {
     }
 }
 
-export {getImgLink, getPossibleEggMoves, getPossibleGender}
+function getCollectionProgress(ownedPokemonList) {
+    // console.log(ownedPokemonList)
+    let totalToCollect = 0
+    let totalCollected = 0
+    ownedPokemonList.forEach(p => {
+        const ballsToCollect = Object.keys(p.balls).filter(ball => p.balls[ball].disabled !== true)
+        for (let ball of ballsToCollect) {
+            totalToCollect +=1
+            if (p.balls[ball].isOwned === true) {
+                totalCollected+=1
+            }
+        }
+    })
+    const ballProgress = {display: `${totalCollected}/${totalToCollect}`, percent: (totalCollected/totalToCollect)*100}
+    // console.log(ballProgress)
+    return ballProgress
+}
+
+export {getImgLink, getPossibleEggMoves, getPossibleGender, getCollectionProgress}

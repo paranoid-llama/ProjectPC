@@ -68,7 +68,7 @@ export default function CollectionProgress({ballScopeInit}) {
     return (
         <Box sx={{position: 'relative', height: '100%', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
             {setRowLayout && <Typography sx={{position: 'absolute', top: '-25px', ...totalProgressStyles.label, fontWeight: 700}} variant='h4'>Total Progress</Typography> }
-            {setRowLayout && <Typography sx={{position: 'absolute', top: '-20px', ...totalProgressStyles.text, fontWeight: 700}} variant='h5'>{totalProgress}</Typography> }
+            {setRowLayout && <Typography sx={{position: 'absolute', top: '-20px', ...totalProgressStyles.text, fontWeight: 700}} variant='h5'>{totalProgress.display}</Typography> }
             {setRowLayout &&
             totalBalls.map((ball, idx) => {
                 const scalingStyles = setRowXScaling(idx, totalBalls.length)
@@ -94,7 +94,7 @@ export default function CollectionProgress({ballScopeInit}) {
             })
             }
             {setCircleLayout && selectedBall === '' && <Typography sx={{position: 'absolute', top: '60px', fontWeight: 700, fontSize: '32px'}} variant='h4'>Total Progress</Typography>}
-            {setCircleLayout && selectedBall === '' && <Typography sx={{position: 'absolute', top: '100px', fontWeight: 700}} variant='h5'>{totalProgress}</Typography>}
+            {setCircleLayout && selectedBall === '' && <Typography sx={{position: 'absolute', top: '100px', fontWeight: 700}} variant='h5'>{totalProgress.display}</Typography>}
             {(setCircleLayout && selectedBall !== '') && 
                 <BallProgress 
                   ball={selectedBall}

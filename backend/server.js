@@ -5,7 +5,7 @@ import allPokemon from './utils/aprimonAPI/allpokemoninfo.js';
 import {formatImportQuery, setEMQueries, formatImportedValues, setCollection, detectBadRanges} from './utils/CreateCollection/importCollection.js'
 import { getPokemonGroups } from './utils/pokemongroups/getpokemongroups.js';
 import { getIndividualPokemonInfo } from './utils/createCollection.js';
-import { getPossibleEggMoves } from './utils/schemavirtuals/collectionvirtuals.js';
+import { getPossibleEggMoves, getCollectionProgress } from './utils/schemavirtuals/collectionvirtuals.js';
 // require('dotenv').config()
 import dotenv from 'dotenv'
 import lton from 'letter-to-number'
@@ -58,6 +58,115 @@ app.use(bodyParser.json({ limit: '500kb' }))
 app.get('/message', (req, res) => {
     res.json({ message: "Hello from server!" });
 })
+
+// app.get('/search/:searchType', catchAsync(async(req, res) => {
+//     const {searchType} = req.params
+//     const searchCollections = searchType === 'all' || searchType === 'collections'
+//     const searchUsers = searchType === 'all' || searchType === 'users'
+
+//     const collectionAggregate = [
+//         {
+//             $lookup: {
+//                 from: 'users',
+//                 localField: 'owner',
+//                 foreignField: '_id',
+//                 as: 'owner'
+//             }
+//         },
+//         {$project: {_id: true, name: true, 'owner.username': true, type: true, gen: true, ownedPokemon: true}}
+//     ]
+
+//     const searchResult = {
+//         collections: searchCollections ? await Collection.aggregate(collectionAggregate).exec() : [],
+//         users: searchUsers ? await User.find({}, '_id username').lean().populate({path: 'collections', select: 'type'}).exec() : []
+//     }
+
+//     res.json(searchResult)
+// }))
+
+app.get('/search/:searchType', catchAsync(async(req, res) => {
+    const {searchType} = req.params
+    const {query, skip} = req.query
+    const emptyQuery = query === ''
+    const maxDocs = searchType === 'all' ? 5 : 10
+    const searchCollections = searchType === 'all' || searchType === 'collections'
+    const searchUsers = searchType === 'all' || searchType === 'users'
+    const regex = new RegExp(query, 'i')
+    const searchQueries = {
+        collections: emptyQuery ? {} : {$or: [{name: regex}, {'owner.username': regex}, {type: regex}, {gen: regex}]},
+        users: emptyQuery ? {} : {username: regex}
+    }
+
+    const queryCollectionAggregate = [
+        {
+            $lookup: {
+                from: 'users',
+                localField: 'owner',
+                foreignField: '_id',
+                as: 'owner'
+            }
+        },
+        {$match: searchQueries.collections}
+    ]
+
+    const collectionCountAggregate = [
+        ...queryCollectionAggregate,
+        {$count: "totalCollections"}
+    ]
+
+    const collectionAggregate = [
+        ...queryCollectionAggregate,
+        {$skip: skip === undefined ? 0 : parseInt(skip)},
+        {$limit: maxDocs},
+        {$addFields: {
+            progress: {
+                $concat: [
+                    {$toString: {$sum: {$map: {
+                        input: {$filter: {
+                            input: "$ownedPokemon",
+                            as: 'pokemon',
+                            cond: {$not: '$$pokemon.disabled'}
+                        }},
+                        as: 'enabledPokemon',
+                        in: {$sum: {$map: {
+                            input: {$filter: {input: {$objectToArray: '$$enabledPokemon.balls'}, as: 'ballValues', cond: {$not: '$$ballValues.v.disabled'}}},
+                            as: 'ballObj',
+                            in: {$cond: {if: '$$ballObj.v.isOwned', then: 1, else: 0}}
+                        }}}
+                    }}}},
+                    '/',
+                    {$toString: {$sum: {$map: {
+                        input: {$filter: {
+                            input: "$ownedPokemon",
+                            as: 'pokemon',
+                            cond: {$not: '$$pokemon.disabled'}
+                        }},
+                        as: 'enabledPokemon',
+                        in: {$sum: {$map: {
+                            input: {$filter: {input: {$objectToArray: '$$enabledPokemon.balls'}, as: 'ballValues', cond: {$not: '$$ballValues.v.disabled'}}},
+                            as: 'ballObj',
+                            in: {$cond: {if: '$$ballObj.v', then: 1, else: 0}}
+                        }}}
+                    }}}}
+                ]
+            }
+        }},
+        {$project: {_id: true, name: true, 'owner.username': true, type: true, gen: true, progress: true}}
+    ]
+    // const searchOperations = {
+    //     collections: searchCollections ? Collection.aggregate(collectionAggregate).exec : [],
+    //     users: searchUsers ? User.find(searchQueries.users, '_id username').lean().populate({path: 'collections'}).exec : []
+    // }
+
+    const searchResult = {
+        collections: searchCollections ? await Collection.aggregate(collectionAggregate).exec() : [],
+        users: searchUsers ? await User.find(searchQueries.users, '_id username').skip(skip === undefined ? 0 : skip).limit(maxDocs).lean().populate({path: 'collections', select: 'type -_id -owner'}).exec() : [],
+        collectionCount: searchCollections ? (await Collection.aggregate(collectionCountAggregate, {maxTimeMS: 750}))[0].totalCollections : 0,
+        userCount: searchUsers ? await User.countDocuments(searchQueries.users, {maxTimeMS: 750}) : 0,
+    }
+
+    res.json(searchResult)
+}))
 
 app.post('/users/new', catchAsync(async(req, res) => {
     const user = new User({username: 'paranoid-llama', password: 'rgdbdfbnasuia', email: 'qwqfafasfewwe'})
@@ -172,9 +281,36 @@ app.post('/collections/new', catchAsync(async(req, res) => {
     const collectionData = new CollectionClass(undefined, newCollectionInfo)
     const collection = new Collection(collectionData)
     await collection.save()
+    await User.findByIdAndUpdate({_id: newCollectionInfo.owner}, {$push: {'collections': collection._id}})
 
     res.json(collection._id)
 }))
+
+// app.post('/collections/new/seeddb', catchAsync(async(req, res) => {
+//     const gens = [6, 7, 'swsh', 'bdsp', 9]
+//     const names = ['random sheet', 'first aprimon collection', 'we get this!', 'collecting aprimon', 'aprimon collector 1', 'aprimon collection 24', 'llamas sheet']
+//     const ownerIds = ['64ea4c22465311a6bf99c4ae',  '663313a050e7aacd52eb2d54']
+
+//     const usernames = ['ash ketchup', 'penny', 'hihi', 'aprimon collector', 'selvt', 'paro', 'gary oak', 'misty', 'brock', 'sabrina', 'everword', 'superguy12345', 'XxpokemonCollectorxX', 'lol', 'neverAgain', 'findmyway', 'pandabear', 'pandaman', 'pirate king garon', 'aaron', 'matear', 'poalert', 'poltergeist', 'pikachu enjoyer', 'gen wunner', 'wurst', 'gutentag', 'betterman', 'the pokemon lady']
+    
+//     // for (let i=0; i < 100; i++) {
+//     //     const newCollectionInfo = {
+//     //         gen: gens[Math.floor(Math.random() * gens.length)],
+//     //         collectionName: names[Math.floor(Math.random() * names.length)],
+//     //         owner: ownerIds[Math.floor(Math.random() * ownerIds.length)],
+//     //         options: {}
+//     //     }
+//     //     const collectionData = new CollectionClass(undefined, newCollectionInfo)
+//     //     const collection = new Collection(collectionData)
+//     //     await collection.save()
+//     // }
+
+//     for (let user of usernames) {
+//         const newUser = new User({username: user, password: 'uhfw9ugfq2yh9uifqeho', email: 'rwqwqqwsafsae'})
+//         await newUser.save()
+//     }
+//     res.end()
+// }))
 
 app.get('/collections/:id', catchAsync(async(req, res) => {
     const collection = await Collection.findById(req.params.id).populate({path: 'owner'})

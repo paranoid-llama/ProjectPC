@@ -1,4 +1,5 @@
 import {createSelector} from '@reduxjs/toolkit'
+import { getBallProgress } from '../../../utils/functions/ballprogresscircle/ballprogressstate'
 
 const selectCollectionList = (state) => {
     return state.collection
@@ -59,32 +60,7 @@ const selectIdxOfMon = createSelector([selectListFromListType, selectPokemon], (
 })
 
 const selectBallProgress = createSelector([selectEnabledPokemonInCollectionList, selectBall], (list, ball) => {
-    if (list.length === undefined) { //showCollection page sets initial state on launch which makes first render have an empty list array. this prevents the selector from throwing an error
-        if (ball === 'total') {
-            return '0/0'
-        }
-        return {display: '0/0', percent: 0}
-    }
-    if (ball === 'total') {
-        let totalToCollect = 0
-        let totalCollected = 0
-        list.forEach(p => {
-            const ballsToCollect = Object.keys(p.balls).filter(ball => p.balls[ball].disabled !== true)
-            for (let ball of ballsToCollect) {
-                totalToCollect +=1
-                if (p.balls[ball].isOwned === true) {
-                    totalCollected+=1
-                }
-            }
-        })
-        const ballProgress = `${totalCollected}/${totalToCollect}`
-        return ballProgress
-    }
-    const filteredList = list.filter(p => p.balls[ball] !== undefined)
-    const totalToCollect = filteredList.length
-    const totalCollected = filteredList.filter(p => p.balls[ball].isOwned === true).length
-    const ballProgress = {display: `${totalCollected}/${totalToCollect}`, percent: (totalCollected/totalToCollect)*100}
-    return ballProgress
+    return getBallProgress(list, ball)
 })
 
 const selectScopeFormData = createSelector([selectEnabledPokemonInCollectionList, selectScopeTotal], (list, scopeTotal) => {

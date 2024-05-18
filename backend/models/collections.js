@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
-import {getImgLink, getPossibleEggMoves, getPossibleGender} from './../utils/schemavirtuals/collectionvirtuals.js'
+import {getImgLink, getPossibleEggMoves, getPossibleGender, getCollectionProgress} from './../utils/schemavirtuals/collectionvirtuals.js'
 
 const opts = {toJSON: {virtuals: true}, minimize: false}
 
@@ -10,6 +10,7 @@ const collectionSchema = new Schema ({
         ref: "User",
         required: true
     },
+    type: {type: String, enum: {values: ['aprimon']}},
     name: {
         type: String,
         required: true
@@ -102,7 +103,7 @@ const collectionSchema = new Schema ({
     },
     trades: {
         type: [{type: Schema.Types.ObjectId}],
-        ref: "Trades"
+        ref: "Trade"
     },
     ownedPokemon: [{
         _id: false,
@@ -265,6 +266,9 @@ collectionSchema.virtual('eggMoveInfo').get(function() {
     return getPossibleEggMoves(this.ownedPokemon, this.gen)
 })
 
+collectionSchema.virtual('progress').get(function() {
+    return getCollectionProgress(this.ownedPokemon)
+})
 
 collectionSchema.set('toJSON', {virtuals: true})
 
