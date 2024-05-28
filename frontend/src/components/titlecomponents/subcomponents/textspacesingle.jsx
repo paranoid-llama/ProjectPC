@@ -1,6 +1,6 @@
 import {Box, Typography} from '@mui/material'
 
-export default function TextSpaceSingle({colorStyles, text, multipleTexts, label, width, otherStyles, otherLabelStyles, otherTextStyles, textBgColor, displayingTags, tagAreaStyles}) {
+export default function TextSpaceSingle({colorStyles, text, multipleTexts, label, width, otherStyles, otherLabelStyles, otherTextStyles, textBgColor, displayingTags, tagAreaStyles, largeTextArea, largeTextAreaStyles, largeTextStyles}) {
     //displayingTags is for when there's no uniform text for the area, but rather they display text blurbs of user preferences. Refer to show collection under trade status
     const hasLabel = label !== undefined
     const {bgColor, textColor, labelBgColor, isGradient} = colorStyles
@@ -55,6 +55,24 @@ export default function TextSpaceSingle({colorStyles, text, multipleTexts, label
                             </Typography>
                 })}
             </Box>
+        </Box> : 
+        largeTextArea ? 
+        <Box
+            sx={{
+                width, 
+                ...bgStyle,
+                ...largeTextAreaStyles,
+                borderTopLeftRadius: '15px', 
+                borderBottomLeftRadius: '15px'
+            }}
+        >
+            <Typography 
+                sx={{
+                    ...largeTextStyles
+                }}
+            >
+                {text}
+            </Typography>
         </Box> : 
         <Box sx={{display: 'flex', justifyContent: 'start', flexDirection: 'row', height: '2rem', width, ...bgStyle}}>
             <Box sx={{margin: 0}}>

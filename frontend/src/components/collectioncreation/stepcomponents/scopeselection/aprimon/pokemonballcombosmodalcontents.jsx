@@ -125,11 +125,11 @@ export default function PokemonBallCombosModalContents({elementBg, selectedMon, 
         <>
         {changingScope && 
         <Box sx={{...elementBg, width: '95%', height: '35px', display: 'flex', alignItems: 'center', mb: 1}}>
-            <Button sx={{color: 'rgb(38, 188, 201)', fontWeight: 700, textTransform: 'none', fontSize: '1rem'}} onClick={() => changeScopeSave(false, 'main')}>Collection Options</Button>
+            <Button sx={{color: 'rgb(38, 188, 201)', fontWeight: 700, textTransform: 'none', fontSize: '0.9rem'}} onClick={() => changeScopeSave(false, 'main')}>Collection Options</Button>
             <ArrowForward sx={{color: 'rgb(38, 188, 201)'}}/>
-            <Button sx={{color: 'rgb(38, 188, 201)', fontWeight: 700, textTransform: 'none', fontSize: '1rem'}} onClick={() => changeScopeSave(false, 'changeScope')}>Change Scope</Button>
+            <Button sx={{color: 'rgb(38, 188, 201)', fontWeight: 700, textTransform: 'none', fontSize: '0.9rem'}} onClick={() => changeScopeSave(false, 'changeScope')}>Change Scope</Button>
             <ArrowForward sx={{color: 'rgb(38, 188, 201)'}}/>
-            <Typography sx={{color: 'white', fontWeight: 700, mx: 1}}>Excluded Ball Combos</Typography>
+            <Typography sx={{color: 'white', fontWeight: 700, mx: 1, fontSize: '0.9rem'}}>Excluded Ball Combos</Typography>
         </Box>
         }
         <Box sx={{...elementBg, width: '95%', height: '8%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>

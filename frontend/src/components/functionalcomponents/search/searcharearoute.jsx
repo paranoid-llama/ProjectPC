@@ -32,7 +32,8 @@ export default function SearchAreaRoute({query, searchType, result, page, change
                         subType={collection.gen}
                         owner={collection.owner[0].username}
                         progress={collection.progress}
-                        percentProgress={percentProgress}
+                        percentProgress={percentProgress === 100 ? 99 : percentProgress}
+                        collectionId={collection._id}
                     />
                 )
             })
@@ -45,6 +46,7 @@ export default function SearchAreaRoute({query, searchType, result, page, change
                         query={query}
                         username={user.username}
                         collectionsInfo={collectionsInfo}
+                        userId={user._id}
                     />
                 )
             })
@@ -106,7 +108,7 @@ export default function SearchAreaRoute({query, searchType, result, page, change
             {(searchingUsers && !noUsers) && 
             <>
                 {searchingAll && 
-                <Box sx={{width: '100%', height: '50px', ...theme.components.box.fullCenterRow, mt: searchingCollections ? 4 : 0}}>
+                <Box sx={{width: '100%', height: '50px', ...theme.components.box.fullCenterRow, mt: (searchingCollections && result.collectionCount !== 0) ? 4 : 0}}>
                     <Typography sx={{fontSize: '24px', fontWeight: 700}}>Users</Typography>
                 </Box>}
                 <Box sx={{...theme.components.box.fullCenterCol, gap: 1}}>

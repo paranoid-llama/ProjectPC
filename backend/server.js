@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import nocache from 'nocache';
 import mongoose from 'mongoose';
 import allPokemon from './utils/aprimonAPI/allpokemoninfo.js';
 import {formatImportQuery, setEMQueries, formatImportedValues, setCollection, detectBadRanges} from './utils/CreateCollection/importCollection.js'
@@ -10,6 +11,11 @@ import { getPossibleEggMoves, getCollectionProgress } from './utils/schemavirtua
 import dotenv from 'dotenv'
 import lton from 'letter-to-number'
 import bodyParser from 'body-parser';
+import { initializePassportStrategy } from './middleware.js';
+import passport from 'passport';
+import bcrypt from 'bcrypt'
+import session from 'express-session';
+import MongoDBStore from 'connect-mongo'
 dotenv.config()
 
 function newObjectId() {
@@ -23,6 +29,8 @@ function newObjectId() {
 
 //env variables
 const APIKEY = process.env.API_KEY
+const SECRET = process.env.SECRET
+const dbUrl = process.env.DB_URL || "mongodb://127.0.0.1:27017/ProjectPC"
 
 //utils and classes
 import catchAsync from './utils/catchAsync.js'
@@ -33,8 +41,8 @@ import Collection from './models/collections.js'
 import User from './models/users.js'
 import Trade from './models/trades.js'
 
-//database connection
-mongoose.connect("mongodb://127.0.0.1:27017/ProjectPC", {
+//database connection 
+mongoose.connect(dbUrl, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 })
@@ -46,43 +54,70 @@ db.once("open", () => {
     console.log("Database connected");
 });
 
+//store initialization
+const store = new MongoDBStore({
+    mongoUrl: dbUrl,
+    touchAfter: 24 * 60 * 60,
+    crypto: {
+        secret: SECRET,
+    }
+})
+
+store.on('error', function(e) {
+    console.log('SESSION STORE ERROR', e)
+})
+
+const sessionConfig = {
+    store: store,
+    secret: SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        httpOnly: true,
+        // secure: true,
+        expires: Date.now() + (1000 * 60 * 60 * 24 * 7),
+        maxAge: 1000 * 60 * 60 * 24 * 7
+    }
+}
+
+
 const app = express();
 
 //middleware
-app.use(cors())
+app.use(session(sessionConfig))
+app.use(cors({ credentials: true, origin: true }))
+// app.use(nocache())
 app.use(express.json({ limit: '500kb' }))
 app.use(bodyParser.json({ limit: '500kb' }))
+// app.use((req, res, next) => {
+//     res.setHeader('Access-Control-Allow-Credentials', true);
+//     res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+//     res.setHeader('Access-Control-Allow-Origin', 'http://localhost:5173');
+
+//     next()
+// })
+
+// app.use((req, res, next) => {
+//     res.locals.currentUser = req.user;
+//     next();
+// })
+
+//passport initialization
+app.use(passport.initialize())
+app.use(passport.session())
+initializePassportStrategy()
+passport.serializeUser(function (user, cb) {
+    return cb(null, user.id)
+})
+passport.deserializeUser(async function (id, cb) {
+    return await User.findById({_id: id}).then(user => cb(null, user))
+})
 
 //routes
 
 app.get('/message', (req, res) => {
     res.json({ message: "Hello from server!" });
 })
-
-// app.get('/search/:searchType', catchAsync(async(req, res) => {
-//     const {searchType} = req.params
-//     const searchCollections = searchType === 'all' || searchType === 'collections'
-//     const searchUsers = searchType === 'all' || searchType === 'users'
-
-//     const collectionAggregate = [
-//         {
-//             $lookup: {
-//                 from: 'users',
-//                 localField: 'owner',
-//                 foreignField: '_id',
-//                 as: 'owner'
-//             }
-//         },
-//         {$project: {_id: true, name: true, 'owner.username': true, type: true, gen: true, ownedPokemon: true}}
-//     ]
-
-//     const searchResult = {
-//         collections: searchCollections ? await Collection.aggregate(collectionAggregate).exec() : [],
-//         users: searchUsers ? await User.find({}, '_id username').lean().populate({path: 'collections', select: 'type'}).exec() : []
-//     }
-
-//     res.json(searchResult)
-// }))
 
 app.get('/search/:searchType', catchAsync(async(req, res) => {
     const {searchType} = req.params
@@ -158,10 +193,12 @@ app.get('/search/:searchType', catchAsync(async(req, res) => {
     //     users: searchUsers ? User.find(searchQueries.users, '_id username').lean().populate({path: 'collections'}).exec : []
     // }
 
+    const collectionCountStep1 = searchCollections ? await Collection.aggregate(collectionCountAggregate, {maxTimeMS: 750}) : 0
+
     const searchResult = {
         collections: searchCollections ? await Collection.aggregate(collectionAggregate).exec() : [],
         users: searchUsers ? await User.find(searchQueries.users, '_id username').skip(skip === undefined ? 0 : skip).limit(maxDocs).lean().populate({path: 'collections', select: 'type -_id -owner'}).exec() : [],
-        collectionCount: searchCollections ? (await Collection.aggregate(collectionCountAggregate, {maxTimeMS: 750}))[0].totalCollections : 0,
+        collectionCount: (collectionCountStep1[0] === undefined || collectionCountStep1 === 0) ? 0 : collectionCountStep1[0].totalCollections,
         userCount: searchUsers ? await User.countDocuments(searchQueries.users, {maxTimeMS: 750}) : 0,
     }
 
@@ -172,6 +209,17 @@ app.post('/users/new', catchAsync(async(req, res) => {
     const user = new User({username: 'paranoid-llama', password: 'rgdbdfbnasuia', email: 'qwqfafasfewwe'})
     await user.save()
     res.send('ok, made new user!')
+}))
+
+app.post('/users/login', passport.authenticate('local'), catchAsync((req, res) => {
+    res.send(req.sessionID)
+}))
+
+app.post('/users/logout', catchAsync((req, res, next) => {
+    req.logout(function(err) {
+        if (err) { return next(err) }
+        res.end()
+    })
 }))
 
 app.get('/collections', catchAsync(async(req, res) => {
@@ -286,35 +334,49 @@ app.post('/collections/new', catchAsync(async(req, res) => {
     res.json(collection._id)
 }))
 
-// app.post('/collections/new/seeddb', catchAsync(async(req, res) => {
-//     const gens = [6, 7, 'swsh', 'bdsp', 9]
-//     const names = ['random sheet', 'first aprimon collection', 'we get this!', 'collecting aprimon', 'aprimon collector 1', 'aprimon collection 24', 'llamas sheet']
-//     const ownerIds = ['64ea4c22465311a6bf99c4ae',  '663313a050e7aacd52eb2d54']
+app.post('/collections/new/seeddb', catchAsync(async(req, res) => {
+    const gens = [6, 7, 'swsh', 'bdsp', 9]
+    const names = ['random sheet', 'first aprimon collection', 'we get this!', 'collecting aprimon', 'aprimon collector 1', 'aprimon collection 24', 'llamas sheet']
+    const allUsers = await User.find({}).exec()
+    const ownerIds = allUsers.map(user => user._id)
 
-//     const usernames = ['ash ketchup', 'penny', 'hihi', 'aprimon collector', 'selvt', 'paro', 'gary oak', 'misty', 'brock', 'sabrina', 'everword', 'superguy12345', 'XxpokemonCollectorxX', 'lol', 'neverAgain', 'findmyway', 'pandabear', 'pandaman', 'pirate king garon', 'aaron', 'matear', 'poalert', 'poltergeist', 'pikachu enjoyer', 'gen wunner', 'wurst', 'gutentag', 'betterman', 'the pokemon lady']
-    
-//     // for (let i=0; i < 100; i++) {
-//     //     const newCollectionInfo = {
-//     //         gen: gens[Math.floor(Math.random() * gens.length)],
-//     //         collectionName: names[Math.floor(Math.random() * names.length)],
-//     //         owner: ownerIds[Math.floor(Math.random() * ownerIds.length)],
-//     //         options: {}
-//     //     }
-//     //     const collectionData = new CollectionClass(undefined, newCollectionInfo)
-//     //     const collection = new Collection(collectionData)
-//     //     await collection.save()
-//     // }
+    const usernames = ['ash ketchup', 'penny', 'hihi', 'aprimon collector', 'selvt', 'paro', 'gary oak', 'misty', 'brock', 'sabrina', 'everword', 'superguy12345', 'XxpokemonCollectorxX', 'lol', 'neverAgain', 'findmyway', 'pandabear', 'pandaman', 'pirate king garon', 'aaron', 'matear', 'poalert', 'poltergeist', 'pikachu enjoyer', 'gen wunner', 'wurst', 'gutentag', 'betterman', 'the pokemon lady']
 
-//     for (let user of usernames) {
-//         const newUser = new User({username: user, password: 'uhfw9ugfq2yh9uifqeho', email: 'rwqwqqwsafsae'})
-//         await newUser.save()
-//     }
-//     res.end()
-// }))
+    // for (let i=0; i < 100; i++) {
+    //     const gen = gens[Math.floor(Math.random() * gens.length)]
+    //     const newCollectionInfo = {
+    //         gen: gen,
+    //         collectionName: names[Math.floor(Math.random() * names.length)],
+    //         owner: ownerIds[Math.floor(Math.random() * ownerIds.length)],
+    //         options: {
+    //             collectingBalls: gen === 6 ? ['fast', 'friend', 'heavy', 'level', 'love', 'lure', 'moon', 'dream', 'safari', 'sport'] : ['fast', 'friend', 'heavy', 'level', 'love', 'lure', 'moon', 'beast', 'dream', 'safari', 'sport'],
+    //             sortingOptions: {collection: {reorder: false, default: 'NatDexNumL2H'}, onhand: {reorder: true, default: 'NatDexNumL2H', ballOrder: ['fast', 'friend', 'heavy', 'level', 'love', 'lure', 'moon', 'beast', 'dream', 'safari', 'sport'], sortFirstBy: 'pokemon'}},
+    //             tradePreferences: {status: 'open', rates: {pokemonOffers: [{items: ['On-Hand HA Aprimon', 'HA Aprimon'], rate: [2, 1]}], itemOffers: []}, size: 'small preferred', onhandOnly: 'no', items: 'none', lfItems: [], ftItems: {}}
+    //         }
+    //     }
+    //     const collectionData = new CollectionClass(undefined, newCollectionInfo)
+    //     const collection = new Collection(collectionData)
+    //     await collection.save()
+    // }
+
+    // for (let user of usernames) {
+    //     bcrypt.hash('12345', 11, async function(err, hash) {
+    //         const newUser = new User({username: user, password: hash, email: 'rhuvrh8hif'})
+    //         await newUser.save()
+    //     })
+    // }
+
+    res.end()
+}))
 
 app.get('/collections/:id', catchAsync(async(req, res) => {
     const collection = await Collection.findById(req.params.id).populate({path: 'owner'})
     res.json(collection)
+}))
+
+app.get('/users/:id', catchAsync(async(req, res) => {
+    const user = await User.findById(req.params.id).populate({path: 'collections'})
+    res.json(user)
 }))
 
 app.put('/collections/:id/edit', catchAsync(async(req, res) => {
@@ -493,6 +555,16 @@ app.delete('/collections/:id/edit/deleteonhand', catchAsync(async(req, res) => {
         { multi: true }
     )
     res.end()
+}))
+
+app.get('/api/session', catchAsync(async(req, res) => {
+    const noUser = req.session.passport === undefined
+    if (noUser) {
+        res.json({})
+    } else {
+        const userData = await User.findById(req.session.passport.user).lean().populate({path: 'collections', select: 'type gen -owner'}).select('username collections').exec()
+        res.json(userData)
+    }
 }))
 
 app.put('/addtolist', async(req, res) => {

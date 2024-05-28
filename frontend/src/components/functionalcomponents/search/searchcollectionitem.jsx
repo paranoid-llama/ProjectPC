@@ -2,17 +2,22 @@ import {Box, Typography, useTheme, CircularProgress} from '@mui/material'
 import ImgData from '../../collectiontable/tabledata/imgdata'
 import SearchItemWrapper from './searchitemwrapper'
 import Highlighter from 'react-highlight-words'
+import { useNavigate } from 'react-router-dom'
 
-export default function SearchCollectionItem({query, name, type, subType, owner, progress, percentProgress}) {
+export default function SearchCollectionItem({query, name, type, subType, owner, progress, percentProgress, collectionId, showOwner=true}) {
     const typeDisplay = type === 'aprimon' && isNaN(parseInt(subType)) ? `${subType.toUpperCase()} Aprimon Collection` : `Gen ${subType} Aprimon Collection`
+    const navigate = useNavigate()
+    const sendToCollection = () => {
+        navigate(`/collections/${collectionId}`)
+    }
     return (
-        <SearchItemWrapper>
+        <SearchItemWrapper onClickFunc={sendToCollection}>
             <Box sx={{width: '80%', height: '100%', display: 'flex', alignItems: 'center', gap: 2}}>
                 <Box sx={{ml: 1.5, display: 'flex', justifyContent: 'center', alignItems: 'center'}}><ImgData type='icons' linkKey={type} size={'50px'}/></Box>
                 <Box sx={{width: '80%', minWidth: '100px', display: 'flex', flexDirection: 'column'}}>
                     <Typography sx={{fontWeight: 700, fontSize: '16px', textAlign: 'start', my: -0.25}} noWrap><Highlighter textToHighlight={name} searchWords={[query]}/></Typography>
                     <Typography sx={{fontSize: '11px', textAlign: 'start', my: 0, opacity: 0.8}}><Highlighter textToHighlight={typeDisplay} searchWords={[query]}/></Typography>
-                    <Typography sx={{fontSize: '11px', textAlign: 'start', my: -0.25, opacity: 0.8}}>Owned by <Highlighter textToHighlight={owner} searchWords={[query]}/></Typography>
+                    {showOwner && <Typography sx={{fontSize: '11px', textAlign: 'start', my: -0.25, opacity: 0.8}}>Owned by <Highlighter textToHighlight={owner} searchWords={[query]}/></Typography>}
                 </Box>
             </Box>
             <Box sx={{width: '20%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'end', gap: 0.5}}>

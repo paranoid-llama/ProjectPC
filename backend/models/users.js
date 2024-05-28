@@ -10,6 +10,12 @@ const userSchema = new Schema ({
         unique: true,
         max: 24
     },
+    tags: {
+        type: [
+            {type: String}
+        ]
+    },
+    bio: {type: String, max: 300},
     password: {
         type: String,
         required: true

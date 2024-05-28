@@ -2,12 +2,18 @@ import {Box, Typography, useTheme, CircularProgress} from '@mui/material'
 import ImgData from '../../collectiontable/tabledata/imgdata'
 import SearchItemWrapper from './searchitemwrapper'
 import Highlighter from 'react-highlight-words'
+import { useNavigate } from 'react-router-dom'
 
-export default function SearchUserItem({query, username, collectionsInfo}) {
+export default function SearchUserItem({query, username, collectionsInfo, userId}) {
     const aprimonCollectionCount = collectionsInfo.filter(cType => cType === 'aprimon').length
+    const navigate = useNavigate()
     // const otherCollectionCount = collectionsInfo.filter(cInfo => cInfo.type !== 'aprimon').length
+    const sendToUser = () => {
+        navigate(`/users/${userId}`)
+    }
+
     return (
-        <SearchItemWrapper>
+        <SearchItemWrapper onClickFunc={sendToUser}>
             <Box sx={{width: '80%', height: '100%', display: 'flex', alignItems: 'center', gap: 2}}>
                 <Box sx={{ml: 1.5, display: 'flex', justifyContent: 'center', alignItems: 'center'}}><ImgData type='icons' linkKey='user' size={'45px'}/></Box>
                 <Box sx={{width: '80%', minWidth: '100px', display: 'flex', flexDirection: 'column'}}>

@@ -176,6 +176,8 @@ const tradePreferenceDisplay = {
     }
 }
 
+const gamesOrder = ['sword', 'shield', 'home',  'letsgopikachu', 'letsgoeevee', 'brilliantdiamond', 'shiningpearl', 'legendsarceus', 'scarlet', 'violet']
+
 const regionIdentifiers = ['Alolan', 'Galarian', 'Hisuian', 'Paldean']
 
 export {
@@ -191,5 +193,5 @@ export {
     pokeBabies, pokeAdults, pokeIncenseBabies, pokeIncenseAdults,
     pokemonGroups, pokemonSubGroups,
     differentRegionalFormEvolutions, vivillonForms, getAllAlcremieFormsArr,
-    items, getPossibleItems, tradePreferenceDisplay, regionIdentifiers
+    items, getPossibleItems, tradePreferenceDisplay, gamesOrder, regionIdentifiers
 }

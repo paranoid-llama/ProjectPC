@@ -1,5 +1,5 @@
 import {useState, useEffect, useRef} from 'react';
-import {useLoaderData, Link} from 'react-router-dom'
+import {useLoaderData, Link, useRouteLoaderData} from 'react-router-dom'
 import * as React from 'react';
 import Box from '@mui/material/Box'
 import {Tabs, Tab, Button} from '@mui/material'
@@ -15,13 +15,14 @@ import {useSelector, useDispatch} from 'react-redux'
 import {setCollectionInitialState} from './../app/slices/collection'
 import {setOnHandInitialState} from './../app/slices/onhand'
 import {setListInitialState} from './../app/slices/listdisplay'
-import { setOptionsInitialState } from '../app/slices/options';
+import { setNameState, setOptionsInitialState } from '../app/slices/options';
 import {deselect, changeList} from './../app/slices/editmode'
 
 export default function ShowCollection({colorStyles, listStyles}) {
     const list = useSelector(state => state.editmode.listType)
     // const isEditMode = useSelector(state => state.editmode.isEditMode)
     const collection = useLoaderData()
+    const currentlyLoggedInUser = useRouteLoaderData("root")
     const collectionId = collection._id
     // const collectionState = {...collection, ownedPokemon: 
     //     collection.ownedPokemon.map(p => {
