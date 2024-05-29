@@ -1,0 +1,269 @@
+@keyframes grow-step-0 {
+    0% {
+        width: 40px;
+        top: -10px;
+        left: calc(0% - 20px);
+    }
+    90% {
+        width: 40px;
+        top: -10px;
+        left: calc(0% - 20px);
+    }
+    100% {
+        width: 70px;
+        top: -17.5px;
+        left: calc(0% - 35px);
+    }
+}
+
+@keyframes shrink-step-0 {
+    0% {
+        width: 70px;
+        top: -17.5px;
+        left: calc(0% - 35px);
+    }
+    90% {
+        width: 70px;
+        top: -17.5px;
+        left: calc(0% - 35px);
+    }
+    100% {
+        width: 40px;
+        top: -10px;
+        left: calc(0% - 20px);
+    }
+}
+
+@keyframes grow-step-text {
+    0% {
+        font-size: 8px;
+        font-weight: 400;
+    }
+    90% {
+        font-size: 8px;
+        font-weight: 400;
+    }
+    100% {
+        font-size: 13px; 
+        font-weight: 700;
+    }
+}
+
+@keyframes shrink-step-text {
+    0% {
+        font-size: 13px; 
+        font-weight: 700;
+    }
+    90% {
+        font-size: 13px; 
+        font-weight: 700;
+    }
+    100% {
+        font-size: 8px;
+        font-weight: 400;
+    }
+}
+
+@keyframes grow-step-text-container {
+    0% {
+        height: 20px;
+    }
+    90% {
+        height: 20px;
+    }
+    100% {
+        height: 35px;
+    }
+}
+
+@keyframes shrink-step-text-container {
+    0% {
+        height: 35px;
+    }
+    90% {
+        height: 35px;
+    }
+    100% {
+        height: 20px;
+    }
+}
+
+/* .grow-step {
+    animation-name: grow-step;
+    animation-duration: 0.5s;
+    animation-fill-mode: forwards
+}
+
+.shrink-step {
+    animation-name: shrink-step;
+    animation-duration: 0.5s;
+    animation-fill-mode: forwards
+} */
+
+.grow-step-text {
+    animation-name: grow-step-text;
+    animation-duration: 0.5s;
+    animation-fill-mode: forwards
+}
+
+.shrink-step-text {
+    animation-name: shrink-step-text;
+    animation-duration: 0.5s;
+    animation-fill-mode: forwards
+}
+
+.grow-step-text-container {
+    animation-name: grow-step-text-container;
+    animation-duration: 0.5s;
+    animation-fill-mode: forwards
+}
+
+.shrink-step-text-container {
+    animation-name: shrink-step-text-container;
+    animation-duration: 0.5s;
+    animation-fill-mode: forwards
+}
+
+@keyframes grow-step-25 {
+    0% {
+        width: 40px;
+        top: -10px;
+        left: calc(25% - 20px);
+    }
+    90% {
+        width: 40px;
+        top: -10px;
+        left: calc(25% - 20px);
+    }
+    100% {
+        width: 70px;
+        top: -17.5px;
+        left: calc(25% - 35px);
+    }
+}
+
+@keyframes shrink-step-25 {
+    0% {
+        width: 70px;
+        top: -17.5px;
+        left: calc(25% - 35px);
+    }
+    90% {
+        width: 70px;
+        top: -17.5px;
+        left: calc(25% - 35px);
+    }
+    100% {
+        width: 40px;
+        top: -10px;
+        left: calc(25% - 20px);
+    }
+}
+
+@keyframes grow-step-50 {
+    0% {
+        width: 40px;
+        top: -10px;
+        left: calc(50% - 20px);
+    }
+    90% {
+        width: 40px;
+        top: -10px;
+        left: calc(50% - 20px);
+    }
+    100% {
+        width: 70px;
+        top: -17.5px;
+        left: calc(50% - 35px);
+    }
+}
+
+@keyframes shrink-step-50 {
+    0% {
+        width: 70px;
+        top: -17.5px;
+        left: calc(50% - 35px);
+    }
+    90% {
+        width: 70px;
+        top: -17.5px;
+        left: calc(50% - 35px);
+    }
+    100% {
+        width: 40px;
+        top: -10px;
+        left: calc(50% - 20px);
+    }
+}
+
+@keyframes grow-step-75 {
+    0% {
+        width: 40px;
+        top: -10px;
+        left: calc(75% - 20px);
+    }
+    90% {
+        width: 40px;
+        top: -10px;
+        left: calc(75% - 20px);
+    }
+    100% {
+        width: 70px;
+        top: -17.5px;
+        left: calc(75% - 35px);
+    }
+}
+
+@keyframes shrink-step-75 {
+    0% {
+        width: 70px;
+        top: -17.5px;
+        left: calc(75% - 35px);
+    }
+    90% {
+        width: 70px;
+        top: -17.5px;
+        left: calc(75% - 35px);
+    }
+    100% {
+        width: 40px;
+        top: -10px;
+        left: calc(75% - 20px);
+    }
+}
+
+@keyframes grow-step-100 {
+    0% {
+        width: 40px;
+        top: -10px;
+        left: calc(100% - 20px);
+    }
+    90% {
+        width: 40px;
+        top: -10px;
+        left: calc(100% - 20px);
+    }
+    100% {
+        width: 70px;
+        top: -17.5px;
+        left: calc(100% - 35px);
+    }
+}
+
+@keyframes shrink-step-100 {
+    0% {
+        width: 70px;
+        top: -17.5px;
+        left: calc(100% - 35px);
+    }
+    90% {
+        width: 70px;
+        top: -17.5px;
+        left: calc(100% - 35px);
+    }
+    100% {
+        width: 40px;
+        top: -10px;
+        left: calc(100% - 20px);
+    }
+}
