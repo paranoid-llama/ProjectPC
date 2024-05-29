@@ -1,0 +1,36 @@
+@keyframes fade-notice-out {
+    0% {
+        opacity: 1
+    }
+    99% {
+        position: relative
+    }
+    100% {
+        opacity: 0;
+        position: absolute
+    }
+}
+
+@keyframes fade-form-in {
+    0% {
+        opacity: 0
+    }
+    50% {
+        opacity: 0
+    }
+    100% {
+        opacity: 1
+    }
+}
+
+.fade-notice-out {
+    animation: fade-notice-out 0.25s forwards
+}
+
+.fade-form-in {
+    animation: fade-form-in 0.5s forwards
+}
+
+.set-under {
+    z-index: -100;
+}

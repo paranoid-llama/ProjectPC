@@ -1,0 +1,147 @@
+data
+
+collections:
+    users
+        user_id
+        username
+        password
+        email
+
+    collections
+        collection_id:
+        user_id: 
+        gen: one value out of these: [gen 6, gen 7, gen 8, gen 9, home, misc]
+        owned_pokemon:
+            [{ 
+                name:
+                gen:
+                owned_balls:
+                {
+                    fast: {isOwned: false, isHA: true, EMs: [*ems*]}
+                    friend: isOwned: false, isHA: true, EMs: [*ems*]}
+                    heavy: {isOwned: false, isHA: true, EMs: [*ems*]}
+                    level: {isOwned: false, isHA: true, EMs: [*ems*]}
+                    love: {isOwned: false, isHA: true, EMs: [*ems*]}
+                    lure: {isOwned: false, isHA: true, EMs: [*ems*]}
+                    moon: {isOwned: false, isHA: true, EMs: [*ems*]}
+                    safari: {isOwned: false, isHA: true, EMs: [*ems*]}
+                    sport: {isOwned: false, isHA: true, EMs: [*ems*]}
+                    beast: {isOwned: false, isHA: true, EMs: [*ems*]}
+                    dream: {isOwned: false, isHA: true, EMs: [*ems*]}
+                }
+            }, {
+                *same data*
+            }]
+    sessions
+
+pokemondata
+    [{ 
+        name: "",
+        gen: "",
+        info: {
+            HA: {
+                hasHA: true,
+                HA: ""
+            },
+            isIncenseMon: false,
+            alternateForm: {
+                hasAlternateForm: false,
+                name: ""
+            }
+        },
+        specificGenInfo:
+        [{
+            gen: gen6,
+            eggmoves: [{moves: []}, {xyOnly: []}, {orasOnly: []}],
+            balls: {
+                apriball: {isLegal: true, haIsLegal: true},
+                safari: {isLegal: true, haIsLegal: true},
+                sport: {isLegal: true, haIsLegal: true},
+                beast: {isLegal: true, haIsLegal: true},
+                dream: {isLegal: true, haIsLegal: true}
+                }
+            }, {
+            gen: gen7,
+            eggmoves: [{moves: []}, {regularOnly: []}, {altFormOnly: []}, {smOnly: []}, {usumOnly: []}],
+            balls: {
+                apriball: {isLegal: true, haIsLegal: true},
+                safari: {isLegal: true, haIsLegal: true},
+                sport: {isLegal: true, haIsLegal: true},
+                beast: {isLegal: true, haIsLegal: true},
+                dream: {isLegal: true, haIsLegal: true}
+                }
+            }, {
+            gen: gen8,
+            eggmoves: [{moves: []}, {regularOnly: []}, {altFormOnly: []}, {swshOnly: []}, {bdspOnly: []}],
+            balls: {
+                apriball: {isLegal: true, haIsLegal: true},
+                safari: {isLegal: true, haIsLegal: true},
+                sport: {isLegal: true, haIsLegal: true},
+                beast: {isLegal: true, haIsLegal: true},
+                dream: {isLegal: true, haIsLegal: true}
+                }
+            }, {
+            gen: gen9,
+            eggmoves: [{moves: []}, {regularOnly: []}, {altFormOnly: []}],
+            balls: {
+                apriball: {isLegal: true, haIsLegal: true},
+                safari: {isLegal: true, haIsLegal: true},
+                sport: {isLegal: true, haIsLegal: true},
+                beast: {isLegal: true, haIsLegal: true},
+                dream: {isLegal: true, haIsLegal: true}
+                }
+            }
+        }]
+    }, {
+        *same data*
+    }]
+
+
+name: "",
+gen: 9,
+info: {
+    natDexNum: ,
+    HA: {
+        hasHA: true,
+        name: {reg: ""}
+    },
+    special: {
+        hasBabyMon: false,
+        incenseMon: false,
+    },
+    regionalForm: {
+        hasRegionalForm: false
+        name: [{name: "", gen: }]
+    }
+},
+specificGenInfo: {
+    gen9: {
+        eggmoves: [{moves: []}],
+        balls: {
+            apriball: {isLegal: true, haIsLegal: true},
+            safari: {isLegal: false, haIsLegal: false},
+            sport: {isLegal: false, haIsLegal: false},
+            beast: {isLegal: true, haIsLegal: true},
+            dream: {isLegal: true, haIsLegal: true}
+        }
+    }
+}
+
+[['fast', {}], ]
+[{fast: {}}, {}]
+
+
+native ingame ball combos (gen 8/9):
+
+gen 8: 
+    swsh: 
+        all balls
+        gen 8 starters no balls
+        gen 7 starters no balls
+    bdsp:
+        all apriballs (safari legal for marsh zone mons)
+        gen 4 starters no balls
+
+gen 9:
+    all balls (except safari and sport)
+    gen 4 starters no balls

@@ -1,0 +1,93 @@
+@keyframes slide-import-screen-right-1 {
+    0% {
+        transform: translateX(100%)
+    }
+    100% {
+        transform: translateX(0)
+    }
+}
+
+@keyframes slide-import-screen-right-2 {
+    0% {
+        transform: translateX(0)
+    }
+    100% {
+        transform: translateX(-100%)
+    }
+}
+
+@keyframes slide-import-screen-left-1 {
+    0% {
+        transform: translateX(0%)
+    }
+    100% {
+        transform: translateX(100%)
+    }
+}
+
+
+@keyframes slide-import-screen-left-2 {
+    0% {
+        transform: translateX(-100%)
+    }
+    100% {
+        transform: translateX(0%)
+    }
+}
+
+@keyframes screen-fade-in {
+    0% {
+        visibility: hidden
+    }
+    100% {
+        visibility: visible
+    }
+}
+
+@keyframes screen-fade-out {
+    0% {
+        visibility: visible
+    }
+    100% {
+        visibility: hidden
+    }
+}
+
+@keyframes stay-in-display {
+    0% {
+        transform: translateX(-100%);
+        visibility: visible
+    }
+    100% {
+        transform: translateX(-100%);
+        visibility: visible
+    }
+}
+
+.slide-import-screen-right-1 {
+    animation: slide-import-screen-right-1 0.5s forwards
+}
+
+.slide-import-screen-right-2 {
+    animation: slide-import-screen-right-2 0.5s forwards
+}
+
+.slide-import-screen-left-1 {
+    animation: slide-import-screen-left-1 0.5s forwards
+}
+
+.slide-import-screen-left-2 {
+    animation: slide-import-screen-left-2 0.5s forwards
+}
+
+.stay-in-display {
+    animation: stay-in-display 0.1s forwards
+}
+
+.screen-fade-in {
+    animation: screen-fade-in 0.15s forwards
+}
+
+.screen-fade-out {
+    animation: screen-fade-out 0.15s forwards
+}
