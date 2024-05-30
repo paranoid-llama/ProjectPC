@@ -1,4 +1,4 @@
-import {createSelector} from '@reduxjs/toolkit'
+import {createSelector, createDraftSafeSelector} from '@reduxjs/toolkit'
 import { getBallProgress } from '../../../utils/functions/ballprogresscircle/ballprogressstate'
 
 const selectCollectionList = (state) => {
@@ -8,8 +8,6 @@ const selectCollectionList = (state) => {
 const selectEnabledPokemonInCollectionList = (state) => {
     return state.collection[0] === undefined ? state.collection : state.collection.filter(mon => mon.disabled === undefined) 
 }
-
-
 
 const selectOnHandList = (state) => {
     return state.onhand

@@ -48,17 +48,17 @@ const filterMultipleKeys = (totalList, genKeys, ballKeys, otherKeys, currentSort
                 return hasAnyFilteredBalls
             }
         })
-        return sortList(currentSortKey, filteredByOwnedBallList)
+        return currentSortKey === '' ? filteredByOwnedBallList : sortList(currentSortKey, filteredByOwnedBallList)
     } else if (otherKeys.length !== 0) {
         const filteredByTagList = filteredList.filter((pokemon) => {
             const booleanList = Object.values(pokemon.balls).map((ball) => ball[otherKeys[0]] !== undefined)
             const hasTagKey = booleanList.includes(true)
             return hasTagKey
         })
-        return sortList(currentSortKey, filteredByTagList)
+        return currentSortKey === '' ? filteredByTagList : sortList(currentSortKey, filteredByTagList)
     } 
 
-    return sortList(currentSortKey, filteredList)
+    return currentSortKey === '' ? filteredList : sortList(currentSortKey, filteredList)
 }
 
 const filterByGen = (list, genFilter, listType) => {

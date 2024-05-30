@@ -7,6 +7,7 @@ import {Box, Typography, FormGroup, FormControl, FormControlLabel, FormLabel, To
 import ImgData from '../../../collectiontable/tabledata/imgdata'
 import {usePutRequest, useTagRequest} from './../../../../../utils/functions/backendrequests/editcollection'
 import {setMaxEmArr, selectNextEmCount} from './../../../../../utils/functions/misc'
+import getDefaultData from '../../../../../utils/functions/defaultdata'
 import EditWrapper from './../components/editwrapper'
 import BallSelectionForm from '../../editsectioncomponents/shared/ballselectionform'
 import IsOwnedSelectionForm from '../../editsectioncomponents/collectioneditonly/isownedselectionform'
@@ -18,7 +19,7 @@ import EditEggMovesForm from '../../editsectioncomponents/shared/editeggmovesfor
 function RenderCollectionEdit({collectionId, ownerId, pokemon, ballInfo, selectedBall, allEggMoves}) {
     const [editEggMoves, setEditEggMoves] = useState({open: 'firstRenderFalse', idx: ''})
     const dispatch = useDispatch()
-    const allowedBalls = Object.keys(ballInfo)
+    const allowedBalls = Object.keys(ballInfo).filter(ball => ballInfo[ball].disabled === undefined)
     // const initState = allowedBalls.length === 3 || allowedBalls.length === 4 ? allowedBalls[1] : allowedBalls[0] 
 
     //useEffect(() => {
@@ -62,8 +63,9 @@ function RenderCollectionEdit({collectionId, ownerId, pokemon, ballInfo, selecte
 
     const handleIsOwnedChange = (event) => {
         const newValue = event.target.checked
+        const defaultData = getDefaultData('none', currentDefault, pokemon.balls, maxEMs, possibleEggMoves)
         dispatch(setIsOwned({idx: selectedIdx, ball: renderedBall, ballDefault: currentDefault}))
-        usePutRequest('isOwned', newValue, {pokename: pokemon.name, ballname: renderedBall}, 'collection', collectionId, ownerId)
+        usePutRequest('isOwned', newValue, {pokename: pokemon.name, ballname: renderedBall}, 'collection', collectionId, ownerId, defaultData === 'none' ? undefined : defaultData)
     }
     const handleIsHAChange = (event) => {
         const newValue = event.target.value === 'true' // event.target.value comes out as a string instead of boolean

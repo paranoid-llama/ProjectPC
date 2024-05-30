@@ -29,6 +29,7 @@ export default function OnHandPokemonSelectionForm({speciesEditOnly=false, open,
     const dispatch = useDispatch()
 
     const allEggMoveInfo = useSelector((state) => state.listDisplay.eggMoveInfo)
+    const sortingOptions = useSelector((state) => state.options.sortingOptions.onhand)
     const collectionID = useLoaderData()._id
     const initialSelection = initialPokemonData.imgLink === undefined ? {} : selectCollectionPokemon(store.getState(), initialPokemonData.imgLink)
     const [pokemonData, setPokemonData] = useState({selection: {...initialSelection}, searchData: '', ball: initialPokemonData.ball, newOnHandData: {}})
@@ -251,7 +252,7 @@ export default function OnHandPokemonSelectionForm({speciesEditOnly=false, open,
             imgLink: pokemonData.selection.imgLink
         }
         dispatch(setNewOnHand(stateInfo)) //updates row content state
-        dispatch(addOnHandPokemonToList(stateInfo)) //updates show list state, which allows the new on hand to appear
+        dispatch(addOnHandPokemonToList({newOnhand: stateInfo, sortingOptions})) //updates show list state, which allows the new on hand to appear
         newOnHandPutReq(saveToDataBase, collectionID)
 
         //spawning alert

@@ -7,25 +7,38 @@ import TableRowGrouping from './tablerowgrouping'
 import './../../../routes/showCollection.css'
 import { capitalizeFirstLetter } from '../../../../utils/functions/misc';
 import {useSelector, useDispatch, connect} from 'react-redux'
+import { useLocation } from 'react-router';
 import {setCollectionInitialState} from '../../../app/slices/collection'
 import {setSelected} from '../../../app/slices/editmode'
 
-export default function ShowCollectionList({collection, styles}) {
+export default function ShowCollectionList({collection, styles, isEditMode}) {
 
-    const listState = useSelector((state) => state.listDisplay.collection)
     const ballScopeState = useSelector((state) => state.options.collectingBalls)
+    const listDisplay = useSelector((state) => state.listDisplay.collection)
+    const link = useLocation().pathname
+    const linkRef = useRef(link)
+    // ^^ listdisplay always uses state to cover for filtering/sorting functions (which anyone should be able to do)
 
-    //apparently, on first render, this component loads faster than the initial state can initialize, meaning we have to use this.
-    const ballScopeDisplay = ballScopeState === undefined ? collection.options.collectingBalls : ballScopeState
+    //apparently, on first render, this component loads faster than the initial state can initialize, meaning we have the one line below.
+    const ballScopeDisplay = (ballScopeState === undefined || !isEditMode) ? collection.options.collectingBalls : ballScopeState
+
+    // console.log(listDisplay)
 
     const scrollRef = useRef(null)
     const scrollPosition = useRef()
 
+    // useEffect(() => {
+        
+    // })
+
     useEffect(() => {
-        if (scrollPosition.current !== undefined) { 
+        const id = collection._id
+        const sameIDBetweenRefs = linkRef.current.includes(id) && link.includes(id)
+        if (scrollPosition.current !== undefined && (sameIDBetweenRefs)) { 
             setTimeout(() => scrollRef.current.scrollTo({top: scrollPosition.current}), 1000)
         }
-    })
+        linkRef.current = link
+    }, [link])
 
     const setBallCols = () => {
         const cols = []
@@ -101,6 +114,7 @@ export default function ShowCollectionList({collection, styles}) {
     }
 
     function rowContent(_index, row) {
+        const includePokemonProp = isEditMode ? {} : {row}
         return (
             // <Fragment key={row.imgLink}>
                 <TableRowGrouping
@@ -111,6 +125,9 @@ export default function ShowCollectionList({collection, styles}) {
                     collectionId={collection._id}
                     ownerId={collection.owner._id}
                     styles={styles}
+                    isEditMode={isEditMode}
+                    constRow={row}
+                    {...includePokemonProp}
                 />
             // </Fragment>
         )
@@ -136,7 +153,7 @@ export default function ShowCollectionList({collection, styles}) {
         <>
         <Paper style={{height: 800, margin: 0}}>
             <TableVirtuoso
-                data={listState}
+                data={listDisplay}
                 components={VirtuosoTableComponents}
                 fixedHeaderContent={setHeaders}
                 itemContent={rowContent}

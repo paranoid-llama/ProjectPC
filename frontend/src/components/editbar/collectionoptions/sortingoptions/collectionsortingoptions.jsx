@@ -12,7 +12,7 @@ import SaveChangesConfirmModal from '../savechangesconfirmmodal'
 
 export default function CollectionSortingOptions({elementBg, collectionGen, collectionId}) {
     const dispatch = useDispatch()
-    const currentOptions = useSelector((state) => state.options.sorting.collection)
+    const currentOptions = useSelector((state) => state.options.sortingOptions.collection)
     const collectionListState = useSelector((state) => state.collection)
 
     const buttonStyles = {
@@ -82,7 +82,7 @@ export default function CollectionSortingOptions({elementBg, collectionGen, coll
                         return mon
                     })
                     backendChangeOptions('sort', {listType: 'collection', data: sortingOptions.options, sortedList: backendSortedList}, collectionId)
-                    dispatch(setListInitialState({collection: sortedCollectionList, resetCollectionFilters: true, onlyUpdateCollection: true}))
+                    // dispatch(setListInitialState({collection: sortedCollectionList, resetCollectionFilters: true, onlyUpdateCollection: true}))
                 } else {
                    backendChangeOptions('sort', {listType: 'collection', data: sortingOptions.options}, collectionId) 
                 }

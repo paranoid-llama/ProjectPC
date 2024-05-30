@@ -1,5 +1,10 @@
 import {AppBar, Box, Button, Alert} from '@mui/material'
-import {useLocation, useLoaderData, Link} from 'react-router-dom'
+import {useLocation, useLoaderData, Link, useNavigate, useRevalidator} from 'react-router-dom'
+import { useEffect, useRef } from 'react'
+import { setCollectionInitialState } from '../app/slices/collection.jsx'
+import { setOnHandInitialState } from '../app/slices/onhand.jsx'
+import { setListInitialState } from '../app/slices/listdisplay.jsx'
+import { setOptionsInitialState } from '../app/slices/options.jsx'
 import {useSelector, useDispatch} from 'react-redux'
 import {configureStore, createSlice, current} from '@reduxjs/toolkit'
 import store from './../app/store'
@@ -11,13 +16,19 @@ import CollectionOptionsModal from '../components/editbar/collectionoptions/coll
 
 export default function EditCollection() {
     const dispatch = useDispatch()
-    const isEditMode = useSelector(state => state.editmode.isEditMode)
     const collection = useLoaderData()
+    const navigate = useNavigate()
+    const revalidator = useRevalidator()
     
     const linkBack = useLocation().pathname.slice(0, -5)
-    // const collection = useSelector((state) => state.collection)
-    // const onhand = useSelector((state) => state.onhand)
-    // const select = useSelector((state) => state.editmode)
+
+
+    const leaveEditMode = () => { 
+        navigate(linkBack)
+        revalidator.revalidate()
+        //do not switch the order of these or it ends up revalidating the edit route before it changes which means every other unnecessary state 
+        //(col onhand options) gets revalidated too. at least, i THINK thats what happens since it re-renders a LOT when leaving edit mode
+    }
 
     return (
         <>
@@ -31,13 +42,12 @@ export default function EditCollection() {
                     widthPercent='10%'
                     additionalStyles={{paddingLeft: '8px'}}
                 >   
-                    <Link to={linkBack}> 
-                        <Button
-                            sx={{color: '#73661e'}}
-                        >
-                            Leave Edit Mode
-                        </Button>
-                    </Link>
+                    <Button
+                        sx={{color: '#73661e'}}
+                        onClick={leaveEditMode}
+                    >
+                        Leave Edit Mode
+                    </Button>
                 </FlexAppBarContainer>
                 <DisplaySelection collection={collection}/>
             </AppBar>

@@ -1,6 +1,5 @@
 import * as React from 'react';
 import {useState, useEffect, useRef} from 'react'
-import {useLocation} from 'react-router'
 import Box from '@mui/material/Box'
 import './../../../routes/showCollection.css'
 import TableCell from '@mui/material/TableCell'
@@ -13,22 +12,22 @@ import {setMaxEmArr, selectNextEmCount} from './../../../../utils/functions/misc
 import {seeIfPokemonIsSelected, selectCollectionPokemon, selectIdxOfMon} from './../../../app/selectors/selectors'
 import {setSelected, deselect, setSelectedAfterChangingOwned} from './../../../app/slices/editmode'
 import {usePutRequest} from './../../../../utils/functions/backendrequests/editcollection'
+import getDefaultData from '../../../../utils/functions/defaultdata';
 import {createSelector} from '@reduxjs/toolkit'
 import {setCollectionInitialState} from '../../../app/slices/collection'
 import store from '../../../app/store'
 
 //dont remove id, mapStateToProps uses it
-function TableRowGrouping({columns, row, id, collectionId, ownerId, styles, isSelected, setSelected}) {
+function TableRowGrouping({columns, row, id, collectionId, ownerId, styles, isSelected, setSelected, isEditMode}) {
     const dispatch = useDispatch()
-    const isEditMode = useLocation().pathname.includes('edit')
-    // const collection = useLoaderData()
-    const possibleEggMoves = useSelector((state) => state.listDisplay.eggMoveInfo[row.name])
-    const maxEMs = possibleEggMoves.length > 4 ? 4 : possibleEggMoves.length
 
-    const emCountSelectionList = setMaxEmArr(maxEMs)
+    //following data is used for editing values in the list
+    const possibleEggMoves = isEditMode ? useSelector((state) => state.listDisplay.eggMoveInfo[row.name]) : null
+    const maxEMs = isEditMode ? possibleEggMoves.length > 4 ? 4 : possibleEggMoves.length : null
+    const emCountSelectionList = isEditMode ? setMaxEmArr(maxEMs) : null
+    const idx = isEditMode ? useSelector(state => state.collection.indexOf(row)) : null
 
-    const idx = useSelector(state => state.collection.indexOf(row))
-
+    //default data
     const checkDefault = Object.keys(row.balls)[Object.values(row.balls).map((b) => b.default !== undefined).indexOf(true)]
     const currentDefault = checkDefault === undefined ? 'none' : checkDefault
 
@@ -40,6 +39,7 @@ function TableRowGrouping({columns, row, id, collectionId, ownerId, styles, isSe
                 key === 'emCount' ? selectNextEmCount(emCountSelectionList, parseInt(e.target.value)) :
                 key === 'EMs' && 'none'
             )
+        const defaultData = getDefaultData('none', currentDefault, row.balls, maxEMs, possibleEggMoves)
         if (key === 'isOwned') {
             if (newValue === true) {
                 dispatch(setSelectedAfterChangingOwned({idx: id, ball: ballname, ballDefault: currentDefault}))
@@ -54,7 +54,7 @@ function TableRowGrouping({columns, row, id, collectionId, ownerId, styles, isSe
                 usePutRequest('EMs', [], {pokename, ballname}, 'collection', collectionID, ownerID)
             }
         }
-        usePutRequest(key, newValue, {pokename, ballname}, 'collection', collectionID, ownerID)
+        usePutRequest(key, newValue, {pokename, ballname}, 'collection', collectionID, ownerID, defaultData === 'none' ? undefined : defaultData)
     }
 
     const blackTableCellStyles = { //for illegal ball combos
@@ -119,6 +119,9 @@ function TableRowGrouping({columns, row, id, collectionId, ownerId, styles, isSe
 }
 
 const mapStateToProps = function(state, ownProps) {
+    if (!ownProps.isEditMode) {
+        return {}
+    } 
     const isPokemonSelected = seeIfPokemonIsSelected(state, ownProps.id)
     // const pokemon = state.collection[ownProps.idx]
     const pokemon = selectCollectionPokemon(state, ownProps.id)
@@ -129,6 +132,9 @@ const mapStateToProps = function(state, ownProps) {
 }
 
 const mapDispatchToProps = function(dispatch, ownProps) {
+    if (!ownProps.isEditMode) {
+        return {}
+    }
     return {
         setSelected: () => dispatch(setSelected(ownProps.id))
     }

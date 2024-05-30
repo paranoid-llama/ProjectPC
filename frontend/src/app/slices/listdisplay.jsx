@@ -1,7 +1,8 @@
 import {createSlice} from '@reduxjs/toolkit'
-import { sortList } from '../../../utils/functions/sortfilterfunctions/sortingfunctions'
+import { sortList, sortOnHandList } from '../../../utils/functions/sortfilterfunctions/sortingfunctions'
 import { filterList } from '../../../utils/functions/sortfilterfunctions/filterfunctions'
 import { apriballs } from '../../infoconstants'
+import { setSortingOptionsState } from './options'
 
 //this slice controls the display for the show list components (showonhandlist, showcollectionlist). 
 //separated from the other slices as it controls the state of the list displays ONLY (not the row content) and allows it to update when the length of the lists change 
@@ -34,7 +35,11 @@ const listDisplay = createSlice({
             return state
         },
         addOnHandPokemonToList: (state, action) => {
-            state.onhand[state.onhand.length] = action.payload
+            const {newOnhand, sortingOptions} = action.payload
+            state.onhand[state.onhand.length] = newOnhand
+            if (sortingOptions.reorder === true) {
+                state.onhand = sortOnHandList(sortingOptions.sortFirstBy, sortingOptions.default, sortingOptions.ballOrder, state.onhand)
+            }
             return state
         },
         removePokemonFromList: (state, action) => {
@@ -79,7 +84,7 @@ const listDisplay = createSlice({
                 return newState
             }
             if (noFilters) {
-                const correctlySortedTotalList = sortList(currentSortKey, totalList)
+                const correctlySortedTotalList = currentSortKey === '' ? totalList : sortList(currentSortKey, totalList)
                 const newState = {...state, [`${listType}Filters`]: {...state[`${listType}Filters`], filters: {ballFilters: [], genFilters: [], otherFilters: []}}, [listType]: correctlySortedTotalList}
                 return newState
             }
@@ -93,11 +98,28 @@ const listDisplay = createSlice({
             return newState
         },
         filterSearch: (state, action) => {
-            const {searchQuery, listState, listType, reFilterList, totalList} = action.payload
+            const {searchQuery, listState, listType, reFilterList, totalList, currentSortKey} = action.payload
             const newListState = reFilterList ? totalList.filter((pokemon) => pokemon.name.toLowerCase().includes(searchQuery.toLowerCase())) : listState.filter((pokemon) => pokemon.name.toLowerCase().includes(searchQuery.toLowerCase()))
-            const newState = {...state, [listType]: newListState}
+            const newListStateSorted = currentSortKey !== '' ? sortList(currentSortKey, newListState) : newListState
+            const newState = {...state, [listType]: newListStateSorted}
             return newState
         }
+    },
+    extraReducers: (builder) => {
+        builder
+            .addCase(setSortingOptionsState, (state, action) => {
+                const {listType, data} = action.payload
+                if (data.reorder === false) {
+                    return state
+                }
+                if (listType === 'onhand') {
+                    state.onhand = sortOnHandList(data.sortFirstBy, data.default, data.ballOrder, state.onhand)
+                    return state
+                } else {
+                    state.collection = sortList(data.default, state.collection)
+                    return state
+                }
+            })
     }
 })
 

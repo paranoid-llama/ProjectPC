@@ -4,7 +4,8 @@ import { getPossibleItems } from '../../infoconstants'
 import ImgData from '../collectiontable/tabledata/imgdata'
 
 export default function ItemDisplay({collectionGen, itemTradeStatus, lfItems, ftItems}) {
-    const [itemType, setItemType] = useState(lfItems.length === 0 ? 'ft' : 'lf')
+    const startAtLf = itemTradeStatus === 'lf' || itemTradeStatus === 'lf/ft'
+    const [itemType, setItemType] = useState(startAtLf ? 'lf' : 'ft')
     const changeItemType = (newVal) => {setItemType(newVal)}
 
     const gridItemStyles = {
@@ -28,7 +29,12 @@ export default function ItemDisplay({collectionGen, itemTradeStatus, lfItems, ft
             img: itemValuesArr.length <= 12 ? '30px' : '24px'
         }
         return (
-            renderedItems.map(item => {
+            itemValuesArr.length === 0 ? 
+            <Box sx={{display: 'flex', flexDirection: 'center', justifyContent: 'center', alignItems: 'center', height: '100%', width: '100%'}}>
+                <Typography sx={{fontSize: '14px', color: 'grey'}}><i>No info</i></Typography>
+            </Box> : 
+            <>
+            {renderedItems.map(item => {
                 const pluralSuffix = item.value === 'patch' ? 'es' : 's'
                 return (
                     <Grid item xs={itemValuesArr.length <= 12 ? 2 : 1.75} key={`${item.display}-display`} sx={gridItemStyles}>
@@ -37,7 +43,8 @@ export default function ItemDisplay({collectionGen, itemTradeStatus, lfItems, ft
                         {(itemType === 'ft') && <Typography sx={{...scalingStyles.text, opacity: ftItems[item.value] === 0 ? 0.5 : 1}}>{ftItems[item.value] === 0 ? '(Unknown)' : ftItems[item.value]}</Typography>}
                     </Grid>
                 )
-            })
+            })}
+            </>
         )
     }
 

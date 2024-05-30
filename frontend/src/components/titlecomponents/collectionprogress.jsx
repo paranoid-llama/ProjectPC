@@ -1,19 +1,24 @@
 import {Box, Typography, Button} from '@mui/material'
-import {useState} from 'react'
+import {useState, useEffect} from 'react'
 import BallProgress from './subcomponents/ballprogress'
 import { selectScreenBreakpoint } from '../../app/selectors/windowsizeselectors'
 import { selectBallProgress } from '../../app/selectors/selectors'
 import { useSelector } from 'react-redux'
+import { useLocation } from 'react-router-dom'
 import { setCirclePositionStyles, setRowXScaling } from '../../../utils/functions/ballprogresscircle/ballprogress'
+import { getBallProgress } from '../../../utils/functions/ballprogresscircle/ballprogressstate'
 
-export default function CollectionProgress({ballScopeInit}) {
+export default function CollectionProgress({ballScopeInit, isEditMode, collectionList}) {
     const [selectedBall, setSelectedBall] = useState('')
+    const link = useLocation().pathname
     const breakpoint = useSelector((state) => selectScreenBreakpoint(state, 'ballprogress'))
-    const totalProgress = useSelector((state) => selectBallProgress(state, 'total'))
+    const collectionListState = useSelector((state) => state.collection)
+    const listToCompareFrom = isEditMode ? collectionListState.filter((mon) => mon.disabled === undefined) : collectionList.filter((mon) => mon.disabled === undefined)
+    const totalProgress = getBallProgress(listToCompareFrom, 'total')
 
     const totalBallsState = useSelector((state) => state.options.collectingBalls)
     //refer to showcollectionlist for why we do below
-    const totalBalls = totalBallsState === undefined ? ballScopeInit : JSON.parse(JSON.stringify(totalBallsState)) //need new reference as we mutate this variable
+    const totalBalls = (totalBallsState === undefined || !isEditMode) ? JSON.parse(JSON.stringify(ballScopeInit)) : JSON.parse(JSON.stringify(totalBallsState)) //need new reference as we mutate this variable
     // const apriballs = balls.slice(0, 11)
     const setCircleLayout = totalBalls.length > 6 && breakpoint === 'md'
     const setRowLayout = (totalBalls.length <= 6 && breakpoint === 'md') || breakpoint === 'lg'
@@ -65,6 +70,10 @@ export default function CollectionProgress({ballScopeInit}) {
         }
     }
 
+    useEffect(() => {
+        setSelectedBall('')
+    }, [link])
+
     return (
         <Box sx={{position: 'relative', height: '100%', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
             {setRowLayout && <Typography sx={{position: 'absolute', top: '-25px', ...totalProgressStyles.label, fontWeight: 700}} variant='h4'>Total Progress</Typography> }
@@ -75,14 +84,16 @@ export default function CollectionProgress({ballScopeInit}) {
                 const topRowBall = ((idx+1) % 2 === 0) && (totalBalls.length >= 6)
                 const topPosition = topRowBall ? '30%' : totalBalls.length >= 6 ? '70%' : '50%'
                 const position = {top: topPosition, left: scalingStyles.left}
-                return <BallProgress key={`progress-bar-${ball}-ball`} ball={ball} position={position} size={scalingStyles.size} lgScreen={true} addLabel={totalBalls.length < 6} smallerSizeLabel={totalBalls.length < 6 && totalBalls.length === 5}/>
+                const progress = getBallProgress(listToCompareFrom, ball)
+                return <BallProgress key={`progress-bar-${ball}-ball`} ball={ball} position={position} size={scalingStyles.size} lgScreen={true} addLabel={totalBalls.length < 6} smallerSizeLabel={totalBalls.length < 6 && totalBalls.length === 5} progress={progress}/>
             })
             }
             {setCircleLayout && 
             totalBalls.map((ball, idx) => {
                 const positioning = setCirclePositionStyles(idx, totalBalls.length)
                 const selected = ball === selectedBall
-                return <BallProgress 
+                const ballProgress = getBallProgress(listToCompareFrom, ball)
+                return <BallProgress
                             key={`progress-bar-${ball}-ball`} 
                             ball={ball} 
                             className={positioning.className} 
@@ -90,6 +101,7 @@ export default function CollectionProgress({ballScopeInit}) {
                             circleOrientation={true}
                             selected={selected}
                             handleBallChange={handleBallSelect}
+                            progress={ballProgress}
                         />
             })
             }
@@ -99,7 +111,8 @@ export default function CollectionProgress({ballScopeInit}) {
                 <BallProgress 
                   ball={selectedBall}
                   position={{right: '50%', top: '50%'}}
-                  circleCenterBall={true}  
+                  circleCenterBall={true}
+                  progress={getBallProgress(listToCompareFrom, selectedBall)}
                 />
             }
             {(setCircleLayout && totalBalls.length % 2 === 0 && selectedBall !== '') && 

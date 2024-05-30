@@ -1,5 +1,5 @@
 import {useState, useEffect, useRef} from 'react';
-import {useLoaderData, Link, useRouteLoaderData} from 'react-router-dom'
+import {useLoaderData, Link, useRouteLoaderData, useLocation} from 'react-router-dom'
 import * as React from 'react';
 import Box from '@mui/material/Box'
 import {Tabs, Tab, Button} from '@mui/material'
@@ -20,27 +20,16 @@ import {deselect, changeList} from './../app/slices/editmode'
 
 export default function ShowCollection({colorStyles, listStyles}) {
     const list = useSelector(state => state.editmode.listType)
-    // const isEditMode = useSelector(state => state.editmode.isEditMode)
+    const currentLink = useLocation().pathname
+    const isEditMode = currentLink.includes('edit')
     const collection = useLoaderData()
     const currentlyLoggedInUser = useRouteLoaderData("root")
     const collectionId = collection._id
-    // const collectionState = {...collection, ownedPokemon: 
-    //     collection.ownedPokemon.map(p => {
-    //         return {...p, selected: false}
-    //     })
-    // , onHand: 
-    //     collection.onHand.map(p => {
-    //         return {...p, selected: false}
-    //     })
-    // }
+
     const gen8Collection = isNaN(parseInt(collection.gen))
     const collectionName = collection.name
     const dispatch = useDispatch()
-    useEffect(() => {dispatch(setCollectionInitialState(collection.ownedPokemon))}, [])
-    useEffect(() => {dispatch(setOnHandInitialState(collection.onHand))}, [])
-    useEffect(() => {dispatch(setListInitialState({collection: collection.ownedPokemon, onhand: collection.onHand, updatedEggMoveInfo: collection.eggMoveInfo}))}, [])
-    useEffect(() => {dispatch(setOptionsInitialState({...collection.options, collectionName: collection.name}))}, [])
-
+    // useEffect(() => {dispatch(setListInitialState({collection: collection.ownedPokemon, onhand: collection.onHand, updatedEggMoveInfo: collection.eggMoveInfo, resetCollectionFilters: true, resetOnHandFilters: true}))}, [currentLink])
     useEffect(() => {dispatch(deselect())})
 
     const changeListType = (e, newList) => {
@@ -77,11 +66,11 @@ export default function ShowCollection({colorStyles, listStyles}) {
         {/* <EditCollection /> */}
         <Box sx={{flex: 1}}>
             <Box sx={{flexGrow: 1, width: '100%', alignItems: 'center'}}>
-                <Header additionalStyles={{backgroundColor: '#26BCC9', color: 'black'}}>{collectionNameState === undefined ? collectionName : collectionNameState}</Header>
+                <Header additionalStyles={{backgroundColor: '#26BCC9', color: 'black'}}>{!isEditMode ? collectionName : collectionNameState}</Header>
             </Box>
             <BodyWrapper>
-                <ShowCollectionTitle collectionID={collectionId} options={collection.options}/>
-                <FilterSortArea/>
+                <ShowCollectionTitle collectionID={collectionId} options={collection.options} isEditMode={isEditMode}/>
+                <FilterSortArea collection={collection} isEditMode={isEditMode}/>
                 <Box sx={{flexGrow: 1, margin: 0, width: '100%', display: 'flex'}}>
                     <Tabs 
                         textcolor='inherit'
@@ -113,11 +102,14 @@ export default function ShowCollection({colorStyles, listStyles}) {
                 <ShowCollectionList
                     collection={collection}
                     styles={listStyles.collection}
+                    isEditMode={isEditMode}
                 /> :
                 <ShowOnHandList
+                    onhandList={collection.onHand}
                     collectionID={collection._id}
                     eggMoveInfo={collection.eggMoveInfo}
                     styles={listStyles.onhand}
+                    isEditMode={isEditMode}
                 />
                 }
             </BodyWrapper>

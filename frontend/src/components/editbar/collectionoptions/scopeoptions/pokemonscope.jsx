@@ -52,8 +52,8 @@ export default function PokemonScope({elementBg, collectionGen, collectionId}) {
         };
     }, []);
 
-    const collectionAutoSort = optionsState.sorting.collection.reorder
-    const collectionSortOrder = optionsState.sorting.collection.default
+    const collectionAutoSort = optionsState.sortingOptions.collection.reorder
+    const collectionSortOrder = optionsState.sortingOptions.collection.default
     const ballScope = optionsState.collectingBalls
 
     const changeGroup = (e, groupKey) => {

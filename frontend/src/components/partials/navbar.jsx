@@ -46,9 +46,8 @@ export default function NavBar() {
 
     const navigateUserOption = async(isLogout, link) => {
         if (!isLogout) {
-                setUserArea({open: false})
-                navigate(link)
-            
+            setUserArea({open: false})
+            navigate(link)
         } else {
             const status = await userLogoutRequest()
             if (status.successful === true) {
@@ -208,24 +207,23 @@ export default function NavBar() {
                                                     const collectionHoverStyle = {'&:hover': {backgroundColor: theme.palette.color1.main, ...hoverBorderRadiusKeep}}
                                                     const collectionType = isNaN(parseInt(col.gen)) ? `${col.gen.toUpperCase()} Aprimon Collection` : `Gen ${col.gen} Aprimon Collection`
                                                     return (
-                                                        <Link 
-                                                            href={`/collections/${col._id}`}
+                                                        <Box 
+                                                            sx={{
+                                                                height: `${100/userData.user.collections.length}%`, 
+                                                                width: '100%', 
+                                                                borderTop: isFirst ? 'none' : '1px solid white', 
+                                                                position: 'relative',
+                                                                ...theme.components.box.fullCenterCol, 
+                                                                ...collectionHoverStyle
+                                                            }}
                                                             key={`user-collection-${idx+1}-option-${collectionType}`}
-                                                            sx={{textDecoration: 'none', color: 'white'}}
-                                                        >
-                                                            <Box 
-                                                                sx={{
-                                                                    height: `${100/userData.user.collections.length}%`, 
-                                                                    width: '100%', 
-                                                                    borderTop: isFirst ? 'none' : '1px solid white', 
-                                                                    position: 'relative',
-                                                                    ...theme.components.box.fullCenterCol, 
-                                                                    ...collectionHoverStyle
-                                                                }}
-                                                            > 
-                                                                <Typography>{collectionType}</Typography>
-                                                            </Box>
-                                                        </Link>
+                                                            onClick={() => {
+                                                                navigate(`/collections/${col._id}`)
+                                                                setUserArea({open: false})
+                                                            }}
+                                                        > 
+                                                            <Typography>{collectionType}</Typography>
+                                                        </Box>
                                                     )
                                                 })}
                                             </Box>
