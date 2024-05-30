@@ -3,23 +3,30 @@ import {useRef, useEffect} from 'react'
 import store from '../../../app/store';
 import {Paper, Table, TableHead, TableRow, TableBody, TableContainer, TableCell, Box} from '@mui/material'
 import {TableVirtuoso} from 'react-virtuoso'
+import { useLocation } from 'react-router';
 import { useSelector } from 'react-redux';
 import OnHandRowContent from './onhandrowcontent'
 import './../../../routes/showCollection.css'
 import {connect} from 'react-redux'
 
-export default function ShowOnHandList({collectionID, styles, eggMoveInfo}) {
+export default function ShowOnHandList({onhandList, collectionID, styles, eggMoveInfo, isEditMode}) {
     
     const listState = useSelector(state => state.listDisplay.onhand)
+    const listDisplay = isEditMode ? listState : onhandList
+    const link = useLocation().pathname
+    const linkRef = useRef(link)
 
     const scrollRef = useRef(null)
     const scrollPosition = useRef()
 
     useEffect(() => {
-        if (scrollPosition.current !== undefined) { 
+        const sameIDBetweenRefs = linkRef.current.includes(collectionID) && link.includes(collectionID)
+        if (scrollPosition.current !== undefined && (sameIDBetweenRefs)) { 
             setTimeout(() => scrollRef.current.scrollTo({top: scrollPosition.current}), 1000)
         }
-    })
+        linkRef.current = link
+    }, [link])
+
 
     const columns = [
         {label: '#', dataKey: 'natDexNum', width: '5%'},
@@ -67,6 +74,7 @@ export default function ShowOnHandList({collectionID, styles, eggMoveInfo}) {
     }
 
     function rowContent(_index, row) {
+        const includePokemonProp = isEditMode ? {} : {row}
         return (
             <OnHandRowContent
                 columns={columns}
@@ -75,6 +83,8 @@ export default function ShowOnHandList({collectionID, styles, eggMoveInfo}) {
                 collectionId={collectionID}
                 styles={styles}
                 allEggMoveInfo={eggMoveInfo}
+                isEditMode={isEditMode}
+                {...includePokemonProp}
             />
         )
     }
@@ -94,13 +104,12 @@ export default function ShowOnHandList({collectionID, styles, eggMoveInfo}) {
     return (
         <Paper style={{height: 800, margin: 0}}>
             <TableVirtuoso
-                data={listState}
+                data={listDisplay}
                 components={VirtuosoTableComponents}
                 fixedHeaderContent={setHeaders}
                 itemContent={rowContent}
                 sx={{backgroundColor: '#272625', zIndex: 100}}
-            >
-            </TableVirtuoso>
+            />
         </Paper>
     )
 }

@@ -1,7 +1,6 @@
 import {Box, AppBar, Button, ToggleButton, ToggleButtonGroup} from '@mui/material'
 import { useState, useEffect } from 'react'
-import { useLoaderData } from 'react-router'
-import { useLocation } from 'react-router'
+import { useLoaderData, useLocation, useNavigate } from 'react-router-dom'
 import { Link } from 'react-router-dom'
 import Header from './subcomponents/header'
 import TextSpaceDouble from './subcomponents/textspacedouble'
@@ -12,14 +11,19 @@ import ItemDisplay from './itemdisplay'
 import { tradePreferenceDisplay } from '../../infoconstants'
 import { useDispatch, useSelector } from 'react-redux'
 import { changeModalState } from '../../app/slices/editmode'
+import { setCollectionInitialState } from '../../app/slices/collection'
+import { setOnHandInitialState } from '../../app/slices/onhand'
+import { setOptionsInitialState } from '../../app/slices/options'
 
-export default function ShowCollectionTitle({collectionID, options}) {
+export default function ShowCollectionTitle({collectionID, options, isEditMode}) {
     const collectionInfo = useLoaderData()
     const dispatch = useDispatch()
+    const navigate = useNavigate()
+    const link = useLocation().pathname
     const [displayScreen, setDisplayScreen] = useState('ballProgress')
-    const isEditMode = useLocation().pathname.includes('/edit')
     const gen8Collection = isNaN(parseInt(collectionInfo.gen))
-    const tradePreferences = useSelector((state) => state.options.tradePreferences)
+    const tradePreferencesState = useSelector((state) => state.options.tradePreferences)
+    const tradePreferences = isEditMode ? tradePreferencesState : options.tradePreferences
     const itemsState = tradePreferences.items
     const collectionType = gen8Collection ? `${collectionInfo.gen.toUpperCase()} Aprimon Collection` : `Gen ${collectionInfo.gen} Aprimon Collection`
     const formattedTradePreferences = [tradePreferenceDisplay.onhandOnly[tradePreferences.onhandOnly], tradePreferenceDisplay.size[tradePreferences.size], tradePreferenceDisplay.items[tradePreferences.items]].filter(display => display !== undefined)
@@ -28,7 +32,7 @@ export default function ShowCollectionTitle({collectionID, options}) {
         if (itemsState === 'none' && displayScreen === 'items') {
             setDisplayScreen('rates')
         }
-    }, [itemsState])
+    }, [itemsState, link])
 
     const colorStyles1 = {
         bgColor: 'linear-gradient(90deg, rgba(40,63,87,1) 90%, rgba(60,165,186,0) 100%)',
@@ -88,6 +92,13 @@ export default function ShowCollectionTitle({collectionID, options}) {
         ':hover': {backgroundColor: 'rgba(39, 38, 37, 0.9)'}
     }
 
+    const initializeEditMode = () => {
+        // dispatch(setCollectionInitialState(collectionInfo.ownedPokemon))
+        // dispatch(setOnHandInitialState(collectionInfo.onHand))
+        // dispatch(setOptionsInitialState({...collectionInfo.options, collectionName: collectionInfo.name}))
+        navigate(`/collections/${collectionID}/edit`)
+    }
+
     return (
         <Box sx={{display: 'flex', flexDirection: 'row', width: '100%', marginBottom: '1rem', height: '200px'}}>
             <Box sx={{display: 'flex', flexDirection: 'column', width: '45%'}}>
@@ -131,12 +142,12 @@ export default function ShowCollectionTitle({collectionID, options}) {
                     </ToggleButtonGroup>
                 </Box>
                 <Box sx={{width: '100%', height: '15%', display: 'flex', justifyContent: 'center'}}>
-                    <Button sx={{width: '30%', fontSize: '12px'}}><Link to={`edit`}>Edit Mode</Link></Button>
+                    <Button sx={{width: '30%', fontSize: '12px'}} onClick={initializeEditMode}>Edit Mode</Button>
                     {isEditMode && <Button sx={{fontSize: '12px'}} onClick={() => dispatch(changeModalState({open: true, screen: 'main'}))}>Collection Options</Button>}
                 </Box>
             </Box>
             <Box sx={{display: 'flex', flexDirection: 'column', alignItems: 'center', width: '55%'}}>
-                {displayScreen === 'ballProgress' && <CollectionProgress ballScopeInit={options.collectingBalls}/>}
+                {displayScreen === 'ballProgress' && <CollectionProgress ballScopeInit={options.collectingBalls} isEditMode={isEditMode} collectionList={collectionInfo.ownedPokemon}/>}
                 {displayScreen === 'rates' && <RateDisplay rates={tradePreferences.rates} owner={collectionInfo.owner.username}/>}
                 {displayScreen === 'items' && <ItemDisplay collectionGen={collectionInfo.gen} itemTradeStatus={tradePreferences.items} lfItems={tradePreferences.lfItems} ftItems={tradePreferences.ftItems}/>}
             </Box>

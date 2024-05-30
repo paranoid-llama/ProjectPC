@@ -10,9 +10,9 @@ import {seeIfPokemonIsSelected, selectOnHandPokemon} from './../../../app/select
 import {setSelected} from './../../../app/slices/editmode'
 import {connect, useDispatch} from 'react-redux'
 
-function OnHandRowContent({columns, row, pokemonId, collectionId, styles, isSelected, setSelected, allEggMoveInfo}) {
+function OnHandRowContent({columns, row, pokemonId, collectionId, styles, isSelected, setSelected, allEggMoveInfo, isEditMode}) {
     const dispatch = useDispatch()
-    const idx = useSelector(state => state.onhand.indexOf(row)) 
+
     const possibleEMs = allEggMoveInfo[row.name]
     const maxEMs = possibleEMs.length > 4 ? 4 : possibleEMs.length
 
@@ -22,8 +22,6 @@ function OnHandRowContent({columns, row, pokemonId, collectionId, styles, isSele
     //     console.log(`RE-RENDER ${reRenderCount.current}`)
     // }) 
     // to check how often its re-rendering
-    
-    const isEditMode = useLocation().pathname.includes('edit')
 
     const pokeImgLink = `https://res.cloudinary.com/duaf1qylo/image/upload/sprites/${row.imgLink}.png`
     const imgLinkModifiers = {gender: 'icons', ball: 'balls'}
@@ -78,6 +76,9 @@ function OnHandRowContent({columns, row, pokemonId, collectionId, styles, isSele
 }
 
 const mapStateToProps = (state, ownProps) => {
+    if (!ownProps.isEditMode) {
+        return {}
+    }
     const pokemon = selectOnHandPokemon(state, ownProps.pokemonId)
     const isSelected = seeIfPokemonIsSelected(state, ownProps.pokemonId)
     return {
@@ -87,6 +88,9 @@ const mapStateToProps = (state, ownProps) => {
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => {
+    if (!ownProps.isEditMode) {
+        return {}
+    }
     return {
         setSelected: () => dispatch(setSelected(ownProps.pokemonId))
     }

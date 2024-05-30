@@ -7,6 +7,7 @@ import {formatImportQuery, setEMQueries, formatImportedValues, setCollection, de
 import { getPokemonGroups } from './utils/pokemongroups/getpokemongroups.js';
 import { getIndividualPokemonInfo } from './utils/createCollection.js';
 import { getPossibleEggMoves, getCollectionProgress } from './utils/schemavirtuals/collectionvirtuals.js';
+import { sortOnHandList, sortList } from '../frontend/utils/functions/sortfilterfunctions/sortingfunctions.js';
 // require('dotenv').config()
 import dotenv from 'dotenv'
 import lton from 'letter-to-number'
@@ -382,7 +383,7 @@ app.get('/users/:id', catchAsync(async(req, res) => {
 app.put('/collections/:id/edit', catchAsync(async(req, res) => {
     const changedField = Object.keys(req.body)[2]
     const newValueOfChangedField = Object.values(req.body)[2]
-    const {pokename, ballname, idOfPokemon, onhandPokemon} = req.body //idofpokemon is only for onhand pokemon
+    const {pokename, ballname, idOfPokemon, onhandPokemon, otherFieldsData} = req.body //idofpokemon is only for onhand pokemon
     const {id, ownerid} = req.params
 
     if (onhandPokemon === true) {
@@ -396,8 +397,17 @@ app.put('/collections/:id/edit', catchAsync(async(req, res) => {
         )
     } else {
         if (changedField === 'isOwned' && newValueOfChangedField === true) {
+            const setDefaults = otherFieldsData !== undefined
+            const otherSetModifiers = {}
+            if (setDefaults) {
+                const fieldsChanged = Object.keys(otherFieldsData)
+                for (let field of fieldsChanged) {
+                    otherSetModifiers[`ownedPokemon.$.balls.${ballname}.${field}`] = otherFieldsData[field]
+                }
+            }
             const setModifier = { $set: {
-                [`ownedPokemon.$.balls.${ballname}.${changedField}`]: newValueOfChangedField
+                [`ownedPokemon.$.balls.${ballname}.${changedField}`]: newValueOfChangedField,
+                ...otherSetModifiers
             }, $unset: {
                 [`ownedPokemon.$.balls.${ballname}.highlyWanted`]: "",
                 [`ownedPokemon.$.balls.${ballname}.pending`]: ""
@@ -491,6 +501,11 @@ app.put('/collections/:id/edit/addonhand', catchAsync(async(req, res) => {
 
     const collection = await Collection.findById(id)
     collection.onHand.push(newOnHand)
+    const onhandSortingOptions = collection.options.sortingOptions.onhand
+    if (onhandSortingOptions.reorder === true) {
+        collection.onHand = sortOnHandList(onhandSortingOptions.sortFirstBy, onhandSortingOptions.default, onhandSortingOptions.ballOrder, collection.onHand)
+    }
+    
     collection.save()
 
     res.end()
@@ -523,6 +538,7 @@ app.put('/collections/:id/edit/ownedpokemonedit', catchAsync(async(req, res) => 
 }))
 
 app.put('/collections/:id/edit/optionsedit', catchAsync(async(req, res) => {
+    //update this route so it sorts the list on its own
     const {id} = req.params
     const {optionType, listType, data, sortedList, newRates, newPreferences, lfItems, ftItems, name} = req.body
     if (optionType === 'sort') {

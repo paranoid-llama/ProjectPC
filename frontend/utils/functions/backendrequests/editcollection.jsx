@@ -1,20 +1,20 @@
 
-const getCollectionEditData = (key, value, pokename, ballname) => {
-    return {pokename, ballname, [key]: value}
+const getCollectionEditData = (key, value, pokename, ballname, otherFieldsData) => {
+    return {pokename, ballname, [key]: value, otherFieldsData}
 }
 
-const getOnHandEditData = (key, value, id) => {
-    return {idOfPokemon: id, onhandPokemon: true, [key]: value}
+const getOnHandEditData = (key, value, id, otherFieldsData) => {
+    return {idOfPokemon: id, onhandPokemon: true, [key]: value, otherFieldsData}
 }
 
-const usePutRequest = (key, value, identifiers, listType, collectionID, userID) => {
+const usePutRequest = (key, value, identifiers, listType, collectionID, userID, otherFieldsData=undefined) => {
     const dataParser = listType === 'collection' ? getCollectionEditData : getOnHandEditData
     fetch(`http://localhost:3000/collections/${collectionID}/edit`, {
         method: 'PUT',
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify(listType === 'collection' ? dataParser(key, value, identifiers.pokename, identifiers.ballname) : dataParser(key, value, identifiers.id))
+        body: JSON.stringify(listType === 'collection' ? dataParser(key, value, identifiers.pokename, identifiers.ballname, otherFieldsData) : dataParser(key, value, identifiers.id, otherFieldsData))
     })
 }
 

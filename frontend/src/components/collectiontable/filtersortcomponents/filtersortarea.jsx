@@ -6,7 +6,7 @@ import Sort from './sort'
 import Filter from './filter'
 import "./../../../../utils/styles/componentstyles/filtersortbox.css"
 
-export default function FilterSortArea({}) {
+export default function FilterSortArea({collection, isEditMode}) {
     const [area, setArea] = useState({open: false, firstRender: true})
     const list = useSelector((state) => state.editmode.listType)
     const listType = list === 'onHand' ? 'onhand' : 'collection' //listType is used to simplify store update which uses lowercase onhand. should probably use uniform casing for that word.
@@ -33,7 +33,7 @@ export default function FilterSortArea({}) {
                                 <Sort listType={listType}/>
                             </Box>
                             <Box sx={{width: '60%', height: '95%'}}>
-                                <Filter listType={listType}/>
+                                <Filter listType={listType} collection={collection} isEditMode={isEditMode}/>
                             </Box>
                         </Box>
                     </Box>

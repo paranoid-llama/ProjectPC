@@ -48,7 +48,7 @@ export default function ItemSelectionModalContents({elementBg, activeTab, change
             <Box sx={{...elementBg, width: '95%', height: '35px', display: 'flex', alignItems: 'center', mb: 1}}>
                 <Button sx={{color: 'rgb(38, 188, 201)', fontWeight: 700, textTransform: 'none', fontSize: '1rem'}} onClick={() => saveChanges(false, 'main')}>Collection Options</Button>
                 <ArrowForward sx={{color: 'rgb(38, 188, 201)'}}/>
-                <Button sx={{color: 'rgb(38, 188, 201)', fontWeight: 700, textTransform: 'none', fontSize: '1rem'}} onClick={() => saveChanges(false, 'preferences')}>Trade Preferences</Button>
+                <Button sx={{color: 'rgb(38, 188, 201)', fontWeight: 700, textTransform: 'none', fontSize: '1rem'}} onClick={() => saveChanges(false, 'tradePreferences')}>Trade Preferences</Button>
                 <ArrowForward sx={{color: 'rgb(38, 188, 201)'}}/>
                 <Typography sx={{color: 'white', fontWeight: 700, mx: 1}}>Items</Typography>
             </Box>

@@ -14,7 +14,7 @@ import SaveChangesConfirmModal from '../savechangesconfirmmodal'
 export default function OnHandSortingOptions({elementBg, collectionGen, collectionId}) {
     const dispatch = useDispatch()
     const totalBalls = getBallsInGen(collectionGen)
-    const currentOptions = useSelector((state) => state.options.sorting.onhand)
+    const currentOptions = useSelector((state) => state.options.sortingOptions.onhand)
     const onhandListState = useSelector((state) => state.onhand)
 
     const buttonStyles = {
@@ -94,7 +94,7 @@ export default function OnHandSortingOptions({elementBg, collectionGen, collecti
                         return mon
                     })
                     backendChangeOptions('sort', {listType: 'onhand', data: editedOptionsObj, sortedList: backendSortedList}, collectionId)
-                    dispatch(setListInitialState({onhand: sortedOnHandList, resetOnHandFilters: true, onlyUpdateOnHand: true}))
+                    // dispatch(setListInitialState({onhand: sortedOnHandList, resetOnHandFilters: true, onlyUpdateOnHand: true}))
                 } else {
                    backendChangeOptions('sort', {listType: 'onhand', data: editedOptionsObj}, collectionId) 
                 }

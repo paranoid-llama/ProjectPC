@@ -1,4 +1,4 @@
-import { multipleDexNumAndSpaceHavingPokemon, regionIdentifiers, apriballs } from "../../../src/infoconstants"
+import { multipleDexNumAndSpaceHavingPokemon, regionIdentifiers, apriballs } from "../../../src/infoconstants.js"
 
 const sortByDexNumLogic = (a, b, order) => {
     if (order === 'NatDexNumL2H') {

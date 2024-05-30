@@ -10,7 +10,7 @@ import ImgData from '../tabledata/imgdata'
 import ListSearch from '../../functionalcomponents/listsearch'
 import {useDebouncedCallback} from 'use-debounce'
 
-export default function Filter({listType}) {
+export default function Filter({listType, collection, isEditMode}) {
     const dispatch = useDispatch()
     const collectionGen = useLoaderData().gen
     const genNum = collectionGen === 'swsh' ? 8 :
@@ -27,9 +27,11 @@ export default function Filter({listType}) {
         }
     })
 
+    const listLiteralState = listType === 'collection' ? useSelector((state) => state.collection) : useSelector((state) => state.onhand)
+
     const currentFilters = listType === 'collection' ? useSelector((state) => state.listDisplay.collectionFilters) : useSelector((state) => state.listDisplay.onhandFilters)
     const listState = listType === 'collection' ? useSelector((state) => state.listDisplay.collection) : useSelector((state) => state.listDisplay.onhand)
-    const totalList = listType === 'collection' ? useSelector((state) => state.collection) : useSelector((state) => state.onhand)
+    const totalList = isEditMode ? listType === 'collection' ? listLiteralState.filter((mon) => mon.disabled === undefined) : listLiteralState : listType === 'collection' ? collection.ownedPokemon : collection.onHand
     const ballFilters = currentFilters.filters.ballFilters
     const genFilters = currentFilters.filters.genFilters
     const miscFilters = currentFilters.filters.otherFilters
@@ -114,7 +116,7 @@ export default function Filter({listType}) {
     }   
 
     const debounceFunction = (query, reFilterList) => {
-        dispatch(filterSearch({searchQuery: query, listState, listType, reFilterList, totalList}))
+        dispatch(filterSearch({searchQuery: query, listState, listType, reFilterList, totalList, currentSortKey}))
     }
 
     const debouncedSearch = useDebouncedCallback(
