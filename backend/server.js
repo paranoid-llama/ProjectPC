@@ -344,22 +344,25 @@ app.post('/collections/new/seeddb', catchAsync(async(req, res) => {
 
     const usernames = ['ash ketchup', 'penny', 'hihi', 'aprimon collector', 'selvt', 'paro', 'gary oak', 'misty', 'brock', 'sabrina', 'everword', 'superguy12345', 'XxpokemonCollectorxX', 'lol', 'neverAgain', 'findmyway', 'pandabear', 'pandaman', 'pirate king garon', 'aaron', 'matear', 'poalert', 'poltergeist', 'pikachu enjoyer', 'gen wunner', 'wurst', 'gutentag', 'betterman', 'the pokemon lady']
 
-    // for (let i=0; i < 100; i++) {
-    //     const gen = gens[Math.floor(Math.random() * gens.length)]
-    //     const newCollectionInfo = {
-    //         gen: gen,
-    //         collectionName: names[Math.floor(Math.random() * names.length)],
-    //         owner: ownerIds[Math.floor(Math.random() * ownerIds.length)],
-    //         options: {
-    //             collectingBalls: gen === 6 ? ['fast', 'friend', 'heavy', 'level', 'love', 'lure', 'moon', 'dream', 'safari', 'sport'] : ['fast', 'friend', 'heavy', 'level', 'love', 'lure', 'moon', 'beast', 'dream', 'safari', 'sport'],
-    //             sortingOptions: {collection: {reorder: false, default: 'NatDexNumL2H'}, onhand: {reorder: true, default: 'NatDexNumL2H', ballOrder: ['fast', 'friend', 'heavy', 'level', 'love', 'lure', 'moon', 'beast', 'dream', 'safari', 'sport'], sortFirstBy: 'pokemon'}},
-    //             tradePreferences: {status: 'open', rates: {pokemonOffers: [{items: ['On-Hand HA Aprimon', 'HA Aprimon'], rate: [2, 1]}], itemOffers: []}, size: 'small preferred', onhandOnly: 'no', items: 'none', lfItems: [], ftItems: {}}
-    //         }
-    //     }
-    //     const collectionData = new CollectionClass(undefined, newCollectionInfo)
-    //     const collection = new Collection(collectionData)
-    //     await collection.save()
-    // }
+    for (let i=0; i < 100; i++) {
+        const gen = gens[Math.floor(Math.random() * gens.length)]
+        const isHARand = Math.floor(Math.random()*2)
+        const emCountRand = Math.floor(Math.random()*5)
+        const newCollectionInfo = {
+            gen: gen,
+            collectionName: names[Math.floor(Math.random() * names.length)],
+            owner: ownerIds[Math.floor(Math.random() * ownerIds.length)],
+            options: {
+                collectingBalls: gen === 6 ? ['fast', 'friend', 'heavy', 'level', 'love', 'lure', 'moon', 'dream', 'safari', 'sport'] : ['fast', 'friend', 'heavy', 'level', 'love', 'lure', 'moon', 'beast', 'dream', 'safari', 'sport'],
+                globalDefaults: {isHA: isHARand === 0 ? true : false, emCount: emCountRand},
+                sortingOptions: {collection: {reorder: false, default: 'NatDexNumL2H'}, onhand: {reorder: true, default: 'NatDexNumL2H', ballOrder: ['fast', 'friend', 'heavy', 'level', 'love', 'lure', 'moon', 'beast', 'dream', 'safari', 'sport'], sortFirstBy: 'pokemon'}},
+                tradePreferences: {status: 'open', rates: {pokemonOffers: [{items: ['On-Hand HA Aprimon', 'HA Aprimon'], rate: [2, 1]}], itemOffers: []}, size: 'small preferred', onhandOnly: 'no', items: 'none', lfItems: [], ftItems: {}}
+            }
+        }
+        const collectionData = new CollectionClass(undefined, newCollectionInfo)
+        const collection = new Collection(collectionData)
+        await collection.save()
+    }
 
     // for (let user of usernames) {
     //     bcrypt.hash('12345', 11, async function(err, hash) {
@@ -541,7 +544,7 @@ app.put('/collections/:id/edit/ownedpokemonedit', catchAsync(async(req, res) => 
 app.put('/collections/:id/edit/optionsedit', catchAsync(async(req, res) => {
     //update this route so it sorts the list on its own
     const {id} = req.params
-    const {optionType, listType, data, sortedList, newRates, newPreferences, lfItems, ftItems, name} = req.body
+    const {optionType, listType, data, sortedList, newRates, newPreferences, lfItems, ftItems, name, globalDefault} = req.body
     if (optionType === 'sort') {
         const setListModifier = sortedList !== undefined ? listType === 'collection' ? {'ownedPokemon': sortedList} : {'onHand': sortedList} : {}
         await Collection.updateOne({_id: id}, { $set: {[`options.sorting.${listType}`]: data, ...setListModifier} })
@@ -556,8 +559,11 @@ app.put('/collections/:id/edit/optionsedit', catchAsync(async(req, res) => {
         await Collection.updateOne({_id: id}, { $set: {'options.tradePreferences.lfItems': lfItems, 'options.tradePreferences.ftItems': ftItems} })
         res.end()
     } else if (optionType === 'name') {
-        await Collection.updateOne({_id: id}, { $set: {'name': name} })
+        const otherSetModifier = globalDefault !== undefined ? { $set: {'options.globalDefaults': globalDefault} } : {}
+        await Collection.updateOne({_id: id}, { $set: {'name': name}, ...otherSetModifier })
         res.end()
+    } else if (optionType === 'globalDefault') {
+        await Collection.updateOne({_id: id}, { $set: {'options.globalDefaults': globalDefault} })
     }
 }))
 

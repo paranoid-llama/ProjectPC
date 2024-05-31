@@ -4,6 +4,7 @@ const backendChangeOptions = (optionType, accompanyingData, collectionId) => {
     const changingPreference = optionType === 'preferences'
     const changingItems = optionType === 'items'
     const changingCollectionName = optionType === 'name'
+    const changingGlobalDefault = optionType === 'globalDefault'
     if (changingSortingOption) {
         const {listType, data, sortedList} = accompanyingData
         fetch(`http://localhost:3000/collections/${collectionId}/edit/optionsedit`, {
@@ -41,13 +42,22 @@ const backendChangeOptions = (optionType, accompanyingData, collectionId) => {
             body: JSON.stringify({optionType, lfItems, ftItems})
         })
     } else if (changingCollectionName) {
-        const {name} = accompanyingData
+        const {name, globalDefault} = accompanyingData
         fetch(`http://localhost:3000/collections/${collectionId}/edit/optionsedit`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({optionType, name})
+            body: JSON.stringify({optionType, name, globalDefault})
+        })
+    } else if (changingGlobalDefault) {
+        const {globalDefault} = accompanyingData
+        fetch(`http://localhost:3000/collections/${collectionId}/edit/optionsedit`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({optionType, globalDefault})
         })
     }
 }

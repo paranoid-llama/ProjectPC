@@ -144,6 +144,7 @@ export default function NewCollection(userid) {
     const finalizeCreation = async() => {
         const backendOptionsFormat = {
             collectingBalls: formData.ballScope.formData,
+            globalDefaults: formData.options.globalDefaults,
             sorting: {collection: formData.options.sorting.collection, onhand: formData.options.sorting.onhand},
             tradePreferences: {...formData.options.tradePreferences, rates: {pokemonOffers: formData.options.rates.pokemonOffers.filter(off => off.add === undefined), itemOffers: formData.options.rates.itemOffers.filter(off => off.add === undefined)}}
         }

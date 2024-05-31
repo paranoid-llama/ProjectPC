@@ -1,10 +1,10 @@
-import {Modal, Fade, Backdrop, Box, Typography, Button} from '@mui/material'
+import {Modal, Fade, Backdrop, Box, Typography, Button, ToggleButton, ToggleButtonGroup} from '@mui/material'
 import ArrowForward from '@mui/icons-material/ArrowForward'
 import { useDispatch, useSelector } from 'react-redux'
 import { useState, useEffect, useContext, useRef } from 'react'
 import { AlertsContext } from '../../../alerts/alerts-context'
 import { changeModalState } from '../../../app/slices/editmode'
-import { setNameState } from '../../../app/slices/options'
+import { setNameState, setGlobalDefaultState } from '../../../app/slices/options'
 import { backendChangeOptions } from '../../../../utils/functions/backendrequests/collectionoptionsedit'
 import ControlledTextInput from '../../functionalcomponents/controlledtextinput'
 import SaveChangesConfirmModal from './savechangesconfirmmodal'
@@ -12,9 +12,23 @@ import SaveChangesConfirmModal from './savechangesconfirmmodal'
 export default function OtherOptions({elementBg, collectionId, collectionType}) {
     const dispatch = useDispatch()
     const collectionNameState = useSelector((state) => state.options.collectionName)
+    const globalDefaultInit = useSelector((state) => state.options.globalDefaults)
     const collectionNameRef = useRef(collectionNameState)
 
-    const [otherOptions, setOtherOptions] = useState({deleteCollectionModal: false, saveChangesConfirmOpen: false})
+    const [otherOptions, setOtherOptions] = useState({globalDefaults: globalDefaultInit, deleteCollectionModal: false, saveChangesConfirmOpen: false})
+
+    const buttonStyles = {
+        '&.MuiToggleButton-root': {
+            borderColor: 'rgba(230,230,230, 0.5)',
+            color: 'white',
+            '&:hover': {
+                backgroundColor: 'rgba(64, 224, 208, 0.2)'
+            }
+        },
+        '&.Mui-selected': {
+            backgroundColor: 'rgba(0, 0, 0, 0.3)'
+        }
+    }
 
     //alerts
     const [alertIds, setAlertIds] = useState([])
@@ -33,6 +47,10 @@ export default function OtherOptions({elementBg, collectionId, collectionType}) 
         };
     }, []);
 
+    const changeGlobalDefault = (field, newVal) => {
+        setOtherOptions({...otherOptions, globalDefaults: {...otherOptions.globalDefaults, [field]: newVal}})
+    }
+
     const closeSaveChangesConfirm = () => {
         setOtherOptions({...otherOptions, saveChangesConfirmOpen: false})
     }
@@ -42,12 +60,13 @@ export default function OtherOptions({elementBg, collectionId, collectionType}) 
     }
 
     const changeOptions = (saveButtonSelected, nextScreen) => {
-        const noNameChanges = collectionNameRef === collectionNameState
-        const noChangesMade = noNameChanges
+        const noNameChanges = collectionNameRef.current.value === collectionNameState
+        const noGlobalDefaultChanges = (globalDefaultInit.isHA === otherOptions.globalDefaults.isHA) && (globalDefaultInit.emCount === otherOptions.globalDefaults.emCount)
+        const noChangesMade = noNameChanges && noGlobalDefaultChanges
         if (saveButtonSelected && noChangesMade) {
-            setOtherOptions({...otherOptions, saveErrorNotice: true})
+            setOtherOptions({...otherOptions, saveErrorNoticeShow: true})
             setTimeout(() => {
-                setOtherOptions((curr) => {return {...curr, saveErrorNotice: false}})
+                setOtherOptions((curr) => {return {...curr, saveErrorNoticeShow: false}})
             }, 3000)
         } else if (!noChangesMade) {
             setOtherOptions({...otherOptions, saveChangesConfirmOpen: true, saveButtonSelected, nextScreen})
@@ -63,13 +82,23 @@ export default function OtherOptions({elementBg, collectionId, collectionType}) 
     const finalizeChanges = (saveChanges, nextScreen) => {
         if (saveChanges) {
             const newName = collectionNameRef.current.value
+            const noNameChanges = collectionNameRef === collectionNameState
+            const noGlobalDefaultChanges = (globalDefaultInit.isHA === otherOptions.globalDefaults.isHA) && (globalDefaultInit.emCount === otherOptions.globalDefaults.emCount)
             setOtherOptions({...otherOptions, saving: true})
             setTimeout(() => {
-                backendChangeOptions('name', {name: newName}, collectionId)
-                dispatch(setNameState(newName))
+                if (!noNameChanges && !noGlobalDefaultChanges) {
+                    backendChangeOptions('name', {name: newName, globalDefault: otherOptions.globalDefaults}, collectionId)
+                    dispatch(setNameState({name: newName, globalDefault: otherOptions.globalDefaults}))
+                } else if (!noNameChanges) {
+                    backendChangeOptions('name', {name: newName}, collectionId)
+                    dispatch(setNameState({name: newName}))
+                } else if (!noGlobalDefaultChanges) {
+                    backendChangeOptions('globalDefault', {globalDefault: otherOptions.globalDefaults}, collectionId)
+                    dispatch(setGlobalDefaultState(otherOptions.globalDefaults))
+                }
 
                 //spawning alert
-                const alertMessage = `Set Trade Rates!`
+                const alertMessage = `Set Other Options!`
                 const alertInfo = {severity: 'success', message: alertMessage, timeout: 3}
                 const id = addAlert(alertInfo);
                 setAlertIds((prev) => [...prev, id]);
@@ -114,6 +143,36 @@ export default function OtherOptions({elementBg, collectionId, collectionType}) 
                     defaultValue={collectionNameState}
                     charLimit={60}
                 />
+            </Box>
+            <Box sx={{width: '90%', height: '30%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', mt: -1}}>
+                <Typography sx={{fontSize: '14px', fontWeight: 700, marginRight: 1}}>Global Defaults:</Typography>
+                <Box sx={{display: 'flex', flexDirection: 'row', width: '100%', height: '90%'}}>
+                    <Box sx={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', width: '50%', height: '100%'}}>
+                        <Typography sx={{fontSize: '14px', mb: 1, fontWeight: 700}}>Hidden Ability</Typography>
+                        <Box sx={{display: 'flex', flexDirection: 'row', justifyContent: 'center'}}>
+                            <ToggleButtonGroup exclusive value={otherOptions.globalDefaults.isHA} onChange={(e, newVal) => changeGlobalDefault('isHA', newVal)}>
+                            <ToggleButton sx={{fontSize: '12px', ...buttonStyles}} value={true}>
+                                HA
+                            </ToggleButton>
+                            <ToggleButton sx={{fontSize: '12px', ...buttonStyles}} value={false}>
+                                Non-HA
+                            </ToggleButton>
+                            </ToggleButtonGroup>
+                        </Box>
+                    </Box>
+                    <Box sx={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', width: '50%', height: '100%', position: 'relative'}}>
+                        <Typography sx={{fontSize: '14px', mb: 1, fontWeight: 700}}>Egg Move Count</Typography>
+                        <Box sx={{display: 'flex', flexDirection: 'row', justifyContent: 'center'}}>
+                            {Array.from(Array(5).keys()).map((emCount, idx) => {
+                                return (
+                                    <ToggleButton sx={{fontSize: '12px', mx: 0.5, ...buttonStyles}} value={emCount} selected={otherOptions.globalDefaults.emCount === emCount} onChange={(e, newVal) => changeGlobalDefault('emCount', newVal)} key={`global-default-emCount-${emCount}`}>
+                                        {emCount}
+                                    </ToggleButton>
+                                )
+                            })}
+                        </Box>
+                    </Box>
+                </Box>
             </Box>
             <Box sx={{width: '90%', height: '20%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                 <Button sx={{backgroundColor: '#ED4337', color: 'white'}} onClick={toggleDeleteCollectionModal}>Delete Collection</Button>

@@ -23,6 +23,10 @@ const collectionSchema = new Schema ({
         _id: false,
         type: Object,
         collectionBalls: {type: Array},
+        globalDefault: {
+            isHA: {type: Boolean},
+            emCount: {type: Number}
+        },
         sorting: {
             _id: false,
             type: Object,
@@ -264,10 +268,6 @@ collectionSchema.path('onHand').schema.virtual('imgLink').get(function() {
 
 collectionSchema.virtual('eggMoveInfo').get(function() {
     return getPossibleEggMoves(this.ownedPokemon, this.gen)
-})
-
-collectionSchema.virtual('progress').get(function() {
-    return getCollectionProgress(this.ownedPokemon)
 })
 
 collectionSchema.set('toJSON', {virtuals: true})

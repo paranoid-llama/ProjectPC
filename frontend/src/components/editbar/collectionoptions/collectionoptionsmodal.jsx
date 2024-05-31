@@ -50,7 +50,7 @@ export default function CollectionOptionsModal({collectionGen, collectionId}) {
         >
             <Fade in={modalState.open}>
                 {/* height is normally 665px in scope selection */}
-                <Box sx={{...modalStyles.onhand.modalContainer, height: modalHeight, width: '70%', maxWidth: '800px', display: 'flex', alignItems: 'center'}}>
+                <Box sx={{...modalStyles.onhand.modalContainer, height: modalHeight, width: '70%', minWidth: '575px', maxWidth: '850px', display: 'flex', alignItems: 'center'}}>
                     {modalState.screen === 'main' && <OptionsMain elementBg={elementBg}/>}
                     {isOptionsSubScreen && <OptionsSub elementBg={elementBg} screenType={modalState.screen} collectionGen={collectionGen}/>}
                     {modalState.screen === 'pokemonScope' && <PokemonScope elementBg={elementBg} collectionGen={collectionGen} collectionId={collectionId}/>}

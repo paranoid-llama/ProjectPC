@@ -28,6 +28,7 @@ function TableRowGrouping({columns, row, id, collectionId, ownerId, styles, isSe
     const idx = isEditMode ? useSelector(state => state.collection.indexOf(row)) : null
 
     //default data
+    const globalDefaults = isEditMode ? useSelector((state) => state.options.globalDefaults) : null
     const checkDefault = Object.keys(row.balls)[Object.values(row.balls).map((b) => b.default !== undefined).indexOf(true)]
     const currentDefault = checkDefault === undefined ? 'none' : checkDefault
 
@@ -39,12 +40,12 @@ function TableRowGrouping({columns, row, id, collectionId, ownerId, styles, isSe
                 key === 'emCount' ? selectNextEmCount(emCountSelectionList, parseInt(e.target.value)) :
                 key === 'EMs' && 'none'
             )
-        const defaultData = getDefaultData('none', currentDefault, row.balls, maxEMs, possibleEggMoves)
+        const defaultData = getDefaultData(globalDefaults, currentDefault, row.balls, maxEMs, possibleEggMoves)
         if (key === 'isOwned') {
             if (newValue === true) {
-                dispatch(setSelectedAfterChangingOwned({idx: id, ball: ballname, ballDefault: currentDefault}))
+                dispatch(setSelectedAfterChangingOwned({idx: id, ball: ballname}))
             }
-            dispatch(setIsOwned({idx, ball: ballname, ballDefault: currentDefault}))
+            dispatch(setIsOwned({idx, ball: ballname, ballDefault: defaultData}))
         } else if (key === 'isHA') {
             dispatch(setCollectionIsHA({idx, ball: ballname, listType: 'collection'}))
         } else if (key === 'emCount') {
@@ -54,7 +55,7 @@ function TableRowGrouping({columns, row, id, collectionId, ownerId, styles, isSe
                 usePutRequest('EMs', [], {pokename, ballname}, 'collection', collectionID, ownerID)
             }
         }
-        usePutRequest(key, newValue, {pokename, ballname}, 'collection', collectionID, ownerID, defaultData === 'none' ? undefined : defaultData)
+        usePutRequest(key, newValue, {pokename, ballname}, 'collection', collectionID, ownerID, defaultData)
     }
 
     const blackTableCellStyles = { //for illegal ball combos

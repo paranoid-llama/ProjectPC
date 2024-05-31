@@ -7,15 +7,20 @@ import ControlledTextInput from '../../../../functionalcomponents/controlledtext
 import TradePreferencesSelection from './tradepreferencesselection';
 import RateSelection from '../aprimon/rateselection';
 import SortingSelection from '../aprimon/sortingselection';
+import MiscSelection from '../aprimon/miscselection';
 import Header from '../../../../titlecomponents/subcomponents/header';
 import { getPossibleItems, apriballLiterals, getBallsInGen } from '../../../../../../../common/infoconstants/miscconstants.mjs';
 
 export default function OptionSelection({collectionType, formOptionsData, collectionGen, goBackStep, cssClass, customSort, handleChange}) {
-    const optionTabs = ['preferences', 'rates', 'sorting']
+    const optionTabs = ['preferences', 'rates', 'sorting', 'misc']
     const [optionTab, setOptionTab] = useState(optionTabs[0])
     const collectionNameRef = useRef(null)
     const [optionsFormData, setOptionsFormData] = useState(formOptionsData !== undefined ? formOptionsData : {
         collectionName: '',
+        globalDefaults: {
+            isHA: true,
+            emCount: 0
+        },
         tradePreferences: {
             status: 'open',
             size: 'any',
@@ -62,6 +67,10 @@ export default function OptionSelection({collectionType, formOptionsData, collec
         setOptionsFormData({...optionsFormData, sorting: {...optionsFormData.sorting, customSort, ...includeHoldPokemon}})
     }
 
+    const handleGlobalDefaultChange = (field, newValue) => {
+        setOptionsFormData({...optionsFormData, globalDefaults: {...optionsFormData.globalDefaults, [field]: newValue}})
+    }
+
     const sortMechanismTooltip = 'The sorting mechanisms applied to the two lists when content is added or removed. Enable it to have the sorting mechanism apply every time content changes.'
 
     return (
@@ -95,6 +104,7 @@ export default function OptionSelection({collectionType, formOptionsData, collec
                         <Tab value='preferences' label='Preferences'/>
                         <Tab value='rates' label='Rates'/>
                         <Tab value='sorting' label='Sorting'/>
+                        <Tab value='misc' label='Miscellaneous'/>
                     </Tabs>
                 </Box>
                 <Box sx={{width: '100%', height: '70%', mt: 1}}>
@@ -120,6 +130,12 @@ export default function OptionSelection({collectionType, formOptionsData, collec
                             handleCustomSortChange={handleCustomSortChange}
                             tentativeBallOrder={tentativeBallOrder}
                             holdPokemon={optionsFormData.sorting.holdPokemon}
+                        />
+                    }
+                    {optionTab === 'misc' && 
+                        <MiscSelection
+                            globalDefaultData={optionsFormData.globalDefaults}
+                            handleChange={handleGlobalDefaultChange}
                         />
                     }
                 </Box>

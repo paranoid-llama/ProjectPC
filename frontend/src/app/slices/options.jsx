@@ -2,7 +2,7 @@ import {createSlice} from '@reduxjs/toolkit'
 
 const options = createSlice({
     name: 'options',
-    initialState: {collectingBalls: [], sorting: {}, tradePreferences: {status: 'closed', size: 'any', onhandOnly: 'no', items: 'none', rates: {pokemonOffers: [], itemOffers: []}, lfItems: [], ftItems: {}}},
+    initialState: {collectingBalls: [], globalDefaults: {}, sorting: {}, tradePreferences: {status: 'closed', size: 'any', onhandOnly: 'no', items: 'none', rates: {pokemonOffers: [], itemOffers: []}, lfItems: [], ftItems: {}}},
     reducers: {
         setOptionsInitialState: (state, action) => {
             const initialState = action.payload
@@ -44,12 +44,20 @@ const options = createSlice({
             return state
         },
         setNameState: (state, action) => {
-            state.collectionName = action.payload
+            const {name, globalDefault} = action.payload
+            if (globalDefault !== undefined) {
+                state.globalDefaults = globalDefault
+            }
+            state.collectionName = name
+            return state
+        },
+        setGlobalDefaultState: (state, action) => {
+            state.globalDefaults = action.payload
             return state
         }
     }
 })
 
-export const {setOptionsInitialState, setRate, setBallScope, setSortingOptionsState, setTradePreferencesState, setItemState, setNameState} = options.actions
+export const {setOptionsInitialState, setRate, setBallScope, setSortingOptionsState, setTradePreferencesState, setItemState, setNameState, setGlobalDefaultState} = options.actions
 
 export default options

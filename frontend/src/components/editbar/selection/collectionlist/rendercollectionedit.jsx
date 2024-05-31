@@ -37,6 +37,7 @@ function RenderCollectionEdit({collectionId, ownerId, pokemon, ballInfo, selecte
     const emCountSelectionList = setMaxEmArr(maxEMs) 
 
     //default logic used for isOwned state and setDefault state
+    const globalDefault = useSelector((state) => state.options.globalDefaults)
     const checkDefault = Object.keys(ballInfo)[Object.values(ballInfo).map((b) => b.default !== undefined).indexOf(true)]
     const currentDefault = checkDefault === undefined ? 'none' : checkDefault
     
@@ -63,9 +64,9 @@ function RenderCollectionEdit({collectionId, ownerId, pokemon, ballInfo, selecte
 
     const handleIsOwnedChange = (event) => {
         const newValue = event.target.checked
-        const defaultData = getDefaultData('none', currentDefault, pokemon.balls, maxEMs, possibleEggMoves)
-        dispatch(setIsOwned({idx: selectedIdx, ball: renderedBall, ballDefault: currentDefault}))
-        usePutRequest('isOwned', newValue, {pokename: pokemon.name, ballname: renderedBall}, 'collection', collectionId, ownerId, defaultData === 'none' ? undefined : defaultData)
+        const defaultData = getDefaultData(globalDefault, currentDefault, pokemon.balls, maxEMs, possibleEggMoves)
+        dispatch(setIsOwned({idx: selectedIdx, ball: renderedBall, ballDefault: defaultData}))
+        usePutRequest('isOwned', newValue, {pokename: pokemon.name, ballname: renderedBall}, 'collection', collectionId, ownerId, defaultData)
     }
     const handleIsHAChange = (event) => {
         const newValue = event.target.value === 'true' // event.target.value comes out as a string instead of boolean

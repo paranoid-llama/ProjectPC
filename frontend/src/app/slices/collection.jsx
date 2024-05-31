@@ -18,13 +18,10 @@ const collection = createSlice({
             const {idx, ball, ballDefault} = action.payload
             const isOwned = state[idx].balls[ball].isOwned
             const activeTag = state[idx].balls[ball].highlyWanted !== undefined ? 'highlyWanted' : state[idx].balls[ball].pending !== undefined ? 'pending' : 'none'
-            if (isOwned === false && ballDefault !== 'none') {
-                if (state[idx].balls[ball].isHA !== undefined) {
-                    state[idx].balls[ball].isHA = state[idx].balls[ballDefault].isHA
-                }
-                if (state[idx].balls[ball].EMs !== undefined) {
-                    state[idx].balls[ball].EMs = state[idx].balls[ballDefault].EMs
-                    state[idx].balls[ball].emCount = state[idx].balls[ballDefault].emCount
+            if (isOwned === false) {
+                const changedFields = Object.keys(ballDefault)
+                for (let field of changedFields) {
+                    state[idx].balls[ball][field] = ballDefault[field]
                 }
             }
             if (isOwned === false && activeTag !== 'none') {
