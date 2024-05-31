@@ -1,4 +1,4 @@
-import { genGames } from "../../infoconstants.js"
+import { genGames } from "../../../common/infoconstants/miscconstants.mjs"
 
 const getGenNum = (genStr) => {
     const isGameGenStr = isNaN(parseInt(genStr))

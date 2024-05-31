@@ -7,7 +7,7 @@ import { setListInitialState } from '../../../../app/slices/listdisplay'
 import { changeModalState } from '../../../../app/slices/editmode'
 import { setSortingOptionsState } from '../../../../app/slices/options'
 import { backendChangeOptions } from '../../../../../utils/functions/backendrequests/collectionoptionsedit'
-import { sortList } from '../../../../../utils/functions/sortfilterfunctions/sortingfunctions'
+import { sortList } from '../../../../../../common/sortingfunctions/customsorting.mjs'
 import SaveChangesConfirmModal from '../savechangesconfirmmodal'
 
 export default function CollectionSortingOptions({elementBg, collectionGen, collectionId}) {

@@ -14,8 +14,8 @@ import OptionSelection from "../components/collectioncreation/stepcomponents/opt
 import ReviewFinalizeBase from "../components/collectioncreation/stepcomponents/finalize/shared/reviewfinalizebase";
 import { selectAdjArrItem, capitalizeFirstLetter } from "../../utils/functions/misc";
 import { getPokemonGroups } from "../../utils/functions/backendrequests/getpokemongroups";
-import { ballIntros, apriballs, genGames } from "../infoconstants";
-import { sortByDexNum, customSortCollectionListLogic } from "../../utils/functions/sortfilterfunctions/sortingfunctions";
+import { ballIntros, apriballs, genGames } from "../../../common/infoconstants/miscconstants.mjs";
+import { customSortCollectionListLogic } from "../../../common/sortingfunctions/customsorting.mjs";
 import { creationInitializeScopeFormData } from "../../utils/functions/scope/statechanges";
 import { getOneArrData } from "../../utils/functions/scope/getonearrdata";
 import './newCollection.css'

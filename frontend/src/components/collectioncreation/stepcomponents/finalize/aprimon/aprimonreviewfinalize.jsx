@@ -1,5 +1,6 @@
 import {Box, Typography, Grid} from '@mui/material'
-import { pokemonGroups, items } from '../../../../../infoconstants'
+import { pokemonGroups } from '../../../../../../../common/infoconstants/pokemonconstants.mjs'
+import { items } from '../../../../../../../common/infoconstants/miscconstants.mjs'
 import ImgData from '../../../../collectiontable/tabledata/imgdata'
 import { capitalizeFirstLetter } from '../../../../../../utils/functions/misc'
 

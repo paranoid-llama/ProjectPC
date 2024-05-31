@@ -1,4 +1,6 @@
-import {apriballLiterals, specialBalls, uniqueAlternateFormPokemon, uniqueRegionalFormPokemon, interchangeableAltFormMons, nonBreedableAltFormMons} from './../../infoconstants.js'
+// import { apriballLiterals, specialBalls } from '../../../common/infoconstants/miscconstants.js'
+import { apriballLiterals, specialBalls } from '../../../common/infoconstants/miscconstants.mjs'
+import { uniqueAlternateFormPokemon, uniqueRegionalFormPokemon } from '../../../common/infoconstants/pokemonconstants.mjs'
 
 //JSON.parse(JSON.stringify(ownedBallList)) ---- this makes a new ref for the owned ball list allowing changes in one alt form to not affect the other
 

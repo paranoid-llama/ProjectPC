@@ -1,8 +1,6 @@
 import allPokemon from './aprimonAPI/allpokemoninfo.js'
 import {handleAlternateForms, handleRegionalForms, handleIncenseAndBabyMons, setBallInfo, setOwnedBallList, removeBallsOutsideScope} from './CreateCollection/functions.js'
-import { customSortCollectionListLogic } from './CreateCollection/initialsort.js'
-import {interchangeableAltFormMons} from './../infoconstants.js'
-import { genGames, nonBreedableAltFormMons } from './../infoconstants.js'
+import { customSortCollectionListLogic } from '../../common/sortingfunctions/customsorting.mjs'
 import { getGenNum } from './infogathering/gens.js'
 import { getImgLink, getPossibleGender } from './schemavirtuals/collectionvirtuals.js'
 
@@ -167,7 +165,7 @@ class Collection {
         this.ownedPokemon = ((ownedPokemonList !== undefined && remakeList) || (ownedPokemonList === undefined)) ? setOwnedPokemonList(gen, pokemonScope, ballScope, excludedCombos, true, ownedPokemonList !== undefined ? ownedPokemonList : false)
                                 .flat()
                                 .filter(e => e !== undefined)
-                                // .sort((a, b) => customSortCollectionListLogic(a, b, customSort)) 
+                                // .sort((a, b) => customSortCollectionListLogic(a, b, customSort, true)) 
                                 : ownedPokemonList.map((mon) => {return {name: mon.name, natDexNum: mon.natDexNum, gen: mon.gen, balls: mon.balls}})
                                 // .sort((a, b) => a.natDexNum > b.natDexNum ? 1 : -1)
                                 // .sort((a, b) => {

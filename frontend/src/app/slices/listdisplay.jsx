@@ -1,7 +1,8 @@
 import {createSlice} from '@reduxjs/toolkit'
-import { sortList, sortOnHandList } from '../../../utils/functions/sortfilterfunctions/sortingfunctions'
+import { sortOnHandList } from '../../../../common/sortingfunctions/onhandsorting.mjs'
+import { sortList } from '../../../../common/sortingfunctions/customsorting.mjs'
 import { filterList } from '../../../utils/functions/sortfilterfunctions/filterfunctions'
-import { apriballs } from '../../infoconstants'
+import { apriballs } from '../../../../common/infoconstants/miscconstants.mjs'
 import { setSortingOptionsState } from './options'
 
 //this slice controls the display for the show list components (showonhandlist, showcollectionlist). 

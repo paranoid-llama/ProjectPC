@@ -1,4 +1,4 @@
-import { apriballLiterals } from "../../../src/infoconstants"
+import { apriballLiterals } from "../../../../common/infoconstants/miscconstants.mjs"
 
 const getPokemonChange = (individualPokeInfo, monAdded, currAddedPoke, currRemovedPoke, groupChanges=false, oldGroupFormData, newGroupFormData) => {
     //monAdded is if the mon was NOT selected when the user clicked, and is now selected. can be gathered from the onChange

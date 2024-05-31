@@ -1,6 +1,6 @@
 import {Box, Typography, Grid, Tabs, Tab} from '@mui/material'
 import { useState } from 'react'
-import { getPossibleItems } from '../../infoconstants'
+import { getPossibleItems } from '../../../../common/infoconstants/miscconstants.mjs'
 import ImgData from '../collectiontable/tabledata/imgdata'
 
 export default function ItemDisplay({collectionGen, itemTradeStatus, lfItems, ftItems}) {

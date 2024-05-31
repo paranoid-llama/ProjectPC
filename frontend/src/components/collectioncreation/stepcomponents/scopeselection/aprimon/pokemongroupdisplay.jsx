@@ -1,6 +1,6 @@
 import { forwardRef } from 'react';
 import {Box, Typography, Grid, Paper, styled, Tooltip} from '@mui/material'
-import { apriballLiterals } from '../../../../../infoconstants';
+import { apriballLiterals } from '../../../../../../../common/infoconstants/miscconstants.mjs';
 import MuiToggleButton from '@mui/material/ToggleButton'
 import ImgData from '../../../../collectiontable/tabledata/imgdata';
 import { Virtuoso, VirtuosoGrid } from 'react-virtuoso';

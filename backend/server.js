@@ -7,7 +7,8 @@ import {formatImportQuery, setEMQueries, formatImportedValues, setCollection, de
 import { getPokemonGroups } from './utils/pokemongroups/getpokemongroups.js';
 import { getIndividualPokemonInfo } from './utils/createCollection.js';
 import { getPossibleEggMoves, getCollectionProgress } from './utils/schemavirtuals/collectionvirtuals.js';
-import { sortOnHandList, sortList } from '../frontend/utils/functions/sortfilterfunctions/sortingfunctions.js';
+import { sortOnHandList } from '../common/sortingfunctions/onhandsorting.mjs';
+import { sortList } from '../common/sortingfunctions/customsorting.mjs';
 // require('dotenv').config()
 import dotenv from 'dotenv'
 import lton from 'letter-to-number'

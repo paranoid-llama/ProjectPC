@@ -1,4 +1,4 @@
-import { sortByDexNum } from "../sortfilterfunctions/sortingfunctions";
+import { sortByDexNum } from "../../../../common/sortingfunctions/sortbydexnum.mjs";
 
 //aggregates all pokemongroup data into one array and assigns group and subgroup keys to each pokemon. used for mass changes to particular pokemon (such
 //as changing ball scope) which requires their group/subgroup data to change the form data.

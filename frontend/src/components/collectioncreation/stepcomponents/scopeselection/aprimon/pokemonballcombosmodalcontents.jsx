@@ -7,7 +7,7 @@ import Header from '../../../../titlecomponents/subcomponents/header'
 import SpeciesSelect from '../../../../editbar/editsectioncomponents/onhandeditonly/modalcomponents/speciesselect'
 import ImgData from '../../../../collectiontable/tabledata/imgdata'
 import Selection from '../../../../collectiontable/selection'
-import { apriballLiterals } from '../../../../../infoconstants'
+import { apriballLiterals } from '../../../../../../../common/infoconstants/miscconstants.mjs'
 import { capitalizeFirstLetter } from '../../../../../../utils/functions/misc'
 
 export default function PokemonBallCombosModalContents({elementBg, selectedMon, totalList, ballComboData, pokemonScopeData, ballScope, changePokemonSelection, allPossibleBalls, handleChange, changingScope=false, changeScopeSave, saveErrorNoticeShow}) {

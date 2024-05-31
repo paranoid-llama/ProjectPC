@@ -1,3 +1,5 @@
+import { multipleDexNumAndSpaceHavingPokemon } from "../infoconstants/pokemonconstants.mjs"
+
 const sortByDexNumLogic = (a, b, order) => {
     if (order === 'NatDexNumL2H') {
         if (a.natDexNum > b.natDexNum) {
@@ -42,3 +44,5 @@ const sortByDexNum = (order='NatDexNumL2H', list) => {
     const sortedList = list.slice().sort((a, b) => sortByDexNumLogic(a, b, order))
     return sortedList
 }
+
+export {sortByDexNum, sortByDexNumLogic}

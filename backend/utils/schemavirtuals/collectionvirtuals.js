@@ -1,5 +1,5 @@
 import {handleGen8EMs, handleDifferentFormEMs, selectPokemonInfo} from './infoandotherfuncs.js'
-import {incenseBabiesWithExclusiveEMs, incenseAdultsWithExclusiveEMs, altFormMonsWithExclusiveEMs, regionalFormRegions, pokemonNamesWithSpaces} from './../../infoconstants.js'
+import { incenseBabiesWithExclusiveEMs, incenseAdultsWithExclusiveEMs, altFormMonsWithExclusiveEMs, pokemonNamesWithSpaces, regionalFormRegions } from '../../../common/infoconstants/pokemonconstants.mjs'
 
 function getImgLink(p) {
     if (p.name) {

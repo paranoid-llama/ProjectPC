@@ -3,7 +3,7 @@ import OnHandSortSettingsModal from './onhandsortsettingsmodal'
 import CustomSortModal from './customsortmodal'
 import SpeciesSelect from '../../../../editbar/editsectioncomponents/onhandeditonly/modalcomponents/speciesselect'
 import ImgData from '../../../../collectiontable/tabledata/imgdata'
-import { sortList } from '../../../../../../utils/functions/sortfilterfunctions/sortingfunctions'
+import { sortList } from '../../../../../../../common/sortingfunctions/customsorting.mjs'
 import { useState, forwardRef } from 'react'
 
 export default function SortingSelection({sortData, handleChange, handleCustomSortChange, totalBalls, tentativeBallOrder, holdPokemon}) {

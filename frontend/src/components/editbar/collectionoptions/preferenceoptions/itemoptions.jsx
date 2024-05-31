@@ -3,7 +3,7 @@ import { AlertsContext } from "../../../../alerts/alerts-context";
 import { useDispatch, useSelector } from "react-redux";
 import { changeModalState } from "../../../../app/slices/editmode";
 import { setItemState } from "../../../../app/slices/options";
-import { getPossibleItems } from "../../../../infoconstants";
+import { getPossibleItems } from "../../../../../../common/infoconstants/miscconstants.mjs";
 import { backendChangeOptions } from "../../../../../utils/functions/backendrequests/collectionoptionsedit";
 import ItemSelectionModalContents from "../../../collectioncreation/stepcomponents/optionsselection/aprimon/itemselectionmodalcontents";
 import SaveChangesConfirmModal from "../savechangesconfirmmodal";

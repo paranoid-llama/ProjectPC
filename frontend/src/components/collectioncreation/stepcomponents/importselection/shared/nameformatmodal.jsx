@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {Modal, Box, Typography, Fade, Backdrop, Tooltip, TableRow, TableCell, TableHead, TableBody, TableContainer, Paper, Table, Button} from '@mui/material'
 import HelpIcon from '@mui/icons-material/Help';
-import { aprimonGeneralIdentifiers, aprimonSpecificIdentifiers, aprimonAsideInfo } from '../../../../../importinfoconstants'
+import { aprimonGeneralIdentifiers, aprimonSpecificIdentifiers, aprimonAsideInfo } from '../../../../../../../common/infoconstants/importconstants.mjs';
 import { TableVirtuoso } from 'react-virtuoso'
 import ImgData from '../../../../collectiontable/tabledata/imgdata';
 import modalStyles from '../../../../../../utils/styles/componentstyles/modalstyles'

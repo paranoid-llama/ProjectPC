@@ -1,13 +1,6 @@
-import
-    {gapIdentifiers, 
-    regions, 
-    regionalFormNameIdentifiers, 
-    regionalFormMons, multipleRegionalFormMons,
-    originalRegionalFormNameIdentifiers, additionalOriginRegionalFormNameIdentifiers,
-    firstLetterAllowedAltForms, 
-    allAltFormMons, interchangeableAltFormMons, nonBreedableAltFormMons, nonBreedableAltRegIdentifiers,
-    allowedAprimonMultipleDexNums, allowedAprimonDuplicateNum, apriballs}
-from '../../infoconstants.js'
+import { gapIdentifiers, regions, regionalFormNameIdentifiers, originalRegionalFormNameIdentifiers, additionalOriginRegionalFormNameIdentifiers, firstLetterAllowedAltForms, allowedAprimonMultipleDexNums, allowedAprimonDuplicateNum} from '../../../common/infoconstants/importconstants.mjs'
+import { apriballs } from '../../../common/infoconstants/miscconstants.mjs'
+import { regionalFormMons, multipleRegionalFormMons, allAltFormMons, interchangeableAltFormMons, nonBreedableAltFormMons, nonBreedableAltRegIdentifiers } from '../../../common/infoconstants/pokemonconstants.mjs'
 import {setOwnedPokemonList} from './../createCollection.js'
 import allPokemon from '../aprimonAPI/allpokemoninfo.js'
 import rgbHex from 'rgb-hex'

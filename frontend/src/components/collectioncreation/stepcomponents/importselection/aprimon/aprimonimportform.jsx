@@ -6,11 +6,11 @@ import Tooltip, {tooltipClasses} from '@mui/material/Tooltip'
 import HelpIcon from '@mui/icons-material/Help';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { useState, useRef, useEffect } from 'react'
-import { apriballs } from '../../../../../infoconstants';
+import { apriballs } from '../../../../../../../common/infoconstants/miscconstants.mjs';
 import AprimonImportNotice from './aprimonimportnotice'
 import ColorSelection from './colorselection';
 import ImgData from '../../../../collectiontable/tabledata/imgdata'
-import { aprimonImportFormTemplate } from '../../../../../importinfoconstants'
+import { aprimonImportFormTemplate } from '../../../../../../../common/infoconstants/importconstants.mjs';
 
 import { useDebouncedCallback } from 'use-debounce';
 import './aprimonimportform.css'
