@@ -14,7 +14,7 @@ import SaveChangesConfirmModal from '../savechangesconfirmmodal'
 export default function OnHandSortingOptions({elementBg, collectionGen, collectionId}) {
     const dispatch = useDispatch()
     const totalBalls = getBallsInGen(collectionGen)
-    const currentOptions = useSelector((state) => state.options.sortingOptions.onhand)
+    const currentOptions = useSelector((state) => state.options.sorting.onhand)
     const onhandListState = useSelector((state) => state.onhand)
 
     const buttonStyles = {

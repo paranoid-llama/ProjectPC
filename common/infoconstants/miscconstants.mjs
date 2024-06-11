@@ -56,7 +56,7 @@ const collectionTypes = ['aprimon'] //haven't set up app for living dex collecti
 const collectionDescription = ['Collect pokemon in apricorn/rare pokeballs!', "Collect every pokemon. Gotta catch 'em all!"]
 
 const collectionSubTypes = {
-    aprimon: {display: ['Gen 6', 'Gen 7', 'SW/SH', 'BD/SP', 'Gen 9', 'HOME'], value: [6, 7, 'swsh', 'bdsp', 9, 'HOME']},
+    aprimon: {display: ['Gen 6', 'Gen 7', 'SW/SH', 'BD/SP', 'Gen 9', 'HOME'], value: [6, 7, 'swsh', 'bdsp', 9, 'home']},
     ['living dex']: ['Regular', 'Shiny', 'Alternate Forms']
 }
 
@@ -116,6 +116,24 @@ const tradePreferenceDisplay = {
 }
 
 const gamesOrder = ['sword', 'shield', 'home',  'letsgopikachu', 'letsgoeevee', 'brilliantdiamond', 'shiningpearl', 'legendsarceus', 'scarlet', 'violet']
+//most games aren't compatible with home on first release. This just keeps track of it, as well as if any games somehow lose home compatibility.
+//mainly used for determining which gens can trade with home collections
+const homeCompatibleGames = [
+    {game: 'sword', compatible: true}, {game: 'shield', compatible: true}, {game: 'letsgopikachu', compatible: true}, {game: 'letsgoeevee', compatible: true},
+    {game: 'brilliantdiamond', compatible: true}, {game: 'shiningpearl', compatible: true}, {game: 'legendsarceus', compatible: true}, {game: 'scarlet', compatible: true}, {game: 'violet', compatible: true},
+    //below parts are dupes but they're used for backend operations related to home collection generation
+    {game: 7, compatible: true}, {game: 'swsh', compatible: true}, {game: 'bdsp', compatible: true}, {game: 9, compatible: true}
+]
+
+const noRegionalFormGens = [6, 'bdsp']
+const homeDisplayGames = ['swsh', 'bdsp', 9]
+
+const getGameColor = (gameLetter) => { //for home-compatible games only
+    const color = gameLetter === 'SW' ? '#009fe8' : gameLetter === 'SH' ? '#e5015a' : 
+        gameLetter === 'BD' ? '#9ad4f6' : gameLetter === 'SP' ? '#e3d0df' : 
+        gameLetter === 'S' ? '#c33124' : gameLetter === 'V' && '#95398a'
+    return color
+}
 
 export {
     generations, genRomans, genGames, findGenByDexNum,
@@ -125,5 +143,5 @@ export {
     items, getPossibleItems,
     regionIdentifiers,
     tradePreferenceDisplay,
-    gamesOrder
+    gamesOrder, homeCompatibleGames, noRegionalFormGens, homeDisplayGames, getGameColor
 }

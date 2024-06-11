@@ -1,4 +1,6 @@
 import { getImgLink } from "../../backend/utils/schemavirtuals/collectionvirtuals.js"
+import { sortByName } from "./sortbyname.mjs"
+import { sortByDexNum } from "./sortbydexnum.mjs"
 
 const customSortCollectionListLogic = (a, b, customSortOrder, initializeImgLink=false) => {
     if (initializeImgLink) { //need to get Ids for when we custom sort the first time ever (on collection creation in backend)

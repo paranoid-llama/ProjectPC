@@ -4,8 +4,10 @@ import HelpIcon from '@mui/icons-material/Help';
 import ItemSelectionModal from '../aprimon/itemselectionmodal'
 import { useState } from 'react'
 
-export default function TradePreferencesSelection({formData, handleChange, totalItems}) {
+export default function TradePreferencesSelection({formData, handleChange, totalItems, collectionGen}) {
     const [itemSelectionModal, setItemSelectionModal] = useState({open: false, tab: 'lf', ftSelectedItem: 'none'})
+    const homeCollection = collectionGen === 'home'
+    const disabledItemSelectionStyles = homeCollection ? {filter: 'blur(10px)', pointerEvents: 'none'} : {}
 
     const toggleModal = () => {
         setItemSelectionModal({...itemSelectionModal, open: false})
@@ -63,7 +65,7 @@ export default function TradePreferencesSelection({formData, handleChange, total
         <Box sx={{width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
             <Typography variant='h6' sx={{fontSize: '16px', fontWeight: 700, mt: 1}}>Trade Preferences</Typography>
             <Typography sx={{fontSize: '12px'}}>Select your preferences for trade offers</Typography>
-            <Box sx={{width: '90%', height: '90%', display: 'flex', flexDirection: 'row', mt: 1}}>
+            <Box sx={{width: '90%', height: '90%', display: 'flex', flexDirection: 'row', mt: 1, position: 'relative'}}>
                 <Box sx={{width: '50%', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'start', alignItems: 'center'}}>
                     <Typography sx={{fontSize: '14px', fontWeight: 700}}>Trade Status:</Typography>
                     <Box sx={{width: '100%', height: '10%', display: 'flex', justifyContent: 'center', gap: 4}}>
@@ -120,8 +122,9 @@ export default function TradePreferencesSelection({formData, handleChange, total
                         </ToggleButton>
                     </Box>
                 </Box>
-                <Box sx={{width: '50%', height: '100%', display: 'flex', flexDirection: 'column'}}>
-                    <Box sx={{width: '100%', height: '20%', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+                <Box sx={{width: '50%', height: '100%', display: 'flex', flexDirection: 'column', position: 'relative'}}>
+                {homeCollection && <Typography sx={{position: 'absolute', top: '45%', right: '25%', fontWeight: 700, width: '50%'}}>Item trading disabled for <br></br> HOME Collections</Typography>}
+                    <Box sx={{width: '100%', height: '20%', display: 'flex', flexDirection: 'column', alignItems: 'center', ...disabledItemSelectionStyles}}>
                         <Typography sx={{fontSize: '14px', fontWeight: 700, mt: 1}}>Item Trading:</Typography>
                         <Select 
                             value={formData.items}
@@ -134,7 +137,7 @@ export default function TradePreferencesSelection({formData, handleChange, total
                             <MenuItem value='lf/ft'>I'm looking for items and have items to offer</MenuItem>
                         </Select>
                     </Box>
-                    <Box sx={{width: '100%', height: '80%', display: 'flex', flexDirection: 'column', alignItems: 'center', ...disabledItemTabStyles}}>
+                    <Box sx={{width: '100%', height: '80%', display: 'flex', flexDirection: 'column', alignItems: 'center', ...disabledItemTabStyles, ...disabledItemSelectionStyles}}>
                         <Box sx={{width: '100%', height: '80%', mt: 2}}>
                             <Box sx={{height: '50%', weight: '100%',  display: 'flex', flexDirection: 'column', alignItems: 'center', ...disabledLfItemsStyles}}>
                                 <Typography sx={{fontSize: '12px', mt: 1}}>Select which items you're looking for</Typography>

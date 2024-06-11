@@ -10,12 +10,12 @@ import theme from '../utils/styles/globalstyles/theme.jsx'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <ThemeProvider theme={theme}>
-      <AlertsProvider>
+    {/* <ThemeProvider theme={theme}>
+      <AlertsProvider> */}
         {/* <Provider store={store}> */}
           <App />
         {/* </Provider> */}
-      </AlertsProvider>
-    </ThemeProvider>
+      {/* </AlertsProvider>
+    </ThemeProvider> */}
   </React.StrictMode>
 )

@@ -19,7 +19,8 @@ export default function OptionsSub({elementBg, screenType, collectionGen}) {
 
     const generateButtons = () => {
         return buttons.map((button) => {
-            const disableButton = button.screen === 'items' && itemsState === 'none'
+            const disableButton = button.screen === 'items' && itemsState === 'none' && !(collectionGen === 'home')
+            const disableButtonBecauseHomeCollection = collectionGen === 'home' && button.screen === 'items'
             const initializeScopeTotal = (button.screen === 'pokemonScope' || button.screen === 'ballScope' || button.screen === 'excludedCombos')
             const onClickFunc = isPending ? null : initializeScopeTotal ? () => initializePokemonGroups(button.screen) : () => dispatch(changeModalState({screen: button.screen}))
             return (
@@ -27,13 +28,13 @@ export default function OptionsSub({elementBg, screenType, collectionGen}) {
                     size='large'
                     sx={{color: 'white', fontSize: '24px', fontWeight: 700, position: 'relative', '&.Mui-disabled': {opacity: 0.3, color: 'white'}}}
                     key={`change-${button.display}`}
-                    disabled={disableButton}
+                    disabled={(disableButton || disableButtonBecauseHomeCollection)}
                     onClick={onClickFunc}
                 >
                     {button.display}
-                    {disableButton && 
+                    {(disableButton || disableButtonBecauseHomeCollection) && 
                         <Typography sx={{position: 'absolute', fontSize: '12px', textTransform: 'none', top: '95%', width: '140px'}}>
-                            Item Trading is disabled. Re-enable it in Preferences.
+                            {disableButton ? 'Item Trading is disabled. Re-enable it in Preferences.' : 'Item Trading is disabled in HOME collections.'}
                         </Typography>
                     }
                 </Button>

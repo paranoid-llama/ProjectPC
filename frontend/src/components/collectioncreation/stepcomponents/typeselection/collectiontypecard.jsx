@@ -5,7 +5,7 @@ import { collectionDescription } from '../../../../../../common/infoconstants/mi
 import { useState } from 'react'
 import './collectiontypeselection.css'
 
-export default function CollectionTypeCard({collectionType, idx, subTypes, subTypeValues, handleSubTypeScreen, slideClass, handleChange}) {
+export default function CollectionTypeCard({collectionType, idx, subTypes, subTypeValues, handleSubTypeScreen, slideClass, userData, handleChange}) {
     
     const displayName = collectionType === 'living dex' ? 'Living Dex' : capitalizeFirstLetter(collectionType)
     const description = collectionDescription[idx]
@@ -64,10 +64,13 @@ export default function CollectionTypeCard({collectionType, idx, subTypes, subTy
                     const backgroundColor = evenIdx ? '#94918f' : '#545250'
                     const color = evenIdx ? 'black' : 'white'
                     const height = `${85/subTypes.length}%`
+                    const adjustedSubType = subType.includes('Gen') ? subType.slice(4, subType.length) : subType.includes('/') ? subType.replace('/', '').toLowerCase() : subType.toLowerCase()
+                    const disabledSelection = userData.collections.filter(col => col.gen === adjustedSubType).length !== 0
                     return (
                         <Box sx={{width: '100%', backgroundColor, height, maxHeight: '50px', display: 'flex', alignItems: 'center'}} key={`${collectionType}-subtype-${subType}-selection`}>
                             <Button 
                                 sx={{width: '100%', height: '100%', color}}
+                                disabled={disabledSelection}
                                 onClick={(e) => handleChange(e, collectionType, subType, subTypeValues[idx])}
                             >
                                 {subType}

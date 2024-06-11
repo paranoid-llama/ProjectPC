@@ -2,7 +2,7 @@ import {Box, FormLabel, ToggleButtonGroup, styled, Grid, Typography} from '@mui/
 import MuiToggleButton from '@mui/material/ToggleButton'
 import RenderEggMoves from './rendereggmoves'
 
-export default function EggMoveSelectionForm({noEMs, EMs, emCount, handleEmCountChange, toggleScreen, maxEms=4, idxOfSelectedEM, handleEMChange, disabled, width='40%', height='100%', color='black', newOnHandSelect=false, noInfoBgColor}) {
+export default function EggMoveSelectionForm({noEMs, EMs, emCount, handleEmCountChange, toggleScreen, maxEms=4, idxOfSelectedEM, handleEMChange, disabled, width='40%', height='100%', color='black', newOnHandSelect=false, noInfoBgColor, isHomeCollection}) {
 
     const disabledStyle = disabled ? {opacity: 0.5} : {}
 
@@ -21,7 +21,7 @@ export default function EggMoveSelectionForm({noEMs, EMs, emCount, handleEmCount
                     <Typography align='center' sx={{color, fontSize: '13px'}}>Egg Moves</Typography>
                 </Box> 
                 <Box sx={{height: '70%', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                    <Typography align='center' sx={{color, fontSize: '13px', opacity: 0.8}}>Egg Moves Unavailable</Typography>
+                    <Typography align='center' sx={{color, fontSize: isHomeCollection ? '11px' : '13px', opacity: 0.8}}>{isHomeCollection ? 'Disabled in HOME collections' : 'Egg Moves Unavailable'}</Typography>
                 </Box>
             </> :
             <>

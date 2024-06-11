@@ -9,7 +9,7 @@ import { backendChangeOptions } from '../../../../utils/functions/backendrequest
 import ControlledTextInput from '../../functionalcomponents/controlledtextinput'
 import SaveChangesConfirmModal from './savechangesconfirmmodal'
 
-export default function OtherOptions({elementBg, collectionId, collectionType}) {
+export default function OtherOptions({elementBg, collectionId, collectionGen, collectionType, owner}) {
     const dispatch = useDispatch()
     const collectionNameState = useSelector((state) => state.options.collectionName)
     const globalDefaultInit = useSelector((state) => state.options.globalDefaults)
@@ -114,6 +114,9 @@ export default function OtherOptions({elementBg, collectionId, collectionType}) 
         }
     }
 
+    const isHomeCollection = collectionGen === 'home'
+    const disabledEMSelection = isHomeCollection ? {filter: 'blur(10px)', pointerEvents: 'none'} : {}
+
     return (
         <>
         <Box sx={{...elementBg, width: '95%', height: '35px', display: 'flex', alignItems: 'center', mb: 1}}>
@@ -130,7 +133,7 @@ export default function OtherOptions({elementBg, collectionId, collectionType}) 
                         FormHelperTextProps: {
                             sx: {fontSize: '10px', height: 2, color: 'white'}
                         },
-                        helperText: `If empty: 'twentyfourcharacteryesno's ${collectionType}'`,
+                        helperText: `If empty: '${owner}'s ${collectionType}'`,
                         inputRef:  collectionNameRef
                     }}
                     textFieldStyles={{
@@ -161,8 +164,9 @@ export default function OtherOptions({elementBg, collectionId, collectionType}) 
                         </Box>
                     </Box>
                     <Box sx={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', width: '50%', height: '100%', position: 'relative'}}>
-                        <Typography sx={{fontSize: '14px', mb: 1, fontWeight: 700}}>Egg Move Count</Typography>
-                        <Box sx={{display: 'flex', flexDirection: 'row', justifyContent: 'center'}}>
+                    {isHomeCollection && <Typography sx={{position: 'absolute', fontSize: '12px', top: '25%', right: '20%', fontWeight: 700, width: '70%', height: '50%', textAlign: 'center'}}>Egg Moves are disabled in <br></br>HOME collections</Typography>}
+                        <Typography sx={{fontSize: '14px', mb: 1, fontWeight: 700, ...disabledEMSelection}}>Egg Move Count</Typography>
+                        <Box sx={{display: 'flex', flexDirection: 'row', justifyContent: 'center', ...disabledEMSelection}}>
                             {Array.from(Array(5).keys()).map((emCount, idx) => {
                                 return (
                                     <ToggleButton sx={{fontSize: '12px', mx: 0.5, ...buttonStyles}} value={emCount} selected={otherOptions.globalDefaults.emCount === emCount} onChange={(e, newVal) => changeGlobalDefault('emCount', newVal)} key={`global-default-emCount-${emCount}`}>

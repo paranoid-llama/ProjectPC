@@ -1,5 +1,5 @@
 // import { apriballLiterals, specialBalls } from '../../../common/infoconstants/miscconstants.js'
-import { apriballLiterals, specialBalls } from '../../../common/infoconstants/miscconstants.mjs'
+import { apriballLiterals, specialBalls, homeCompatibleGames, genGames } from '../../../common/infoconstants/miscconstants.mjs'
 import { uniqueAlternateFormPokemon, uniqueRegionalFormPokemon } from '../../../common/infoconstants/pokemonconstants.mjs'
 
 //JSON.parse(JSON.stringify(ownedBallList)) ---- this makes a new ref for the owned ball list allowing changes in one alt form to not affect the other
@@ -93,7 +93,7 @@ function handleRegionalForms(pokemonInfo, ownedBallList, pokename, gen, multiple
         regionalForms.forEach((regionF) => {
             const formName = regionF.name + " " + capitalizeFirstLetter(pokename)
             const balls = setType ? {} : {balls: JSON.parse(JSON.stringify(ownedBallList))}
-            const isInGen = gen >= regionF.gen
+            const isInGen = gen === 'home' ? homeCompatibleGames.filter(gameData => getBallPath(pokemonInfo, gen, '', '', false, true) === gameData.game && gameData.compatible).length !== 0 : gen >= regionF.gen
             const includePokemon = ((importing || setType) && isInGen) ? true : (isInGen && regionalFormScope.filter(mon => mon.name === formName).length !== 0)
             if (includePokemon) {
                 copyOfArr.push(
@@ -114,9 +114,10 @@ function handleRegionalForms(pokemonInfo, ownedBallList, pokename, gen, multiple
     return copyOfArr
 }
 
-function setBallInfo(pokemon, genKey, ballLegality) {
+function setBallInfo(pokemon, genKey, ballLegality, isHomeCollection=false) {
     const hasHAAndIsLegal = pokemon.info.HA.hasHA && (ballLegality.haIsLegal === true)
-    const hasEMs = pokemon.specificGenInfo[genKey].eggmoves ? true : false
+    // const hasEMs = isHomeCollection ? (getBallPath(pokemon, 'home', '', '', true).eggmoves ? true : false) : (pokemon.specificGenInfo[genKey].eggmoves ? true : false)
+    const hasEMs = isHomeCollection ? false : (pokemon.specificGenInfo[genKey].eggmoves ? true : false) //ems are disabled for home collections
     if (hasHAAndIsLegal === false && hasEMs === false) {
         return {isOwned: false}
     } else if (hasHAAndIsLegal === true && hasEMs === false) {
@@ -125,6 +126,33 @@ function setBallInfo(pokemon, genKey, ballLegality) {
         return {isOwned: false, emCount: 0, EMs: []}
     } else {
         return {isOwned: false, isHA: false, emCount: 0, EMs: []}
+    }
+}
+
+function getBallPath(pokemon, gen, formattedGen, game, getPathWithEMs=false, getImportedGen=false) {
+    if (gen === 'home') {
+        const genInfos = Object.keys(pokemon.specificGenInfo)
+        const latestGen = pokemon.name === 'spinda' ? pokemon.specificGenInfo.gen7 : pokemon.specificGenInfo[genInfos[genInfos.length-1]]
+        // ^^ as of june 2024 spinda still cannot be transferred between bdsp/home, so there are actually more legal balls in gen 7 than there are in gen 8 for spinda.
+        //very likely this is a one off and we won't see another pokemon like this again, so we'll set it as the only exception
+        if (latestGen.balls.apriball === undefined) { //indicates its a gen with two games, such as gen 8 with SWSH and BDSP
+            const games = Object.keys(latestGen.balls)
+            const availableGamesToTakeLegality = games.filter(game => homeCompatibleGames.filter(hGame => hGame.game === game && hGame.compatible).length !== 0)
+            const latestCompatibleGameLegality = latestGen.balls[availableGamesToTakeLegality[availableGamesToTakeLegality.length-1]]
+            if (getImportedGen) {
+                return availableGamesToTakeLegality[availableGamesToTakeLegality.length-1]
+            }
+            return getPathWithEMs ? latestGen : latestCompatibleGameLegality
+        } else {
+            if (getImportedGen) {
+                return parseInt(pokemon.name === 'spinda' ? '7' : genInfos[genInfos.length-1].slice(3))
+            }
+            return getPathWithEMs ? latestGen : latestGen.balls
+        }
+    } else if (game !== "") {
+        return getPathWithEMs ? pokemon.specificGenInfo[formattedGen] : pokemon.specificGenInfo[formattedGen].balls[game]
+    } else {
+        return getPathWithEMs ? pokemon.specificGenInfo[formattedGen] : pokemon.specificGenInfo[formattedGen].balls
     }
 }
 
@@ -155,13 +183,13 @@ function handleIncenseAndBabyMons(pokemon) {
 }
 
 //this function returns an owned ball list based on legality
-function setOwnedBallList(genKey, ballLegality, fullPokemonInfo, onlyGettingLegalBalls=false) {
+function setOwnedBallList(genKey, ballLegality, fullPokemonInfo, onlyGettingLegalBalls=false, isHomeCollection=false) {
     const ownedBallList = {}
     const legalBalls = []
     if (ballLegality.apriball.isLegal === true) {
         apriballLiterals.forEach((b) => {
             
-            ownedBallList[b] = setBallInfo(fullPokemonInfo, genKey, ballLegality.apriball)
+            ownedBallList[b] = setBallInfo(fullPokemonInfo, genKey, ballLegality.apriball, isHomeCollection)
         })
         legalBalls.push('apriball')
     } 
@@ -170,7 +198,7 @@ function setOwnedBallList(genKey, ballLegality, fullPokemonInfo, onlyGettingLega
             null
         } else if (ballLegality[b].isLegal === true) {
             legalBalls.push(b)
-            ownedBallList[b] = setBallInfo(fullPokemonInfo, genKey, ballLegality[b])
+            ownedBallList[b] = setBallInfo(fullPokemonInfo, genKey, ballLegality[b], isHomeCollection)
         }
     })
     return onlyGettingLegalBalls ? legalBalls : ownedBallList
@@ -222,7 +250,7 @@ function handleBasculin(altForms, name, pokemonInfo, ownedBallList, gen, importi
         const balls = setType ? {} : {balls: JSON.parse(JSON.stringify(ownedBallList))}
         const formName = name + ' ' + `(${pokemonInfo.info.alternateForm.name[form]})`
         const whiteStriped = formName.includes('White-Striped')
-        const includeWhiteStriped = (whiteStriped && gen >= 9)
+        const includeWhiteStriped = (whiteStriped && (gen >= 9 || gen === 'home'))
         const includeMon = (importing || setType) ? true : breedableAltFormScope.filter(mon => mon.name === formName).length !== 0
         if (((whiteStriped && includeWhiteStriped) || (!whiteStriped)) && includeMon) {
             multiplePokemon.push(
@@ -400,7 +428,7 @@ function handlePaldeanTauros(regionalForms, name, pokemonInfo, ownedBallList, ge
     const importAltIdentifier = importing ? {originalPokemon: name} : {}
     const displayName = (setType || !importing) ? {} : {displayName: ''}
     regionalForms.forEach((regionF) => {
-        if (regionF.gen <= gen) {
+        if ((regionF.gen <= gen) || gen === 'home') {
             const formName1 = regionF.name + " " + capitalizeFirstLetter(name) //Paldean Tauros
             const formName2 = regionF.name + " " + capitalizeFirstLetter(name) + " " + `(${regionF.special[0]})` //Paldean Tauros (Blaze)
             const formName3 = regionF.name + " " + capitalizeFirstLetter(name) + " " + `(${regionF.special[1]})` //Paldean Tauros (Aqua)
@@ -453,4 +481,4 @@ function handlePaldeanTauros(regionalForms, name, pokemonInfo, ownedBallList, ge
 
 
 
-export {handleAlternateForms, handleRegionalForms, handleIncenseAndBabyMons, setBallInfo, setOwnedBallList, removeBallsOutsideScope}
+export {handleAlternateForms, handleRegionalForms, handleIncenseAndBabyMons, setBallInfo, getBallPath, setOwnedBallList, removeBallsOutsideScope}

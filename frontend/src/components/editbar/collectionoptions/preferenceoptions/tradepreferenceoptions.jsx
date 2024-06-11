@@ -9,7 +9,7 @@ import { setTradePreferencesState } from '../../../../app/slices/options'
 import { backendChangeOptions } from '../../../../../utils/functions/backendrequests/collectionoptionsedit'
 import SaveChangesConfirmModal from '../savechangesconfirmmodal'
 
-export default function TradePreferenceOptions({elementBg, collectionId}) {
+export default function TradePreferenceOptions({elementBg, collectionId, isHomeCollection}) {
     const dispatch = useDispatch()
     const preferencesInit = useSelector((state) => state.options.tradePreferences)
     const [preferences, setPreferences] = useState({pref: {...preferencesInit, rates: undefined}, saveChangesConfirmOpen: false})
@@ -96,6 +96,8 @@ export default function TradePreferenceOptions({elementBg, collectionId}) {
     const disabledStyles = preferences.pref.status === 'closed' ? {pointerEvents: 'none', opacity: 0.5} : {}
     const onHandOnlyTooltip = 'Indicates whether you want to only offer pokemon that you have on-hand, which are listed separately to everyone'
 
+    const disabledItemSelection = isHomeCollection ? {filter: 'blur(10px)', pointerEvents: 'none'} : {}
+
     return (
         <>
         <Box sx={{...elementBg, width: '95%', height: '35px', display: 'flex', alignItems: 'center', mb: 1}}>
@@ -166,12 +168,13 @@ export default function TradePreferenceOptions({elementBg, collectionId}) {
                     </ToggleButton>
                 </Box>
             </Box>
-            <Box sx={{width: '100%', height: '15%', display: 'flex', flexDirection: 'column', alignItems: 'center', ...disabledStyles}}>
-                <Typography sx={{fontSize: '14px', fontWeight: 700, mt: 0.5}}>Item Trading:</Typography>
+            <Box sx={{width: '100%', height: '15%', display: 'flex', flexDirection: 'column', alignItems: 'center', ...disabledStyles, position: 'relative'}}>
+            {isHomeCollection && <Typography sx={{position: 'absolute', fontSize: '12px', top: '25%', right: '25%', fontWeight: 700, width: '50%', height: '50%', textAlign: 'center'}}>Item trading is disabled in <br></br>HOME collections</Typography>}
+                <Typography sx={{fontSize: '14px', fontWeight: 700, mt: 0.5, ...disabledItemSelection}}>Item Trading:</Typography>
                 <Select 
                     value={preferences.pref.items}
                     onChange={(e, newValue) => handleChange('items', newValue)}
-                    sx={{width: '50%', height: '100%', '& .MuiSelect-select': {padding: 0.5, py: 1, color: 'white', border: '1px solid white'}}}
+                    sx={{width: '50%', height: '100%', ...disabledItemSelection, '& .MuiSelect-select': {padding: 0.5, py: 1, color: 'white', border: '1px solid white'}}}
                 >
                     <MenuItem value='none'>Not looking to trade items</MenuItem>
                     <MenuItem value='lf'>I'm looking for items</MenuItem>

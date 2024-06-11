@@ -30,10 +30,10 @@ import RenderOnHandEdit from './onhandlist/renderonhandedit'
             additionalStyles={{color: 'black', justifyContent: 'center', display: 'flex', height: '100%', zIndex: 999}}
         >
             {/* {onHandNoSelection ? <Box sx={{width: '81.5136%', display: 'flex', justifyContent: 'end'}}><NothingSelected listType={listType}/></Box> : */}
-            {noSelection ? <NothingSelected listType={listType}/> :
+            {noSelection ? <NothingSelected listType={listType} isHomeCollection={collection.gen === 'home'}/> :
             showEditScreen === false ? <ShowSelectionConfirm listType={listType} pokemon={pokemon}/> :
-            listType === 'collection' ? <RenderCollectionEdit collectionId={collection._id} ownerId={ownerID} pokemon={pokemon} ballInfo={pokemonBallInfo} allEggMoves={allEggMoves}/> :
-            listType === 'onHand' && <RenderOnHandEdit collectionId={collection._id} ownerId={ownerID} pokemon={pokemon} idxOfPokemon={idxOfPokemon} allEggMoves={allEggMoves}/>
+            listType === 'collection' ? <RenderCollectionEdit collectionId={collection._id} ownerId={ownerID} pokemon={pokemon} ballInfo={pokemonBallInfo} allEggMoves={allEggMoves} isHomeCollection={collection.gen === 'home'}/> :
+            listType === 'onHand' && <RenderOnHandEdit collectionId={collection._id} ownerId={ownerID} pokemon={pokemon} idxOfPokemon={idxOfPokemon} allEggMoves={allEggMoves} isHomeCollection={collection.gen === 'home'}/>
             }
         </FlexAppBarContainer>
         <MiscButtonArea 
@@ -48,7 +48,7 @@ import RenderOnHandEdit from './onhandlist/renderonhandedit'
                     isHA: pokemon.isHA, 
                     emCount: pokemon.emCount,
                     gender: pokemon.gender,
-                    isMaxEMs: pokemon.emCount === 4 || pokemon.emCount === collection.eggMoveInfo[pokemon.name].length,
+                    isMaxEMs: pokemon.emCount === 4 || (collection.gen === 'home' ? true : pokemon.emCount === collection.eggMoveInfo[pokemon.name].length),
                     pokemonId: pokemon._id
                 } : 
                 buttonArea === 'collectionEdit' && 

@@ -1,15 +1,17 @@
 import allPokemon from "../aprimonAPI/allpokemoninfo.js"
 import { capitalizeFirstLetter } from "../../../frontend/utils/functions/misc.js"
 import { getImgLink } from "../schemavirtuals/collectionvirtuals.js"
-import { handleAlternateForms, handleRegionalForms, handleIncenseAndBabyMons, setOwnedBallList } from "../CreateCollection/functions.js"
-import { getGenNum } from "../infogathering/gens.js"
+import { handleAlternateForms, handleRegionalForms, handleIncenseAndBabyMons, setOwnedBallList, getBallPath } from "../CreateCollection/functions.js"
+import { getGenNum } from "../../../common/infoconstants/miscconstants.mjs"
+import { genGames } from "../../../common/infoconstants/miscconstants.mjs"
 
 function getPokemonTypes (gen) {
     const genNum = getGenNum(gen)
-    const hasGame = genNum === 8
+    const hasGame = genGames.filter(gG => gG.gen === genNum).length !== 0
     const parsedGen = `gen${genNum}`
+    const isHomeCollection = gen === 'home'
     const pokemonTypes = allPokemon.map((p) => {
-        const isInGen = hasGame ? (p.specificGenInfo.gen8 !== undefined && p.specificGenInfo.gen8.balls[gen] !== undefined) : p.specificGenInfo[parsedGen] !== undefined
+        const isInGen = gen === 'home' || (hasGame ? (p.specificGenInfo.gen8 !== undefined && p.specificGenInfo.gen8.balls[gen] !== undefined) : p.specificGenInfo[parsedGen] !== undefined)
         if (isInGen) {
             const {childName, adultChildType, childNatDexNum, childGen, adultName, adultNatDexNum, adultGen, pokename, pokeNatDexNum, pokeGen} = handleIncenseAndBabyMons(p)
             const originalPokemon = pokename === undefined ? {
@@ -30,7 +32,8 @@ function getPokemonTypes (gen) {
                 type: 'babyAdultMons',
                 nestedType: `${adultChildType}Babies`
             } : {}
-            const ballLegality = hasGame ? p.specificGenInfo[parsedGen].balls[gen] : p.specificGenInfo[parsedGen].balls
+            // const ballLegality = hasGame ? p.specificGenInfo[parsedGen].balls[gen] : p.specificGenInfo[parsedGen].balls
+            const ballLegality = getBallPath(p, gen, parsedGen, hasGame ? gen : "")
             if (p.info.alternateForm !== undefined) { 
                 const breedableAltForm = p.info.alternateForm.nonBreedable === undefined
                 if ((breedableAltForm && p.info.alternateForm.originalIsForm) || p.info.alternateForm.interchangeable !== undefined) { 
@@ -41,10 +44,10 @@ function getPokemonTypes (gen) {
                         originalPokemon.type = 'breedables'
                         originalPokemon.nestedType = 'regular'
                     }
-                    return [{...originalPokemon, legalBalls: setOwnedBallList(parsedGen, ballLegality, p, true)}, handleAlternateForms(p, {}, pokename, genNum, true, true).map(mon => {return {...mon, legalBalls: setOwnedBallList(parsedGen, ballLegality, p, true)}})]
+                    return [{...originalPokemon, legalBalls: setOwnedBallList(parsedGen, ballLegality, p, true, isHomeCollection)}, handleAlternateForms(p, {}, pokename, genNum, true, true).map(mon => {return {...mon, legalBalls: setOwnedBallList(parsedGen, ballLegality, p, true, isHomeCollection)}})]
                 }
                 const multiplePokemon = handleAlternateForms(p, {}, pokename, genNum, true, true)
-                return multiplePokemon.map((mon) => {return {...mon, legalBalls: setOwnedBallList(parsedGen, ballLegality, p, true)}})
+                return multiplePokemon.map((mon) => {return {...mon, legalBalls: setOwnedBallList(parsedGen, ballLegality, p, true, isHomeCollection)}})
             }
             if (p.info.regionalForm !== undefined && gen !== "bdsp") {
                 if (childPokemon.name === undefined){
@@ -60,7 +63,7 @@ function getPokemonTypes (gen) {
                         }
                     })
                 }
-                return multiplePokemon.map((mon) => {return {...mon, legalBalls: setOwnedBallList(parsedGen, ballLegality, p, true)}})
+                return multiplePokemon.map((mon) => {return {...mon, legalBalls: setOwnedBallList(parsedGen, ballLegality, p, true, isHomeCollection)}})
             }
             if (p.info.nonBreedable === true) {
                 originalPokemon.type = 'nonBreedables'
@@ -82,10 +85,10 @@ function getPokemonTypes (gen) {
 
             return childPokemon.name ? 
                 [
-                    {...originalPokemon, legalBalls: setOwnedBallList(parsedGen, ballLegality, p, true)}, 
-                    {...childPokemon, legalBalls: setOwnedBallList(parsedGen, ballLegality, p, true)}
+                    {...originalPokemon, legalBalls: setOwnedBallList(parsedGen, ballLegality, p, true, isHomeCollection)}, 
+                    {...childPokemon, legalBalls: setOwnedBallList(parsedGen, ballLegality, p, true, isHomeCollection)}
                 ] : 
-                {...originalPokemon, legalBalls: setOwnedBallList(parsedGen, ballLegality, p, true)}
+                {...originalPokemon, legalBalls: setOwnedBallList(parsedGen, ballLegality, p, true, isHomeCollection)}
         } else {
             return undefined
         }

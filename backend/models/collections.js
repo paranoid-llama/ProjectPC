@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
-import {getImgLink, getPossibleEggMoves, getPossibleGender, getCollectionProgress} from './../utils/schemavirtuals/collectionvirtuals.js'
+import {getImgLink, getPossibleEggMoves, getPossibleGender, getCollectionProgress, getAvailableHomeGames} from './../utils/schemavirtuals/collectionvirtuals.js'
 
 const opts = {toJSON: {virtuals: true}, minimize: false}
 
@@ -266,8 +266,20 @@ collectionSchema.path('onHand').schema.virtual('imgLink').get(function() {
     return getImgLink(this)
 })
 
+collectionSchema.virtual('availableGamesInfo').get(function() {
+    if (this.gen === 'home') {
+        return getAvailableHomeGames(this.ownedPokemon)
+    } else {
+        null
+    }
+})
+
 collectionSchema.virtual('eggMoveInfo').get(function() {
-    return getPossibleEggMoves(this.ownedPokemon, this.gen)
+    if (this.gen === 'home') {
+        null
+    } else {
+        return getPossibleEggMoves(this.ownedPokemon, this.gen)
+    }
 })
 
 collectionSchema.set('toJSON', {virtuals: true})

@@ -126,7 +126,8 @@ export default function ShowCollectionList({collection, styles, isEditMode}) {
                     ownerId={collection.owner._id}
                     styles={styles}
                     isEditMode={isEditMode}
-                    constRow={row}
+                    isHomeCollection={collection.gen === 'home'}
+                    availableGames={collection.availableGamesInfo !== undefined && collection.availableGamesInfo}
                     {...includePokemonProp}
                 />
             // </Fragment>

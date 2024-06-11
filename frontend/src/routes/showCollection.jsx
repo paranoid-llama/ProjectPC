@@ -1,4 +1,5 @@
-import {useState, useEffect, useRef} from 'react';
+import {useState, useEffect, useContext} from 'react';
+import { AlertsContext } from '../alerts/alerts-context';
 import {useLoaderData, Link, useRouteLoaderData, useLocation} from 'react-router-dom'
 import * as React from 'react';
 import Box from '@mui/material/Box'
@@ -17,13 +18,18 @@ import {setOnHandInitialState} from './../app/slices/onhand'
 import {setListInitialState} from './../app/slices/listdisplay'
 import { setNameState, setOptionsInitialState } from '../app/slices/options';
 import {deselect, changeList} from './../app/slices/editmode'
+import listStyles from '../../utils/styles/componentstyles/liststyles';
 
-export default function ShowCollection({colorStyles, listStyles}) {
+export default function ShowCollection({colorStyles}) {
     const list = useSelector(state => state.editmode.listType)
-    const currentLink = useLocation().pathname
-    const isEditMode = currentLink.includes('edit')
+    const pathData = useLocation()
+    const currentLink = pathData.pathname
     const collection = useLoaderData()
     const currentlyLoggedInUser = useRouteLoaderData("root")
+    const userIsLoggedIn = currentlyLoggedInUser.loggedIn && currentlyLoggedInUser.user._id !== collection.owner._id
+    const isOwner = (currentlyLoggedInUser.loggedIn && currentlyLoggedInUser.user._id === collection.owner._id)
+    const isEditMode = currentLink.includes('edit') && isOwner
+
     const collectionId = collection._id
 
     const gen8Collection = isNaN(parseInt(collection.gen))
@@ -52,24 +58,33 @@ export default function ShowCollection({colorStyles, listStyles}) {
         }
     }
 
-    // const toggleEditMode = () => {
-    //     if (isEditMode === true) {
-    //         dispatch(leaveEditMode())
-    //     } else if (isEditMode === false) {
-    //         dispatch(enterEditMode())
-    //     }
-    // }
+    //alerts
+    const [alertIds, setAlertIds] = useState([])
+    const {addAlert, dismissAlert} = useContext(AlertsContext)
+
+    const clearAlerts = () => {
+        alertIds.forEach((id) => {
+            dismissAlert(id);
+        });
+        setAlertIds([]);
+    }
+
+    useEffect(() => {
+        return () => {
+            clearAlerts();
+        };
+    }, []);
+    
     const collectionNameState = useSelector((state) => state.options.collectionName)
 
     return (
         <>
-        {/* <EditCollection /> */}
         <Box sx={{flex: 1}}>
             <Box sx={{flexGrow: 1, width: '100%', alignItems: 'center'}}>
                 <Header additionalStyles={{backgroundColor: '#26BCC9', color: 'black'}}>{!isEditMode ? collectionName : collectionNameState}</Header>
             </Box>
             <BodyWrapper>
-                <ShowCollectionTitle collectionID={collectionId} options={collection.options} isEditMode={isEditMode}/>
+                <ShowCollectionTitle collectionID={collectionId} options={collection.options} isEditMode={isEditMode} isOwner={isOwner} userIsLoggedIn={userIsLoggedIn} userData={currentlyLoggedInUser.user}/>
                 <FilterSortArea collection={collection} isEditMode={isEditMode}/>
                 <Box sx={{flexGrow: 1, margin: 0, width: '100%', display: 'flex'}}>
                     <Tabs 
@@ -110,6 +125,7 @@ export default function ShowCollection({colorStyles, listStyles}) {
                     eggMoveInfo={collection.eggMoveInfo}
                     styles={listStyles.onhand}
                     isEditMode={isEditMode}
+                    isHomeCollection={collection.gen === 'home'}
                 />
                 }
             </BodyWrapper>

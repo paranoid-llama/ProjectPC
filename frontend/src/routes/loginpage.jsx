@@ -1,20 +1,41 @@
 import {Box, useTheme, Typography, Button, Alert} from '@mui/material'
-import {useState, useRef} from 'react'
+import {useState, useRef, useEffect, useContext} from 'react'
+import { AlertsContext } from '../alerts/alerts-context'
 import ControlledTextInput from '../components/functionalcomponents/controlledtextinput'
 import BodyWrapper from '../components/partials/routepartials/bodywrapper'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useRevalidator } from 'react-router-dom'
 import userLoginRequest from '../../utils/functions/backendrequests/users/login'
 
 export default function LoginPage({}) {
     const theme = useTheme()
     const location = useLocation()
     const navigate = useNavigate()
+    const revalidator = useRevalidator()
     const errorInit = location.state !== null && location.state.error
+    const successInit = location.state !== null && location.state.success
     const errorMessageInit = location.state !== null && location.state.message || ''
+    const redirectTo = location.state !== null ? location.state.redirectTo : undefined
 
     const usernameFieldRef = useRef(null)
     const passwordFieldRef = useRef(null)
     const [error, setError] = useState({username: false, password: false, error: errorInit, errorMessage: errorMessageInit}) 
+
+    //alerts
+    const [alertIds, setAlertIds] = useState([])
+    const {addAlert, dismissAlert} = useContext(AlertsContext)
+
+    const clearAlerts = () => {
+        alertIds.forEach((id) => {
+            dismissAlert(id);
+        });
+        setAlertIds([]);
+    }
+
+    useEffect(() => {
+        return () => {
+            clearAlerts();
+        };
+    }, []);
 
     const loginFieldStyles = {
         '&.MuiTextField-root': {
@@ -49,17 +70,27 @@ export default function LoginPage({}) {
         if (loginStatus.successful === false) {
             setError({username: false, password: false, error: true, errorMessage: 'One or more fields are incorrect!'})
         } else {
-            navigate(0)
+            //spawning alert
+            const alertMessage = `Logged in as ${userData.username}!`
+            const alertInfo = {severity: 'success', message: alertMessage, timeout: 3}
+            const id = addAlert(alertInfo);
+            setAlertIds((prev) => [...prev, id]);
+            revalidator.revalidate()
+            if (redirectTo !== undefined) {
+                navigate(redirectTo)
+            } else {
+                navigate('/')
+            }
         }
     }
 
     return (
         <BodyWrapper sx={{...theme.components.box.fullCenterCol, justifyContent: 'start'}}>
-            <Box sx={{...theme.components.box.fullCenterCol, maxWidth: '800px', minHeight: '500px', width: '80%'}}>
-                <Typography sx={{fontWeight: 700, mb: error.error ? 0 : 3, fontSize: '36px'}}>Login</Typography>
-                {error.error && 
+            <Box sx={{...theme.components.box.fullCenterCol, justifyContent: 'start', maxWidth: '800px', minHeight: '500px', width: '80%'}}>
+                <Typography sx={{fontWeight: 700, mb: (error.error || successInit === true) ? 0 : 3, fontSize: '36px'}}>Login</Typography>
+                {(error.error || successInit === true) && 
                 <Alert 
-                    severity='error' 
+                    severity={error.error === true ? 'error' : successInit === true && 'success'} 
                     sx={{
                         marginTop: '5px',
                         pointerEvents: 'all',

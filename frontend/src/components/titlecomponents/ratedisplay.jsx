@@ -1,7 +1,7 @@
 import {Box, Typography, Tabs, Tab} from '@mui/material'
 import { useState } from 'react'
 
-export default function RateDisplay({rates, owner}) {
+export default function RateDisplay({rates, owner, collectionGen}) {
     const [offerType, setOfferType] = useState('pokemonOffers')
     const changeOfferType = (newVal) => {setOfferType(newVal)}
 
@@ -14,7 +14,7 @@ export default function RateDisplay({rates, owner}) {
             </Box>
             <Tabs value={offerType} onChange={(e, newVal) => changeOfferType(newVal)} sx={{'&.MuiTabs-root': {height: '20px', minHeight: '12px', my: 1}, '& .MuiTab-root': {py: 0, minHeight: '12px'}}}>
                 <Tab label='Pokemon Offers' value='pokemonOffers'/>
-                <Tab label='Item Offers' value='itemOffers'/>
+                <Tab label='Item Offers' value='itemOffers' disabled={collectionGen === 'home'}/>
             </Tabs>
             <Box sx={{width: '90%', px: '2%', height: '70%', display: 'flex', flexDirection: 'column', justifyContent: noRates ? 'center' : 'start', alignItems: 'center', maxWidth: '500px', backgroundColor: 'rgba(240, 240, 240, 0.9)', boxShadow: '0px 2px 1px -1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 1px 3px 0px rgba(0,0,0,0.12)'}}>
                 {noRates && <Typography>No {offerType === 'pokemonOffers' ? 'Pokemon' : 'Item'} Rates</Typography>}

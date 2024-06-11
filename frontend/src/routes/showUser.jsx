@@ -1,7 +1,7 @@
-import {Box, useTheme, Typography, Grid, styled} from '@mui/material'
+import {Box, useTheme, Typography, Grid, styled, Button} from '@mui/material'
 import { useRef, forwardRef } from 'react'
 import BodyWithBanner from '../components/partials/routepartials/bodywithbanner'
-import { useLoaderData } from 'react-router-dom'
+import { useNavigate, useLoaderData, useRouteLoaderData } from 'react-router-dom'
 import ImgData from '../components/collectiontable/tabledata/imgdata'
 import TextSpaceSingle from '../components/titlecomponents/subcomponents/textspacesingle'
 import hexToRgba from 'hex-to-rgba'
@@ -10,12 +10,17 @@ import { Virtuoso } from 'react-virtuoso'
 import { getBallProgress } from '../../utils/functions/ballprogresscircle/ballprogressstate'
 import SearchCollectionItem from '../components/functionalcomponents/search/searchcollectionitem'
 import SimpleBar from 'simplebar-react'
+import EditIcon from '@mui/icons-material/Edit';
+import SettingsIcon from '@mui/icons-material/Settings';
 import 'simplebar-react/dist/simplebar.min.css'
 import "./showUser.css"
 
 //user profile page
 export default function ShowUser({}) {
+    const navigate = useNavigate()
     const userData = useLoaderData()
+    const loggedInUserData = useRouteLoaderData("root")
+    const isUser = loggedInUserData.loggedIn === true && (loggedInUserData.user._id === userData._id)
     const theme = useTheme()
     const gameScrollRef = useRef()
 
@@ -33,10 +38,7 @@ export default function ShowUser({}) {
         labelBgColor: theme.palette.color3.dark
     }
     const userTags = ['Aprimon Master', 'Multi-Generational Aprimon Master']
-    const userGamesInit = ['sword', 'shield', 'shiningpearl', 'home', 'legendsarceus', 'scarlet', 'violet', 'letsgopikachu', 'letsgoeevee', 'brilliantdiamond']
-    // const userGamesInit = ['sword', 'shield', 'shiningpearl']
-
-    const userGames = gamesOrder.filter(game => userGamesInit.includes(game))
+    const userGames = userData.settings.profile.games
 
     const tagTextStyles = {
         '@media only screen and (min-width: 908px) and (max-width: 1043px)': {
@@ -69,7 +71,23 @@ export default function ShowUser({}) {
         }
     }
 
-    const bio = 'Small-time aprimon collector in a big pokemon world. reddit /u/paranoid-llama. Looking to trade pokemon of any gen!'
+    const bio = userData.settings.profile.bio
+
+    const generateEditBioButton = () => {
+        return (
+            <Button sx={{borderRadius: '50%'}} onClick={() => navigate(`/users/${userData.username}/settings/profile`, {state: {catInit: 'profile'}})}>
+                <EditIcon/>
+            </Button>
+        )
+    }
+
+    const generateSettingsButton = () => {
+        return (
+            <Button sx={{borderRadius: '50%', padding: 0, height: '100%', color: 'grey'}} onClick={() => navigate(`/users/${userData.username}/settings`)}>
+                <SettingsIcon color='grey'/>
+            </Button>
+        )
+    }
 
     return (
         <BodyWithBanner bannerSx={{backgroundColor: theme.palette.color1.light, color: theme.palette.color1.contrastTextLight}} bodySx={{mb: 0, mt: 2}} text={`${userData.username}'s profile`}>
@@ -78,10 +96,11 @@ export default function ShowUser({}) {
                 <Box sx={{width: '70%', ml: 3, ...theme.components.box.fullCenterCol}}>
                     <TextSpaceSingle 
                         colorStyles={textColor1}
-                        otherStyles={{borderBottom: '1px solid white', marginBottom: 0}} 
+                        otherStyles={{borderBottom: '1px solid white', marginBottom: 0, position: 'relative'}} 
                         text={userData.username}
                         label={'Username'}
                         width='100%'
+                        buttonAdornmentFunc={isUser ? generateSettingsButton : undefined}
                     />
                     <TextSpaceSingle 
                         colorStyles={textColor2}
@@ -96,15 +115,17 @@ export default function ShowUser({}) {
                         colorStyles={textColor1}
                         otherStyles={{borderBottom: '1px solid white', marginBottom: 0}} 
                         largeTextArea={true}
-                        largeTextAreaStyles={{height: '50%', minHeight: '80px', display: 'flex', alignItems: 'center'}}
+                        largeTextAreaStyles={{height: '50%', minHeight: '80px', display: 'flex', alignItems: 'center', position: 'relative'}}
                         largeTextStyles={{textAlign: 'start', color: textColor1.textColor, mx: 2, mr: '10%', fontSize: '12px'}}
                         text={bio}
                         width='100%'
+                        buttonAdornmentFunc={isUser ? generateEditBioButton : undefined}
                     />
                 </Box>
             </Box>
             <Box sx={{minHeight: '80px', ...theme.components.box.fullCenterCol, mt: -3}}>
                 <Box sx={{width: '100%', position: 'relative', display: 'flex', justifyContent: 'center'}}>
+                    {userGames.length !== 0 ? 
                     <Box 
                         ref={gameScrollRef}
                         sx={{
@@ -133,7 +154,9 @@ export default function ShowUser({}) {
                             </Box>
                         )
                     })}
-                    </Box>
+                    </Box> : 
+                    <Typography sx={{fontSize: '18px', color: 'grey'}}><i>This user has not listed any games</i></Typography>
+                    }
                 </Box>
             </Box>
             <Box sx={{...theme.components.box.fullCenterCol, mt: 3}}>

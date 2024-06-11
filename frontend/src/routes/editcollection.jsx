@@ -51,7 +51,7 @@ export default function EditCollection() {
                 </FlexAppBarContainer>
                 <DisplaySelection collection={collection}/>
             </AppBar>
-            <CollectionOptionsModal collectionGen={collection.gen} collectionId={collection._id}/>
+            <CollectionOptionsModal collectionGen={collection.gen} collectionId={collection._id} ownerUsername={collection.owner.username}/>
         </Box>
         </>
     )

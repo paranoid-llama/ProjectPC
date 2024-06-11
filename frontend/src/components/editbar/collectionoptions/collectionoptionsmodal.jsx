@@ -15,7 +15,7 @@ import RateOptions from './preferenceoptions/rateoptions'
 import ItemOptions from './preferenceoptions/itemoptions'
 import OtherOptions from './otheroptions'
 
-export default function CollectionOptionsModal({collectionGen, collectionId}) {
+export default function CollectionOptionsModal({collectionGen, collectionId, ownerUsername}) {
     const dispatch = useDispatch()
     const modalState = useSelector((state) => state.editmode.collectionOptionsModal)
     const elementBg = modalStyles.onhand.modalElementBg
@@ -59,10 +59,10 @@ export default function CollectionOptionsModal({collectionGen, collectionId}) {
                     {modalState.screen === 'collectionSort' && <CollectionSortingOptions elementBg={elementBg} collectionGen={collectionGen} collectionId={collectionId}/>}
                     {modalState.screen === 'onhandSort' && <OnHandSortingOptions elementBg={elementBg} collectionGen={collectionGen} collectionId={collectionId}/>}
                     {modalState.screen === 'customSort' && <CustomSortingOptions elementBg={elementBg} collectionGen={collectionGen} collectionId={collectionId}/>}
-                    {modalState.screen === 'preferences' && <TradePreferenceOptions elementBg={elementBg} collectionId={collectionId}/>}
+                    {modalState.screen === 'preferences' && <TradePreferenceOptions elementBg={elementBg} collectionId={collectionId} isHomeCollection={collectionGen === 'home'}/>}
                     {modalState.screen === 'rates' && <RateOptions elementBg={elementBg} collectionGen={collectionGen} collectionId={collectionId}/>}
                     {modalState.screen === 'items' && <ItemOptions elementBg={elementBg} collectionGen={collectionGen} collectionId={collectionId}/>}
-                    {modalState.screen === 'other' && <OtherOptions elementBg={elementBg} collectionId={collectionId} collectionType={collectionTypeText}/>}
+                    {modalState.screen === 'other' && <OtherOptions elementBg={elementBg} collectionGen={collectionGen} collectionId={collectionId} collectionType={collectionTypeText} owner={ownerUsername}/>}
                </Box>
             </Fade>
         </Modal>

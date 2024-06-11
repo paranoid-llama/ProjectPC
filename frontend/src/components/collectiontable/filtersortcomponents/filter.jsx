@@ -15,7 +15,7 @@ export default function Filter({listType, collection, isEditMode}) {
     const collectionGen = useLoaderData().gen
     const genNum = collectionGen === 'swsh' ? 8 :
      collectionGen === 'bdsp' ? 4 : collectionGen
-    const gens = genRomans.slice(0, genNum)
+    const gens = collection.gen === 'home' ? genRomans : genRomans.slice(0, genNum)
 
     const ToggleButton = styled(MuiToggleButton)({
         '&.MuiToggleButton-sizeSmall': {

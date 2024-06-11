@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
-const opts = {toJSON: {virtuals: true}}
+const opts = {toJSON: {virtuals: true}, minimize: false}
 
 const userSchema = new Schema ({
     username: {
@@ -10,19 +10,42 @@ const userSchema = new Schema ({
         unique: true,
         max: 24
     },
-    tags: {
-        type: [
-            {type: String}
-        ]
-    },
-    bio: {type: String, max: 300},
     password: {
         type: String,
         required: true
     },
     email: {
         type: String,
-        required: true
+        required: true,
+        unique: true
+    },
+    settings: {
+        _id: false,
+        profile: {
+            _id: false,
+            bio: {type: String, max: 300},
+            tags: {
+                type: [
+                    {type: String}
+                ]
+            },
+            games: {type: Array}
+        },
+        account: {
+            _id: false,
+            verified: {type: Boolean},
+            securityQuestions: {
+                type: [{
+                    _id: false,
+                    question: {type: String},
+                    answer: {type: String}
+                }],
+                validate: v => v.length <= 3
+            }
+        },
+        display: {
+            
+        }
     }
 }, opts)
 

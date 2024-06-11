@@ -5,8 +5,8 @@ import Checkbox from '@mui/material/Checkbox'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import './../../../../utils/styles/componentstyles/checkboxindicators.css'
 
-export default function IsOwnedCheckbox({ballInfo, handleEditBallInfo, pokeName, ball, collectionId, ownerId, styles}) {
-    const isEditMode = useLocation().pathname.includes('edit')
+export default function IsOwnedCheckbox({ballInfo, handleEditBallInfo, pokeName, ball, collectionId, ownerId, styles, isEditMode, isHomeCollection}) {
+    const disabled = !isEditMode
 
     const ToggleButton = styled(MuiToggleButton)({
         '&.Mui-selected, &.Mui-selected:hover': {
@@ -16,24 +16,35 @@ export default function IsOwnedCheckbox({ballInfo, handleEditBallInfo, pokeName,
     })
 
     const renderHAIndicator = (position) => {
-        
+        const mediaQuery = isHomeCollection ? {} : {[`@media only screen and (${position === 'Top' ? 'min' : 'max'}-width: 110${position === 'Top' ? '1' : '0'}px)`]: {display: 'none'}}
+        const displayStyle = isHomeCollection && position === 'Top' ? {display: 'none'} : {}
+        const positioning = isHomeCollection ? {left: '35%'} : {...styles.indicators[`haindicator${position}`]}
         return (
                 <ToggleButton
                     sx={{
-                        ...styles.indicators[`haindicator${position}`],
+                        ...positioning,
                         position: 'absolute',
                         border: 'none',
                         color: 'white',
-                        [`@media only screen and (${position === 'Top' ? 'min' : 'max'}-width: 110${position === 'Top' ? '1' : '0'}px)`]: {
-                            display: 'none'
-                        },
+                        bottom: '-2px',
+                        width: '30%',
+                        ...mediaQuery,
+                        ...displayStyle,
                         margin: 0,
                         padding: '2px',
+                        border: 'none',
                         fontWeight: ballInfo[ball].isHA === true ? 700 : 400,
-                        opacity: ballInfo[ball].isHA === true ? 1 : 0.5
+                        opacity: ballInfo[ball].isHA === true ? 1 : 0.5,
+                        '&.Mui-disabled': {
+                            border: 'none',
+                            color: 'white',
+                            fontWeight: ballInfo[ball].emCount >  0 ? 700 : 400,
+                            opacity: ballInfo[ball].emCount > 0 ? 1 : 0.5
+                        }
                     }}
                     onChange={isEditMode ? (e) => handleEditBallInfo(e, 'isHA', pokeName, ball, collectionId, ownerId) : undefined}
                     value={ballInfo[ball].isHA}
+                    disabled={disabled}
                 >
                     HA
                 </ToggleButton>
@@ -50,11 +61,19 @@ export default function IsOwnedCheckbox({ballInfo, handleEditBallInfo, pokeName,
                         position: 'absolute',
                         margin: 0,
                         padding: '2px',
+                        border: 'none',
                         fontWeight: ballInfo[ball].emCount >  0 ? 700 : 400,
-                        opacity: ballInfo[ball].emCount > 0 ? 1 : 0.5
+                        opacity: ballInfo[ball].emCount > 0 ? 1 : 0.5,
+                        '&.Mui-disabled': {
+                            border: 'none',
+                            color: 'white',
+                            fontWeight: ballInfo[ball].emCount >  0 ? 700 : 400,
+                            opacity: ballInfo[ball].emCount > 0 ? 1 : 0.5
+                        }
                     }}
                     onChange={isEditMode ? (e) => handleEditBallInfo(e, 'emCount', pokeName, ball, collectionId, ownerId) : undefined}
                     value={ballInfo[ball].emCount}
+                    disabled={disabled}
                 >
                     {ballInfo[ball].emCount}EM
                 </ToggleButton>
@@ -95,7 +114,8 @@ export default function IsOwnedCheckbox({ballInfo, handleEditBallInfo, pokeName,
             <Box sx={{...styles.alignment.checkboxAlignment, ...styles.bodyColor}}>
                 <Checkbox 
                     checked={ballInfo[ball].isOwned} 
-                    sx={{color: 'white'}} 
+                    sx={{color: 'white', '&.Mui-disabled': {color: 'white', '&.Mui-checked': {color: '#1976d2'}}}} 
+                    disabled={disabled}
                     onClick={isEditMode ? ((e) => handleEditBallInfo(e, 'isOwned', pokeName, ball, collectionId, ownerId)) : undefined}
                 />
                
@@ -105,10 +125,10 @@ export default function IsOwnedCheckbox({ballInfo, handleEditBallInfo, pokeName,
             <Box sx={styles.indicators.indicatorRow}> 
                 {ballInfo[ball].isOwned === true && 
                 <>
-                <Box sx={styles.indicators.haindicatorContainer}>
+                <Box sx={{position: 'absolute', width: isHomeCollection ? '100%' : '50%'}}>
                     {ballInfo[ball].isHA !== undefined && renderHAIndicator('')}
                 </Box>
-                <Box sx={styles.indicators.emindicatorContainer}>
+                <Box sx={{position: 'absolute', width: isHomeCollection ? '0%' : '50%'}}>
                     {ballInfo[ball].emCount !== undefined && renderEMIndicator()}
                 </Box>
                 </>

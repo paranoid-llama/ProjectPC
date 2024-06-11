@@ -16,7 +16,7 @@ import { usePutRequest } from '../../../../../utils/functions/backendrequests/ed
 import '../../../../../utils/styles/componentstyles/eggmoveselection.css'
 import store from '../../../../app/store'
 
-export default function RenderOnHandEdit({collectionId, ownerId, pokemon, idxOfPokemon, allEggMoves}) {
+export default function RenderOnHandEdit({collectionId, ownerId, pokemon, idxOfPokemon, allEggMoves, isHomeCollection}) {
     const [popOutScreens, setPopOutScreens] = useState({eggmoveScreen: {open: 'firstRenderFalse', idx: ''}, pokemonSelection: false})
     const dispatch = useDispatch()
     const listType = 'onhand'
@@ -114,7 +114,7 @@ export default function RenderOnHandEdit({collectionId, ownerId, pokemon, idxOfP
     const noHA = ownedPokemonInfo.balls[allowedBalls[0]].isHA === undefined
     const noEMs = ownedPokemonInfo.balls[allowedBalls[0]].EMs === undefined
     const possibleEggMoves = allEggMoves[pokemon.name]
-    const maxEMs = possibleEggMoves.length > 4 ? 4 : possibleEggMoves.length
+    const maxEMs = possibleEggMoves === undefined ? 0 : possibleEggMoves.length > 4 ? 4 : possibleEggMoves.length
     const emCountSelectionList = setMaxEmArr(maxEMs) 
 
     const toggleClass = popOutScreens.eggmoveScreen.open === true ? 'egg-moves-slide-in' : 
@@ -134,6 +134,7 @@ export default function RenderOnHandEdit({collectionId, ownerId, pokemon, idxOfP
                 handleEmCountChange={handleEmCountChange}
                 handleEMChange={handleEMChange}
                 toggleScreen={toggleEditEggMoveScreen}
+                isHomeCollection={isHomeCollection}
             />
             {(popOutScreens.eggmoveScreen.open !== 'firstRenderFalse') &&
             <EditEggMovesForm 

@@ -1,6 +1,6 @@
 import {Box, Typography} from '@mui/material'
 
-export default function TextSpaceSingle({colorStyles, text, multipleTexts, label, width, otherStyles, otherLabelStyles, otherTextStyles, textBgColor, displayingTags, tagAreaStyles, largeTextArea, largeTextAreaStyles, largeTextStyles}) {
+export default function TextSpaceSingle({colorStyles, text, multipleTexts, label, width, otherStyles, otherLabelStyles, otherTextStyles, textBgColor, displayingTags, tagAreaStyles, largeTextArea, largeTextAreaStyles, largeTextStyles, buttonAdornmentFunc}) {
     //displayingTags is for when there's no uniform text for the area, but rather they display text blurbs of user preferences. Refer to show collection under trade status
     const hasLabel = label !== undefined
     const {bgColor, textColor, labelBgColor, isGradient} = colorStyles
@@ -25,6 +25,11 @@ export default function TextSpaceSingle({colorStyles, text, multipleTexts, label
             <Box sx={{margin: 0, marginLeft: '0.8rem'}}>
                 <Typography sx={{color: textColor, ...otherTextStyles}}>{text}</Typography>
             </Box>
+            {buttonAdornmentFunc !== undefined && 
+                <Box sx={{position: 'absolute', right: '7%', top: 0, height: '100%', borderRadius: '50%'}}>
+                    {buttonAdornmentFunc()}
+                </Box>
+            }
         </Box> :
         displayingTags ? 
         <Box 
@@ -73,6 +78,11 @@ export default function TextSpaceSingle({colorStyles, text, multipleTexts, label
             >
                 {text}
             </Typography>
+            {buttonAdornmentFunc !== undefined && 
+                <Box sx={{position: 'absolute', right: '7%', bottom: '0%', borderRadius: '50%'}}>
+                    {buttonAdornmentFunc()}
+                </Box>
+            }
         </Box> : 
         <Box sx={{display: 'flex', justifyContent: 'start', flexDirection: 'row', height: '2rem', width, ...bgStyle}}>
             <Box sx={{margin: 0}}>

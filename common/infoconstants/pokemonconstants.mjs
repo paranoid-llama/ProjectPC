@@ -32,6 +32,25 @@ const pokeAdults = ['Pikachu', 'Clefairy', 'Jigglypuff', 'Jynx', 'Electabuzz', '
 const pokeIncenseBabies = ['Mime Jr.', 'Happiny', 'Munchlax', 'Azurill', 'Wynaut', 'Bonsly', 'Mantyke', 'Budew', 'Chingling']
 const pokeIncenseAdults = ['Mr. Mime', 'Chansey', 'Snorlax', 'Marill', 'Wobbuffet', 'Sudowoodo', 'Mantine', 'Roselia', 'Chimecho']
 
+//below primarily used to filter out all non-breedables in comparison operators
+const legendaryPokemon = [
+    'Articuno', 'Galarian Articuno', 'Zapdos', 'Galarian Zapdos', 'Moltres', 'Galarian Moltres', 'Mewtwo', 'Raikou', 'Entei', 'Suicune', 'Lugia', 'Ho-oh',
+    'Regirock', 'Regice', 'Registeel', 'Latias', 'Latios', 'Kyogre', 'Groudon', 'Rayquaza', 'Uxie', 'Mesprit', 'Azelf', 'Dialga', 'Palkia', 'Heatran', 'Regigigas', 'Giratina', 'Cresselia', 
+    'Cobalion', 'Terrakion', 'Virizion', 'Tornadus', 'Thundurus', 'Reshiram', 'Zekrom', 'Landorus', 'Kyurem', 'Keldeo', 'Meloetta', 'Xerneas', 'Yveltal', 'Zygarde', 
+    'Tapu Koko', 'Tapu Lele', 'Tapu Bulu', 'Tapu Fini', 'Solgaleo', 'Lunala', 'Necrozma', 'Zacian', 'Zamazenta', 'Eternatus', 'Kubfu', 'Regieleki', 'Regidrago', 'Glastrier', 'Spectrier', 'Calyrex',
+    'Wo-Chien', 'Chien-Pao', 'Ting-Lu', 'Chi-Yu', 'Koraidon', 'Miraidon', 'Walking Wake', 'Iron Leaves', 'Okidogi', 'Munkidori', 'Fezandipiti', 'Ogerpon', 'Gouging Fire', 'Raging Bolt', 'Iron Boulder', 'Iron Crown', 'Terapagos', 'Pecharunt'
+]
+const nonBreedablePokemon = [
+    'Ditto', 'Nihilego', 'Buzzwole', 'Pheromosa', 'Xurkitree', 'Celesteela', 'Kartana', 'Guzzlord', 'Poipole', 'Stakataka', 'Blacephalon', 
+    'Dracozolt', 'Arctozolt', 'Dracovish', 'Arctovish', 'Great Tusk', 'Scream Tail', 'Brute Bonnet', 'Flutter Mane', 'Slither Wing', 'Sandy Shocks',
+    'Iron Treads', 'Iron Bundle', 'Iron Hands', 'Iron Jugulis', 'Iron Moth', 'Iron Thorns', 'Gimmighoul', 'Gholdengo', 'Roaring Moon', 'Iron Valiant'
+]
+const nonBreedableAltFormPokemon = ['Sinistea (Antique)', 'Poltchageist (Artisan)']
+const effectiveNonBreedable = [...nonBreedablePokemon, ...nonBreedableAltFormPokemon]
+const evolvedRegionals = [
+    'Alolan Raichu', 'Alolan Exeggutor', 'Alolan Marowak', 'Galarian Weezing', 'Hisuian Typhlosion', 'Hisuian Samurott', 'Hisuian Lilligant',
+    'Hisuian Braviary', 'Hisuian Sliggoo', 'Hisuian Goodra', 'Hisuian Avalugg', 'Hisuian Decidueye'
+]
 
 //these are alternate and regional form pokemon who have special cases when creating ball list for them.
 const uniqueAlternateFormPokemon = ['Basculin', 'Vivillon', 'Flabébé', 'Rockruff', 'Alcremie']
@@ -112,7 +131,7 @@ export {
     regionalFormRegions, alolanFormMons, galarianFormMons, hisuianFormMons, paldeanFormMons, regionalFormMons, multipleRegionalFormMons,
     allAltFormMons, genderAltFormMons, interchangeableAltFormMons, nonBreedableAltFormMons, nonBreedableAltRegIdentifiers,
     altFormMonsWithExclusiveEMs, incenseAdultsWithExclusiveEMs, incenseBabiesWithExclusiveEMs, babiesOfGen1Pokemon, babiesOfGen2Pokemon, babiesOfGen3Pokemon,
-    pokeBabies, pokeAdults, pokeIncenseBabies, pokeIncenseAdults,
+    pokeBabies, pokeAdults, pokeIncenseBabies, pokeIncenseAdults, legendaryPokemon, nonBreedablePokemon, effectiveNonBreedable, evolvedRegionals,
     uniqueRegionalFormPokemon, uniqueAlternateFormPokemon, pokemonNamesWithSpaces,
     pokemonGroups, pokemonSubGroups, differentRegionalFormEvolutions, vivillonForms, getAllAlcremieFormsArr, multipleDexNumAndSpaceHavingPokemon
 }

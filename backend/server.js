@@ -208,9 +208,21 @@ app.get('/search/:searchType', catchAsync(async(req, res) => {
 }))
 
 app.post('/users/new', catchAsync(async(req, res) => {
-    const user = new User({username: 'paranoid-llama', password: 'rgdbdfbnasuia', email: 'qwqfafasfewwe'})
-    await user.save()
-    res.send('ok, made new user!')
+    const {username, password, email, secQuestion1, secQuestion2, secQuestion3, secAnswer1, secAnswer2, secAnswer3} = req.body
+    const securityQuestions = [
+        secAnswer1 === undefined ? undefined : {question: secQuestion1, answer: await bcrypt.hash(secAnswer1, 11)},
+        secAnswer2 === undefined ? undefined : {question: secQuestion2, answer: await bcrypt.hash(secAnswer2, 11)},
+        secAnswer3 === undefined ? undefined : {question: secQuestion3, answer: await bcrypt.hash(secAnswer3, 11)}
+    ].filter(item => item !== undefined)
+    const settings = {
+        profile: {bio: '', tags: [], games: []},
+        account: {verified: false, securityQuestions},
+    }
+    bcrypt.hash(password, 11, async function(err, hash) {
+        const newUser = new User({username, password: hash, email, settings})
+        await newUser.save()
+        res.json(newUser._id)
+    })
 }))
 
 app.post('/users/login', passport.authenticate('local'), catchAsync((req, res) => {
@@ -222,6 +234,14 @@ app.post('/users/logout', catchAsync((req, res, next) => {
         if (err) { return next(err) }
         res.end()
     })
+}))
+
+app.put('/users/settings/:settingType', catchAsync(async(req, res) => {
+    const {settingType} = req.params
+    const {newSettings, userID} = req.body
+    const setModifier = {[`settings.${settingType}`]: newSettings}
+    await User.findByIdAndUpdate({_id: userID}, {$set: setModifier})
+    res.end()
 }))
 
 app.get('/collections', catchAsync(async(req, res) => {
@@ -331,7 +351,6 @@ app.post('/collections/new', catchAsync(async(req, res) => {
     const collectionData = new CollectionClass(undefined, newCollectionInfo)
     const collection = new Collection(collectionData)
     await collection.save()
-    await User.findByIdAndUpdate({_id: newCollectionInfo.owner}, {$push: {'collections': collection._id}})
 
     res.json(collection._id)
 }))
@@ -343,7 +362,7 @@ app.post('/collections/new/seeddb', catchAsync(async(req, res) => {
     const ownerIds = allUsers.map(user => user._id)
 
     const usernames = ['ash ketchup', 'penny', 'hihi', 'aprimon collector', 'selvt', 'paro', 'gary oak', 'misty', 'brock', 'sabrina', 'everword', 'superguy12345', 'XxpokemonCollectorxX', 'lol', 'neverAgain', 'findmyway', 'pandabear', 'pandaman', 'pirate king garon', 'aaron', 'matear', 'poalert', 'poltergeist', 'pikachu enjoyer', 'gen wunner', 'wurst', 'gutentag', 'betterman', 'the pokemon lady']
-
+    const emails = ['gma@gmail.com', 'Durward.Aufderhar@gmail.com', 'Michaela99@gmail.com', 'Haylie4@gmail.com', 'Gonzalo_Marks79@gmail.com',  'Clare82@gmail.com', 'Kaylee8@gmail.com', 'Chaim.Gerhold34@gmail.com', 'Trycia_Hyatt90@gmail.com', 'Ezra_Buckridge@gmail.com', 'Zachary42@gmail.com', 'Neha_Goodwin@gmail.com', 'Amira.Legros@gmail.com', 'Audie37@outlook.com', 'Jodie.Jakubowski10@outlook.com', 'Dale43@outlook.com', 'Karina29@outlook.com', 'Torrey_Dickens26@outlook.com', 'Cathrine.Stoltenberg24@outlook.com', 'Kaitlyn.Hills34@outlook.com', 'Emily.Ondricka@outlook.com', 'Destiney78@outlook.com', 'Ottis_Bode17@outlook.com', 'Abdiel.Zieme@outlook.com', 'Omari_Lowe@outlook.com', 'Joanne.Dooley@outlook.com', 'Orin.Stark77@outlook.com', 'Mikayla.Wilderman1@outlook.com', 'Kristy.Runolfsdottir85@outlook.com', 'Marquis17@outlook.com', 'Sherwood.Borer@outlook.com', 'Susan_Armstrong73@outlook.com', 'Verna20@outlook.com']
     for (let i=0; i < 100; i++) {
         const gen = gens[Math.floor(Math.random() * gens.length)]
         const isHARand = Math.floor(Math.random()*2)
@@ -355,7 +374,7 @@ app.post('/collections/new/seeddb', catchAsync(async(req, res) => {
             options: {
                 collectingBalls: gen === 6 ? ['fast', 'friend', 'heavy', 'level', 'love', 'lure', 'moon', 'dream', 'safari', 'sport'] : ['fast', 'friend', 'heavy', 'level', 'love', 'lure', 'moon', 'beast', 'dream', 'safari', 'sport'],
                 globalDefaults: {isHA: isHARand === 0 ? true : false, emCount: emCountRand},
-                sortingOptions: {collection: {reorder: false, default: 'NatDexNumL2H'}, onhand: {reorder: true, default: 'NatDexNumL2H', ballOrder: ['fast', 'friend', 'heavy', 'level', 'love', 'lure', 'moon', 'beast', 'dream', 'safari', 'sport'], sortFirstBy: 'pokemon'}},
+                sorting: {collection: {reorder: false, default: 'NatDexNumL2H'}, onhand: {reorder: true, default: 'NatDexNumL2H', ballOrder: ['fast', 'friend', 'heavy', 'level', 'love', 'lure', 'moon', 'beast', 'dream', 'safari', 'sport'], sortFirstBy: 'pokemon'}},
                 tradePreferences: {status: 'open', rates: {pokemonOffers: [{items: ['On-Hand HA Aprimon', 'HA Aprimon'], rate: [2, 1]}], itemOffers: []}, size: 'small preferred', onhandOnly: 'no', items: 'none', lfItems: [], ftItems: {}}
             }
         }
@@ -365,8 +384,14 @@ app.post('/collections/new/seeddb', catchAsync(async(req, res) => {
     }
 
     // for (let user of usernames) {
+    //     const securityQuestions = [{question: 'hi there!', answer: 'duh'}]
+    //     const randEmail = emails[usernames.indexOf(user)]
+    //     const settings = {
+    //         profile: {bio: '', tags: [], games: []},
+    //         account: {verified: false, securityQuestions},
+    //     }
     //     bcrypt.hash('12345', 11, async function(err, hash) {
-    //         const newUser = new User({username: user, password: hash, email: 'rhuvrh8hif'})
+    //         const newUser = new User({username: user, password: hash, email: randEmail, settings})
     //         await newUser.save()
     //     })
     // }
@@ -379,9 +404,20 @@ app.get('/collections/:id', catchAsync(async(req, res) => {
     res.json(collection)
 }))
 
-app.get('/users/:id', catchAsync(async(req, res) => {
-    const user = await User.findById(req.params.id).populate({path: 'collections'})
-    res.json(user)
+app.get('/users/:username', catchAsync(async(req, res) => {
+    const user = await User.find({username: req.params.username}).populate({path: 'collections'})
+    res.json(user[0])
+}))
+
+app.get('/username/availability', catchAsync(async(req, res) => {
+    const {username, email, checkEmailInstead} = req.query
+    const search = await User.find(checkEmailInstead ? {email} : {username}).exec()
+    const userWithThatName = Object.keys(search).length !== 0
+    if (userWithThatName) {
+        res.json({available: false})
+    } else {
+        res.json({available: true})
+    }
 }))
 
 app.put('/collections/:id/edit', catchAsync(async(req, res) => {
@@ -505,7 +541,7 @@ app.put('/collections/:id/edit/addonhand', catchAsync(async(req, res) => {
 
     const collection = await Collection.findById(id)
     collection.onHand.push(newOnHand)
-    const onhandSortingOptions = collection.options.sortingOptions.onhand
+    const onhandSortingOptions = collection.options.sorting.onhand
     if (onhandSortingOptions.reorder === true) {
         collection.onHand = sortOnHandList(onhandSortingOptions.sortFirstBy, onhandSortingOptions.default, onhandSortingOptions.ballOrder, collection.onHand)
     }

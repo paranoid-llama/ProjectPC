@@ -7,8 +7,9 @@ import Link from '@mui/material/Link';
 import ArrowBack from "@mui/icons-material/ArrowBack";
 import { useTheme, Button } from "@mui/material";
 import ControlledTextInput from "../functionalcomponents/controlledtextinput";
-import { Fragment, useState, useRef } from "react";
-import { useNavigate, useLoaderData } from "react-router-dom";
+import { Fragment, useState, useRef, useEffect, useContext } from "react";
+import { AlertsContext } from "../../alerts/alerts-context";
+import { useNavigate, useLoaderData, useRevalidator } from "react-router-dom";
 import userLoginRequest from "../../../utils/functions/backendrequests/users/login";
 import userLogoutRequest from "../../../utils/functions/backendrequests/users/logout";
 import hexToRgba from "hex-to-rgba";
@@ -16,6 +17,7 @@ import hexToRgba from "hex-to-rgba";
 export default function NavBar() {
     const theme = useTheme()
     const navigate = useNavigate()
+    const revalidator = useRevalidator()
     const userData = useLoaderData()
     const usernameFieldRef = useRef(null)
     const passwordFieldRef = useRef(null)
@@ -31,6 +33,24 @@ export default function NavBar() {
             }, 1)
         }
     }
+
+    //alerts
+    const [alertIds, setAlertIds] = useState([])
+    const {addAlert, dismissAlert} = useContext(AlertsContext)
+
+    const clearAlerts = () => {
+        alertIds.forEach((id) => {
+            dismissAlert(id);
+        });
+        setAlertIds([]);
+    }
+
+    useEffect(() => {
+        return () => {
+            clearAlerts();
+        };
+    }, []);
+
 
     const toggleUserArea = () => {
         setUserArea({...userArea, open: !userArea.open})
@@ -51,8 +71,14 @@ export default function NavBar() {
         } else {
             const status = await userLogoutRequest()
             if (status.successful === true) {
-                setUserArea({open: false}) 
+                 //spawning alert
+                const alertMessage = `Logged out successfully!`
+                const alertInfo = {severity: 'success', message: alertMessage, timeout: 3}
+                const id = addAlert(alertInfo);
+                setAlertIds((prev) => [...prev, id]);
                 navigate(link)
+                setUserArea({open: false})
+                revalidator.revalidate()
             }
         }
     }
@@ -68,7 +94,14 @@ export default function NavBar() {
             navigate('/login', {state: {error: true, message: 'One or more fields are incorrect!'}})
             setLoginArea({open: false, usernameError: false, passwordError: false})
         } else {
-            navigate(0)
+            // navigate(0)
+            //spawning alert
+            const alertMessage = `Logged in as ${userData.username}!`
+            const alertInfo = {severity: 'success', message: alertMessage, timeout: 3}
+            const id = addAlert(alertInfo);
+            setAlertIds((prev) => [...prev, id]);
+            setLoginArea({open: false})
+            revalidator.revalidate()
         }
     }
 
@@ -99,6 +132,11 @@ export default function NavBar() {
         '& .MuiInputBase-inputSizeSmall': {
             color: 'white'
         },
+    }
+
+    const dontHaveAccount = () => {
+        setLoginArea({...loginArea, open: false})
+        navigate('/register')
     }
 
     return (
@@ -145,7 +183,7 @@ export default function NavBar() {
                             <Button variant='contained' size='small' sx={{mt: 1.5, py: 0.5}} onClick={finalizeLogin}>Login</Button>
                             <Box sx={{...theme.components.box.fullCenterCol, width: '100%'}}>
                                 <Button sx={{fontSize: '8px', padding: 0.25}}>I forgot my password</Button>
-                                <Button sx={{fontSize: '8px', padding: 0.25}}>I don't have an account</Button>
+                                <Button sx={{fontSize: '8px', padding: 0.25}} onClick={dontHaveAccount}>I don't have an account</Button>
                             </Box>
                         </Box>
                     </Box>}
@@ -161,7 +199,7 @@ export default function NavBar() {
                             {userProfileOptions.map((o, idx) => {
                                 const evenOption = idx % 2 === 0
                                 const isCollectionOption = o === 'Collections'
-                                const linkTo = o === 'Profile' ? `/users/${userData.user._id}` : o === 'Settings' ? `/users/${userData.user._id}/settings` : o === 'Logout' ? `/` : null
+                                const linkTo = o === 'Profile' ? `/users/${userData.user.username}` : o === 'Settings' ? `/users/${userData.user.username}/settings` : o === 'Logout' ? `/` : null
                                 const backgroundColorStyle = evenOption ? {backgroundColor: theme.palette.color1.main} : {backgroundColor: theme.palette.color1.darker}
                                 const hoverStyle = evenOption ? {'&:hover': {backgroundColor: hexToRgba(theme.palette.color1.main, 0.5), cursor: 'pointer'}} : {'&:hover': {backgroundColor: hexToRgba(theme.palette.color1.darker, 0.3), cursor: 'pointer'}}
                                 return (

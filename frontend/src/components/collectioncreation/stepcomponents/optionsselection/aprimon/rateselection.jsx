@@ -2,7 +2,7 @@ import {Box, Typography, Tabs, Tab} from '@mui/material'
 import IndividualRateSelection from './individualrateselection'
 import { useState } from 'react'
 
-export default function RateSelection({rateData, items, handleChange}) {
+export default function RateSelection({rateData, items, handleChange, collectionGen}) {
     const [offerType, setOfferType] = useState('pokemon')
     const changeOfferType = () => {
         setOfferType(offerType === 'pokemon' ? 'item' : 'pokemon')
@@ -49,7 +49,7 @@ export default function RateSelection({rateData, items, handleChange}) {
             <Typography sx={{fontSize: '12px'}}>Select your exchange rates for trades. Up to 8 per type. All offers are organized as (You:Potential Trader)</Typography>
             <Tabs value={offerType} onChange={changeOfferType}>
                 <Tab value='pokemon' label='Pokemon Offers'/>
-                <Tab value='item' label='Item Offers'/>
+                <Tab value='item' label='Item Offers' disabled={collectionGen === 'home'}/>
             </Tabs>
             <Box sx={{width: '90%', height: '65%', display: 'flex', flexDirection: 'row', mt: 1}}>
                 <Box sx={{width: '50%', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'start', alignItems: 'center'}}>

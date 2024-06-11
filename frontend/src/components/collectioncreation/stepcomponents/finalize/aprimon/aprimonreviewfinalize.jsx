@@ -17,6 +17,7 @@ export default function AprimonReviewFinalize({formData}) {
 
     const excludedBallCombosMons = `${Object.keys(formData.scope.excludedCombos).filter((mon, idx) => idx <= 20).map((mon, idx) => idx === 20 ? ' ...' : (idx === 0 ? mon : ` ${mon}`))}`
     const excludedBallCombosMonsSliced = excludedBallCombosMons.slice(0, 300)
+    const homeCollection = formData.collectionType.subTypeValue === 'home'
 
     const reorderDisplays = {
         'NatDexNumL2H': 'Dex Number - Lowest to Highest',
@@ -76,7 +77,7 @@ export default function AprimonReviewFinalize({formData}) {
                     <Typography sx={{fontSize: '12px'}}><b>Trade Status:</b> {formData.options.tradePreferences.status}</Typography>
                     <Typography sx={{fontSize: '12px'}}><b>Trade Size:</b> {formData.options.tradePreferences.size}</Typography>
                     <Typography sx={{fontSize: '12px'}}><b>On-Hand Only:</b> {formData.options.tradePreferences.onhandOnly}</Typography>
-                    <Typography sx={{fontSize: '12px'}}><b>Item Trading:</b> {formData.options.tradePreferences.items === 'none' ? 'not trading items' : formData.options.tradePreferences.items.toUpperCase() + ' items'}</Typography>
+                    <Typography sx={{fontSize: '12px'}}><b>Item Trading:</b> {homeCollection ? 'disabled' : formData.options.tradePreferences.items === 'none' ? 'not trading items' : formData.options.tradePreferences.items.toUpperCase() + ' items'}</Typography>
                     <Typography sx={{fontSize: '10px', opacity: formData.options.tradePreferences.items === 'lf' || formData.options.tradePreferences.items === 'lf/ft' ? 1 : 0.5}}>
                         <b>Items you're looking for:</b> {formData.options.tradePreferences.lfItems.map((item, idx) => {
                             const pluralConfig = formData.options.tradePreferences.ftItems[item] !== 1 ? (item === 'patch' ? 'es' : 's') : ''
@@ -98,7 +99,7 @@ export default function AprimonReviewFinalize({formData}) {
                 <Box sx={{width: '100%', height: '15%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
                     <Typography sx={{fontSize: '14px', fontWeight: 700, mb: 1}}>Trade Rates (You : Trader)</Typography>
                     <Typography sx={{fontSize: '12px'}}><b>Pokemon Trade Rates:</b> {formData.options.rates.pokemonOffers.length-1} defined rate{formData.options.rates.pokemonOffers.length-1 === 1 ? '' : 's'}</Typography>
-                    <Typography sx={{fontSize: '12px'}}><b>Item Trade Rates:</b> {formData.options.rates.itemOffers.length-1} defined rate{formData.options.rates.itemOffers.length-1 === 1 ? '' : 's'}</Typography>
+                    <Typography sx={{fontSize: '12px'}}><b>Item Trade Rates:</b> {homeCollection ? 'disabled' : formData.options.rates.itemOffers.length-1} {homeCollection ? '' : 'defined rate'}{formData.options.rates.itemOffers.length-1 === 1 || homeCollection ? '' : 's'}</Typography>
                 </Box>
                 <Box sx={{width: '100%', height: '20%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
                     <Typography sx={{fontSize: '14px', fontWeight: 700}}>Sorting Options</Typography>

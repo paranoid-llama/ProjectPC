@@ -24,12 +24,12 @@ import EditEggMovesModal from './modalcomponents/editeggmovesmodal'
 import Header from './modalcomponents/header'
 import SpeciesSelect from './modalcomponents/speciesselect'
 
-export default function OnHandPokemonSelectionForm({speciesEditOnly=false, open, handleClose, initialPokemonData, idxOfInitialPokemon}) {
+export default function OnHandPokemonSelectionForm({speciesEditOnly=false, open, handleClose, initialPokemonData, idxOfInitialPokemon, isHomeCollection}) {
     //usage in regular functions
     const dispatch = useDispatch()
 
     const allEggMoveInfo = useSelector((state) => state.listDisplay.eggMoveInfo)
-    const sortingOptions = useSelector((state) => state.options.sortingOptions.onhand)
+    const sortingOptions = useSelector((state) => state.options.sorting.onhand)
     const collectionID = useLoaderData()._id
     const initialSelection = initialPokemonData.imgLink === undefined ? {} : selectCollectionPokemon(store.getState(), initialPokemonData.imgLink)
     const [pokemonData, setPokemonData] = useState({selection: {...initialSelection}, searchData: '', ball: initialPokemonData.ball, newOnHandData: {}})
@@ -42,7 +42,7 @@ export default function OnHandPokemonSelectionForm({speciesEditOnly=false, open,
         noEMs: pokemonData.newOnHandData.gender !== undefined ? pokemonData.newOnHandData.EMs === undefined : false,
         EMs: pokemonData.newOnHandData.gender !== undefined ? pokemonData.newOnHandData.EMs : [],
         emCount: pokemonData.newOnHandData.gender !== undefined ? pokemonData.newOnHandData.emCount : 0,
-        maxEMs: pokemonData.newOnHandData.gender !== undefined ? (allEggMoveInfo[pokemonData.selection.name].length > 4 ? 4 : allEggMoveInfo[pokemonData.selection.name].length) : 4,
+        maxEMs: pokemonData.newOnHandData.gender !== undefined ? (allEggMoveInfo[pokemonData.selection.name] === undefined ? 0 : allEggMoveInfo[pokemonData.selection.name].length > 4 ? 4 : allEggMoveInfo[pokemonData.selection.name].length) : 4,
         possibleEggMoves: pokemonData.newOnHandData.gender !== undefined ? allEggMoveInfo[pokemonData.selection.name] : []
     }
 
@@ -322,7 +322,7 @@ export default function OnHandPokemonSelectionForm({speciesEditOnly=false, open,
                                         EMs={eggMoveData.EMs}
                                         emCount={eggMoveData.emCount}
                                         maxEms={eggMoveData.maxEMs}
-                                        width='100%'
+                                        width={isHomeCollection ? '40%' : '100%'}
                                         height='80%'
                                         newOnHandSelection={true}
                                         color='white'
@@ -333,6 +333,7 @@ export default function OnHandPokemonSelectionForm({speciesEditOnly=false, open,
                                         toggleScreen={handleOpenEggMoveSelection}
                                         idxOfSelectedEM={selectedEMIdx}
                                         noInfoBgColor='#283f57'
+                                        isHomeCollection={isHomeCollection}
                                     />
                                     <EditEggMovesModal 
                                         open={editEggMoveScreen} 

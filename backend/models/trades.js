@@ -11,14 +11,16 @@ const offerSchema = new Schema({
         }
     },
     offerer: {
-        type: Schema.Types.ObjectId,
-        ref: "User",
+        type: String,
         required: true
     },
     recipient: {
-        type: Schema.Types.ObjectId,
-        ref: "User",
+        type: String,
         required: true
+    },
+    comment: {
+        type: String,
+        validate: v => v.length <= 150
     },
 //offer and receiving are always in the POV of the offerer. so offerer gives 'offer' and receives 'receiving', while recipient gives 'receiving' and receives 'offer'
     trade: {

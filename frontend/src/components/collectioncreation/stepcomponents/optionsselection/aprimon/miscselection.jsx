@@ -1,6 +1,8 @@
 import {Box, Typography, ToggleButton, ToggleButtonGroup} from '@mui/material'
 
-export default function MiscSelection({globalDefaultData, handleChange}) {
+export default function MiscSelection({globalDefaultData, handleChange, collectionGen}) {
+    const homeCollection = collectionGen === 'home'
+    const disabledStyles = homeCollection ? {filter: 'blur(10px)', pointerEvents: 'none'} : {}
     return (
         <Box sx={{width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative'}}>
             <Typography variant='h6' sx={{fontSize: '16px', fontWeight: 700, mt: 1}}>Set Global Defaults</Typography>
@@ -23,8 +25,9 @@ export default function MiscSelection({globalDefaultData, handleChange}) {
                     </Box>
                 </Box>
                 <Box sx={{display: 'flex', flexDirection: 'column', justifyContent: 'center', width: '50%', height: '100%', position: 'relative'}}>
-                    <Typography sx={{fontSize: '14px', mb: 1, fontWeight: 700}}>Egg Move Count</Typography>
-                    <Box sx={{display: 'flex', flexDirection: 'row', justifyContent: 'center'}}>
+                    {homeCollection && <Typography sx={{position: 'absolute', fontSize: '12px', top: '25%', right: '25%', fontWeight: 700, width: '50%', height: '50%'}}>Egg Moves are disabled in <br></br>HOME collections</Typography>}
+                    <Typography sx={{fontSize: '14px', mb: 1, fontWeight: 700, ...disabledStyles}}>Egg Move Count</Typography>
+                    <Box sx={{display: 'flex', flexDirection: 'row', justifyContent: 'center', ...disabledStyles}}>
                         {Array.from(Array(5).keys()).map((emCount, idx) => {
                             return (
                                 <ToggleButton sx={{fontSize: '12px', mx: 0.5}} value={emCount} selected={globalDefaultData.emCount === emCount} onChange={(e, newVal) => handleChange('emCount', newVal)} key={`global-default-emCount-${emCount}`}>

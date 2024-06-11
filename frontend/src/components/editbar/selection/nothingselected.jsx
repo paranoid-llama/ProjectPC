@@ -2,7 +2,7 @@ import {useState} from 'react'
 import {Box, Typography, Button} from '@mui/material'
 import OnHandPokemonSelectionForm from '../editsectioncomponents/onhandeditonly/onhandpokemonselectionform'
 
-export default function NothingSelected({listType}) {
+export default function NothingSelected({listType, isHomeCollection}) {
     const onhandList = listType === 'onHand'
     const [openModal, setOpenModal] = useState(false)
     const handleOpen = () => setOpenModal(true)
@@ -23,7 +23,7 @@ export default function NothingSelected({listType}) {
             <Button size='small' onClick={handleOpen}>
                 New On-hand
             </Button>
-            <OnHandPokemonSelectionForm open={openModal} handleClose={handleClose} initialPokemonData={{}}/>
+            <OnHandPokemonSelectionForm open={openModal} handleClose={handleClose} initialPokemonData={{}} isHomeCollection={isHomeCollection}/>
         </Box>}
         </>
     )

@@ -18,13 +18,13 @@ import {setCollectionInitialState} from '../../../app/slices/collection'
 import store from '../../../app/store'
 
 //dont remove id, mapStateToProps uses it
-function TableRowGrouping({columns, row, id, collectionId, ownerId, styles, isSelected, setSelected, isEditMode}) {
+function TableRowGrouping({columns, row, id, collectionId, ownerId, styles, isSelected, setSelected, isEditMode, isHomeCollection, availableGames}) {
     const dispatch = useDispatch()
 
     //following data is used for editing values in the list
-    const possibleEggMoves = isEditMode ? useSelector((state) => state.listDisplay.eggMoveInfo[row.name]) : null
-    const maxEMs = isEditMode ? possibleEggMoves.length > 4 ? 4 : possibleEggMoves.length : null
-    const emCountSelectionList = isEditMode ? setMaxEmArr(maxEMs) : null
+    const possibleEggMoves = (isEditMode && !isHomeCollection) ? useSelector((state) => state.listDisplay.eggMoveInfo[row.name]) : null
+    const maxEMs = (isEditMode && !isHomeCollection) ? possibleEggMoves.length > 4 ? 4 : possibleEggMoves.length : null
+    const emCountSelectionList = (isEditMode && !isHomeCollection) ? setMaxEmArr(maxEMs) : null
     const idx = isEditMode ? useSelector(state => state.collection.indexOf(row)) : null
 
     //default data
@@ -40,7 +40,7 @@ function TableRowGrouping({columns, row, id, collectionId, ownerId, styles, isSe
                 key === 'emCount' ? selectNextEmCount(emCountSelectionList, parseInt(e.target.value)) :
                 key === 'EMs' && 'none'
             )
-        const defaultData = getDefaultData(globalDefaults, currentDefault, row.balls, maxEMs, possibleEggMoves)
+        const defaultData = getDefaultData(globalDefaults, currentDefault, row.balls, maxEMs, possibleEggMoves, ballname)
         if (key === 'isOwned') {
             if (newValue === true) {
                 dispatch(setSelectedAfterChangingOwned({idx: id, ball: ballname}))
@@ -96,6 +96,7 @@ function TableRowGrouping({columns, row, id, collectionId, ownerId, styles, isSe
                             isEditMode={isEditMode}
                             isSelected={isSelected}
                             onClickFunc={setSelected}
+                            availableGames={(availableGames === undefined) ? undefined : c.dataKey === 'name' ? availableGames[row.name] : undefined}
                         />:
                     row.balls[c.dataKey] === undefined ? 
                         <TableCell sx={blackTableCellStyles} key={`${row.imgLink}-${c.label}`}>
@@ -112,6 +113,8 @@ function TableRowGrouping({columns, row, id, collectionId, ownerId, styles, isSe
                         collectionId={collectionId}
                         ownerId={ownerId}
                         styles={styles}
+                        isEditMode={isEditMode}
+                        isHomeCollection={isHomeCollection}
                     />
                 )
             })}

@@ -30,7 +30,6 @@ const Item = styled(Paper)(() => ({
     textAlign: 'center',
     color: 'inherit',
     fontFamily: 'Arial',
-    
 }));
 
 const gridComponents = {

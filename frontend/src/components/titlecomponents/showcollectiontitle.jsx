@@ -8,19 +8,37 @@ import TextSpaceSingle from './subcomponents/textspacesingle'
 import CollectionProgress from './collectionprogress'
 import RateDisplay from './ratedisplay'
 import ItemDisplay from './itemdisplay'
+import ComparisonMain from '../functionalcomponents/comparecollections/comparisonmain'
 import { tradePreferenceDisplay } from '../../../../common/infoconstants/miscconstants'
 import { useDispatch, useSelector } from 'react-redux'
 import { changeModalState } from '../../app/slices/editmode'
+import { homeCompatibleGames } from '../../../../common/infoconstants/miscconstants.mjs'
 import { setCollectionInitialState } from '../../app/slices/collection'
 import { setOnHandInitialState } from '../../app/slices/onhand'
 import { setOptionsInitialState } from '../../app/slices/options'
 
-export default function ShowCollectionTitle({collectionID, options, isEditMode}) {
+function checkIfCanTrade(collection, loggedInCollection) {
+    const typeMatches = collection.type === loggedInCollection.type
+    const genMatches = (collection.gen === loggedInCollection.gen && typeMatches)
+    const oneHomeCollection = collection.gen === 'home' || loggedInCollection.gen === 'home'
+    if (oneHomeCollection && typeMatches && !genMatches) {
+        const otherCollection = collection.gen === 'home' ? loggedInCollection : collection
+        const otherCollectionGen = isNaN(parseInt(otherCollection.gen)) ? otherCollection.gen : parseInt(otherCollection.gen)
+        const checkCompatibility = homeCompatibleGames.filter(data => (data.game === otherCollectionGen && otherCollectionGen !== 7))[0]
+        const homeCompatible = checkCompatibility !== undefined && checkCompatibility.compatible
+        return homeCompatible
+    } else {
+        return genMatches
+    }
+}
+
+export default function ShowCollectionTitle({collectionID, options, isEditMode, isOwner, userIsLoggedIn, userData}) {
     const collectionInfo = useLoaderData()
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const link = useLocation().pathname
     const [displayScreen, setDisplayScreen] = useState('ballProgress')
+    const [comparisonModal, setComparisonModal] = useState(false)
     const gen8Collection = isNaN(parseInt(collectionInfo.gen))
     const tradePreferencesState = useSelector((state) => state.options.tradePreferences)
     const tradePreferences = isEditMode ? tradePreferencesState : options.tradePreferences
@@ -28,6 +46,9 @@ export default function ShowCollectionTitle({collectionID, options, isEditMode})
     const collectionType = gen8Collection ? `${collectionInfo.gen.toUpperCase()} Aprimon Collection` : `Gen ${collectionInfo.gen} Aprimon Collection`
     const formattedTradePreferences = [tradePreferenceDisplay.onhandOnly[tradePreferences.onhandOnly], tradePreferenceDisplay.size[tradePreferences.size], tradePreferenceDisplay.items[tradePreferences.items]].filter(display => display !== undefined)
     
+    const tradeableCollections = (userData !== undefined && collectionInfo.owner._id !== userData._id) && userData.collections.filter(col => checkIfCanTrade(collectionInfo, col))
+    const canInitiateTrade = (userData !== undefined && collectionInfo.owner._id !== userData._id) && tradeableCollections.length !== 0
+
     useEffect(() => {
         if (itemsState === 'none' && displayScreen === 'items') {
             setDisplayScreen('rates')
@@ -48,6 +69,7 @@ export default function ShowCollectionTitle({collectionID, options, isEditMode})
     }
 
     const changeDisplayScreen = (newVal) => {setDisplayScreen(newVal)}
+    const toggleComparisonModal = () => {setComparisonModal(!comparisonModal)}
    
     //breakpoints when the label wraps
     const tradeStatusLabelStyles = {
@@ -93,9 +115,6 @@ export default function ShowCollectionTitle({collectionID, options, isEditMode})
     }
 
     const initializeEditMode = () => {
-        // dispatch(setCollectionInitialState(collectionInfo.ownedPokemon))
-        // dispatch(setOnHandInitialState(collectionInfo.onHand))
-        // dispatch(setOptionsInitialState({...collectionInfo.options, collectionName: collectionInfo.name}))
         navigate(`/collections/${collectionID}/edit`)
     }
 
@@ -142,15 +161,17 @@ export default function ShowCollectionTitle({collectionID, options, isEditMode})
                     </ToggleButtonGroup>
                 </Box>
                 <Box sx={{width: '100%', height: '15%', display: 'flex', justifyContent: 'center'}}>
-                    <Button sx={{width: '30%', fontSize: '12px'}} onClick={initializeEditMode}>Edit Mode</Button>
+                    {canInitiateTrade && <Button sx={{width: '60%', fontSize: '12px'}} onClick={toggleComparisonModal}>Compare Collections</Button>}
+                    {isOwner && <Button sx={{width: '30%', fontSize: '12px'}} onClick={initializeEditMode}>Edit Mode</Button>}
                     {isEditMode && <Button sx={{fontSize: '12px'}} onClick={() => dispatch(changeModalState({open: true, screen: 'main'}))}>Collection Options</Button>}
                 </Box>
             </Box>
             <Box sx={{display: 'flex', flexDirection: 'column', alignItems: 'center', width: '55%'}}>
                 {displayScreen === 'ballProgress' && <CollectionProgress ballScopeInit={options.collectingBalls} isEditMode={isEditMode} collectionList={collectionInfo.ownedPokemon}/>}
-                {displayScreen === 'rates' && <RateDisplay rates={tradePreferences.rates} owner={collectionInfo.owner.username}/>}
+                {displayScreen === 'rates' && <RateDisplay rates={tradePreferences.rates} owner={collectionInfo.owner.username} collectionGen={collectionInfo.gen}/>}
                 {displayScreen === 'items' && <ItemDisplay collectionGen={collectionInfo.gen} itemTradeStatus={tradePreferences.items} lfItems={tradePreferences.lfItems} ftItems={tradePreferences.ftItems}/>}
             </Box>
+            {canInitiateTrade && <ComparisonMain open={comparisonModal} toggleModal={toggleComparisonModal} tradeableCollections={tradeableCollections} collectionData={collectionInfo}/>}
         </Box>
     )
 }

@@ -9,7 +9,7 @@ import OnHandRowContent from './onhandrowcontent'
 import './../../../routes/showCollection.css'
 import {connect} from 'react-redux'
 
-export default function ShowOnHandList({onhandList, collectionID, styles, eggMoveInfo, isEditMode}) {
+export default function ShowOnHandList({onhandList, collectionID, styles, eggMoveInfo, isEditMode, isHomeCollection}) {
     
     const listState = useSelector(state => state.listDisplay.onhand)
     const listDisplay = isEditMode ? listState : onhandList
@@ -27,6 +27,13 @@ export default function ShowOnHandList({onhandList, collectionID, styles, eggMov
         linkRef.current = link
     }, [link])
 
+    const emColumns = isHomeCollection ? [] : [
+        {label: 'EM Count', dataKey: 'emCount', width: '10%'},
+        {label: 'EM 1', dataKey: 'EMs', width: '10%', idx: 0},
+        {label: 'EM 2', dataKey: 'EMs', width: '10%', idx: 1},
+        {label: 'EM 3', dataKey: 'EMs', width: '10%', idx: 2},
+        {label: 'EM 4', dataKey: 'EMs', width: '10%', idx: 3},
+    ]
 
     const columns = [
         {label: '#', dataKey: 'natDexNum', width: '5%'},
@@ -35,11 +42,7 @@ export default function ShowOnHandList({onhandList, collectionID, styles, eggMov
         {label: 'Ball', dataKey: 'ball', width: '5%', isImg: true, smallHeader: true},
         {label: 'Gender', dataKey: 'gender', width: '8%', isImg: true, smallHeader: true},
         {label: 'HA?', dataKey: 'isHA', width: '5%', smallHeader: true},
-        {label: 'EM Count', dataKey: 'emCount', width: '10%'},
-        {label: 'EM 1', dataKey: 'EMs', width: '10%', idx: 0},
-        {label: 'EM 2', dataKey: 'EMs', width: '10%', idx: 1},
-        {label: 'EM 3', dataKey: 'EMs', width: '10%', idx: 2},
-        {label: 'EM 4', dataKey: 'EMs', width: '10%', idx: 3},
+        ...emColumns,
         {label: 'Qty', dataKey: 'qty', width: '5%', smallHeader: true}
     ]
 
@@ -84,6 +87,7 @@ export default function ShowOnHandList({onhandList, collectionID, styles, eggMov
                 styles={styles}
                 allEggMoveInfo={eggMoveInfo}
                 isEditMode={isEditMode}
+                isHomeCollection={isHomeCollection}
                 {...includePokemonProp}
             />
         )

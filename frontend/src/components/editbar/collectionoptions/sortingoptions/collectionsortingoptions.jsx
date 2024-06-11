@@ -12,7 +12,7 @@ import SaveChangesConfirmModal from '../savechangesconfirmmodal'
 
 export default function CollectionSortingOptions({elementBg, collectionGen, collectionId}) {
     const dispatch = useDispatch()
-    const currentOptions = useSelector((state) => state.options.sortingOptions.collection)
+    const currentOptions = useSelector((state) => state.options.sorting.collection)
     const collectionListState = useSelector((state) => state.collection)
 
     const buttonStyles = {

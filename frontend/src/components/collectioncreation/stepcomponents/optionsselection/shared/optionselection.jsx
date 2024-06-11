@@ -11,7 +11,7 @@ import MiscSelection from '../aprimon/miscselection';
 import Header from '../../../../titlecomponents/subcomponents/header';
 import { getPossibleItems, apriballLiterals, getBallsInGen } from '../../../../../../../common/infoconstants/miscconstants.mjs';
 
-export default function OptionSelection({collectionType, formOptionsData, collectionGen, goBackStep, cssClass, customSort, handleChange}) {
+export default function OptionSelection({collectionType, formOptionsData, collectionGen, goBackStep, cssClass, customSort, userData, handleChange}) {
     const optionTabs = ['preferences', 'rates', 'sorting', 'misc']
     const [optionTab, setOptionTab] = useState(optionTabs[0])
     const collectionNameRef = useRef(null)
@@ -83,7 +83,7 @@ export default function OptionSelection({collectionType, formOptionsData, collec
                     <ControlledTextInput
                         textFieldProps={{
                             size: 'small',
-                            helperText: `If empty: 'twentyfourcharacteryesno's ${collectionType}'`,
+                            helperText: `If empty: '${userData.username}'s ${collectionType}'`,
                             FormHelperTextProps: {
                                 sx: {fontSize: '10.5px', height: 2}
                             },
@@ -113,6 +113,7 @@ export default function OptionSelection({collectionType, formOptionsData, collec
                             formData={optionsFormData.tradePreferences} 
                             handleChange={handleTradePreferenceChange} 
                             totalItems={totalItems}
+                            collectionGen={collectionGen}
                         />
                     }
                     {optionTab === 'rates' && 
@@ -120,6 +121,7 @@ export default function OptionSelection({collectionType, formOptionsData, collec
                             rateData={optionsFormData.rates} 
                             items={rateTotalItems} 
                             handleChange={handleRateDataChange}
+                            collectionGen={collectionGen}
                         />
                     }
                     {optionTab === 'sorting' && 
@@ -136,6 +138,7 @@ export default function OptionSelection({collectionType, formOptionsData, collec
                         <MiscSelection
                             globalDefaultData={optionsFormData.globalDefaults}
                             handleChange={handleGlobalDefaultChange}
+                            collectionGen={collectionGen}
                         />
                     }
                 </Box>

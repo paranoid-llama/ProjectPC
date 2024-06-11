@@ -16,7 +16,7 @@ import EggMoveSelectionForm from '../../editsectioncomponents/shared/eggmovesele
 import EditEggMovesForm from '../../editsectioncomponents/shared/editeggmovesform'
 
 
-function RenderCollectionEdit({collectionId, ownerId, pokemon, ballInfo, selectedBall, allEggMoves}) {
+function RenderCollectionEdit({collectionId, ownerId, pokemon, ballInfo, selectedBall, allEggMoves, isHomeCollection}) {
     const [editEggMoves, setEditEggMoves] = useState({open: 'firstRenderFalse', idx: ''})
     const dispatch = useDispatch()
     const allowedBalls = Object.keys(ballInfo).filter(ball => ballInfo[ball].disabled === undefined)
@@ -29,7 +29,7 @@ function RenderCollectionEdit({collectionId, ownerId, pokemon, ballInfo, selecte
     const listType = 'collection'
 
     const possibleEggMoves = allEggMoves[pokemon.name]
-    const maxEMs = possibleEggMoves.length > 4 ? 4 : possibleEggMoves.length
+    const maxEMs = possibleEggMoves === undefined ? 0 : possibleEggMoves.length > 4 ? 4 : possibleEggMoves.length
     
     const toggleClass = editEggMoves.open === true ? 'egg-moves-slide-in' : 
         editEggMoves.open === false && 'egg-moves-slide-out'
@@ -64,7 +64,7 @@ function RenderCollectionEdit({collectionId, ownerId, pokemon, ballInfo, selecte
 
     const handleIsOwnedChange = (event) => {
         const newValue = event.target.checked
-        const defaultData = getDefaultData(globalDefault, currentDefault, pokemon.balls, maxEMs, possibleEggMoves)
+        const defaultData = getDefaultData(globalDefault, currentDefault, pokemon.balls, maxEMs, possibleEggMoves, renderedBall)
         dispatch(setIsOwned({idx: selectedIdx, ball: renderedBall, ballDefault: defaultData}))
         usePutRequest('isOwned', newValue, {pokename: pokemon.name, ballname: renderedBall}, 'collection', collectionId, ownerId, defaultData)
     }
@@ -169,6 +169,7 @@ function RenderCollectionEdit({collectionId, ownerId, pokemon, ballInfo, selecte
                 handleEMChange={handleEMChange}
                 toggleScreen={toggleEditEggMoveScreen}
                 disabled={isOwnedState === false}
+                isHomeCollection={isHomeCollection}
             />
             {/* 40% width */}
             {(editEggMoves.open !== 'firstRenderFalse') &&

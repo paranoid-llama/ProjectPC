@@ -330,8 +330,8 @@ const setCollection = (identifier, names, ballData, gapRows, ballOrder, collecti
     const setCollectionScope = collection.filter((pokemon, idx) => {
         // console.log(pokemon.name)
         const isRegionalFormMon = regionalFormMons.map((regionalMon) => pokemon.name.includes(regionalMon)).includes(true)
-        const isAltForm = pokemon.name.includes("(") || pokemon.name.includes('♀') || pokemon.name.includes('♂') || nonBreedableAltFormMons.includes(pokemon.name)
-        const isInterchangeableAltFormMon = !isAltForm && interchangeableAltFormMons.includes(pokemon.name) // this is singled out as we support interchangeable alt form mons just being a singular entity in collections
+        const isAltForm = !pokemon.name.includes('Any') && (pokemon.name.includes("(") || pokemon.name.includes('♀') || pokemon.name.includes('♂') || nonBreedableAltFormMons.includes(pokemon.name))
+        const isInterchangeableAltFormMon = !isAltForm && interchangeableAltFormMons.map(iAltMon => pokemon.name.includes(iAltMon)).includes(true) // this is singled out as we support interchangeable alt form mons just being a singular entity in collections
         // console.log(`name: ${pokemon.name} isRegionalFormMon: ${isRegionalFormMon}`)
         if (isRegionalFormMon) {
             const isRegionalForm = pokemon.name === 'Mr. Mime' ? pokemon.name.includes('Galarian') : pokemon.name.includes(" ")
@@ -391,7 +391,8 @@ const setCollection = (identifier, names, ballData, gapRows, ballOrder, collecti
             return isPokemonInImportedNamesList.bool
         }
         if (isInterchangeableAltFormMon) {
-            const isPokemonInImportedNamesList = formattedNames.includes(pokemon.name.toLowerCase())
+            //note: pokemon in this section come out as '*pokemonname* (Any)'
+            const isPokemonInImportedNamesList = formattedNames.includes(interchangeableAltFormMons.filter(iAltFormMon => pokemon.name.includes(iAltFormMon))[0].toLowerCase())
             const hasOtherFormsInList = !noDexNums ? identifier.filter(dexNum => dexNum === pokemon.natDexNum).length > 1 : formattedNames.filter((name) => name.includes(pokemon.name.toLowerCase())).length > 1
             if (isPokemonInImportedNamesList && hasOtherFormsInList) { //this checks if, for example, the user has 'Oricorio' in their list but also has 'Oricorio (Baile)', and causes 'Oricorio' to fail since the form is unidentified AND other forms are present. the error gets reported in the forEach
                 const errorMessage = `Detected ${pokemon.name} (Changeable Alternate Form Pokemon) with an unidentified form name, and other forms of the same pokemon is present. Remove other form names if you want to have any form, or identify the form name.`

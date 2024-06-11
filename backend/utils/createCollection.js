@@ -1,7 +1,7 @@
 import allPokemon from './aprimonAPI/allpokemoninfo.js'
-import {handleAlternateForms, handleRegionalForms, handleIncenseAndBabyMons, setBallInfo, setOwnedBallList, removeBallsOutsideScope} from './CreateCollection/functions.js'
+import {handleAlternateForms, handleRegionalForms, handleIncenseAndBabyMons, setBallInfo, setOwnedBallList, removeBallsOutsideScope, getBallPath} from './CreateCollection/functions.js'
 import { customSortCollectionListLogic } from '../../common/sortingfunctions/customsorting.mjs'
-import { getGenNum } from './infogathering/gens.js'
+import { getGenNum } from '../../common/infoconstants/miscconstants.mjs'
 import { getImgLink, getPossibleGender } from './schemavirtuals/collectionvirtuals.js'
 
 //Note for pokemon groups/scope
@@ -21,14 +21,15 @@ function setOwnedPokemonList(gen, pokemonScope, ballScope, excludedCombos, impor
     const userImportedCollection = importedCollection !== false
     const parsedGen = getGenNum(gen) //gen comes as a string, since "swsh" and "bdsp" are used instead of 8. this parses it into a number
     const game = isNaN(parseInt(gen)) ? gen : "" //this retains what game it is (if there is one)
-    const formattedGen = `gen${parsedGen}` //this formats gen to how its organized in the database
+    const isHomeCollection = gen === 'home'
+    const formattedGen = isHomeCollection ? 'home' : `gen${parsedGen}` //this formats gen to how its organized in the database
     return (
         allPokemon.map((pokemon) => {
-            const pokemonInGen = (parsedGen !== 8 && pokemon.specificGenInfo[formattedGen] !== undefined) || (parsedGen === 8 && pokemon.specificGenInfo[formattedGen] !== undefined && pokemon.specificGenInfo[formattedGen].balls[game] !== undefined) //have to break gen 8 check in 2 since they could have no gen 8 combos
+            const pokemonInGen = gen === 'home' || (parsedGen !== 8 && pokemon.specificGenInfo[formattedGen] !== undefined) || (parsedGen === 8 && pokemon.specificGenInfo[formattedGen] !== undefined && pokemon.specificGenInfo[formattedGen].balls[game] !== undefined) //have to break gen 8 check in 2 since they could have no gen 8 combos
             if (pokemonInGen) {
                 // console.log(pokemon.name)
-                const ballsPath = parsedGen === 8 ? pokemon.specificGenInfo[formattedGen].balls[game] : pokemon.specificGenInfo[formattedGen].balls
-                const ownedBallList = setOwnedBallList(formattedGen, ballsPath, pokemon)
+                const ballsPath = getBallPath(pokemon, gen, formattedGen, game)
+                const ownedBallList = setOwnedBallList(formattedGen, ballsPath, pokemon, false, isHomeCollection)
                 const {childName, childNatDexNum, childGen, adultName, adultNatDexNum, adultGen, pokename, pokeNatDexNum, pokeGen} = handleIncenseAndBabyMons(pokemon)
                 
                 const originalPokemon = pokename === undefined ? {
@@ -61,7 +62,8 @@ function setOwnedPokemonList(gen, pokemonScope, ballScope, excludedCombos, impor
                     }
                     if (pokemon.info.alternateForm.interchangeable !== undefined) {//there is an option to just have a one of an interchangeable alt form mon. this just gets singled out if they have all of them, though.
                         const includeOriginalPokemon = importing ? true : pokemonScope.alternateForms.interchangeable.filter(mon => mon.name === originalPokemon.name).length !== 0
-                        const multiplePokemon = [includeOriginalPokemon ? originalPokemon : undefined, handleAlternateForms(pokemon, ownedBallList, pokename, parsedGen, importing ? true : false, false, !importing && pokemonScope.alternateForms)].flat().filter(mon => mon !== undefined)
+                        const originalNameAdjustment = includeOriginalPokemon ? {...originalPokemon, name: `${originalPokemon.name} (Any)`} : null
+                        const multiplePokemon = [includeOriginalPokemon ? originalNameAdjustment : undefined, handleAlternateForms(pokemon, ownedBallList, pokename, parsedGen, importing, false, !importing && pokemonScope.alternateForms)].flat().filter(mon => mon !== undefined)
                         const filteredByBallScope = importing ? multiplePokemon : removeBallsOutsideScope(multiplePokemon, ballScope, excludedCombos, userImportedCollection ? importedCollection.filter(impMon => multiplePokemon.filter(mon => mon.name === impMon.name).length !== 0) : undefined)
                         return filteredByBallScope 
                     }
@@ -162,7 +164,7 @@ class Collection {
         this.gen = gen
         this.options = options
         this.trades = []
-        this.ownedPokemon = ((ownedPokemonList !== undefined && remakeList) || (ownedPokemonList === undefined)) ? setOwnedPokemonList(gen, pokemonScope, ballScope, excludedCombos, true, ownedPokemonList !== undefined ? ownedPokemonList : false)
+        this.ownedPokemon = ((ownedPokemonList !== undefined && remakeList) || (ownedPokemonList === undefined)) ? setOwnedPokemonList(gen, pokemonScope, ballScope, excludedCombos, false, ownedPokemonList !== undefined ? ownedPokemonList : false)
                                 .flat()
                                 .filter(e => e !== undefined)
                                 // .sort((a, b) => customSortCollectionListLogic(a, b, customSort, true)) 

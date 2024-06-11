@@ -14,6 +14,15 @@ import ShowCollection from './routes/showCollection'
 import ShowUser from './routes/showUser'
 import EditCollection from './routes/editcollection'
 import LoginPage from './routes/loginpage'
+import RegisterPage from './routes/registerpage'
+import VerifyAccount from './routes/verifyaccount'
+import Auth from './routes/auth'
+import SettingsPage from './routes/usersettings/settingspage'
+import Profile from './routes/usersettings/profile'
+import Account from './routes/usersettings/account'
+import Display from './routes/usersettings/display'
+import Other from './routes/usersettings/other'
+import NewTrade from './routes/trades/newtrade'
 import ErrorPage from "./error-page";
 import NavBar from "./components/partials/navbar"
 import Footer from "./components/partials/footer"
@@ -31,6 +40,12 @@ import collectionLoader from '../utils/functions/collectionLoader'
 import userLoader from '../utils/functions/userloader'
 import getSession from '../utils/functions/backendrequests/users/getsession'
 import './App.css'
+import ProtectedRoute from './components/partials/auth/protectedroute'
+import PrivateRoute from './components/partials/auth/privateroute'
+import AlertsProvider from './alerts/alerts-context'
+import { ThemeProvider } from '@mui/material'
+import theme from '../utils/styles/globalstyles/theme'
+
 
 //can add a bit of debounce by adding number parameter in case the event causes performance issues
 resizeEvent(store)
@@ -43,6 +58,20 @@ function NavFooterWrapper() {
     <Footer />
     </>
   )
+}
+
+function ShowCollectionComponent() {
+  const tradeRoute = useLocation().pathname.includes('trade')
+  if (tradeRoute) {
+    return <Outlet />
+  } else {
+    return (
+      <>
+        <Outlet/>
+        <ShowCollection />
+      </>
+    )
+  }
 }
 
 function Router() {
@@ -64,6 +93,18 @@ function Router() {
           element: <Search />
         },
         {
+          path: '/register',
+          element: <RegisterPage />
+        },
+        {
+          path: '/verify-account',
+          element: <VerifyAccount />
+        },
+        {
+          path: '/auth',
+          element: <Auth />
+        },
+        {
           path: '/login',
           element: <LoginPage />
         },
@@ -73,29 +114,53 @@ function Router() {
         },
         {
           path: "/collections/new",
-          element: <NewCollection />
+          element: <ProtectedRoute Component={NewCollection}/>
         },
         {
           path: "/collections/:id",
-          element: (
-            <>
-              <Outlet/>
-              <ShowCollection listStyles={listStyles}/>
-            </>
-          ),
+          element: <ShowCollectionComponent />,
           loader: (params) => collectionLoader(params, dispatch, false, setListInitialState),
+          id: 'showCollection',
           children: [
             {
               path: 'edit',
-              element: <EditCollection/>,
+              element: <PrivateRoute Component={EditCollection} routeType='editCollection'/>,
               loader: (params) => collectionLoader(params, dispatch, true, setListInitialState, setCollectionInitialState, setOnHandInitialState, setOptionsInitialState)
+            },
+            {
+              path: 'trade',
+              element: <ProtectedRoute Component={NewTrade}/>
             }
           ]
         },
         {
-          path: "/users/:id",
+          path: "/users/:username",
           element: <ShowUser/>,
           loader: userLoader
+        },
+        {
+          path: "/users/:username/settings",
+          element: <PrivateRoute Component={SettingsPage} PlaceholderComponent={ShowUser} routeType='userSettings'/>,
+          loader: userLoader,
+          id: 'userSettings',
+          children: [
+            {
+              path: 'profile',
+              element: <Profile />
+            },
+            {
+              path: 'account',
+              element: <Account />
+            },
+            {
+              path: 'display',
+              element: <Display />
+            },
+            {
+              path: 'other',
+              element: <Other />
+            },
+          ]
         }
       ]
     }
@@ -110,9 +175,13 @@ function App() {
   return (
     <>
       <Provider store={store}>
-        <Box sx={{width: '100%', display: 'flex', flexDirection: 'column', minHeight: '100vh', margin: 0}}>
-          <Router />
-        </Box>
+        <ThemeProvider theme={theme}>
+          <AlertsProvider>
+            <Box sx={{width: '100%', display: 'flex', flexDirection: 'column', minHeight: '100vh', margin: 0}}>
+              <Router />
+            </Box>
+          </AlertsProvider>
+        </ThemeProvider>
       </Provider>
     </>
   )

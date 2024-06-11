@@ -1,4 +1,4 @@
-import {useNavigate} from "react-router-dom";
+import {useNavigate, useRouteLoaderData, useRevalidator} from "react-router-dom";
 import { createNewCollection } from "../../utils/functions/backendrequests/newcollection";
 import { useState, useTransition, useRef, useEffect } from "react";
 import { Virtuoso } from "react-virtuoso";
@@ -20,8 +20,10 @@ import { creationInitializeScopeFormData } from "../../utils/functions/scope/sta
 import { getOneArrData } from "../../utils/functions/scope/getonearrdata";
 import './newCollection.css'
 
-export default function NewCollection(userid) {
+export default function NewCollection() {
     const navigate = useNavigate()
+    const userData = useRouteLoaderData("root").user
+    const revalidator = useRevalidator()
     const steps = [0, 25, 50, 75, 100]
     //progressBar and body should be the exact same always, just separating it allows the body to update later and apply transition effects via keyframes
     // const [creationProgress, setCreationProgress] = useState({progressBar: 0, body: 0})
@@ -84,7 +86,7 @@ export default function NewCollection(userid) {
 
     const handleImportedCollectionChange = (e, data, ballScope=[]) => {
         setCreationProgress(50)
-        const genNum = typeof formData.collectionType.subTypeValue === 'string' && formData.collectionType.subTypeValue !== 'home' ? genGames.filter(data => data.games.includes(formData.collectionType.subTypeValue))[0].gen : formData.collectionType.subTypeValue
+        const genNum = formData.collectionType.subTypeValue !== 'home' && (typeof formData.collectionType.subTypeValue === 'string' ? genGames.filter(data => data.games.includes(formData.collectionType.subTypeValue))[0].gen : formData.collectionType.subTypeValue)
         const baseBalls = formData.collectionType.subTypeValue !== 'home' ? apriballs.filter(ball => ballIntros[ball] !== undefined ? ballIntros[ball] <= genNum : true) : apriballs
         const fullBallScope = {total: baseBalls, importedBallScope: ballScope, formData: ballScope.length === 0 ? baseBalls : ballScope}
         setTimeout(() => {
@@ -126,7 +128,7 @@ export default function NewCollection(userid) {
         const newCustomSort = [...options.sorting.customSort, ...options.sorting.holdPokemon]
         options.sorting.customSort = newCustomSort
         options.sorting.holdPokemon = []
-        options.collectionName = collectionName === '' ? `twentyfourcharacteryesno's ${formData.collectionType.subType} ${capitalizeFirstLetter(formData.collectionType.type)} Collection` : collectionName
+        options.collectionName = collectionName === '' ? `${userData.username}'s ${formData.collectionType.subType} ${capitalizeFirstLetter(formData.collectionType.type)} Collection` : collectionName
         if (totalBalls.length !== options.sorting.onhand.ballOrder.length) {
             options.sorting.onhand.ballOrder = [...options.sorting.onhand.ballOrder, ...totalBalls.filter(ball => !options.sorting.onhand.ballOrder.includes(ball))]
         }
@@ -142,11 +144,14 @@ export default function NewCollection(userid) {
     }
 
     const finalizeCreation = async() => {
+        const isHomeCollection = formData.collectionType.subTypeValue === 'home'
+        const globalDefaultFormatted = isHomeCollection ? {...formData.options.globalDefaults, emCount: undefined} : formData.options.globalDefaults
+        const tradePreferencesFormatted = isHomeCollection ? {...formData.options.tradePreferences, ftItems: undefined, lfItems: undefined} : formData.options.tradePreferences
         const backendOptionsFormat = {
             collectingBalls: formData.ballScope.formData,
-            globalDefaults: formData.options.globalDefaults,
+            globalDefaults: globalDefaultFormatted,
             sorting: {collection: formData.options.sorting.collection, onhand: formData.options.sorting.onhand},
-            tradePreferences: {...formData.options.tradePreferences, rates: {pokemonOffers: formData.options.rates.pokemonOffers.filter(off => off.add === undefined), itemOffers: formData.options.rates.itemOffers.filter(off => off.add === undefined)}}
+            tradePreferences: {...tradePreferencesFormatted, rates: {pokemonOffers: formData.options.rates.pokemonOffers.filter(off => off.add === undefined), itemOffers: isHomeCollection ? undefined : formData.options.rates.itemOffers.filter(off => off.add === undefined)}}
         }
         //below variable only matters for imported collections, since if it is completely unchanged then we just take the imported collection as is and don't 
         //redo the collection creation function
@@ -163,12 +168,13 @@ export default function NewCollection(userid) {
             options: backendOptionsFormat,
             customSort: formData.options.sorting.customSort,
             collectionName: formData.options.collectionName,
-            owner: "663313a050e7aacd52eb2d54"
+            owner: userData._id
         }
 
         const collectionId = await createNewCollection(newCollectionInfo, formData.collectionType.type)
         setTimeout(() => {
             setFormData({...formData, redirectLink: collectionId})
+            revalidator.revalidate()
         }, 250)
 
     }
@@ -193,7 +199,7 @@ export default function NewCollection(userid) {
             <Box sx={{height: '100%', mt: 3, mx: 1}}> 
                 <CreationProgress progress={creationProgress} />
                 {(formBodyProgress === 0 || slideClasses.step1 !== 'none') && 
-                    <CollectionTypeSelection handleChange={handleCollectionTypeChange} cssClass={slideClasses.step1}/>
+                    <CollectionTypeSelection handleChange={handleCollectionTypeChange} cssClass={slideClasses.step1} userData={userData}/>
                 }
                 {(formBodyProgress === 25 || slideClasses.step2 !== 'none') && 
                     <ImportSelection 
@@ -224,7 +230,8 @@ export default function NewCollection(userid) {
                         cssClass={slideClasses.step4} 
                         ballOrderInit={formData.ballScope.formData}
                         customSort={formData.customSort}
-                        goBackStep={{stepName: 'Scope Selection', func: goBackStep}} 
+                        goBackStep={{stepName: 'Scope Selection', func: goBackStep}}
+                        userData={userData}
                         handleChange={handleOptionsSelection}
                     />
                 }

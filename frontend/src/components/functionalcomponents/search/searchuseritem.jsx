@@ -9,7 +9,7 @@ export default function SearchUserItem({query, username, collectionsInfo, userId
     const navigate = useNavigate()
     // const otherCollectionCount = collectionsInfo.filter(cInfo => cInfo.type !== 'aprimon').length
     const sendToUser = () => {
-        navigate(`/users/${userId}`)
+        navigate(`/users/${username}`)
     }
 
     return (

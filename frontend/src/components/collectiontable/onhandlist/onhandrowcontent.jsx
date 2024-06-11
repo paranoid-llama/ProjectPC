@@ -10,11 +10,11 @@ import {seeIfPokemonIsSelected, selectOnHandPokemon} from './../../../app/select
 import {setSelected} from './../../../app/slices/editmode'
 import {connect, useDispatch} from 'react-redux'
 
-function OnHandRowContent({columns, row, pokemonId, collectionId, styles, isSelected, setSelected, allEggMoveInfo, isEditMode}) {
+function OnHandRowContent({columns, row, pokemonId, collectionId, styles, isSelected, setSelected, allEggMoveInfo, isEditMode, isHomeCollection}) {
     const dispatch = useDispatch()
 
-    const possibleEMs = allEggMoveInfo[row.name]
-    const maxEMs = possibleEMs.length > 4 ? 4 : possibleEMs.length
+    const possibleEMs = !isHomeCollection && (allEggMoveInfo[row.name])
+    const maxEMs = !isHomeCollection && (possibleEMs === undefined ? 0 : possibleEMs.length > 4 ? 4 : possibleEMs.length)
 
     // const reRenderCount = useRef(0)
     // useEffect(() => {
