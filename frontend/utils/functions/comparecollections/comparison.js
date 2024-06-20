@@ -6,11 +6,12 @@ const comparisonPokemonFormat = (ball, isOnhand, ballData, pokemon, eggMoveData,
     const isHAData = peripheryInfoLocation.isHA === undefined ? {} : {isHA: peripheryInfoLocation.isHA}
     const emData = peripheryInfoLocation.emCount === undefined ? {} : {emCount: peripheryInfoLocation.emCount, EMs: peripheryInfoLocation.EMs, isMaxEMs: eggMoveData[pokemon.name].length === peripheryInfoLocation.emCount || peripheryInfoLocation.emCount === 4}
     const wanted = highlyWanted ? {wanted: true} : {}
+    const onhandId = isOnhand ? {onhandId: pokemon._id} : {}
     return {
         ball,
         ...isHAData,
         ...emData,
-        onhand: isOnhand,
+        ...onhandId,
         ...wanted
     }
 }
@@ -52,6 +53,8 @@ const compareLists = (refList, compareFromList, specificOpts, advOpts, eggMoveDa
     for (let iFormMon of interchangeableAltFormMons) {
         interchangeableToAnyRef[iFormMon] = []
     }
+    //this object is used so that multiple of the same pokemon/ball combo of a valid on-hand aren't used
+    const onhandBallComboRef = {}
     refList.forEach(pokemon => {
         //isOnhandList always refers to the refList.
         if (pokemon.disabled === true) {return} 
@@ -64,6 +67,7 @@ const compareLists = (refList, compareFromList, specificOpts, advOpts, eggMoveDa
         // console.log(equivalentPokemon)
 
         const otherListPokemonLiteral = compareFromList.filter(p => p.name === pokemon.name)[0]
+        
         const otherListPokemonEquivalent = equivalentPokemon !== undefined ? compareFromList.filter(p => p.name === equivalentPokemon)[0] : undefined
         const otherListPokemonData = (otherListPokemonLiteral !== undefined && otherListPokemonLiteral.disabled !== true) ? otherListPokemonLiteral : otherListPokemonEquivalent !== undefined ? otherListPokemonEquivalent : undefined
         // console.log(otherListPokemonLiteral)
@@ -80,6 +84,10 @@ const compareLists = (refList, compareFromList, specificOpts, advOpts, eggMoveDa
                 const ballData = pokemon.balls[ball]
                 const otherListBallData = otherListOwnedData[ball]
                 const noOtherBallData = otherListBallData === undefined || otherListBallData.disabled === true
+                const noComparisonToBeMade = ballData.disabled === true || noOtherBallData
+                const theyHaveBallPending = (otherListBallData !== undefined) && otherListBallData.pending === true
+                if (noComparisonToBeMade) {return}
+                if (theyHaveBallPending) {return}
                 const hasOnHandVer = onHandPokemon.filter(p => {
                     const matchesPokemon = pokemon.name === p.name
                     const matchesBall = p.balls.filter(ohBallData => ohBallData.ball === ball).length !== 0
@@ -90,10 +98,6 @@ const compareLists = (refList, compareFromList, specificOpts, advOpts, eggMoveDa
                     return takeOnhandVer
                 }).length !== 0
                 if (hasOnHandVer) {return}
-                const noComparisonToBeMade = ballData.disabled === true || noOtherBallData
-                const theyHaveBallPending = (otherListBallData !== undefined) && otherListBallData.pending === true
-                if (noComparisonToBeMade) {return}
-                if (theyHaveBallPending) {return}
                 //below block is if reflist has multiple int alt forms while compareTo list has 'Any'. To prevent duplication of balls provided (if multiple
                 //forms have the same ball which is unowned for 'Any'), we use this ref to keep track of it.
                 const otherIAltFormProvided = iAltFormDiffSpecies && interchangeableToAnyRef[iAltFormDiffSpecies].includes(ball)
@@ -131,7 +135,8 @@ const compareLists = (refList, compareFromList, specificOpts, advOpts, eggMoveDa
             const otherListBallData = otherListOwnedData[pokemon.ball]
             const noComparisonToBeMade = otherListBallData === undefined || otherListBallData.disabled === true
             if (noComparisonToBeMade) {return}
-
+            const otherOnHandHasProvidedPokeBallCombo = onhandBallComboRef[pokemon.name] !== undefined && onhandBallComboRef[pokemon.name].includes(pokemon.ball)
+            if (otherOnHandHasProvidedPokeBallCombo) {return}
             const otherIAltFormProvided = iAltFormDiffSpecies && interchangeableToAnyRef[iAltFormDiffSpecies].includes(ball)
             if (otherIAltFormProvided) {return}
             const providedByAdultBabyLiteral = babyAdultEquivalent && refList.filter(p => p.name === equivalentPokemon).map((pData) => {
@@ -148,6 +153,7 @@ const compareLists = (refList, compareFromList, specificOpts, advOpts, eggMoveDa
                 if (iAltFormDiffSpecies) {
                     interchangeableToAnyRef[iAltFormDiffSpecies].push(ball)
                 }
+                onhandBallComboRef[pokemon.name] = onhandBallComboRef[pokemon.name] !== undefined ? [...onhandBallComboRef[pokemon.name], pokemon.ball] : [pokemon.ball]
                 if (pokemonDataThere) {
                     const idxOfPokemon = comparedList.map((p, idx) => {return {name: p.name, idx}}).filter(p => p.name === pokemon.name)[0].idx
                     comparedList[idxOfPokemon].balls.push(comparisonPokemonFormat(pokemon.ball, true, {}, pokemon, eggMoveData, otherListBallData.highlyWanted !== undefined))
@@ -179,7 +185,23 @@ const compareCollections = (userCol, ownerCol, opts, advOpts, userEggMoveData, o
     return {canOffer, canReceive}
 }
 
-const reFormatToIndividual = (comparedList) => {
+const reFormatToIndividual = (comparedList, onlyOnePart=false) => {
+    if (onlyOnePart) {
+        const reFormattedList = []
+        comparedList.forEach(pokemon => {
+            const forData = pokemon.for !== undefined ? {for: pokemon.for} : {}
+            pokemon.balls.forEach(ballData => {
+                reFormattedList.push({
+                    name: pokemon.name,
+                    natDexNum: pokemon.natDexNum,
+                    id: pokemon.id,
+                    ...forData,
+                    ...ballData
+                })
+            })
+        })
+        return reFormattedList
+    }
     const reFormattedList = {canOffer: [], canReceive: []}
     comparedList.canOffer.forEach((pokemon) => {
         const forData = pokemon.for !== undefined ? {for: pokemon.for} : {}
@@ -208,4 +230,44 @@ const reFormatToIndividual = (comparedList) => {
     return reFormattedList
 }
 
-export {compareCollections, reFormatToIndividual}
+const reFormatIndividualRow = (comparedList, onlyOnePart=false) => {
+    const reFormattedToIndividual = reFormatToIndividual(comparedList, onlyOnePart)
+    const reReFormattedList = {canOffer: [], canReceive: []}
+    if (onlyOnePart) {
+        const reReFormattedList = []
+        reFormattedToIndividual.forEach((p, idx) => {
+            const pNum = idx+1
+            const rowNum = Math.ceil(pNum/6)
+            const rowNumUninitialized = reReFormattedList[rowNum-1] === undefined
+            if (rowNumUninitialized) {
+                reReFormattedList[rowNum-1] = [p]
+            } else {
+                reReFormattedList[rowNum-1].push(p)
+            }
+        })
+        return reReFormattedList
+    }
+    reFormattedToIndividual.canOffer.forEach((p, idx) => {
+        const pNum = idx+1
+        const rowNum = Math.ceil(pNum/6)
+        const rowNumUninitialized = reReFormattedList.canOffer[rowNum-1] === undefined
+        if (rowNumUninitialized) {
+            reReFormattedList.canOffer[rowNum-1] = [p]
+        } else {
+            reReFormattedList.canOffer[rowNum-1].push(p)
+        }
+    })
+    reFormattedToIndividual.canOffer.forEach((p, idx) => {
+        const pNum = idx+1
+        const rowNum = Math.ceil(pNum/6)
+        const rowNumUninitialized = reReFormattedList.canReceive[rowNum-1] === undefined
+        if (rowNumUninitialized) {
+            reReFormattedList.canReceive[rowNum-1] = [p]
+        } else {
+            reReFormattedList.canReceive[rowNum-1].push(p)
+        }
+    })
+    return reReFormattedList
+}
+
+export {compareCollections, reFormatToIndividual, reFormatIndividualRow}

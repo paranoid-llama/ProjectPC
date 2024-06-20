@@ -4,16 +4,23 @@ import { useState, useTransition } from 'react'
 import hexToRgba from 'hex-to-rgba'
 import ComparisonSelection from './comparisonselection'
 import ComparisonDisplay from './comparisondisplay'
-import getUserCollectionData from '../../../../utils/functions/backendrequests/getusercollectiondata'
-import { compareCollections } from '../../../../utils/functions/comparecollections/comparison'
+import startComparison from '../../../../utils/functions/comparecollections/componentfunction'
 
-export default function ComparisonMain({open, toggleModal, tradeableCollections, collectionData}) {
+
+export default function ComparisonMain({open, toggleModal, tradeableCollections, collectionData, isTradePage=false, externalSelectedCol=undefined, externalChangeSelectedCol=undefined, externalComparisonData=undefined, extSetComparisonData=undefined, extSelectedColData=undefined}) {
     const theme = useTheme()
     const [comparisonData, setComparisonData] = useState({screen: 'selection', selectedCol: tradeableCollections[0]._id, optionType: 'basic', options: {userList: {ha: true, em: false, onhand: false}, ownerList: {ha: true, em: false, onhand: false}}, advancedOptions: {equalizeBabyAdults: false, legendary: false, nonBreedable: false, evolvedRegional: false}, pendingTransition: false})
     // console.log(tradeableCollections)
 
+    const trueSelectedCol = externalSelectedCol !== undefined ? externalSelectedCol : comparisonData.selectedCol
+    const trueComparisonData = externalComparisonData !== undefined ? externalComparisonData : comparisonData.data
+
     const changeSelectedCol = (newId) => {
-        setComparisonData({...comparisonData, selectedCol: newId})
+        if (externalChangeSelectedCol !== undefined) {
+            externalChangeSelectedCol(newId)
+        } else {
+            setComparisonData({...comparisonData, selectedCol: newId})
+        }
     }
 
     const changeOptionType = () => {
@@ -29,25 +36,28 @@ export default function ComparisonMain({open, toggleModal, tradeableCollections,
     const changeScreen = (newScreen) => {
         if (newScreen === 'comparison') {
             setComparisonData({...comparisonData, pendingTransition: true})
-            startComparison(comparisonData.selectedCol, comparisonData.options, comparisonData.advancedOptions)
+            compareData(trueSelectedCol, comparisonData.options, comparisonData.advancedOptions)
         } else {setComparisonData({...comparisonData, screen: newScreen})}
     }
 
-    const startComparison = async(selectedColId, opts, advOpts) => {
-        const fullUserCollectionData = await getUserCollectionData(selectedColId)
-        const userEMInfo = fullUserCollectionData.eggMoveInfo === undefined ? {} : fullUserCollectionData.eggMoveInfo
-        const ownerEMInfo = collectionData.eggMoveInfo === undefined ? {} : collectionData.eggMoveInfo
-        const ignoreEMs = fullUserCollectionData.gen === 'home' || collectionData.gen === 'home'
-        const comparisonResult = compareCollections(fullUserCollectionData, collectionData, opts, advOpts, userEMInfo, ownerEMInfo, ignoreEMs)
+    const compareData = async(selectedColId, opts, advOpts) => {
+        const result = await startComparison(selectedColId, collectionData, opts, advOpts, extSelectedColData)
         setTimeout(() => {
-            setComparisonData({...comparisonData, screen: 'comparison', data: comparisonResult, pendingTransition: false})
+            if (externalComparisonData !== undefined) {
+                extSetComparisonData(result)
+                setComparisonData({...comparisonData, screen: 'comparison', pendingTransition: false})
+            } else {
+                setComparisonData({...comparisonData, screen: 'comparison', data: result, pendingTransition: false})
+            }
         }, 1000)
     }
 
-    const selectedCollectionData = tradeableCollections.filter(col => col._id === comparisonData.selectedCol)[0]
-    const oneHomeCollection = selectedCollectionData.gen === 'home' || collectionData.gen === 'home'
+    const selectedCollectionData = tradeableCollections.filter(col => col._id === trueSelectedCol)[0]
+    const oneHomeCollection = trueSelectedCol !== '' && (selectedCollectionData.gen === 'home' || collectionData.gen === 'home')
 
     const modalScaling = (comparisonData.screen === 'selection') ? {height: '665px', width: '70%', maxWidth: '800px'} : {height: '80%', minHeight: '700px', width: '85%', maxWidth: '1000px'}
+
+    const userCollectionDisplayType = isTradePage ? tradeableCollections.filter(col => col._id === trueComparisonData.comparedWith)[0] : selectedCollectionData
 
     return (
         <Modal
@@ -68,12 +78,12 @@ export default function ComparisonMain({open, toggleModal, tradeableCollections,
                     {(comparisonData.screen === 'selection') && 
                         <ComparisonSelection 
                             dataState={comparisonData} 
+                            externalSelectedCol={externalSelectedCol}
                             changeCollection={changeSelectedCol} 
                             changeOption={changeOption} 
                             collectionOwnerUsername={collectionData.owner.username} 
                             tradeableCollections={tradeableCollections} 
-                            collectionGen={collectionData.gen} 
-                            userCollectionGen={selectedCollectionData.gen} 
+                            oneHomeCollection={oneHomeCollection}
                             changeScreen={changeScreen} 
                             isPending={comparisonData.pendingTransition}
                             optionType={comparisonData.optionType}
@@ -88,13 +98,15 @@ export default function ComparisonMain({open, toggleModal, tradeableCollections,
                     } */}
                     {(comparisonData.screen === 'comparison') && 
                         <ComparisonDisplay 
-                            userCollectionDisplay={isNaN(parseInt(selectedCollectionData.gen)) ? selectedCollectionData.gen.toUpperCase() : `Gen ${selectedCollectionData.gen}`}
+                            userCollectionDisplay={isNaN(parseInt(userCollectionDisplayType.gen)) ? userCollectionDisplayType.gen.toUpperCase() : `Gen ${userCollectionDisplayType.gen}`}
                             ownerCollectionDisplay={isNaN(parseInt(collectionData.gen)) ? collectionData.gen.toUpperCase() : `Gen ${collectionData.gen}`}
-                            comparisonData={comparisonData.data} 
+                            comparisonData={trueComparisonData} 
                             ownerUsername={collectionData.owner.username} 
                             oneHomeCollection={oneHomeCollection}
                             goBackScreen={() => changeScreen('selection')}
                             ownerTradeStatus={collectionData.options.tradePreferences.status}
+                            isTradePage={isTradePage}
+                            closeModal={toggleModal}
                         />
                     }
                 </Box>

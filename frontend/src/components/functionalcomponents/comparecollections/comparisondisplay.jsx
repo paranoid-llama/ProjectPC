@@ -1,36 +1,17 @@
 import {Box, Typography, useTheme, Tabs, Tab, styled, Paper, Button, Grid, Tooltip} from '@mui/material'
 import { useState, forwardRef } from 'react'
+import { useNavigate } from 'react-router'
 import modalStyles from '../../../../utils/styles/componentstyles/modalstyles'
 import { Virtuoso, VirtuosoGrid } from 'react-virtuoso'
-import SpeciesSelect from '../../editbar/editsectioncomponents/onhandeditonly/modalcomponents/speciesselect'
-import ImgData from '../../collectiontable/tabledata/imgdata'
-import { capitalizeFirstLetter } from '../../../../utils/functions/misc'
-import { reFormatToIndividual } from '../../../../utils/functions/comparecollections/comparison'
+import { reFormatToIndividual, reFormatIndividualRow } from '../../../../utils/functions/comparecollections/comparison'
 import hexToRgba from 'hex-to-rgba'
+import { compareDisplayGridComponents, listCompareDisplayIndividual, listCompareDisplayPokemon } from './comparedisplaygridcomponents'
 
-const Item = styled(Paper)(() => ({
-    backgroundColor: 'transparent',
-    boxShadow: '0px 2px 1px -1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 1px 3px 0px rgba(0,0,0,0.12)',
-    textAlign: 'center',
-    color: 'inherit',
-    fontFamily: 'Arial',
-}));
 
-const gridComponents = {
-    List: forwardRef(({children, ...props}, ref) => (
-        <Grid {...props} container ref={ref} spacing={0.5} sx={{width: '100%'}}>
-            {children}
-        </Grid>
-    )),
-    Item: forwardRef(({children, ...props}, ref) => (
-        <Grid item {...props} xs={2} ref={ref} sx={{minHeight: '120px'}}>
-            {children}
-        </Grid>
-    ))
-}
 
-export default function ComparisonDisplay({userCollectionDisplay, ownerCollectionDisplay, comparisonData, ownerUsername, oneHomeCollection, goBackScreen, ownerTradeStatus}) {
+export default function ComparisonDisplay({userCollectionDisplay, ownerCollectionDisplay, comparisonData, ownerUsername, oneHomeCollection, goBackScreen, ownerTradeStatus, isTradePage, closeModal}) {
     const theme = useTheme()
+    const navigate = useNavigate()
     const [list, setList] = useState('canOffer')
     const [displayType, setDisplayType] = useState('byIndividual')
     const canOfferAmount = comparisonData.canOffer.map((p) => p.balls.length).reduce((accumulator, currentValue) => accumulator+currentValue, 0)
@@ -38,116 +19,14 @@ export default function ComparisonDisplay({userCollectionDisplay, ownerCollectio
 
     // console.log(comparisonData)
 
-    const listItemContent = (p) => {
-        const amountOfBalls = p.balls.length
-        return (
-            <>
-            <Box 
-                sx={{display: 'flex', alignItems: 'center', backgroundColor: '#283f57', borderRadius: '10px', my: 0.5, height: '25px', width: '100%', ...theme.components.box.fullCenterRow}}
-            >
-                <Box sx={{display: 'flex', alignItems: 'center', width: '100%', height: '100%'}}>
-                    <Box sx={{height: '100%', width: '30px', mx: 0.25, pointerEvents: 'none', ...theme.components.box.fullCenterRow}}>
-                        <ImgData linkKey={p.id}/>
-                    </Box>
-                    <Box sx={{height: '100%', width: '45px', mx: 0.5, pointerEvents: 'none', ...theme.components.box.fullCenterRow}}>
-                        <Typography sx={{fontSize: '12px'}}>#{p.natDexNum}</Typography>
-                    </Box>
-                    <Box sx={{height: '100%', width: '40%', mx: 0.5, pointerEvents: 'none', ...theme.components.box.fullCenterRow, justifyContent: 'start'}}>
-                        <Typography sx={{fontSize: '12px', textAlign: 'center'}}>{p.name}</Typography>
-                    </Box>
-                    {p.for !== undefined &&
-                    <Box sx={{height: '100%', width: '43%', mx: 0.5, pointerEvents: 'none', ...theme.components.box.fullCenterRow, justifyContent: 'end'}}>
-                        <Typography sx={{fontSize: '12px', textAlign: 'center'}}>For: {p.for}</Typography>
-                    </Box>}
-                </Box>
-            </Box>
-            <Box 
-                sx={{display: 'flex', alignItems: 'center', backgroundColor: '#283f57', borderRadius: '10px', my: 0.5, height: '100px', width: '100%', ...theme.components.box.fullCenterRow}}
-            >
-                <Grid container sx={{height: '80%', width: '100%', pointerEvents: 'none', mt: 1, ...theme.components.box.fullCenterRow}} gap={0.6}>
-                    {p.balls.map((ballData) => {
-                        const showHAEMArea = (oneHomeCollection && ballData.isHA !== undefined) || (!oneHomeCollection && (ballData.isHA !== undefined || ballData.emCount !== undefined))
-                        const displayHA = ballData.isHA !== undefined
-                        const displayEM = (!oneHomeCollection && ballData.emCount !== undefined)
-                        const showIsOnhandArea = ballData.onhand === true
-                        
-                        return (
-                            <Grid item key={`${list}-pokemon-${p.id}-${ballData.ball}`} sx={{...theme.components.box.fullCenterCol, justifyContent: 'start', height: '100%', width: `${100/amountOfBalls}%`, maxWidth: '8%'}}>
-                                <Typography sx={{fontSize: '12px'}}>{capitalizeFirstLetter(ballData.ball)}</Typography>
-                                <ImgData type='ball' linkKey={ballData.ball} size='28px'/>
-                                {showHAEMArea && 
-                                <Box sx={{...theme.components.box.fullCenterRow, borderTop: '1px solid rgba(255,255,255, 0.3)', width: '95%'}}>
-                                    {ballData.isHA !== undefined && <Typography sx={{fontSize: '10px', opacity: ballData.isHA ? 1 : 0.5, fontWeight: ballData.isHA ? 700 : 400}}>HA</Typography>}
-                                    {(displayHA && displayEM) &&
-                                        <Box sx={{width: '10%'}}></Box>
-                                    }
-                                    {(!oneHomeCollection && ballData.emCount !== undefined) && <Typography sx={{fontSize: '10px', opacity: ballData.emCount === 0 ? 0.5 : 1, fontWeight: ballData.isMaxEMs ? 700 : 400}}>{ballData.emCount}EM</Typography>}
-                                </Box>}
-                                {showIsOnhandArea && 
-                                    <Box sx={{...theme.components.box.fullCenterRow, borderTop: '1px solid rgba(255,255,255, 0.3)'}}>
-                                        <Typography sx={{fontSize: '10px'}}>On-Hand</Typography>
-                                    </Box>
-                                }
-                            </Grid>
-                        )
-                    })}
-                </Grid>
-            </Box>
-            </>
-        )
-    }
-
-    const listItemContentByIndividual = (p) => {
-        const showHAEMArea = (oneHomeCollection && p.isHA !== undefined) || (!oneHomeCollection && (p.isHA !== undefined || p.emCount !== undefined))
-        const displayHA = p.isHA !== undefined
-        const displayEM = (!oneHomeCollection && p.emCount !== undefined)
-        const showIsOnhandArea = p.onhand === true
-        return (
-            <Item sx={{padding: '5%', width: '85%', backgroundColor: '#283f57', position: 'relative'}}>
-                <Typography sx={{fontSize: '10px'}}>#{p.natDexNum}</Typography>
-                <Typography sx={{fontSize: '12px'}}>{capitalizeFirstLetter(p.ball)} {p.name}</Typography>
-                <Box sx={{...theme.components.box.fullCenterRow, my: 1}}>
-                    <ImgData type='ball' linkKey={p.ball}/>
-                    <ImgData type='poke' linkKey={p.id}/>
-                </Box>
-                {showHAEMArea && 
-                <Box sx={{...theme.components.box.fullCenterRow, borderTop: '1px solid rgba(255,255,255, 0.3)'}}>
-                    {p.isHA !== undefined && <Typography sx={{fontSize: '13px', opacity: p.isHA ? 1 : 0.5, fontWeight: p.isHA ? 700 : 400}}>HA</Typography>}
-                    {(displayHA && displayEM) &&
-                        <Box sx={{width: '20%'}}></Box>
-                    }
-                    {(!oneHomeCollection && p.emCount !== undefined) && <Typography sx={{fontSize: '13px', opacity: p.emCount === 0 ? 0.5 : 1, fontWeight: p.isMaxEMs ? 700 : 400}}>{p.emCount}EM</Typography>}
-                </Box>}
-                {showIsOnhandArea && 
-                    <Box sx={{...theme.components.box.fullCenterRow, borderTop: '1px solid rgba(255,255,255, 0.3)'}}>
-                        <Typography sx={{fontSize: '12px'}}>On-Hand</Typography>
-                    </Box>
-                }
-                {p.wanted && 
-                    <Tooltip title={`This is marked as 'Highly Wanted' in ${list === 'canOffer' ? 'their' : 'your'} collection.`}>
-                        <Box sx={{position: 'absolute', top: '2px', right: '2px'}}>
-                            <Typography sx={{fontSize: '9px', cursor: 'pointer'}}>WANT</Typography>
-                        </Box>
-                    </Tooltip>
-                }
-                {p.for && 
-                    <Tooltip title={`This is an equivalent pokemon. ${list === 'canOffer' ? 'They' : 'You'} are looking for ${p.for}`}>
-                        <Box sx={{position: 'absolute', top: '2px', left: '2px'}}>
-                            <Typography sx={{fontSize: '9px', cursor: 'pointer'}}>EQ</Typography>
-                        </Box>
-                    </Tooltip>
-                }
-            </Item>
-        )
-    }
-
     const changeDisplayType = (displayType) => {setDisplayType(displayType)}
     const formattedComparisonData = displayType === 'byIndividual' ? reFormatToIndividual(comparisonData) : comparisonData
-    const listContentFunc = displayType === 'byIndividual' ? listItemContentByIndividual : listItemContent
-    const useGridComponents = displayType === 'byIndividual' ? {components: gridComponents} : {}
+    const listContentFunc = displayType === 'byIndividual' ? listCompareDisplayIndividual : listCompareDisplayPokemon
+    const useGridComponents = displayType === 'byIndividual' ? {components: compareDisplayGridComponents} : {}
     const ListComponent = displayType === 'byIndividual' ? VirtuosoGrid : Virtuoso
-    const aprimonCount = comparisonData[list].map(p => p.balls.filter(ballData => ballData.onhand !== true)).flat()
-    const onhandCount = comparisonData[list].map(p => p.balls.filter(ballData => ballData.onhand === true)).flat()
+    const aprimonCount = comparisonData[list].map(p => p.balls.filter(ballData => ballData.onhandId === undefined)).flat()
+    const onhandCount = comparisonData[list].map(p => p.balls.filter(ballData => ballData.onhandId !== undefined)).flat()
+    const canGoNextScreen = (isTradePage || (canOfferAmount === 0 || canReceiveAmount === 0) || ownerTradeStatus !== 'open')
 
     return (
         <>
@@ -168,7 +47,7 @@ export default function ComparisonDisplay({userCollectionDisplay, ownerCollectio
                     totalCount={formattedComparisonData[list].length}
                     {...useGridComponents}
                     style={{width: '99%', height: '95%', border: '1px solid white', borderRadius: '10px'}}
-                    itemContent={(idx) => listContentFunc(formattedComparisonData[list][idx])}
+                    itemContent={(idx) => listContentFunc(formattedComparisonData[list][idx], oneHomeCollection, theme, list.slice(3, list.length).toLowerCase())}
                 /> : 
                 <Box sx={{width: '99%', height: '95%', border: '1px solid white', borderRadius: '10px', ...theme.components.box.fullCenterCol}}>
                     <Typography sx={{fontSize: '20px', color: 'grey'}}>
@@ -191,13 +70,13 @@ export default function ComparisonDisplay({userCollectionDisplay, ownerCollectio
             </Typography>
             <Box sx={{...theme.components.box.fullCenterRow, height: '60%', alignItems: 'end'}}>
                 <Button variant='contained' sx={{mr: 10}} onClick={goBackScreen}>Compare another collection</Button>
-                {((canOfferAmount === 0 || canReceiveAmount === 0) || ownerTradeStatus !== 'open') ?
+                {(!canGoNextScreen) ?
                 <Tooltip title={ownerTradeStatus !== 'open' ? 'This collection is not accepting trade offers' : 'One side cannot offer anything!'}>
                     <Box sx={{'&:hover': {cursor: 'pointer'}}}>
                     <Button variant='contained' sx={{'&.Mui-disabled': {opacity: 0.5, backgroundColor: theme.palette.primary.main, color: 'white'}}} disabled>Offer Trade</Button>
                     </Box>
                 </Tooltip> : 
-                <Button variant='contained'>Offer Trade</Button>
+                <Button variant='contained' onClick={isTradePage ? closeModal : () => navigate('/trade')}>{isTradePage ? 'Next' : 'Offer Trade'}</Button>
                 }
             </Box>
         </Box>

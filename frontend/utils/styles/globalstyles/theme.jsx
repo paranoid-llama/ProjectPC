@@ -1,4 +1,5 @@
 import { createTheme } from '@mui/material/styles'
+import listStyles from '../componentstyles/liststyles'
 
 const theme = createTheme({
     palette: {
@@ -56,7 +57,8 @@ const theme = createTheme({
                     '&.Mui-disabled': {color: 'white', opacity: 0.7}
                 }  
             }
-        }
+        },
+        list: listStyles
     }
 })
 

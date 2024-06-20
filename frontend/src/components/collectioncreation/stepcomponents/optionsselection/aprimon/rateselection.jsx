@@ -40,7 +40,7 @@ export default function RateSelection({rateData, items, handleChange, collection
 
     const firstColumn = rateData[rateOfferPath].map((rate, idx) => {return {...rate, rateIdx: idx}}).filter((rate, idx) => idx % 2  === 0)
     const secondColumn = rateData[rateOfferPath].map((rate, idx) => {return {...rate, rateIdx: idx}}).filter((rate, idx) => idx % 2 === 1)
-    const possibleUserItems = ['On Hand HA Aprimon', 'HA Aprimon', 'On Hand Non-HA Aprimon', 'Non-HA Aprimon']
+    const possibleUserItems = ['On-Hand HA Aprimon', 'HA Aprimon', 'On-Hand Non-HA Aprimon', 'Non-HA Aprimon']
     const possibleTraderPokemonItems = ['HA Aprimon', 'Non-HA Aprimon', 'Wishlist Aprimon']
 
     return (

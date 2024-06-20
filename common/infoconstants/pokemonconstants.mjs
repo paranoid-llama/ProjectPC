@@ -52,6 +52,8 @@ const evolvedRegionals = [
     'Hisuian Braviary', 'Hisuian Sliggoo', 'Hisuian Goodra', 'Hisuian Avalugg', 'Hisuian Decidueye'
 ]
 
+const noCompareWithoutOnhand = [...legendaryPokemon, ...nonBreedablePokemon, nonBreedableAltFormPokemon, evolvedRegionals]
+
 //these are alternate and regional form pokemon who have special cases when creating ball list for them.
 const uniqueAlternateFormPokemon = ['Basculin', 'Vivillon', 'Flabébé', 'Rockruff', 'Alcremie']
 //basculin is unique in that his white striped form is exclusive to gen 9+. 
@@ -131,7 +133,7 @@ export {
     regionalFormRegions, alolanFormMons, galarianFormMons, hisuianFormMons, paldeanFormMons, regionalFormMons, multipleRegionalFormMons,
     allAltFormMons, genderAltFormMons, interchangeableAltFormMons, nonBreedableAltFormMons, nonBreedableAltRegIdentifiers,
     altFormMonsWithExclusiveEMs, incenseAdultsWithExclusiveEMs, incenseBabiesWithExclusiveEMs, babiesOfGen1Pokemon, babiesOfGen2Pokemon, babiesOfGen3Pokemon,
-    pokeBabies, pokeAdults, pokeIncenseBabies, pokeIncenseAdults, legendaryPokemon, nonBreedablePokemon, effectiveNonBreedable, evolvedRegionals,
+    pokeBabies, pokeAdults, pokeIncenseBabies, pokeIncenseAdults, legendaryPokemon, nonBreedablePokemon, effectiveNonBreedable, evolvedRegionals, noCompareWithoutOnhand,
     uniqueRegionalFormPokemon, uniqueAlternateFormPokemon, pokemonNamesWithSpaces,
     pokemonGroups, pokemonSubGroups, differentRegionalFormEvolutions, vivillonForms, getAllAlcremieFormsArr, multipleDexNumAndSpaceHavingPokemon
 }

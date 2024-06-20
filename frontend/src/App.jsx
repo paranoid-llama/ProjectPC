@@ -60,18 +60,13 @@ function NavFooterWrapper() {
   )
 }
 
-function ShowCollectionComponent() {
-  const tradeRoute = useLocation().pathname.includes('trade')
-  if (tradeRoute) {
-    return <Outlet />
-  } else {
-    return (
-      <>
-        <Outlet/>
-        <ShowCollection />
-      </>
-    )
-  }
+function EditCollectionComponent() {
+  return(
+    <>
+    <EditCollection/>
+    <ShowCollection/>
+    </>
+  )
 }
 
 function Router() {
@@ -118,18 +113,24 @@ function Router() {
         },
         {
           path: "/collections/:id",
-          element: <ShowCollectionComponent />,
-          loader: (params) => collectionLoader(params, dispatch, false, setListInitialState),
-          id: 'showCollection',
+          element: <Outlet/>,
+          // loader: (params) => collectionLoader(params, dispatch, false, true, setListInitialState),
+          // id: 'showCollection',
           children: [
             {
+              path: "",
+              element: <ShowCollection/>,
+              loader: (params) => collectionLoader(params, dispatch, false, true, setListInitialState),
+            },
+            {
               path: 'edit',
-              element: <PrivateRoute Component={EditCollection} routeType='editCollection'/>,
-              loader: (params) => collectionLoader(params, dispatch, true, setListInitialState, setCollectionInitialState, setOnHandInitialState, setOptionsInitialState)
+              element: <PrivateRoute Component={EditCollectionComponent} routeType='editCollection'/>,
+              loader: (params) => collectionLoader(params, dispatch, true, true, setListInitialState, setCollectionInitialState, setOnHandInitialState, setOptionsInitialState)
             },
             {
               path: 'trade',
-              element: <ProtectedRoute Component={NewTrade}/>
+              element: <ProtectedRoute Component={NewTrade}/>,
+              loader: (params) => collectionLoader(params, undefined, false, false)
             }
           ]
         },

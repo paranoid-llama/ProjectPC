@@ -93,12 +93,12 @@ function getPossibleEggMoves(ownedPokemon, gen) {
 }
 
 function getPossibleGender(p) {
-    const maleOnlyPokemon = ['Nidoran♂', 'Tauros', 'Paldean Tauros', 'Paldean Tauros (Aqua)', 'Paldean Tauros (Blaze)', 'Tyrogue', 'Volbeat', 'Throh', 'Sawk', 'Rufflet', 'Impidimp']
-    const femaleOnlyPokemon = ['Nidoran♀', 'Chansey', 'Kangaskhan', 'Jynx', 'Smoochum', 'Miltank', 'Illumise', 'Happiny', 'Petilil', 'Vullaby', 'Flabébé', 'Bounsweet', 'Hatenna', 'Milcery', 'Tinkatink']
+    const maleOnlyPokemon = ['Nidoran♂', 'Tauros', 'Paldean Tauros', 'Paldean Tauros (Aqua)', 'Paldean Tauros (Blaze)', 'Tyrogue', 'Volbeat', 'Throh', 'Sawk', 'Rufflet', 'Impidimp', 'Indeedee (Male)']
+    const femaleOnlyPokemon = ['Nidoran♀', 'Chansey', 'Kangaskhan', 'Jynx', 'Smoochum', 'Miltank', 'Illumise', 'Happiny', 'Petilil', 'Vullaby', 'Flabébé', 'Bounsweet', 'Hatenna', 'Milcery', 'Indeedee (Female)', 'Tinkatink']
     const genderlessPokemon = ['Magnemite', 'Voltorb', 'Hisuian Voltorb', 'Staryu', 'Porygon', 'Lunatone', 'Solrock', 'Baltoy', 'Beldum', 'Bronzor', 'Rotom', 'Klink', 'Cryogonal', 'Golett', 'Carbink', 'Minior', 'Dhelmise', 'Sinistea', 'Falinks', 'Tandemaus', 'Poltchageist']
     if (maleOnlyPokemon.includes(p.name)) {
         return 'male'
-    } else if (femaleOnlyPokemon.includes(p.name)) {
+    } else if (femaleOnlyPokemon.includes(p.name) || p.name.includes('Alcremie')) {
         return 'female'
     } else if (genderlessPokemon.includes(p.name)) {
         return 'none'

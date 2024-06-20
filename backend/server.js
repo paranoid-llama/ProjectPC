@@ -567,9 +567,11 @@ app.put('/collections/:id/edit/ownedpokemonedit', catchAsync(async(req, res) => 
             collection.options = {...collection.options, collectingBalls: newCollectingBalls}
         }
         collection.save()
-        if (updateEggMoves) {
+        if (updateEggMoves && gen !== 'home') {
             const updatedEggMoveInfo = getPossibleEggMoves(newOwnedCollectionList, gen)
             res.json(updatedEggMoveInfo)
+        } else if (updateEggMoves && gen === 'home') { 
+            res.json({})
         } else {
             res.end()
         }

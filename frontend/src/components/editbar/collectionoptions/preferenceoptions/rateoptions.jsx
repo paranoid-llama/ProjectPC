@@ -121,7 +121,7 @@ export default function RateOptions({elementBg, collectionGen, collectionId}) {
         }
     }
 
-    const possibleUserItems = ['On Hand HA Aprimon', 'HA Aprimon', 'On Hand Non-HA Aprimon', 'Non-HA Aprimon']
+    const possibleUserItems = ['On-Hand HA Aprimon', 'HA Aprimon', 'On-Hand Non-HA Aprimon', 'Non-HA Aprimon']
     const possibleTraderPokemonItems = ['HA Aprimon', 'Non-HA Aprimon', 'Wishlist Aprimon']
 
     return (

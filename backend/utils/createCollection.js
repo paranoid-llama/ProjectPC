@@ -134,9 +134,10 @@ function getIndividualPokemonInfo(gen, newPokemon, ballScope) {
             const pokemonInNewPokemonArr = pokemon.info.special !== undefined ? (newPokemon.filter(nPoke => nPoke.natDexNum === pokemon.info.natDexNum || nPoke.natDexNum === pokemon.info.special.child.natDexNum)[0]) : newPokemon.filter(nPoke => nPoke.natDexNum === pokemon.info.natDexNum)[0]
             const getPokemonInfo = pokemonInNewPokemonArr !== undefined
             if (getPokemonInfo) {
-                const ballsPath = parsedGen === 8 ? pokemon.specificGenInfo[formattedGen].balls[game] : pokemon.specificGenInfo[formattedGen].balls
+                // const ballsPath = parsedGen === 8 ? pokemon.specificGenInfo[formattedGen].balls[game] : pokemon.specificGenInfo[formattedGen].balls
+                const ballsPath = getBallPath(pokemon, gen, formattedGen, game)
                 const isBabyPokemon = pokemon.info.special !== undefined && pokemon.info.special.child.natDexNum === pokemonInNewPokemonArr.natDexNum
-                const ownedBallList = setOwnedBallList(formattedGen, ballsPath, pokemon)
+                const ownedBallList = setOwnedBallList(formattedGen, ballsPath, pokemon, false, gen === 'home')
                 const pokemonInfo = {
                     name: pokemonInNewPokemonArr.name,
                     natDexNum: pokemonInNewPokemonArr.natDexNum,

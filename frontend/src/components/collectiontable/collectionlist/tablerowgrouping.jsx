@@ -13,13 +13,87 @@ import {seeIfPokemonIsSelected, selectCollectionPokemon, selectIdxOfMon} from '.
 import {setSelected, deselect, setSelectedAfterChangingOwned} from './../../../app/slices/editmode'
 import {usePutRequest} from './../../../../utils/functions/backendrequests/editcollection'
 import getDefaultData from '../../../../utils/functions/defaultdata';
+import { apriballs } from '../../../../../common/infoconstants/miscconstants.mjs';
 import {createSelector} from '@reduxjs/toolkit'
 import {setCollectionInitialState} from '../../../app/slices/collection'
 import store from '../../../app/store'
 
+const blackTableCellStyles = { //for illegal ball combos
+    color: 'white',
+    backgroundColor: 'black'
+}
+
+const disabledTableCellStyles = { //for disabled ball combos (which the user purposefully doesn't wanna collect)
+    color: 'white',
+    backgroundColor: 'grey'
+}
+
+export function TableRowGroupingNoRedux({columns, row, id, collectionId, ownerId, styles, isHomeCollection, availableGames, isTradePage, tradeSide}) {
+    return (
+        <React.Fragment>
+            {columns.map(c => {
+                const isImg = c.label === 'img' && true
+                const textSizeAdjustor = c.dataKey === 'name' && row[c.dataKey] === 'Basculin (White-Striped)' ? {fontSize: '13px'} : {}
+                const validBallCombo = apriballs.includes(c.dataKey) && (row.balls[c.dataKey] !== undefined && row.balls[c.dataKey].disabled !== true)
+                return (
+                    c.label === '#' ? 
+                        <DataCell
+                            key={`${row.imgLink}-${c.label}`}
+                            label={row[c.dataKey]} 
+                            styles={styles} 
+                            alignment={styles.alignment.numAlignment}
+                            isEditMode={false}
+                            leftMostCell={true}
+                            isSelected={false}
+                            onClickFunc={null}
+                        /> :
+                    row[c.dataKey] !== undefined ? 
+                        <DataCell 
+                            key={`${row.imgLink}-${c.label}`}
+                            label={c.dataKey === 'name' && row[c.dataKey]}
+                            styles={styles}
+                            alignment={c.label === 'img' && styles.alignment.imgAlignment}
+                            imgParams={{isImg: isImg, imgLinkKey: row.imgLink}}
+                            specialStyles={textSizeAdjustor}
+                            isEditMode={false}
+                            isSelected={false}
+                            onClickFunc={null}
+                            availableGames={(availableGames === undefined) ? undefined : c.dataKey === 'name' ? availableGames[row.name] : undefined}
+                        />:
+                    row.balls[c.dataKey] === undefined ? 
+                        <TableCell sx={blackTableCellStyles} key={`${row.imgLink}-${c.label}`}>
+                        </TableCell> :
+                    row.balls[c.dataKey].disabled === true ? 
+                        <TableCell sx={disabledTableCellStyles} key={`${row.imgLink}-${c.label}`}>
+                        </TableCell> :
+                    <IsOwnedCheckbox
+                        key={`${row.imgLink}-${c.label}`} 
+                        ballInfo={row.balls}
+                        handleEditBallInfo={null}
+                        pokeName={row.name}
+                        ball={c.dataKey}
+                        collectionId={collectionId}
+                        ownerId={ownerId}
+                        styles={styles}
+                        isEditMode={false}
+                        isHomeCollection={isHomeCollection}
+                        isTradePage={isTradePage}
+                        tradeSide={tradeSide}
+                        tradeDispData={isTradePage && {
+                            pData: {name: row.name, id: row.imgLink, natDexNum: row.natDexNum},
+                            ballData: {ball: c.dataKey, ...row.balls[c.dataKey]}
+                        }}
+                    />
+                )
+            })}
+        </React.Fragment>
+    )
+}
+
 //dont remove id, mapStateToProps uses it
 function TableRowGrouping({columns, row, id, collectionId, ownerId, styles, isSelected, setSelected, isEditMode, isHomeCollection, availableGames}) {
     const dispatch = useDispatch()
+    // console.log(`rendered ${row.name}`)
 
     //following data is used for editing values in the list
     const possibleEggMoves = (isEditMode && !isHomeCollection) ? useSelector((state) => state.listDisplay.eggMoveInfo[row.name]) : null
@@ -73,6 +147,7 @@ function TableRowGrouping({columns, row, id, collectionId, ownerId, styles, isSe
             {columns.map(c => {
                 const isImg = c.label === 'img' && true
                 const textSizeAdjustor = c.dataKey === 'name' && row[c.dataKey] === 'Basculin (White-Striped)' ? {fontSize: '13px'} : {}
+                const validBallCombo = apriballs.includes(c.dataKey) && (row.balls[c.dataKey] !== undefined && row.balls[c.dataKey].disabled !== true)
                 return (
                     c.label === '#' ? 
                         <DataCell

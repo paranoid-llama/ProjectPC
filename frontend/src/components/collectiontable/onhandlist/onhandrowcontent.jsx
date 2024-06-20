@@ -10,7 +10,7 @@ import {seeIfPokemonIsSelected, selectOnHandPokemon} from './../../../app/select
 import {setSelected} from './../../../app/slices/editmode'
 import {connect, useDispatch} from 'react-redux'
 
-function OnHandRowContent({columns, row, pokemonId, collectionId, styles, isSelected, setSelected, allEggMoveInfo, isEditMode, isHomeCollection}) {
+function OnHandRowContent({columns, row, pokemonId, collectionId, styles, isSelected, setSelected, allEggMoveInfo, isEditMode, isHomeCollection, isTradePage, tradeSide}) {
     const dispatch = useDispatch()
 
     const possibleEMs = !isHomeCollection && (allEggMoveInfo[row.name])
@@ -68,6 +68,15 @@ function OnHandRowContent({columns, row, pokemonId, collectionId, styles, isSele
                         onhandCells={true}
                         specialStyles={textSizeAdjustor}
                         blackSquare={isBlackSquare}
+                        isTradePage={isTradePage}
+                        tradeSide={tradeSide}
+                        tradeDispData={isTradePage ? 
+                            {
+                                pData: {name: row.name, id: row.imgLink, natDexNum: row.natDexNum},
+                                ballData: {ball: row.ball, onhandId: row._id},
+                                fullData: row
+                            } : {}
+                        }
                     />
                 )
             })}

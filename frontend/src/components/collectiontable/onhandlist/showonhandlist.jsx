@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {useRef, useEffect} from 'react'
 import store from '../../../app/store';
-import {Paper, Table, TableHead, TableRow, TableBody, TableContainer, TableCell, Box} from '@mui/material'
+import {Paper, Table, TableHead, TableRow, TableBody, TableContainer, TableCell, Box, useTheme} from '@mui/material'
 import {TableVirtuoso} from 'react-virtuoso'
 import { useLocation } from 'react-router';
 import { useSelector } from 'react-redux';
@@ -9,15 +9,19 @@ import OnHandRowContent from './onhandrowcontent'
 import './../../../routes/showCollection.css'
 import {connect} from 'react-redux'
 
-export default function ShowOnHandList({onhandList, collectionID, styles, eggMoveInfo, isEditMode, isHomeCollection}) {
-    
+export default function ShowOnHandList({onhandList, collectionID, styles, eggMoveInfo, isEditMode, isHomeCollection, localDisplayState=undefined, height=800, isTradePage, tradeSide}) {
+    const theme = useTheme()
     const listState = useSelector(state => state.listDisplay.onhand)
-    const listDisplay = isEditMode ? listState : onhandList
+    const listDisplay = localDisplayState === undefined ? listState : localDisplayState
     const link = useLocation().pathname
     const linkRef = useRef(link)
 
     const scrollRef = useRef(null)
     const scrollPosition = useRef()
+
+    const trProps = isTradePage ? {
+        sx: {':hover': {cursor: 'pointer', opacity: 0.5}},
+    } : {}
 
     useEffect(() => {
         const sameIDBetweenRefs = linkRef.current.includes(collectionID) && link.includes(collectionID)
@@ -78,6 +82,9 @@ export default function ShowOnHandList({onhandList, collectionID, styles, eggMov
 
     function rowContent(_index, row) {
         const includePokemonProp = isEditMode ? {} : {row}
+        // console.log(localSelectedPokemon)
+        // console.log(row)
+        // console.log(isSelected)
         return (
             <OnHandRowContent
                 columns={columns}
@@ -88,6 +95,8 @@ export default function ShowOnHandList({onhandList, collectionID, styles, eggMov
                 allEggMoveInfo={eggMoveInfo}
                 isEditMode={isEditMode}
                 isHomeCollection={isHomeCollection}
+                isTradePage={isTradePage}
+                tradeSide={tradeSide}
                 {...includePokemonProp}
             />
         )
@@ -101,12 +110,12 @@ export default function ShowOnHandList({onhandList, collectionID, styles, eggMov
           <Table {...props} sx={{ borderCollapse: 'separate', tableLayout: 'fixed'}} />
         ),
         TableHead,
-        TableRow: ({ item: _item, ...props }) => <TableRow {...props} />,
+        TableRow: ({ item: _item, ...props }) => <TableRow {...props} {...trProps} />,
         TableBody: React.forwardRef((props, ref) => <TableBody {...props} ref={ref} />),
       };
 
     return (
-        <Paper style={{height: 800, margin: 0}}>
+        <Paper style={{height, margin: 0}}>
             <TableVirtuoso
                 data={listDisplay}
                 components={VirtuosoTableComponents}

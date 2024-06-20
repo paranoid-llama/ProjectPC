@@ -3,10 +3,11 @@ import modalStyles from '../../../../utils/styles/componentstyles/modalstyles'
 import HelpIcon from '@mui/icons-material/Help';
 import hexToRgba from 'hex-to-rgba'
 
-export default function ComparisonSelection({dataState, changeCollection, changeOption, tradeableCollections, collectionOwnerUsername, collectionGen, userCollectionGen, changeScreen, isPending, optionType, changeOptionType}) {
+export default function ComparisonSelection({dataState, changeCollection, changeOption, tradeableCollections, collectionOwnerUsername, oneHomeCollection, changeScreen, isPending, optionType, changeOptionType, externalSelectedCol}) {
     const theme = useTheme()
+    const trueSelectedCol = externalSelectedCol !== undefined ? externalSelectedCol : dataState.selectedCol
 
-    const disabledEMs = collectionGen === 'home' || userCollectionGen === 'home'
+    const disabledEMs = oneHomeCollection
     const disabledStyles = disabledEMs ? {opacity: 0.5, pointerEvents: 'none'} : {}
 
     return (
@@ -24,7 +25,7 @@ export default function ComparisonSelection({dataState, changeCollection, change
                             key={`visitor-user-${subType}-collection-selection`}
                             value={col._id} 
                             onChange={(e, newVal) => changeCollection(newVal)}
-                            selected={dataState.selectedCol === col._id} 
+                            selected={trueSelectedCol === col._id} 
                             sx={{
                                 width: '80%', 
                                 color: 'white', 

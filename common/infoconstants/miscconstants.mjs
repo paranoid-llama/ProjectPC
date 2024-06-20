@@ -135,6 +135,17 @@ const getGameColor = (gameLetter) => { //for home-compatible games only
     return color
 }
 
+//default value of various trade items in HA Aprimon
+const valueDefaults = {
+    'On Hand HA Aprimon': 0.5,
+    'Non-HA Aprimon': 1,
+    'On Hand Non-HA Aprimon': 0.5,
+    'Wishlist Aprimon': 1,
+    'Apriballs': 4, 'Dream Ball': 5, 'Beast Ball': 5, 'Safari Ball': 5, 'Sport Ball': 5,
+    'Ability Capsule': 1, 'Bottle Cap': 2, 'Gold Bottle Cap': 3, 'Ability Patch': 3,
+    'Max Mushroom': 2, 'Exp. Candy L': 1, 'Exp. Candy XL': 2
+}
+
 export {
     generations, genRomans, genGames, findGenByDexNum,
     apriballs, apriballLiterals, specialBalls, ballIntros,
@@ -143,5 +154,6 @@ export {
     items, getPossibleItems,
     regionIdentifiers,
     tradePreferenceDisplay,
-    gamesOrder, homeCompatibleGames, noRegionalFormGens, homeDisplayGames, getGameColor
+    gamesOrder, homeCompatibleGames, noRegionalFormGens, homeDisplayGames, getGameColor,
+    valueDefaults
 }

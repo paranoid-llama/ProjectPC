@@ -3,6 +3,7 @@ import {useRef, useEffect, useState} from 'react'
 import {Fragment} from 'react'
 import {Paper, Table, TableHead, TableRow, TableBody, TableContainer, TableCell, Box, Button} from '@mui/material'
 import {TableVirtuoso} from 'react-virtuoso'
+import { TableRowGroupingNoRedux as ConnectlessTableRow } from './tablerowgrouping';
 import TableRowGrouping from './tablerowgrouping'
 import './../../../routes/showCollection.css'
 import { capitalizeFirstLetter } from '../../../../utils/functions/misc';
@@ -11,21 +12,22 @@ import { useLocation } from 'react-router';
 import {setCollectionInitialState} from '../../../app/slices/collection'
 import {setSelected} from '../../../app/slices/editmode'
 
-export default function ShowCollectionList({collection, styles, isEditMode}) {
-
-    const ballScopeState = useSelector((state) => state.options.collectingBalls)
-    const listDisplay = useSelector((state) => state.listDisplay.collection)
+export default function ShowCollectionList({collection, styles, isEditMode, localDisplayState=undefined, height=800, noStates=false, isTradePage=false, tradeSide=null}) {
+    const ballScopeState = !noStates && useSelector((state) => state.options.collectingBalls)
+    const listState = !noStates && useSelector((state) => state.listDisplay.collection)
     const link = useLocation().pathname
     const linkRef = useRef(link)
     // ^^ listdisplay always uses state to cover for filtering/sorting functions (which anyone should be able to do)
 
     //apparently, on first render, this component loads faster than the initial state can initialize, meaning we have the one line below.
     const ballScopeDisplay = (ballScopeState === undefined || !isEditMode) ? collection.options.collectingBalls : ballScopeState
+    const listDisplay = (localDisplayState !== undefined) ? localDisplayState : listState
 
     // console.log(listDisplay)
 
     const scrollRef = useRef(null)
     const scrollPosition = useRef()
+    // console.log('rendered')
 
     // useEffect(() => {
         
@@ -58,17 +60,6 @@ export default function ShowCollectionList({collection, styles, isEditMode}) {
         {label: 'img', dataKey: 'natDexNum', width: '5%'},
         {label: 'Name', dataKey: 'name', width: '20%'},
         ...setBallCols()
-        // {label: 'Fast', dataKey: 'fast', width: `${70/11}%`, ball: true},
-        // {label: 'Friend', dataKey: 'friend', width: `${70/11}%`, ball: true},
-        // {label: 'Heavy', dataKey: 'heavy', width: `${70/11}%`, ball: true},
-        // {label: 'Level', dataKey: 'level', width: `${70/11}%`, ball: true},
-        // {label: 'Love', dataKey: 'love', width: `${70/11}%`, ball: true},
-        // {label: 'Lure', dataKey: 'lure', width: `${70/11}%`, ball: true},
-        // {label: 'Moon', dataKey: 'moon', width: `${70/11}%`, ball: true},
-        // {label: 'Beast', dataKey: 'beast', width: `${70/11}%`, ball: true},
-        // {label: 'Dream', dataKey: 'dream', width: `${70/11}%`, ball: true},
-        // {label: 'Safari', dataKey: 'safari', width: `${70/11}%`, ball: true},
-        // {label: 'Sport', dataKey: 'sport', width: `${70/11}%`, ball: true}
     ]
 
     function setHeaders() {
@@ -115,9 +106,10 @@ export default function ShowCollectionList({collection, styles, isEditMode}) {
 
     function rowContent(_index, row) {
         const includePokemonProp = isEditMode ? {} : {row}
+        const TrueTableRow = isTradePage ? ConnectlessTableRow : TableRowGrouping
         return (
             // <Fragment key={row.imgLink}>
-                <TableRowGrouping
+                <TrueTableRow
                     columns={columns}
                     // row={row}
                     // idx={_index}
@@ -128,6 +120,9 @@ export default function ShowCollectionList({collection, styles, isEditMode}) {
                     isEditMode={isEditMode}
                     isHomeCollection={collection.gen === 'home'}
                     availableGames={collection.availableGamesInfo !== undefined && collection.availableGamesInfo}
+                    noStates={noStates}
+                    isTradePage={isTradePage}
+                    tradeSide={tradeSide}
                     {...includePokemonProp}
                 />
             // </Fragment>
@@ -152,7 +147,7 @@ export default function ShowCollectionList({collection, styles, isEditMode}) {
 
     return (
         <>
-        <Paper style={{height: 800, margin: 0}}>
+        <Paper style={{height, margin: 0}}>
             <TableVirtuoso
                 data={listDisplay}
                 components={VirtuosoTableComponents}

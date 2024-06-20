@@ -9,7 +9,7 @@ const listStyles = {
         tableCell: {
             textAlign: 'center', 
             color: 'white', 
-            padding: '1px'
+            padding: '1px',
         },
         ballHeaderDiv: {
             divStyles: {

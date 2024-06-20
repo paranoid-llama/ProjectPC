@@ -5,6 +5,7 @@ import collection from './slices/collection'
 import editmode from './slices/editmode'
 import listDisplay from './slices/listdisplay'
 import options from './slices/options'
+import tradeOffer from './slices/tradeoffer'
 import reduxWindow from 'redux-window'
 
 const store = configureStore({
@@ -14,6 +15,7 @@ const store = configureStore({
         collection: collection.reducer,
         editmode: editmode.reducer,
         options: options.reducer,
+        tradeOffer: tradeOffer.reducer,
         reduxWindow
     }
 })
