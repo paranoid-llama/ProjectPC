@@ -11,11 +11,8 @@ import ShowOnHandList from '../../collectiontable/onhandlist/showonhandlist'
 import { reFormatToIndividual, reFormatIndividualRow } from '../../../../utils/functions/comparecollections/comparison'
 import listStyles from '../../../../utils/styles/componentstyles/liststyles'
 
-export default function SetPokemon({minHeight='650px', type, view, data, relValue, oneHomeCollection, fullCollectionData}) {
+export default function SetPokemon({minHeight='650px', type, view, data, relValue, oneHomeCollection, fullCollectionData, wantedPokemonData}) {
     const theme = useTheme()
-    const selector = useSelector
-    const dispatch = useDispatch()
-    const activatedPokemon = useSelector
     const viewSubTypes = view === 'comparison' ? ['individual', 'pokemon'] : ['collection', 'onhand']
     const dataInit = view === 'comparison' ? data : (data.collection !== undefined ? data.collection : [])
     const [viewData, setViewData] = useState({viewSub: viewSubTypes[0], listDisplay: dataInit})
@@ -79,6 +76,7 @@ export default function SetPokemon({minHeight='650px', type, view, data, relValu
                     height={minHeight}
                     isTradePage={true}
                     tradeSide={type === 'offer' ? 'offering' : 'receiving'}
+                    wantedByOtherListData={wantedPokemonData}
                 /> : 
                 <ShowOnHandList 
                     collectionID={fullCollectionData._id}

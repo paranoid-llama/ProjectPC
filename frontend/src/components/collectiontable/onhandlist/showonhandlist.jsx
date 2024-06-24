@@ -7,9 +7,10 @@ import { useLocation } from 'react-router';
 import { useSelector } from 'react-redux';
 import OnHandRowContent from './onhandrowcontent'
 import './../../../routes/showCollection.css'
+import { interchangeableAltFormMons } from '../../../../../common/infoconstants/pokemonconstants.mjs';
 import {connect} from 'react-redux'
 
-export default function ShowOnHandList({onhandList, collectionID, styles, eggMoveInfo, isEditMode, isHomeCollection, localDisplayState=undefined, height=800, isTradePage, tradeSide}) {
+export default function ShowOnHandList({onhandList, collectionID, styles, eggMoveInfo, isEditMode, isHomeCollection, localDisplayState=undefined, height=800, isTradePage, tradeSide, wantedByOtherListData=[]}) {
     const theme = useTheme()
     const listState = useSelector(state => state.listDisplay.onhand)
     const listDisplay = localDisplayState === undefined ? listState : localDisplayState
@@ -82,9 +83,13 @@ export default function ShowOnHandList({onhandList, collectionID, styles, eggMov
 
     function rowContent(_index, row) {
         const includePokemonProp = isEditMode ? {} : {row}
-        // console.log(localSelectedPokemon)
-        // console.log(row)
-        // console.log(isSelected)
+        const pokeWantedData = isTradePage ? wantedByOtherListData.filter(p => {
+            const interchangeableMon = interchangeableAltFormMons.map(iName => p.name.includes(iName)).includes(true)
+            const nameComparator = interchangeableMon ? p.name.slice(0, p.name.indexOf('(')-1) : p.name
+            const isExactName = p.name === row.name
+            return (!isExactName && interchangeableMon) ? row.name.includes(nameComparator) : isExactName
+        }) : []
+        const finalPokeWantedData = pokeWantedData.length > 1 ? [{name: row.name, balls: pokeWantedData.map(p => p.balls).flat()}] : pokeWantedData
         return (
             <OnHandRowContent
                 columns={columns}
@@ -97,6 +102,7 @@ export default function ShowOnHandList({onhandList, collectionID, styles, eggMov
                 isHomeCollection={isHomeCollection}
                 isTradePage={isTradePage}
                 tradeSide={tradeSide}
+                wantedByOtherList={finalPokeWantedData}
                 {...includePokemonProp}
             />
         )

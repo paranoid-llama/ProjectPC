@@ -10,7 +10,7 @@ import {seeIfPokemonIsSelected, selectOnHandPokemon} from './../../../app/select
 import {setSelected} from './../../../app/slices/editmode'
 import {connect, useDispatch} from 'react-redux'
 
-function OnHandRowContent({columns, row, pokemonId, collectionId, styles, isSelected, setSelected, allEggMoveInfo, isEditMode, isHomeCollection, isTradePage, tradeSide}) {
+function OnHandRowContent({columns, row, pokemonId, collectionId, styles, isSelected, setSelected, allEggMoveInfo, isEditMode, isHomeCollection, isTradePage, tradeSide, wantedByOtherList}) {
     const dispatch = useDispatch()
 
     const possibleEMs = !isHomeCollection && (allEggMoveInfo[row.name])
@@ -54,6 +54,8 @@ function OnHandRowContent({columns, row, pokemonId, collectionId, styles, isSele
                     (c.dataKey === 'EMs' && label !== undefined && label.includes(" ")) ? styles.alignment.textAlignmentSpaces :
                     (c.dataKey === 'EMs' || c.dataKey === 'isHA') ? styles.alignment.textAlignment :
                     (c.dataKey === 'qty') && styles.alignment.qtyValueAlignment
+                const isBallColumn = c.dataKey === 'ball'
+                const wantedData = isBallColumn && (wantedByOtherList[0] === undefined ? {} : wantedByOtherList[0].balls.includes(row[c.dataKey]) ? {wanted: true} : {})
                 return (
                     <DataCell
                         key={`${row._id}-${c.label}`}
@@ -73,7 +75,7 @@ function OnHandRowContent({columns, row, pokemonId, collectionId, styles, isSele
                         tradeDispData={isTradePage ? 
                             {
                                 pData: {name: row.name, id: row.imgLink, natDexNum: row.natDexNum},
-                                ballData: {ball: row.ball, onhandId: row._id},
+                                ballData: {ball: row.ball, onhandId: row._id, ...wantedData},
                                 fullData: row
                             } : {}
                         }

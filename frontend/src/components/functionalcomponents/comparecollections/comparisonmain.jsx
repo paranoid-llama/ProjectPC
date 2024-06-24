@@ -100,6 +100,8 @@ export default function ComparisonMain({open, toggleModal, tradeableCollections,
                         <ComparisonDisplay 
                             userCollectionDisplay={isNaN(parseInt(userCollectionDisplayType.gen)) ? userCollectionDisplayType.gen.toUpperCase() : `Gen ${userCollectionDisplayType.gen}`}
                             ownerCollectionDisplay={isNaN(parseInt(collectionData.gen)) ? collectionData.gen.toUpperCase() : `Gen ${collectionData.gen}`}
+                            userColId={trueSelectedCol}
+                            ownerColId={collectionData._id}
                             comparisonData={trueComparisonData} 
                             ownerUsername={collectionData.owner.username} 
                             oneHomeCollection={oneHomeCollection}

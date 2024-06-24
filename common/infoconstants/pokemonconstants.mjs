@@ -52,7 +52,7 @@ const evolvedRegionals = [
     'Hisuian Braviary', 'Hisuian Sliggoo', 'Hisuian Goodra', 'Hisuian Avalugg', 'Hisuian Decidueye'
 ]
 
-const noCompareWithoutOnhand = [...legendaryPokemon, ...nonBreedablePokemon, nonBreedableAltFormPokemon, evolvedRegionals]
+const noCompareWithoutOnhand = [...legendaryPokemon, ...nonBreedablePokemon, ...nonBreedableAltFormPokemon, ...evolvedRegionals]
 
 //these are alternate and regional form pokemon who have special cases when creating ball list for them.
 const uniqueAlternateFormPokemon = ['Basculin', 'Vivillon', 'Flabébé', 'Rockruff', 'Alcremie']

@@ -75,7 +75,10 @@ const collectionSchema = new Schema ({
                             validate: v => v.length === 2
                         },
                         rate: {
-                            type: String 
+                            type: [{
+                                type: String
+                            }],
+                            validate: v => v.length === 2
                         }
                     }],
                     validate: v => v.length <= 8

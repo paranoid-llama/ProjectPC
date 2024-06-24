@@ -1,6 +1,6 @@
 import {Box, Typography, useTheme} from '@mui/material'
 import BodyWrapper from '../../components/partials/routepartials/bodywrapper'
-import { useLoaderData, useRouteLoaderData } from 'react-router'
+import { useLoaderData, useRouteLoaderData, useLocation } from 'react-router'
 import { useDispatch } from 'react-redux'
 import { resetTradeData } from '../../app/slices/tradeoffer'
 import hexToRgba from 'hex-to-rgba'
@@ -8,19 +8,25 @@ import { useState, useRef, useEffect, useTransition } from 'react'
 import './newtrade.css'
 import SelectAndCompare from './newtradesteps/selectandcompare'
 import SetOfferReceiving from './newtradesteps/setofferreceiving'
+import FinalizeTrade from './newtradesteps/finalizetrade'
 import { checkIfCanTrade } from '../../../utils/functions/comparecollections/checkifcantrade'
+import { getValue } from '../../../utils/functions/comparecollections/getvalue'
 import getUserCollectionData from '../../../utils/functions/backendrequests/getusercollectiondata'
 
 export default function NewTrade({}) {
     const theme = useTheme()
     const dispatch = useDispatch()
+    const locationData = useLocation()
+
     const targetColData = useLoaderData()
     const userData = useRouteLoaderData("root")
+    const proposedValues = useRef({})
     const targetColDisplay = isNaN(parseInt(targetColData.gen)) ? `${targetColData.gen.toUpperCase()} Aprimon Collection` : `Gen ${targetColData.gen} Aprimon Collection`
     const step1ClassRef = useRef('')
     const step2ClassRef = useRef('')
     const step3ClassRef = useRef('')
 
+    const hasLocationState = locationData.state !== null
     const [tradeData, setTradeData] = useState({displaySteps: {1: false, 2: false, 3: false}, compareWith: '', userCollectionData: {}, comparisonData: {}})
     // const [selectedColIsPending, startColTransition] = useTransition()
 
@@ -45,20 +51,15 @@ export default function NewTrade({}) {
     }
     const disabledStep2 = tradeData.compareWith === '' ? disabledStepStyles : {}
 
-    useEffect(() => {
-        setTimeout(() => {
-            step1ClassRef.current = 'grow-trade-step-1'
-            setTradeData({...tradeData, displaySteps: {...tradeData.displaySteps, 1: true}})
-        }, 500)
-    }, [])
+    
 
     useEffect(() => {
         dispatch(resetTradeData())
     }, [tradeData.compareWith])
 
-    const changeSelectedCol = async(newColId) => {
+    const changeSelectedCol = async(newColId, otherStateChanges={}) => {
         const userCollectionData = await getUserCollectionData(newColId)
-        setTradeData({...tradeData, compareWith: newColId, userCollectionData})
+        setTradeData({...tradeData, compareWith: newColId, userCollectionData, ...otherStateChanges})
     }
     const setComparisonData = (data) => {
         data.comparedWith = tradeData.compareWith
@@ -88,6 +89,26 @@ export default function NewTrade({}) {
             setTradeData({...tradeData, [tradeSide]: newTradeSideState})
         }
     }
+
+    const initDataFromComparison = async() => {
+        const userCollectionData = await getUserCollectionData(locationData.state.compareWith)
+        setTradeData({...tradeData, displaySteps: {...tradeData.displaySteps, 2: true}, compareWith: locationData.state.compareWith, userCollectionData, comparisonData: locationData.state.comparisonData})
+    }
+
+    useEffect(() => {
+        proposedValues.current = getValue(targetColData.options.tradePreferences.rates)
+        if (locationData.state !== null)  {//indicates they came from comparison modal in the show page 
+            setTimeout(() => { 
+                step2ClassRef.current = 'grow-trade-step-2'
+                initDataFromComparison()
+            }, 500)
+        } else {
+           setTimeout(() => {
+                step1ClassRef.current = 'grow-trade-step-1'
+                setTradeData({...tradeData, displaySteps: {...tradeData.displaySteps, 1: true}})
+            }, 500) 
+        }
+    }, [])
 
     const userTradeableCollections = userData.user.collections.filter(col => checkIfCanTrade(col, targetColData))
     
@@ -126,6 +147,7 @@ export default function NewTrade({}) {
                                 selectedColData={tradeData.userCollectionData}
                                 ownerColData={targetColData}
                                 handleChange={setOfferReceiving}
+                                proposedValues={proposedValues.current}
                             />}
                         </Box>
                     </Box>
@@ -133,8 +155,12 @@ export default function NewTrade({}) {
                         <Box sx={{...stepButtonStyles}} onClick={() => toggleTradeStep(3)}>
                             <Typography sx={{fontWeight: 700, ml: 3, height: '50px', display: 'flex', alignItems: 'center'}}>3. Finalize Trade</Typography>
                         </Box>
-                        <Box className={step3ClassRef.current} sx={{height: '0px', width: '100%', position: 'relative'}}>
-
+                        <Box className={step3ClassRef.current} sx={{height: '0px', width: '100%', position: 'relative', overflow: 'hidden'}}>
+                            {!(tradeData.compareWith === '') && 
+                            <FinalizeTrade 
+                                selectedColDisplay={isNaN(parseInt(tradeData.userCollectionData.gen)) ? `${tradeData.userCollectionData.gen.toUpperCase()} Aprimon Collection` : `Gen ${tradeData.userCollectionData.gen} Aprimon Collection`}
+                                proposedValues={proposedValues.current}
+                            />}
                         </Box>
                     </Box>
                 </Box>

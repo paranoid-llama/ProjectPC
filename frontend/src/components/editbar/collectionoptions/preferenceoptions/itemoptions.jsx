@@ -79,7 +79,7 @@ export default function ItemOptions({elementBg, collectionGen, collectionId}) {
     }
 
     const changeItemsSave = (saveButtonSelected, nextScreen) => {
-        const noLFItemsChanges = (tradePreferences.lfItems.length === items.data.lfItems.length) && (tradePreferences.lfItems.length === 0 || !tradePreferences.lfItems.map(item => item.data.lfItems.includes(item)).includes(false))
+        const noLFItemsChanges = (tradePreferences.lfItems.length === items.data.lfItems.length) && (tradePreferences.lfItems.length === 0 || !tradePreferences.lfItems.map(item => items.data.lfItems.includes(item)).includes(false))
         const noFTItemsChanges = (Object.keys(tradePreferences.ftItems).length === Object.keys(items.data.ftItems).length) && (Object.keys(tradePreferences.ftItems).length === 0 || !Object.keys(tradePreferences.ftItems).map(item => tradePreferences.ftItems[item] === items.data.ftItems[item]).includes(false))
         const noChangesMade = noLFItemsChanges && noFTItemsChanges
         if (saveButtonSelected && noChangesMade) {

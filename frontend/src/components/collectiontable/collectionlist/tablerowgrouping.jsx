@@ -28,13 +28,15 @@ const disabledTableCellStyles = { //for disabled ball combos (which the user pur
     backgroundColor: 'grey'
 }
 
-export function TableRowGroupingNoRedux({columns, row, id, collectionId, ownerId, styles, isHomeCollection, availableGames, isTradePage, tradeSide}) {
+export function TableRowGroupingNoRedux({columns, row, id, collectionId, ownerId, styles, isHomeCollection, availableGames, isTradePage, tradeSide, wantedByOtherList}) {
     return (
         <React.Fragment>
             {columns.map(c => {
                 const isImg = c.label === 'img' && true
                 const textSizeAdjustor = c.dataKey === 'name' && row[c.dataKey] === 'Basculin (White-Striped)' ? {fontSize: '13px'} : {}
                 const validBallCombo = apriballs.includes(c.dataKey) && (row.balls[c.dataKey] !== undefined && row.balls[c.dataKey].disabled !== true)
+                const isBallColumn = row.balls[c.dataKey] !== undefined
+                const wantedData = isBallColumn && (wantedByOtherList[0] === undefined ? {} : wantedByOtherList[0].balls.includes(c.dataKey) ? {wanted: true} : {})
                 return (
                     c.label === '#' ? 
                         <DataCell
@@ -81,7 +83,11 @@ export function TableRowGroupingNoRedux({columns, row, id, collectionId, ownerId
                         tradeSide={tradeSide}
                         tradeDispData={isTradePage && {
                             pData: {name: row.name, id: row.imgLink, natDexNum: row.natDexNum},
-                            ballData: {ball: c.dataKey, ...row.balls[c.dataKey]}
+                            ballData: {
+                                ball: c.dataKey, 
+                                ...wantedData,
+                                ...row.balls[c.dataKey]
+                            }
                         }}
                     />
                 )

@@ -9,7 +9,7 @@ import { compareDisplayGridComponents, listCompareDisplayIndividual, listCompare
 
 
 
-export default function ComparisonDisplay({userCollectionDisplay, ownerCollectionDisplay, comparisonData, ownerUsername, oneHomeCollection, goBackScreen, ownerTradeStatus, isTradePage, closeModal}) {
+export default function ComparisonDisplay({userCollectionDisplay, userColId, ownerCollectionDisplay, ownerColId, comparisonData, ownerUsername, oneHomeCollection, goBackScreen, ownerTradeStatus, isTradePage, closeModal}) {
     const theme = useTheme()
     const navigate = useNavigate()
     const [list, setList] = useState('canOffer')
@@ -26,7 +26,14 @@ export default function ComparisonDisplay({userCollectionDisplay, ownerCollectio
     const ListComponent = displayType === 'byIndividual' ? VirtuosoGrid : Virtuoso
     const aprimonCount = comparisonData[list].map(p => p.balls.filter(ballData => ballData.onhandId === undefined)).flat()
     const onhandCount = comparisonData[list].map(p => p.balls.filter(ballData => ballData.onhandId !== undefined)).flat()
-    const canGoNextScreen = (isTradePage || (canOfferAmount === 0 || canReceiveAmount === 0) || ownerTradeStatus !== 'open')
+    const canGoNextScreen = (isTradePage || (canOfferAmount !== 0 || canReceiveAmount !== 0) || ownerTradeStatus !== 'open')
+
+    const navigateOpts = {
+        state: {
+            compareWith: userColId,
+            comparisonData: {...comparisonData, comparedWith: userColId}
+        }
+    }
 
     return (
         <>
@@ -76,7 +83,7 @@ export default function ComparisonDisplay({userCollectionDisplay, ownerCollectio
                     <Button variant='contained' sx={{'&.Mui-disabled': {opacity: 0.5, backgroundColor: theme.palette.primary.main, color: 'white'}}} disabled>Offer Trade</Button>
                     </Box>
                 </Tooltip> : 
-                <Button variant='contained' onClick={isTradePage ? closeModal : () => navigate('/trade')}>{isTradePage ? 'Next' : 'Offer Trade'}</Button>
+                <Button variant='contained' onClick={isTradePage ? closeModal : () => navigate(`/collections/${ownerColId}/trade`, navigateOpts)}>{isTradePage ? 'Next' : 'Offer Trade'}</Button>
                 }
             </Box>
         </Box>

@@ -6,21 +6,9 @@ import { valueDefaults } from '../../../../../common/infoconstants/miscconstants
 import { getValue } from '../../../../utils/functions/comparecollections/getvalue'
 import { selectRelativeValue } from '../../../app/selectors/tradeselectors'
 
-export default function RelativeValueDisplay({ownerRates, userRates, oneHomeCollection, selectedColId, ownerName}) {
-    const valueRef = useRef({})
+export default function RelativeValueDisplay({proposedValues, ownerName}) {
     const theme = useTheme()
-    const currentValue = useSelector((state) => selectRelativeValue(state, valueRef.current, oneHomeCollection))
-
-    // useEffect(() => {
-    //     valueRef.current = getValue(userRates, ownerRates, oneHomeCollection)
-    // }, [])
-
-    useEffect(() => {
-        valueRef.current = getValue(ownerRates, oneHomeCollection)
-    }, [selectedColId])
-
-    // console.log(valueRef.current)
-    // console.log(currentValue)
+    const currentValue = useSelector((state) => selectRelativeValue(state, proposedValues))
 
     return (
         <Box sx={{...theme.components.box.fullCenterRow, gap: 2, mt: 1}}>
@@ -30,7 +18,7 @@ export default function RelativeValueDisplay({ownerRates, userRates, oneHomeColl
                 arrow 
                 title={
                     <Typography sx={{fontSize: '12px', textAlign: 'center'}}>
-                        This is a calculation of relative value in units of HA Aprimon (1) based on {ownerName}'s rates. 
+                        This is a calculation of relative value in units of HA Aprimon (1) based on {ownerName}'s rates/default rates. 
                         This is not the same as the total number of aprimons you can offer/receive.
                         It's only to give you an idea of the worth of both sides of the trade, 
                         and is not to be used as an objective value.

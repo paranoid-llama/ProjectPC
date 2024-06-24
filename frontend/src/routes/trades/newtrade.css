@@ -21,7 +21,7 @@
         min-height: 0px
     }
     100% {
-        min-height: 200px
+        min-height: 400px
     }
 }
 
@@ -45,7 +45,7 @@
 
 @keyframes shrink-trade-step-3 {
     0% {
-        min-height: 200px
+        min-height: 400px
     }
     100% {
         min-height: 0px

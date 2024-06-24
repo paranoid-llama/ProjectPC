@@ -9,10 +9,11 @@ import './../../../routes/showCollection.css'
 import { capitalizeFirstLetter } from '../../../../utils/functions/misc';
 import {useSelector, useDispatch, connect} from 'react-redux'
 import { useLocation } from 'react-router';
+import { interchangeableAltFormMons } from '../../../../../common/infoconstants/pokemonconstants.mjs';
 import {setCollectionInitialState} from '../../../app/slices/collection'
 import {setSelected} from '../../../app/slices/editmode'
 
-export default function ShowCollectionList({collection, styles, isEditMode, localDisplayState=undefined, height=800, noStates=false, isTradePage=false, tradeSide=null}) {
+export default function ShowCollectionList({collection, styles, isEditMode, localDisplayState=undefined, height=800, noStates=false, isTradePage=false, tradeSide=null, wantedByOtherListData=[]}) {
     const ballScopeState = !noStates && useSelector((state) => state.options.collectingBalls)
     const listState = !noStates && useSelector((state) => state.listDisplay.collection)
     const link = useLocation().pathname
@@ -107,6 +108,13 @@ export default function ShowCollectionList({collection, styles, isEditMode, loca
     function rowContent(_index, row) {
         const includePokemonProp = isEditMode ? {} : {row}
         const TrueTableRow = isTradePage ? ConnectlessTableRow : TableRowGrouping
+        const pokeWantedData = isTradePage ? wantedByOtherListData.filter(p => {
+            const interchangeableMon = interchangeableAltFormMons.map(iName => p.name.includes(iName)).includes(true)
+            const nameComparator = interchangeableMon ? p.name.slice(0, p.name.indexOf('(')-1) : p.name
+            const isExactName = p.name === row.name
+            return (!isExactName && interchangeableMon) ? row.name.includes(nameComparator) : isExactName
+        }) : []
+        const finalPokeWantedData = pokeWantedData.length > 1 ? [{name: row.name, balls: pokeWantedData.map(p => p.balls).flat()}] : pokeWantedData
         return (
             // <Fragment key={row.imgLink}>
                 <TrueTableRow
@@ -123,6 +131,7 @@ export default function ShowCollectionList({collection, styles, isEditMode, loca
                     noStates={noStates}
                     isTradePage={isTradePage}
                     tradeSide={tradeSide}
+                    wantedByOtherList={finalPokeWantedData}
                     {...includePokemonProp}
                 />
             // </Fragment>

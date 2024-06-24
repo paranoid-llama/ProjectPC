@@ -24,10 +24,20 @@ const tradeOffer = createSlice({
                 })
             return {...state, [tradeSide]: newSideState}
         },
-        resetTradeData: (state, action) => {return {offering: [], receiving: [], offeringItems: [], receivingItems: []}}
+        resetTradeData: (state, action) => {return {offering: [], receiving: [], offeringItems: [], receivingItems: []}},
+        setItems: (state, action) => {
+            const {itemValueName, newQty, tradeSide} = action.payload
+            const itemInState = state[`${tradeSide}Items`].filter(item => item.name === itemValueName)[0]
+            const itemIsThereAlready = itemInState !== undefined
+            const newTradeSideState = itemIsThereAlready ? state[`${tradeSide}Items`].map(item => {
+                const isItem = item.name === itemValueName
+                return isItem ? {...item, qty: newQty} : item
+            }) : [...state[`${tradeSide}Items`], {name: itemValueName, qty: newQty}]
+            return {...state, [`${tradeSide}Items`]: newTradeSideState}
+        }
     }
 })
 
-export const {setPokemon, resetTradeData} = tradeOffer.actions
+export const {setPokemon, resetTradeData, setItems} = tradeOffer.actions
 
 export default tradeOffer

@@ -5,10 +5,13 @@ import hexToRgba from 'hex-to-rgba'
 import RateDisplay from '../../../components/titlecomponents/ratedisplay'
 import RelativeValueDisplay from '../partialcomponents/relativevaluedisplay'
 import SetPokemon from '../../../components/functionalcomponents/tradeoffer/setpokemon'
+import SetItems from '../../../components/functionalcomponents/tradeoffer/setitems'
+import { getWantedData } from '../../../../utils/functions/comparecollections/getwantedorfordata'
 
-function SetOfferReceivingFunc({comparisonData, selectedColData, ownerColData, handleChange}) {
+function SetOfferReceivingFunc({comparisonData, selectedColData, ownerColData, handleChange, proposedValues}) {
     const theme = useTheme()
     const tradePreferences = ownerColData.options.tradePreferences
+    const userTradePreferences = selectedColData.options.tradePreferences
     const tradePreferenceSizeMessage = tradePreferences.size === 'any' ? 'accepts any size trade' : 
         tradePreferences.size === 'large only' ? 'only accepts large trades' : tradePreferences.size === 'large preferred' ? 'prefers large trades' : 
         tradePreferences.size === 'small only' ? 'only accepts small trades' : 'prefers small trades'
@@ -17,9 +20,7 @@ function SetOfferReceivingFunc({comparisonData, selectedColData, ownerColData, h
     const hasComparisonData = Object.keys(comparisonData).length !== 0 && (comparisonData.comparedWith === selectedColData._id)
     const noComparisonData = !hasComparisonData
     const oneHomeCollection = selectedColData.gen === 'home' || ownerColData.gen === 'home'
-    const [offerData, setOfferData] = useState({userRate: false, ownerRate: false, display: 'offer', view: noComparisonData ? undefined : 'comparison'})
-
-    // console.log(activated)
+    const [offerData, setOfferData] = useState({userRate: false, ownerRate: false, display: 'offer', view: noComparisonData ? undefined : 'comparison', allowItemTrading: false, allowUserOffer: false, allowOwnerOffer: false})
 
     const selectedColDataRef = useRef(selectedColData._id)
     // const comparisonDataRef
@@ -30,6 +31,11 @@ function SetOfferReceivingFunc({comparisonData, selectedColData, ownerColData, h
         handleChange(type, 'pokemon', {...pData, peripherals: ballData})
         // console.log(pData)
         // console.log(ballData)
+    }
+
+    const allowItemTradeType = (type) => {
+        const dataKey = type === 'item' ? 'allowItemTrading' : type === 'userOffer' ? 'allowUserOffer' : 'allowOwnerOffer'
+        setOfferData({...offerData, [dataKey]: true})
     }
 
     const toggleRateDisplay = (type) => {
@@ -115,10 +121,7 @@ function SetOfferReceivingFunc({comparisonData, selectedColData, ownerColData, h
                 <Tab value='items' disabled={oneHomeCollection} label="Offer/receive items"/>
             </Tabs>
             <RelativeValueDisplay 
-                userRates={selectedColData.options.tradePreferences.rates}
-                ownerRates={ownerColData.options.tradePreferences.rates}
-                oneHomeCollection={oneHomeCollection}
-                selectedColId={selectedColData._id}
+                proposedValues={proposedValues}
                 ownerName={ownerColData.owner.username}
             />
             {(offerData.display === 'offer' || offerData.display === 'receive') &&
@@ -131,6 +134,19 @@ function SetOfferReceivingFunc({comparisonData, selectedColData, ownerColData, h
                     relValue={0}
                     oneHomeCollection={oneHomeCollection}
                     fullCollectionData={setPokemonFullColData}
+                    wantedPokemonData={offerData.display === 'offer' ? getWantedData(ownerColData.ownedPokemon) : []}
+                />
+            }
+            {(offerData.display === 'items') &&
+                <SetItems 
+                    userColPreferences={userTradePreferences}
+                    ownerColPreferences={tradePreferences}
+                    ownerName={ownerColData.owner.username}
+                    allowItemTrading={offerData.allowItemTrading}
+                    allowUserOffer={offerData.allowUserOffer}
+                    allowOwnerOffer={offerData.allowOwnerOffer}
+                    allowHandleChange={allowItemTradeType}
+                    tabStyles={tabStyles}
                 />
             }
         </Box>
