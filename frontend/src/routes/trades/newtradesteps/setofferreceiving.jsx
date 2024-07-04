@@ -8,7 +8,7 @@ import SetPokemon from '../../../components/functionalcomponents/tradeoffer/setp
 import SetItems from '../../../components/functionalcomponents/tradeoffer/setitems'
 import { getWantedData } from '../../../../utils/functions/comparecollections/getwantedorfordata'
 
-function SetOfferReceivingFunc({comparisonData, selectedColData, ownerColData, handleChange, proposedValues}) {
+function SetOfferReceivingFunc({comparisonData, selectedColData, ownerColData, originalTradeRecipientName, isCounteroffer, handleProposedValueChange, proposedValues, receivedValueFrom}) {
     const theme = useTheme()
     const tradePreferences = ownerColData.options.tradePreferences
     const userTradePreferences = selectedColData.options.tradePreferences
@@ -24,14 +24,6 @@ function SetOfferReceivingFunc({comparisonData, selectedColData, ownerColData, h
 
     const selectedColDataRef = useRef(selectedColData._id)
     // const comparisonDataRef
-
-    const formatSelectedPokemon = (pData, ballData) => {
-        //pData encompasses name, natDexNum, pokemonid, and for. ballData encompasses isHA, emCount, EMs, wanted, and onhandid 
-        const type = offerData.display === 'offer' ? 'offering' : 'receiving'
-        handleChange(type, 'pokemon', {...pData, peripherals: ballData})
-        // console.log(pData)
-        // console.log(ballData)
-    }
 
     const allowItemTradeType = (type) => {
         const dataKey = type === 'item' ? 'allowItemTrading' : type === 'userOffer' ? 'allowUserOffer' : 'allowOwnerOffer'
@@ -121,8 +113,13 @@ function SetOfferReceivingFunc({comparisonData, selectedColData, ownerColData, h
                 <Tab value='items' disabled={oneHomeCollection} label="Offer/receive items"/>
             </Tabs>
             <RelativeValueDisplay 
+                isCounteroffer={isCounteroffer}
+                originalTradeRecipientName={originalTradeRecipientName}
+                handleProposedValueChange={handleProposedValueChange}
                 proposedValues={proposedValues}
+                traderName={selectedColData.owner.username}
                 ownerName={ownerColData.owner.username}
+                receivedValueFrom={receivedValueFrom}
             />
             {(offerData.display === 'offer' || offerData.display === 'receive') &&
                 <SetPokemon 
@@ -130,7 +127,6 @@ function SetOfferReceivingFunc({comparisonData, selectedColData, ownerColData, h
                     type={offerData.display}
                     view={offerData.view === undefined ? 'full' : offerData.view}
                     data={setPokemonData}
-                    handleChange={formatSelectedPokemon}
                     relValue={0}
                     oneHomeCollection={oneHomeCollection}
                     fullCollectionData={setPokemonFullColData}
@@ -139,6 +135,7 @@ function SetOfferReceivingFunc({comparisonData, selectedColData, ownerColData, h
             }
             {(offerData.display === 'items') &&
                 <SetItems 
+                    isCounteroffer={isCounteroffer}
                     userColPreferences={userTradePreferences}
                     ownerColPreferences={tradePreferences}
                     ownerName={ownerColData.owner.username}
@@ -160,7 +157,8 @@ const SetOfferReceiving = memo(SetOfferReceivingFunc, (oP, nP) => {
     return (
         Object.keys(oP.comparisonData).length === Object.keys(nP.comparisonData).length &&
         oP.comparisonData.comparedWith === nP.comparisonData.comparedWith &&
-        oP.selectedColData._id === nP.selectedColData._id 
+        oP.selectedColData._id === nP.selectedColData._id &&
+        oP.receivedValueFrom === nP.receivedValueFrom
         // !activatedPokemonChanges
     )
 })

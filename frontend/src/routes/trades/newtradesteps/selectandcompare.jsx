@@ -3,7 +3,7 @@ import ComparisonMain from '../../../components/functionalcomponents/comparecoll
 import hexToRgba from 'hex-to-rgba'
 import { useState } from 'react'
 
-export default function SelectAndCompare({selectedCol, userCollections, ownerCollection, comparisonData, changeSelectedCol, setComparisonData, selectedColData}) {
+export default function SelectAndCompare({selectedCol, userCollections, ownerCollection, comparisonData, changeSelectedCol, setComparisonData, selectedColData, isCounteroffer, previousOfferData}) {
     const theme = useTheme()
     const [modalState, setModalState] = useState(false)
     const toggleModalState = () => {
@@ -34,7 +34,9 @@ export default function SelectAndCompare({selectedCol, userCollections, ownerCol
         <Box sx={{width: '100%', height: '100%', overflow: 'hidden', ...theme.components.box.fullCenterCol}}>
             <Box sx={{...theme.components.box.fullCenterCol, width: '80%', height: '40%'}}>
                 <Box sx={{width: '100%', height: '90%', ...theme.components.box.fullCenterRow}}>
-                    <Typography sx={{fontWeight: 700, mr: 2}}>Trade With Your: </Typography>
+                    <Typography sx={{fontWeight: 700, mr: isCounteroffer ? 1 : 2}}>Trade With Your: </Typography>
+                    {isCounteroffer ? 
+                    <Typography sx={{fontWeight: 700}}>{isNaN(parseInt(selectedColData.gen)) ? `${selectedColData.gen.toUpperCase()} Aprimon Collection` : `Gen ${selectedColData.gen} Aprimon Collection`}</Typography> :
                     <Select value={selectedCol} onChange={(e, newVal) => changeSelectedCol(newVal.props.value)} sx={styledSelect}>
                         {userCollections.map(userCol => {
                             const display = isNaN(parseInt(userCol.gen)) ? `${userCol.gen.toUpperCase()} Aprimon Collection` : `Gen ${userCol.gen} Aprimon Collection`
@@ -47,7 +49,7 @@ export default function SelectAndCompare({selectedCol, userCollections, ownerCol
                                 </MenuItem>
                             )
                         })}
-                    </Select>
+                    </Select>}
                 </Box>
             </Box>
             <Box sx={{...theme.components.box.fullCenterRow, width: '90%', height: '60%'}}>
@@ -106,6 +108,7 @@ export default function SelectAndCompare({selectedCol, userCollections, ownerCol
             externalComparisonData={comparisonData}
             extSetComparisonData={setComparisonData}
             extSelectedColData={selectedColData}
+            extCantChangeSelected={isCounteroffer}
         />
         </>
     )

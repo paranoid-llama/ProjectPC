@@ -219,7 +219,19 @@ app.post('/users/new', catchAsync(async(req, res) => {
         account: {verified: false, securityQuestions},
     }
     bcrypt.hash(password, 11, async function(err, hash) {
-        const newUser = new User({username, password: hash, email, settings})
+        const newUser = new User({
+            username, 
+            password: hash, 
+            email, 
+            settings, 
+            notifications: [
+                {
+                    type: 'site message', 
+                    title: 'Welcome to Pokellections!', 
+                    message: 'Welcome to Pokellections! Thank you for joining the site. We hope you enjoy aprimon collecting made easy!'
+                }
+            ]
+        })
         await newUser.save()
         res.json(newUser._id)
     })
@@ -356,23 +368,30 @@ app.post('/collections/new', catchAsync(async(req, res) => {
 }))
 
 app.post('/collections/new/seeddb', catchAsync(async(req, res) => {
-    const gens = [6, 7, 'swsh', 'bdsp', 9]
+    const gens = [6, 7, 'swsh', 'bdsp', 9, 'home']
     const names = ['random sheet', 'first aprimon collection', 'we get this!', 'collecting aprimon', 'aprimon collector 1', 'aprimon collection 24', 'llamas sheet']
-    const allUsers = await User.find({}).exec()
+    const allUsers = await User.find({}).lean().populate({path: 'collections', select: 'gen'}).exec()
     const ownerIds = allUsers.map(user => user._id)
 
     const usernames = ['ash ketchup', 'penny', 'hihi', 'aprimon collector', 'selvt', 'paro', 'gary oak', 'misty', 'brock', 'sabrina', 'everword', 'superguy12345', 'XxpokemonCollectorxX', 'lol', 'neverAgain', 'findmyway', 'pandabear', 'pandaman', 'pirate king garon', 'aaron', 'matear', 'poalert', 'poltergeist', 'pikachu enjoyer', 'gen wunner', 'wurst', 'gutentag', 'betterman', 'the pokemon lady']
     const emails = ['gma@gmail.com', 'Durward.Aufderhar@gmail.com', 'Michaela99@gmail.com', 'Haylie4@gmail.com', 'Gonzalo_Marks79@gmail.com',  'Clare82@gmail.com', 'Kaylee8@gmail.com', 'Chaim.Gerhold34@gmail.com', 'Trycia_Hyatt90@gmail.com', 'Ezra_Buckridge@gmail.com', 'Zachary42@gmail.com', 'Neha_Goodwin@gmail.com', 'Amira.Legros@gmail.com', 'Audie37@outlook.com', 'Jodie.Jakubowski10@outlook.com', 'Dale43@outlook.com', 'Karina29@outlook.com', 'Torrey_Dickens26@outlook.com', 'Cathrine.Stoltenberg24@outlook.com', 'Kaitlyn.Hills34@outlook.com', 'Emily.Ondricka@outlook.com', 'Destiney78@outlook.com', 'Ottis_Bode17@outlook.com', 'Abdiel.Zieme@outlook.com', 'Omari_Lowe@outlook.com', 'Joanne.Dooley@outlook.com', 'Orin.Stark77@outlook.com', 'Mikayla.Wilderman1@outlook.com', 'Kristy.Runolfsdottir85@outlook.com', 'Marquis17@outlook.com', 'Sherwood.Borer@outlook.com', 'Susan_Armstrong73@outlook.com', 'Verna20@outlook.com']
     for (let i=0; i < 100; i++) {
-        const gen = gens[Math.floor(Math.random() * gens.length)]
+        const newOwner = ownerIds[Math.floor(Math.random() * ownerIds.length)]
+        const genObj = {gen: ''}
+        for (let gen of gens) {
+            const newGen = gens[Math.floor(Math.random() * gens.length)]
+            if (allUsers.filter(userD => userD._id === newOwner)[0].collections.filter(col => col.gen === newGen).length !== 0) {return}
+            genObj.gen = newGen
+        }
+        if (genObj.gen === '') {return}
         const isHARand = Math.floor(Math.random()*2)
         const emCountRand = Math.floor(Math.random()*5)
         const newCollectionInfo = {
-            gen: gen,
+            gen: genObj.gen,
             collectionName: names[Math.floor(Math.random() * names.length)],
             owner: ownerIds[Math.floor(Math.random() * ownerIds.length)],
             options: {
-                collectingBalls: gen === 6 ? ['fast', 'friend', 'heavy', 'level', 'love', 'lure', 'moon', 'dream', 'safari', 'sport'] : ['fast', 'friend', 'heavy', 'level', 'love', 'lure', 'moon', 'beast', 'dream', 'safari', 'sport'],
+                collectingBalls: genObj.gen === 6 ? ['fast', 'friend', 'heavy', 'level', 'love', 'lure', 'moon', 'dream', 'safari', 'sport'] : ['fast', 'friend', 'heavy', 'level', 'love', 'lure', 'moon', 'beast', 'dream', 'safari', 'sport'],
                 globalDefaults: {isHA: isHARand === 0 ? true : false, emCount: emCountRand},
                 sorting: {collection: {reorder: false, default: 'NatDexNumL2H'}, onhand: {reorder: true, default: 'NatDexNumL2H', ballOrder: ['fast', 'friend', 'heavy', 'level', 'love', 'lure', 'moon', 'beast', 'dream', 'safari', 'sport'], sortFirstBy: 'pokemon'}},
                 tradePreferences: {status: 'open', rates: {pokemonOffers: [{items: ['On-Hand HA Aprimon', 'HA Aprimon'], rate: [2, 1]}], itemOffers: []}, size: 'small preferred', onhandOnly: 'no', items: 'none', lfItems: [], ftItems: {}}
@@ -399,6 +418,292 @@ app.post('/collections/new/seeddb', catchAsync(async(req, res) => {
     res.end()
 }))
 
+app.post('/trades/new', catchAsync(async(req, res) => {
+    const {offer, receiving, offerMessage, traderId, ownerId, traderUsername, ownerUsername, gen} = req.body
+    const offerObj = {
+        status: 'pending',
+        offerer: traderUsername,
+        recipient: ownerUsername,
+        comment: offerMessage,
+        trade: {
+            offer,
+            receiving
+        }
+    }
+    const newTradeData = {
+        status: 'initialoffer',
+        gen,
+        users: [traderId, ownerId],
+        history: [offerObj]
+    }
+    const trade = new Trade(newTradeData)
+    await trade.save()
+
+    const ownerUserData = await User.findById(ownerId)
+    ownerUserData.notifications.push({type: 'trade-offer: new', tradeData: {otherParticipant: traderUsername, tradeGen: gen, tradeId: trade._id}, unread: true})
+    await ownerUserData.save()
+
+    res.json(trade._id)
+}))
+
+app.get('/trades/:id', catchAsync(async(req, res) => {
+    const {getFullCollectionData} = req.query
+    const latestOfferData = {}
+    const trade = await Trade.findById(req.params.id).lean()
+        .populate({path: 'users', select: 'username collections notifications.tradeData.tradeId', populate: {path: 'collections', select: '_id name type gen'}})
+        .then(data => { //bandaid solution to what should be solved through database queries - couldnt find how to do this.
+            data.history = data.history.map((offer, idx) => {
+                const isLatestOffer = idx+1 === data.history.length
+                if (isLatestOffer) {
+                    latestOfferData.data = offer
+                }
+                return {_id: offer._id, createdAt: offer.createdAt}
+            })
+            data.users.notifications = data.users.map(userData => { //this part is used to see if theres any pending notifications
+                if (userData.notifications === undefined) {return userData}
+                userData.notifications = userData.notifications.filter(nData => nData.tradeData.tradeId === req.params.id)
+                return userData
+            })
+            return data
+        })
+
+    //another bandaid solution to what should be solved through database queries
+    const crossGenTrade = trade.gen.includes('-')
+    const newUsersArr = trade.users.map((userData, userIdx) => {
+        const genRef = crossGenTrade ? (
+            userIdx === 0 ? trade.gen.slice(0, trade.gen.indexOf('-')) : trade.gen.slice(trade.gen.indexOf('-')+1)
+        ) : trade.gen
+        const tradeCollectionData = userData.collections.filter(col => col.gen === genRef)[0]
+        return {...userData, tradeCollection: tradeCollectionData}
+    })
+    const modifiedTradeData = {...trade, users: newUsersArr}
+
+    if (getFullCollectionData === 'true') {
+        const user0CollectionData = await Collection.findById(newUsersArr[0].tradeCollection._id).populate({path: 'owner'})
+        const user1CollectionData = await Collection.findById(newUsersArr[1].tradeCollection._id).populate({path: 'owner'})
+        res.json({tradeData: modifiedTradeData, latestOfferData: latestOfferData.data, user0CollectionData, user1CollectionData})
+    } else {
+        res.json({tradeData: modifiedTradeData, latestOfferData: latestOfferData.data}) 
+    }
+    
+}))
+
+app.get('/trades/:id/offer/:offerIdx', catchAsync(async(req, res) => {
+    const {id, offerIdx} = req.params
+    const offerData = await Trade.findById(id, 'history').lean()
+    res.json(offerData.history[offerIdx])
+}))
+
+app.put('/trades/:id', catchAsync(async(req, res) => {
+    const {response, otherUserId, offerColId, receivingColId, counterOfferData, username} = req.body
+    const {id} = req.params
+
+    const trade = await Trade.findById(id)
+    const latestOffer = trade.history[trade.history.length-1]
+
+    if (response === 'accept') {
+        trade.status = 'pending'
+        trade.history[trade.history.length-1].status = 'accepted'
+        trade.markedCompleteBy = ''
+        trade.save()
+
+        const offerCol = await Collection.findById(offerColId)
+        const receivingCol = await Collection.findById(receivingColId)
+        if (latestOffer.trade.offer.pokemon !== undefined) {
+            offerCol.onHand = offerCol.onHand.map(p => { //taking off onhand if offering an onhand
+                const offeringPokemon = latestOffer.trade.offer.pokemon.filter(tradeP => tradeP.balls.filter(tradePBallData => tradePBallData.onhandId !== undefined && tradePBallData.onhandId === p._id.toString()).length !== 0).length !== 0
+                if (offeringPokemon) {
+                    p.qty = p.qty-1
+                    if (p.qty === 0) {return undefined}
+                }
+                return p
+            }).filter(p => p !== undefined)
+            receivingCol.ownedPokemon = receivingCol.ownedPokemon.map(p => { //setting offered pokemon as pending
+                if (p.disabled) {return p}
+                const newBallData = {}
+                Object.keys(p.balls).forEach(ball => {
+                    const ballData = p.balls[ball]
+                    if (ballData.disabled) {newBallData[ball] = ballData}
+                    else {
+                        const isBeingReceived = latestOffer.trade.offer.pokemon.filter(tradeP => (tradeP.name === p.name || tradeP.for === p.name) && tradeP.balls.filter(tradePBallData => tradePBallData.ball === ball).length !== 0).length !== 0
+                        if (!isBeingReceived) {newBallData[ball] = ballData}
+                        else {
+                            const newSpecificBallData = ballData.isOwned ? ballData : {...ballData, pending: true}
+                            if (newSpecificBallData.highlyWanted) {
+                                delete newSpecificBallData.highlyWanted
+                            }
+                            newBallData[ball] = newSpecificBallData
+                        }
+                    }
+                })
+                return {...p, balls: newBallData}
+            })
+        }
+        if (latestOffer.trade.receiving.items !== undefined) {
+            offerCol.ownedPokemon = offerCol.ownedPokemon.map(p => { //setting received pokemon as pending
+                if (p.disabled) {return p}
+                const newBallData = {}
+                Object.keys(p.balls).forEach(ball => {
+                    const ballData = p.balls[ball]
+                    if (ballData.disabled) {newBallData[ball] = ballData}
+                    else {
+                        const isBeingReceived = latestOffer.trade.receiving.pokemon.filter(tradeP => (tradeP.name === p.name || tradeP.for === p.name) && tradeP.balls.filter(tradePBallData => tradePBallData.ball === ball).length !== 0).length !== 0
+                        if (!isBeingReceived) {newBallData[ball] = ballData}
+                        else {
+                            const newSpecificBallData = ballData.isOwned ? ballData : {...ballData, pending: true}
+                            if (newSpecificBallData.highlyWanted) {
+                                delete newSpecificBallData.highlyWanted
+                            }
+                            newBallData[ball] = newSpecificBallData
+                        }
+                    }
+                })
+                return {...p, balls: newBallData}
+            })
+            receivingCol.onHand = receivingCol.onHand.map(p => { //taking off onhand if offering an onhand
+                const offeringPokemon = latestOffer.trade.receiving.pokemon.filter(tradeP => tradeP.balls.filter(tradePBallData => tradePBallData.onhandId !== undefined && tradePBallData.onhandId === p._id).length !== 0).length !== 0
+                if (offeringPokemon) {
+                    p.qty = p.qty-1
+                    if (p.qty === 0) {return undefined}
+                }
+                return p
+            }).filter(p => p !== undefined)
+        }
+        offerCol.save()
+        receivingCol.save()
+
+        const otherUser = await User.findById(otherUserId)
+        otherUser.notifications.push({type: 'trade-offer: accept', tradeData: {otherParticipant: username, tradeGen: trade.gen, tradeId: trade._id}, unread: true})
+        otherUser.save()
+
+    } else if (response === 'reject') {
+        trade.status = 'rejected'
+        latestOffer.status = 'rejected'
+        trade.closeDate = Date.now()
+        trade.save()
+
+        const otherUser = await User.findById(otherUserId)
+        otherUser.notifications.push({type: 'trade-offer: reject', tradeData: {otherParticipant: username, tradeGen: trade.gen, tradeId: trade._id}, unread: true})
+        otherUser.save()
+    } else if (response === 'counter') {
+        trade.status = 'counteroffer'
+        latestOffer.status = 'countered'
+        trade.history.push({...counterOfferData})
+        trade.save()
+
+        const otherUser = await User.findById(otherUserId)
+        otherUser.notifications.push({type: 'trade-offer: counter', tradeData: {otherParticipant: username, tradeGen: trade.gen, tradeId: trade._id}, unread: true})
+        otherUser.save()
+    } else if (response === 'markAsComplete') {
+        if (trade.markedCompleteBy === username) {
+            trade.markedCompleteBy = ''
+            trade.save()
+        } else if (trade.markedCompleteBy === '') {
+            trade.markedCompleteBy = username
+            trade.save()
+        } else {
+            trade.markedCompleteBy = 'both',
+            trade.status = 'completed'
+            trade.closeDate = Date.now()
+            trade.save()
+
+            const offerCol = await Collection.findById(offerColId)
+            const receivingCol = await Collection.findById(receivingColId)
+
+            if (latestOffer.trade.receiving.pokemon !== undefined) {
+                offerCol.ownedPokemon = offerCol.ownedPokemon.map((poke) => {
+                    if (poke.disabled) {return poke}
+                    const newBallData = {}
+                    Object.keys(poke.balls).forEach(ball => {
+                        const ballData = poke.balls[ball]
+                        if (ballData.disabled) {newBallData[ball] = ballData}
+                        else {
+                            const ballComboTradeData = latestOffer.trade.receiving.pokemon.filter(p => (p.for === poke.name || p.name === poke.name) && (p.balls.filter(bD => bD.ball === ball).length !== 0))
+                            const ballComboBeingReceived = ballComboTradeData.length !== 0 && ballData.isOwned === false
+                            
+                            if (ballComboBeingReceived) {
+                                const ballTradeData = ballComboTradeData[0].balls.filter(bD => bD.ball === ball)[0]
+                                const haData = ballTradeData.isHA !== undefined ? {isHA: ballTradeData.isHA} : {}
+                                const emData = ballTradeData.emCount !== undefined ? {emCount: ballTradeData.emCount, EMs: ballTradeData.EMs} : {}
+                                const defaultData = ballData.default !== undefined ? {default: ballData.default} : {}
+                                newBallData[ball] = {
+                                    isOwned: true,
+                                    ...haData,
+                                    ...emData,
+                                    ...defaultData
+                                }
+                            }
+                            else {newBallData[ball] = ballData}
+                        }
+                    }) 
+                    return {...poke, balls: newBallData}
+                })
+            }
+            if (latestOffer.trade.offer.pokemon !== undefined) {
+                receivingCol.ownedPokemon = receivingCol.ownedPokemon.map((poke) => {
+                    if (poke.disabled) {return poke}
+                    const newBallData = {}
+                    Object.keys(poke.balls).forEach(ball => {
+                        const ballData = poke.balls[ball]
+                        if (ballData.disabled) {newBallData[ball] = ballData}
+                        else {
+                            const ballComboTradeData = latestOffer.trade.offer.pokemon.filter(p => (p.for === poke.name || p.name === poke.name) && (p.balls.filter(bD => bD.ball === ball).length !== 0))
+                            const ballComboBeingReceived = ballComboTradeData.length !== 0 && ballData.isOwned === false
+                            if (ballComboBeingReceived) {
+                                const ballTradeData = ballComboTradeData[0].balls.filter(bD => bD.ball === ball)[0]
+                                const haData = ballTradeData.isHA !== undefined ? {isHA: ballTradeData.isHA} : {}
+                                const emData = ballTradeData.emCount !== undefined ? {emCount: ballTradeData.emCount, EMs: ballTradeData.EMs} : {}
+                                const defaultData = ballData.default !== undefined ? {default: ballData.default} : {}
+                                newBallData[ball] = {
+                                    isOwned: true,
+                                    ...haData,
+                                    ...emData,
+                                    ...defaultData
+                                }
+                            }
+                            else {newBallData[ball] = ballData}
+                        }
+                    }) 
+                    return {...poke, balls: newBallData}
+                })
+            }
+            if (latestOffer.trade.offer.items !== undefined) {
+                latestOffer.trade.offer.items.forEach(itemD => {
+                    const itemName = itemD.name
+                    const hasFtItem = offerCol.options.tradePreferences.ftItems[itemName] !== undefined
+                    if (hasFtItem) {
+                        const setFtItemTo0 = itemD.qty >= offerCol.options.tradePreferences.ftItems[itemName]
+                        if (setFtItemTo0) {
+                            delete offerCol.options.tradePreferences.ftItems[itemName]
+                        } else {
+                            offerCol.options.tradePreferences.ftItems[itemName] = offerCol.options.tradePreferences.ftItems[itemName] - itemD.qty
+                        }
+                        
+                    }
+                })
+            }
+            if (latestOffer.trade.receiving.items !== undefined) {
+                latestOffer.trade.receiving.items.forEach(itemD => {
+                    const itemName = itemD.name
+                    const hasFtItem = receivingCol.options.tradePreferences.ftItems[itemName] !== undefined
+                    if (hasFtItem) {
+                        const setFtItemTo0 = itemD.qty >= receivingCol.options.tradePreferences.ftItems[itemName]
+                        if (setFtItemTo0) {
+                            delete receivingCol.options.tradePreferences.ftItems[itemName]
+                        } else {
+                            receivingCol.options.tradePreferences.ftItems[itemName] = receivingCol.options.tradePreferences.ftItems[itemName] - itemD.qty
+                        }
+                        
+                    }
+                })
+            }
+            offerCol.save()
+            receivingCol.save()
+        }
+    }
+    res.end()
+}))
+
 app.get('/collections/:id', catchAsync(async(req, res) => {
     const collection = await Collection.findById(req.params.id).populate({path: 'owner'})
     res.json(collection)
@@ -407,6 +712,31 @@ app.get('/collections/:id', catchAsync(async(req, res) => {
 app.get('/users/:username', catchAsync(async(req, res) => {
     const user = await User.find({username: req.params.username}).populate({path: 'collections'})
     res.json(user[0])
+}))
+
+app.get('/users/:username/trades', catchAsync(async(req, res) => {
+    const user = await User.find({username: req.params.username})
+    const allTheirTrades = await Trade.find({'users[1]': user._id, 'users[0]': user._id}).select('-history').populate({path: 'users', select: 'username'})
+
+    res.json({user: user[0], trades: allTheirTrades})
+}))
+
+app.put('/users/:username/read-notification', catchAsync(async(req, res) => {
+    const {noteId, tradeId} = req.body
+    const user = await User.findOne({username: req.params.username})
+    user.notifications.forEach((noti) => {
+        if (tradeId !== undefined) {
+            if (noti.type.includes('trade-offer')) {
+                const isTradeOffer = noti.tradeData.tradeId === tradeId
+                if (isTradeOffer) {noti.unread = false}
+            }
+        } else {
+            const isNotification = noti._id === noteId
+            if (isNotification) {noti.unread = false}
+        }
+    })
+    user.save()
+    res.end()
 }))
 
 app.get('/username/availability', catchAsync(async(req, res) => {
@@ -623,7 +953,7 @@ app.get('/api/session', catchAsync(async(req, res) => {
     if (noUser) {
         res.json({})
     } else {
-        const userData = await User.findById(req.session.passport.user).lean().populate({path: 'collections', select: 'type gen -owner'}).select('username collections').exec()
+        const userData = await User.findById(req.session.passport.user).lean().populate({path: 'collections', select: 'type gen -owner'}).select('username collections notifications.unread').exec()
         res.json(userData)
     }
 }))

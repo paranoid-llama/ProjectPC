@@ -25,8 +25,8 @@ export default function ItemDisplay({collectionGen, itemTradeStatus, lfItems, ft
         const itemValuesArr = itemType === 'lf' ? lfItems : Object.keys(ftItems)
         const renderedItems = totalItems.filter(item => itemValuesArr.includes(item.value))
         const scalingStyles = {
-            text: {fontSize: itemValuesArr.length <= 12 ? '12px' : '9px'},
-            img: itemValuesArr.length <= 12 ? '30px' : '24px'
+            text: {fontSize: itemValuesArr.length <= 12 ? '11px' : '8px'},
+            img: itemValuesArr.length <= 12 ? '20px' : '16px'
         }
         return (
             itemValuesArr.length === 0 ? 

@@ -127,6 +127,7 @@ export default function IsOwnedCheckbox({ballInfo, id, handleEditBallInfo, pokeN
                                 isEditMode={isEditMode}
                                 isHAActive={ballInfo[ball].isHA}
                                 handleChange={handleHAChangeFunc}
+                                noTopRow={noTopRowHAInd}
                             />
                         </Box>
                         }

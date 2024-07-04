@@ -17,12 +17,15 @@ import LoginPage from './routes/loginpage'
 import RegisterPage from './routes/registerpage'
 import VerifyAccount from './routes/verifyaccount'
 import Auth from './routes/auth'
-import SettingsPage from './routes/usersettings/settingspage'
-import Profile from './routes/usersettings/profile'
-import Account from './routes/usersettings/account'
-import Display from './routes/usersettings/display'
-import Other from './routes/usersettings/other'
+import SettingsPage from './routes/users/usersettings/settingspage'
+import Profile from './routes/users//usersettings/profile'
+import Account from './routes/users//usersettings/account'
+import Display from './routes/users//usersettings/display'
+import Other from './routes/users/usersettings/other'
 import NewTrade from './routes/trades/newtrade'
+import ShowTrade from './routes/trades/showTrade'
+import UserNotifications from './routes/users/usernotifications'
+import UserTrades from './routes/trades/userTrades'
 import ErrorPage from "./error-page";
 import NavBar from "./components/partials/navbar"
 import Footer from "./components/partials/footer"
@@ -38,6 +41,8 @@ import { setOptionsInitialState } from './app/slices/options'
 import listStyles from '../utils/styles/componentstyles/liststyles'
 import collectionLoader from '../utils/functions/collectionLoader'
 import userLoader from '../utils/functions/userloader'
+import tradeLoader from '../utils/functions/tradeloader'
+import userTradesLoader from '../utils/functions/usertradesLoader'
 import getSession from '../utils/functions/backendrequests/users/getsession'
 import './App.css'
 import ProtectedRoute from './components/partials/auth/protectedroute'
@@ -135,9 +140,36 @@ function Router() {
           ]
         },
         {
+          path: "/trades/:id",
+          element: <ShowTrade />,
+          loader: tradeLoader
+        },
+        {
+          path: '/trades/:id/counter-offer',
+          element: <PrivateRoute Component={NewTrade} routeType='tradeCounteroffer'/>,
+          loader: (params) => tradeLoader(params, true)
+        },
+        {
           path: "/users/:username",
           element: <ShowUser/>,
           loader: userLoader
+        },
+        {
+          path: "/users/:username/trades",
+          element: <PrivateRoute Component={UserTrades} routeType='userTrades'/>,
+          loader: userTradesLoader
+        },
+        {
+          path: '/users/:username/notifications',
+          element: <PrivateRoute Component={UserNotifications} routeType='userNotifications'/>,
+          loader: userLoader,
+          id: 'user', 
+          children: [
+            {
+              path: ':noteId',
+
+            }
+          ]
         },
         {
           path: "/users/:username/settings",

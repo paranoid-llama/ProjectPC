@@ -1,10 +1,10 @@
 import {Box, Typography, useTheme} from '@mui/material'
 import { useState } from 'react'
-import BodyWrapper from '../../components/partials/routepartials/bodywrapper'
-import ImgData from '../../components/collectiontable/tabledata/imgdata'
+import BodyWrapper from '../../../components/partials/routepartials/bodywrapper'
+import ImgData from '../../../components/collectiontable/tabledata/imgdata'
 import { useLocation, useNavigate, useRouteLoaderData, useLoaderData, Outlet, useRevalidator } from 'react-router'
 import hexToRgba from 'hex-to-rgba'
-import { capitalizeFirstLetter } from '../../../utils/functions/misc'
+import { capitalizeFirstLetter } from '../../../../utils/functions/misc'
 
 export default function SettingsPage({}) {
     const theme = useTheme()

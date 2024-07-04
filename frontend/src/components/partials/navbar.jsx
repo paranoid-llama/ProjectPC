@@ -9,7 +9,7 @@ import { useTheme, Button } from "@mui/material";
 import ControlledTextInput from "../functionalcomponents/controlledtextinput";
 import { Fragment, useState, useRef, useEffect, useContext } from "react";
 import { AlertsContext } from "../../alerts/alerts-context";
-import { useNavigate, useLoaderData, useRevalidator } from "react-router-dom";
+import { useNavigate, useLoaderData, useRevalidator, useLocation } from "react-router-dom";
 import userLoginRequest from "../../../utils/functions/backendrequests/users/login";
 import userLogoutRequest from "../../../utils/functions/backendrequests/users/logout";
 import hexToRgba from "hex-to-rgba";
@@ -19,6 +19,7 @@ export default function NavBar() {
     const navigate = useNavigate()
     const revalidator = useRevalidator()
     const userData = useLoaderData()
+    const location = useLocation().pathname
     const usernameFieldRef = useRef(null)
     const passwordFieldRef = useRef(null)
     const collectionAreaRef = useRef(null)
@@ -51,6 +52,11 @@ export default function NavBar() {
         };
     }, []);
 
+    useEffect(() => {
+        if (userData.loggedIn) {
+            revalidator.revalidate()
+        }
+    }, [location])
 
     const toggleUserArea = () => {
         setUserArea({...userArea, open: !userArea.open})
@@ -107,7 +113,8 @@ export default function NavBar() {
 
     const icons = userData.loggedIn ? ['homeicon', 'search', 'createcollection', 'user'] : ['homeicon', 'search', 'createcollection', 'login']
     const iconLinks = userData.loggedIn ? ['/', '/search', '/collections/new', `/users/${userData.user.id}`] : ['/', '/search', '/collections/new', '/login']
-    const userProfileOptions = ['Profile', 'Collections', 'Settings', 'Logout']
+    const userProfileOptions = ['Notifications', 'Profile', 'Collections', 'Trades', 'Settings', 'Logout']
+    const unreadNotificationsAmount = userData.loggedIn && userData.user.notifications.map((noti) => noti.unread ? 1 : 0).reduce((accumulator, currValue) => accumulator+currValue, 0)
 
     const loginFieldStyles = {
         '& .MuiInputBase-input': {
@@ -188,7 +195,7 @@ export default function NavBar() {
                         </Box>
                     </Box>}
                     {userArea.open &&
-                    <Box sx={{position: 'absolute', width: '50%', minWidth: '200px', maxWidth: '300px', height: '250px', top: '100%', right: '0.01%', zIndex: 1, ...theme.components.box.fullCenterCol}}>
+                    <Box sx={{position: 'absolute', width: '50%', minWidth: '200px', maxWidth: '300px', height: '315px', top: '100%', right: '0.01%', zIndex: 1, ...theme.components.box.fullCenterCol}}>
                         <Box sx={{...theme.components.box.fullCenterCol, zIndex: 1, backgroundColor: theme.palette.color1.dark, width: '100%', height: '100%', borderBottom: '1px solid black', borderLeft: '1px solid black', borderBottomLeftRadius: '10px'}}>
                             <Box sx={{width: '90%', height: '40%', ...theme.components.box.fullCenterCol}}>
                                 <Box sx={{width: '50%', height: '100%', ...theme.components.box.fullCenterCol}}>
@@ -199,13 +206,14 @@ export default function NavBar() {
                             {userProfileOptions.map((o, idx) => {
                                 const evenOption = idx % 2 === 0
                                 const isCollectionOption = o === 'Collections'
-                                const linkTo = o === 'Profile' ? `/users/${userData.user.username}` : o === 'Settings' ? `/users/${userData.user.username}/settings` : o === 'Logout' ? `/` : null
+                                const isNotifications = o === 'Notifications'
+                                const linkTo = o === 'Notifications' ? `/users/${userData.user.username}/notifications` : o === 'Profile' ? `/users/${userData.user.username}` : o === 'Settings' ? `/users/${userData.user.username}/settings` : o === 'Logout' ? `/` : o === 'Trades' ? `/users/${userData.user.username}/trades` : null
                                 const backgroundColorStyle = evenOption ? {backgroundColor: theme.palette.color1.main} : {backgroundColor: theme.palette.color1.darker}
                                 const hoverStyle = evenOption ? {'&:hover': {backgroundColor: hexToRgba(theme.palette.color1.main, 0.5), cursor: 'pointer'}} : {'&:hover': {backgroundColor: hexToRgba(theme.palette.color1.darker, 0.3), cursor: 'pointer'}}
                                 return (
                                     <Box 
                                         sx={{
-                                            height: '15%', 
+                                            height: '35px', 
                                             width: '100%', 
                                             borderTop: '1px solid white', 
                                             position: 'relative',
@@ -223,7 +231,13 @@ export default function NavBar() {
                                                 <ArrowBack sx={{position: 'absolute', left: '0%', width: '16px'}}/>
                                             }
                                             {o}
+                                            
                                         </Typography>
+                                        {(isNotifications && unreadNotificationsAmount > 0) && 
+                                            <Box sx={{width: '20px', height: '20px', borderRadius: '50%', position: 'absolute', bottom: '20%', right: '75px', backgroundColor: 'rgb(250, 53, 69)'}}>
+                                                <Typography sx={{fontSize: '14px', fontWeight: 700, color: 'white', position: 'absolute', right: '35%', top: '0px'}}>{unreadNotificationsAmount}</Typography>
+                                            </Box>
+                                        }
                                         {isCollectionOption && 
                                             <Box 
                                                 ref={collectionAreaRef} 
@@ -247,7 +261,7 @@ export default function NavBar() {
                                                     return (
                                                         <Box 
                                                             sx={{
-                                                                height: `${100/userData.user.collections.length}%`, 
+                                                                height: `32px`, 
                                                                 width: '100%', 
                                                                 borderTop: isFirst ? 'none' : '1px solid white', 
                                                                 position: 'relative',
@@ -295,13 +309,17 @@ export default function NavBar() {
                                 isUserProfile ? 
                                 <IconButton
                                     size="small"
-                                    sx={{mr: 2, display: {sm:'flex'}, justifyContent: {xs: 'center'}, width: '5%'}}
+                                    sx={{mr: 2, display: {sm:'flex'}, justifyContent: {xs: 'center'}, width: '5%', position: 'relative'}}
                                     edge="end"
                                     aria-label={i}
                                     className="NavIcons"
                                     onClick={toggleUserArea}
                                 >
                                     <img src={`https://res.cloudinary.com/duaf1qylo/image/upload/icons/${i}.png`} height='32px' width= '32px'/>
+                                    {unreadNotificationsAmount > 0 && 
+                                    <Box sx={{width: '15px', height: '15px', borderRadius: '50%', position: 'absolute', bottom: '0px', right: '0px', backgroundColor: 'rgb(250, 53, 69)'}}>
+                                        <Typography sx={{fontSize: '11px', fontWeight: 700, color: 'white'}}>{unreadNotificationsAmount}</Typography>
+                                    </Box>}
                                 </IconButton> : 
                                 <IconButton
                                     size="small"

@@ -31,6 +31,9 @@ const userSchema = new Schema ({
             },
             games: {type: Array}
         },
+        privacy: {
+
+        },
         account: {
             _id: false,
             verified: {type: Boolean},
@@ -46,6 +49,19 @@ const userSchema = new Schema ({
         display: {
             
         }
+    }, 
+    notifications: {
+        type: [{
+            type: {type: String, required: true, //object key is 'type' to denote whether its a user message/site message/trade offer update/other message
+                enum: {
+                    values: ['trade-offer: new', 'trade-offer: counter', 'trade-offer: accept', 'trade-offer: reject', 'site message']
+                }
+            }, 
+            title: {type: String},
+            tradeData: {_id: false, otherParticipant: {type: String}, tradeGen: {type: String}, tradeId: {type: String}},
+            message: {type: String},
+            unread: {type: Boolean}
+        }]
     }
 }, opts)
 

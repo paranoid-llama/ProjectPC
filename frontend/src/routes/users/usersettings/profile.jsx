@@ -1,13 +1,13 @@
 import {Box, useTheme, Typography, Paper, styled, Grid, Button} from '@mui/material'
 import MuiToggleButton from '@mui/material/ToggleButton'
 import { useState, useEffect, useContext, useRef} from 'react'
-import { AlertsContext } from '../../alerts/alerts-context'
-import ControlledTextInput from '../../components/functionalcomponents/controlledtextinput'
+import { AlertsContext } from '../../../alerts/alerts-context'
+import ControlledTextInput from '../../../components/functionalcomponents/controlledtextinput'
 import { useRouteLoaderData, useRevalidator, useOutletContext } from 'react-router'
 import hexToRgba from 'hex-to-rgba'
-import { gamesOrder } from '../../../../common/infoconstants/miscconstants.mjs'
-import ImgData from '../../components/collectiontable/tabledata/imgdata'
-import userSettingsBackendRequest from '../../../utils/functions/backendrequests/users/settings'
+import { gamesOrder } from '../../../../../common/infoconstants/miscconstants.mjs'
+import ImgData from '../../../components/collectiontable/tabledata/imgdata'
+import userSettingsBackendRequest from '../../../../utils/functions/backendrequests/users/settings'
 import { Virtuoso } from 'react-virtuoso'
 
 export default function Profile({}) {

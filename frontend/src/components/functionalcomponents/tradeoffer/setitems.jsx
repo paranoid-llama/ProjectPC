@@ -16,7 +16,7 @@ const Item = styled(Paper)(() => ({
     padding: '5%'
 }));
 
-export default function SetItems({userColPreferences, ownerColPreferences, ownerName, allowItemTrading, allowUserOffer, allowOwnerOffer, allowHandleChange, tabStyles}) {
+export default function SetItems({userColPreferences, ownerColPreferences, ownerName, allowItemTrading, allowUserOffer, allowOwnerOffer, allowHandleChange, tabStyles, isCounteroffer}) {
     const theme = useTheme()
     const dispatch = useDispatch()
     const [offerTab, setOfferTab] = useState('offering')

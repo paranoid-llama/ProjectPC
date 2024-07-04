@@ -3,7 +3,7 @@ import modalStyles from '../../../../utils/styles/componentstyles/modalstyles'
 import HelpIcon from '@mui/icons-material/Help';
 import hexToRgba from 'hex-to-rgba'
 
-export default function ComparisonSelection({dataState, changeCollection, changeOption, tradeableCollections, collectionOwnerUsername, oneHomeCollection, changeScreen, isPending, optionType, changeOptionType, externalSelectedCol}) {
+export default function ComparisonSelection({dataState, changeCollection, changeOption, tradeableCollections, collectionOwnerUsername, oneHomeCollection, changeScreen, isPending, optionType, changeOptionType, externalSelectedCol, extCantChangeSelected}) {
     const theme = useTheme()
     const trueSelectedCol = externalSelectedCol !== undefined ? externalSelectedCol : dataState.selectedCol
 
@@ -20,12 +20,14 @@ export default function ComparisonSelection({dataState, changeCollection, change
             <Box sx={{...theme.components.box.fullCenterCol, justifyContent: 'start', width: '80%', height: '80%', gap: 0.5}}>
                 {tradeableCollections.map((col) => {
                     const subType = isNaN(parseInt(col.gen)) ? col.gen.toUpperCase() : `Gen ${col.gen}`
+                    const disabledButton = extCantChangeSelected && !(trueSelectedCol === col._id)
                     return (
                         <ToggleButton 
                             key={`visitor-user-${subType}-collection-selection`}
                             value={col._id} 
-                            onChange={(e, newVal) => changeCollection(newVal)}
+                            onChange={extCantChangeSelected ? null : (e, newVal) => changeCollection(newVal)}
                             selected={trueSelectedCol === col._id} 
+                            disabled={disabledButton}
                             sx={{
                                 width: '80%', 
                                 color: 'white', 
@@ -46,7 +48,6 @@ export default function ComparisonSelection({dataState, changeCollection, change
                     )
                 })}
             </Box>
-        
         </Box>
         <Box sx={{...modalStyles.onhand.modalElementBg, height: '40%', width: '95%', mt: 1, ...theme.components.box.fullCenterCol, position: 'relative'}}>
             <Typography sx={{fontWeight: 700, fontSize: '14px', mb: 1}}>Comparison Options</Typography>

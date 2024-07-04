@@ -147,8 +147,9 @@ export default function ShowCollectionTitle({collectionID, options, isEditMode, 
                     </ToggleButtonGroup>
                 </Box>
                 <Box sx={{width: '100%', height: '15%', display: 'flex', justifyContent: 'center'}}>
-                    {canInitiateTrade && <Button sx={{width: '60%', fontSize: '12px'}} onClick={toggleComparisonModal}>Compare Collections</Button>}
-                    {isOwner && <Button sx={{width: '30%', fontSize: '12px'}} onClick={initializeEditMode}>Edit Mode</Button>}
+                    {canInitiateTrade && <Button sx={{width: '60%', fontSize: '11px'}} onClick={toggleComparisonModal}>Compare Collections</Button>}
+                    {canInitiateTrade && <Button sx={{width: '40%', fontSize: '11px'}} onClick={() => navigate(`/collections/${collectionID}/trade`)}>Offer Trade</Button>}
+                    {isOwner && <Button sx={{width: '40%', fontSize: '12px'}} onClick={initializeEditMode}>Edit Mode</Button>}
                     {isEditMode && <Button sx={{fontSize: '12px'}} onClick={() => dispatch(changeModalState({open: true, screen: 'main'}))}>Collection Options</Button>}
                 </Box>
             </Box>

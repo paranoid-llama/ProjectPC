@@ -30,7 +30,6 @@ export default function EMIndicator({sx, textOnly, isEditMode, emCount, handleCh
                     backgroundColor: 'none',
                     border: 'none',
                     ...offset,
-                    position: 'absolute',
                     margin: 0,
                     padding: '2px',
                     width: '100%',

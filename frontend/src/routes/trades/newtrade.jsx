@@ -17,8 +17,12 @@ export default function NewTrade({}) {
     const theme = useTheme()
     const dispatch = useDispatch()
     const locationData = useLocation()
-
-    const targetColData = useLoaderData()
+    const loaderData = useLoaderData()
+    const hasLocationState = locationData.state !== null
+    const isCounteroffer = hasLocationState && locationData.state.isCounteroffer
+    
+    const userMakingOfferCol = isCounteroffer ? loaderData[`user${locationData.state.offererNumber}CollectionData`] : {}
+    const targetColData = isCounteroffer ? loaderData[`user${locationData.state.offererNumber === 0 ? 1 : 0}CollectionData`] : loaderData
     const userData = useRouteLoaderData("root")
     const proposedValues = useRef({})
     const targetColDisplay = isNaN(parseInt(targetColData.gen)) ? `${targetColData.gen.toUpperCase()} Aprimon Collection` : `Gen ${targetColData.gen} Aprimon Collection`
@@ -26,8 +30,7 @@ export default function NewTrade({}) {
     const step2ClassRef = useRef('')
     const step3ClassRef = useRef('')
 
-    const hasLocationState = locationData.state !== null
-    const [tradeData, setTradeData] = useState({displaySteps: {1: false, 2: false, 3: false}, compareWith: '', userCollectionData: {}, comparisonData: {}})
+    const [tradeData, setTradeData] = useState({displaySteps: {1: false, 2: false, 3: false}, compareWith: Object.keys(userMakingOfferCol).length === 0 ? '' : userMakingOfferCol._id, userCollectionData: userMakingOfferCol, comparisonData: {}, receivedValueFrom: ''})
     // const [selectedColIsPending, startColTransition] = useTransition()
 
     const toggleTradeStep = (tradeStepNum) => {
@@ -65,39 +68,25 @@ export default function NewTrade({}) {
         data.comparedWith = tradeData.compareWith
         setTradeData({...tradeData, comparisonData: data})
     }
-    const setOfferReceiving = (tradeSide, type, data) => {
-        //tradeSide = if offering/receiving, type = if pokemon/item, data is the selected data.
-        if (type === 'pokemon') {
-            const periphData = data.peripherals
-            const addToSide = periphData.onhandId !== undefined ? periphData.onhandId : `${data.id} ${periphData.ball}`
-            const pokemonDataInState = tradeData[tradeSide].filter(d => d.name === data.name)[0]
-            const isInData = pokemonDataInState !== undefined && pokemonDataInState.balls.filter(ballData => ((ballData.onhandId === undefined && `${data.id} ${ballData.ball}` === addToSide) || (ballData.onhandId !== undefined && ballData.onhandId === addToSide)))[0] !== undefined
-            const isLastSelectedBall = isInData && pokemonDataInState.balls.length === 1
-            const isFirstTimeSelected = pokemonDataInState === undefined
-            const newTradeSideState = isLastSelectedBall ? tradeData[tradeSide].filter(d => d.name !== data.name) :
-                isInData ? tradeData[tradeSide].map(d => {
-                    const isPokemon = d.name === data.name 
-                    const newData = isPokemon ? {...d, balls: d.balls.filter(ballData => (ballData.onhandId === undefined && `${data.id} ${ballData.ball}` !== addToSide) || (ballData.onhandId !== undefined && ballData.onhandId !== addToSide))} : d
-                    return newData
-                }) : 
-                isFirstTimeSelected ? [...tradeData[tradeSide], {name: data.name, id: data.id, natDexNum: data.natDexNum, balls: [{...periphData}]}] :
-                tradeData[tradeSide].map(d => {
-                    const isPokemon = d.name === data.name 
-                    const newData = isPokemon ? {...d, balls: [...d.balls, {...periphData}]} : d
-                    return newData
-                })
-            setTradeData({...tradeData, [tradeSide]: newTradeSideState})
-        }
-    }
 
     const initDataFromComparison = async() => {
         const userCollectionData = await getUserCollectionData(locationData.state.compareWith)
         setTradeData({...tradeData, displaySteps: {...tradeData.displaySteps, 2: true}, compareWith: locationData.state.compareWith, userCollectionData, comparisonData: locationData.state.comparisonData})
     }
 
+    const changeProposedValues = () => {
+        const newGetValueFromCol = loaderData.user0CollectionData.owner.username === tradeData.receivedValueFrom ? loaderData.user1CollectionData : loaderData.user0CollectionData
+        proposedValues.current = getValue(newGetValueFromCol.options.tradePreferences.rates)
+        setTradeData({...tradeData, receivedValueFrom: newGetValueFromCol.owner.username})
+    }
+
     useEffect(() => {
-        proposedValues.current = getValue(targetColData.options.tradePreferences.rates)
-        if (locationData.state !== null)  {//indicates they came from comparison modal in the show page 
+        const getValueFromCol = isCounteroffer ? 
+            (loaderData.tradeData.users[1].username === loaderData.user1CollectionData.owner.username ? loaderData.user1CollectionData : loaderData.user0CollectionData) : 
+            targetColData
+        const gotValueFromName = getValueFromCol.owner.username
+        proposedValues.current = getValue(getValueFromCol.options.tradePreferences.rates)
+        if (locationData.state !== null && !isCounteroffer)  {//indicates they came from comparison modal in the show page 
             setTimeout(() => { 
                 step2ClassRef.current = 'grow-trade-step-2'
                 initDataFromComparison()
@@ -105,7 +94,7 @@ export default function NewTrade({}) {
         } else {
            setTimeout(() => {
                 step1ClassRef.current = 'grow-trade-step-1'
-                setTradeData({...tradeData, displaySteps: {...tradeData.displaySteps, 1: true}})
+                setTradeData({...tradeData, displaySteps: {...tradeData.displaySteps, 1: true}, receivedValueFrom: gotValueFromName})
             }, 500) 
         }
     }, [])
@@ -115,7 +104,7 @@ export default function NewTrade({}) {
     return (
         <BodyWrapper sx={{mt: 3, mx: 1, ...theme.components.box.fullCenterCol, justifyContent: 'start'}}>
             <Box sx={{...theme.components.box.fullCenterCol, justifyContent: 'start', maxWidth: '1200px', width: '100%'}}>
-                <Typography variant='h1' sx={{fontWeight: 700, width: '100%', fontSize: '36px', mb: 1}}>New Trade Offer</Typography>
+                <Typography variant='h1' sx={{fontWeight: 700, width: '100%', fontSize: '36px', mb: 1}}>New {isCounteroffer ? 'Counter' : 'Trade'} Offer</Typography>
                 <Box sx={{border: `1px solid ${theme.palette.color2.light}`, borderRadius: '10px', backgroundColor: hexToRgba(theme.palette.color2.light, 0.3), width: '75%', height: '50px', ...theme.components.box.fullCenterCol, mb: 3}}>
                     <Typography><b>Trading with:</b> {targetColData.owner.username}'s {targetColDisplay}</Typography>
                 </Box>
@@ -133,6 +122,8 @@ export default function NewTrade({}) {
                                 changeSelectedCol={changeSelectedCol}
                                 setComparisonData={setComparisonData}
                                 selectedColData={tradeData.userCollectionData}
+                                isCounteroffer={isCounteroffer}
+                                previousOfferData={isCounteroffer && loaderData.tradeData.history[loaderData.tradeData.history.length-1]}
                             />
                         </Box>
                     </Box>
@@ -144,9 +135,12 @@ export default function NewTrade({}) {
                             {!(tradeData.compareWith === '') && 
                             <SetOfferReceiving
                                 comparisonData={tradeData.comparisonData}
+                                originalTradeRecipientName={isCounteroffer && (loaderData.tradeData.users[1].username === loaderData.user1CollectionData.owner.username ? loaderData.user1CollectionData.owner.username : loaderData.user0CollectionData.owner.username)}
                                 selectedColData={tradeData.userCollectionData}
                                 ownerColData={targetColData}
-                                handleChange={setOfferReceiving}
+                                isCounteroffer={isCounteroffer}
+                                receivedValueFrom={tradeData.receivedValueFrom}
+                                handleProposedValueChange={changeProposedValues}
                                 proposedValues={proposedValues.current}
                             />}
                         </Box>
@@ -160,6 +154,14 @@ export default function NewTrade({}) {
                             <FinalizeTrade 
                                 selectedColDisplay={isNaN(parseInt(tradeData.userCollectionData.gen)) ? `${tradeData.userCollectionData.gen.toUpperCase()} Aprimon Collection` : `Gen ${tradeData.userCollectionData.gen} Aprimon Collection`}
                                 proposedValues={proposedValues.current}
+                                traderId={userData.user._id}
+                                ownerId={targetColData.owner._id}
+                                traderUsername={userData.user.username}
+                                ownerUsername={targetColData.owner.username}
+                                traderGen={tradeData.userCollectionData.gen}
+                                ownerGen={targetColData.gen}
+                                isCounteroffer={isCounteroffer}
+                                tradeId={isCounteroffer && loaderData.tradeData._id}
                             />}
                         </Box>
                     </Box>
