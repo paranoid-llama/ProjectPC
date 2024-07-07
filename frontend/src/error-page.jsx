@@ -1,15 +1,18 @@
 import {useRouteError} from "react-router-dom";
+import {Box, Typography, useTheme} from '@mui/material'
+import BodyWrapper from "./components/partials/routepartials/bodywrapper";
 
 export default function ErrorPage() {
     const error = useRouteError();
-    console.error(error)
+    const theme = useTheme()
 
     return (
-        <div id="error-page">
-            <h1>Oops!</h1>
-            <p>An unexpected error has occurred!</p>
-            <p>{error.data}</p>
-            <p>{error.status} <i>{error.statusText || error.message}</i></p>
-        </div>
+        <BodyWrapper>
+            <Box sx={{height: '750px', width: '100%', borderRadius: '10px', ...theme.components.box.fullCenterCol, backgroundColor: 'rgba(220, 53, 69, 0.8)', color: 'white'}}>
+            <Typography>Oops! An unexpected error has occurred!</Typography>
+            <Typography>{error.data}</Typography>
+            <Typography>{error.status} <i>{error.statusText || error.message}</i></Typography>
+            </Box>
+        </BodyWrapper>
     )
 }

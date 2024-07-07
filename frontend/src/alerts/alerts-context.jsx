@@ -1,27 +1,26 @@
 import {createContext, useState} from 'react';
 import { CustomAlert, AlertsWrapper } from './alert';
+import { useDispatch } from 'react-redux';
+import { addAlert as reduxAddAlert, dismissAlert as reduxDismissAlert } from '../app/slices/alerts';
 
 const AlertsContext = createContext();
 const AlertsProvider = ({children}) => {
-    const [alerts, setAlerts] = useState([]);
+    // const [alerts, setAlerts] = useState([]);
+    const dispatch = useDispatch()
 
     const addAlert = (alert) => {
         const id = Math.random().toString(36).slice(2, 9) + new Date().getTime().toString(36);
-        setAlerts ((prev) => [{...alert, id: id}, ...prev]);
+        dispatch(reduxAddAlert({alertData: alert, id}))
         return id
     }
 
     const dismissAlert = (id) => {
-        setAlerts((prev) => prev.filter((alert) => alert.id !== id))
+        dispatch(reduxDismissAlert(id))
     }
 
     return (
-        <AlertsContext.Provider value={({alerts, addAlert, dismissAlert})}>
-            <AlertsWrapper>
-                {alerts.map((alert) => (
-                    <CustomAlert key={alert.id} {...alert} handleDismiss={() => {dismissAlert(alert.id)}} />
-                ))}
-            </AlertsWrapper>
+        <AlertsContext.Provider value={({addAlert, dismissAlert})}>
+            <AlertsWrapper dismissAlert={dismissAlert}/>
             {children}
         </AlertsContext.Provider>
     )

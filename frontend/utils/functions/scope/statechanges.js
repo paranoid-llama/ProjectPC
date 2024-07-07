@@ -80,16 +80,16 @@ const scopeSingleChange = (groupInfo, pokemonInfo, formData, updatePokemonChange
             {...formData, [group]: {...formData[group], [subGroup]: [...formData[group][subGroup], {name, natDexNum, id}]}} :
             {...formData, [group]: [...formData[group], {name, natDexNum, id}]}
         if (subGroup === 'interchangeable') {
-            const selectingAny = natDexNum == id
-            const selectingForm = natDexNum !== id && id.includes(natDexNum)
+            const selectingAny = !name.includes('(') || name.includes('Any')
+            const selectingForm = name.includes('(') && !name.includes('Any')
             if (selectingAny) {
-                newScopeFormData.alternateForms.interchangeable = newScopeFormData.alternateForms.interchangeable.filter(poke => (!poke.id.includes(natDexNum) || (poke.id.includes(natDexNum) && poke.id == natDexNum)))
+                newScopeFormData.alternateForms.interchangeable = newScopeFormData.alternateForms.interchangeable.filter(poke => (!poke.id.includes(natDexNum) || (poke.id.includes(natDexNum) && (!poke.name.includes('(') || poke.name.includes('Any')))))
                 if (updatePokemonChange) {
                     const newPokemonChangesData = getPokemonChange({}, false, currAddedPoke, currRemovedPoke, true, oldFormData, newScopeFormData.alternateForms.interchangeable)
                     return {pokemon: newScopeFormData, ...newPokemonChangesData}
                 }
             } else if (selectingForm) {
-                newScopeFormData.alternateForms.interchangeable = newScopeFormData.alternateForms.interchangeable.filter(poke => poke.id != natDexNum)
+                newScopeFormData.alternateForms.interchangeable = newScopeFormData.alternateForms.interchangeable.filter(poke => (poke.id !== `${natDexNum}-a` && poke.id !== `${natDexNum}-any`))
                 if (updatePokemonChange) {
                     const newPokemonChangesData = getPokemonChange({}, false, currAddedPoke, currRemovedPoke, true, oldFormData, newScopeFormData.alternateForms.interchangeable)
                     return {pokemon: newScopeFormData, ...newPokemonChangesData}
@@ -111,8 +111,8 @@ const filterLegalBalls = (scopeTotal, ballScope, massType, hasSubGroup, groupInf
     const currentBallsFormatted = currentBallsLegality.filter((ball, idx) => currentBallsLegality.indexOf(ball) === idx)
     const filteredMons = totalList.filter(mon => mon.legalBalls.map(lB => currentBallsFormatted.includes(lB)).includes(true))
 
-    const finalList = massType === 'any' ? filteredMons.map(mon => {return {name: mon.name, natDexNum: mon.natDexNum, id: mon.imgLink}}).filter(poke => !poke.id.includes('-')) :
-        massType === 'allForms' ? filteredMons.map(mon => {return {name: mon.name, natDexNum: mon.natDexNum, id: mon.imgLink}}).filter(poke => poke.id.includes('-')) : 
+    const finalList = massType === 'any' ? filteredMons.map(mon => {return {name: mon.name, natDexNum: mon.natDexNum, id: mon.imgLink}}).filter(poke => !(poke.name.includes('(')) || (poke.name.includes('Any'))) :
+        massType === 'allForms' ? filteredMons.map(mon => {return {name: mon.name, natDexNum: mon.natDexNum, id: mon.imgLink}}).filter(poke => poke.name.includes('(') && !poke.name.includes('Any')) : 
         filteredMons.map(mon => {return {name: mon.name, natDexNum: mon.natDexNum, id: mon.imgLink}})
 
     return finalList
@@ -121,8 +121,8 @@ const filterLegalBalls = (scopeTotal, ballScope, massType, hasSubGroup, groupInf
 const getFormDataPath = (formData, massType, groupInfo, hasSubGroup) => {
     const {group, subGroup} = groupInfo
     const pokemonFormDataPath = hasSubGroup ? 
-            massType === 'any' ? formData[group][subGroup].filter(poke => !poke.id.includes('-')) :
-            massType === 'allForms' ? formData[group][subGroup].filter(poke => poke.id.includes('-')):
+            massType === 'any' ? formData[group][subGroup].filter(poke => !(poke.name.includes('(')) || (poke.name.includes('Any'))) :
+            massType === 'allForms' ? formData[group][subGroup].filter(poke => poke.name.includes('(') && !poke.name.includes('Any')):
             formData[group][subGroup] : formData[group]
     return pokemonFormDataPath
 }

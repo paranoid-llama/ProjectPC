@@ -109,7 +109,9 @@ export default function RenderOnHandEdit({collectionId, ownerId, pokemon, idxOfP
     }
     
     const ownedPokemonInfo = selectCollectionPokemon(store.getState(), pokemon.imgLink)
-    const allowedBalls = getOwnedBalls(ownedPokemonInfo.balls)
+    //below is like that as it prevents errors arising from a user having a certain onhand ball combo then changing the ball scope of that ball,
+    //resulting in the collection data being wiped. 
+    const allowedBalls = !getOwnedBalls(ownedPokemonInfo.balls).includes(pokemon.ball) ? [...getOwnedBalls(ownedPokemonInfo.balls), pokemon.ball] : getOwnedBalls(ownedPokemonInfo.balls)
     const possibleGenders = ownedPokemonInfo.possibleGender
     const noHA = ownedPokemonInfo.balls[allowedBalls[0]].isHA === undefined
     const noEMs = ownedPokemonInfo.balls[allowedBalls[0]].EMs === undefined

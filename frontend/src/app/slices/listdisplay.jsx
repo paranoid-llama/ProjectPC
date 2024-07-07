@@ -4,6 +4,7 @@ import { sortList } from '../../../../common/sortingfunctions/customsorting.mjs'
 import { filterList } from '../../../utils/functions/sortfilterfunctions/filterfunctions'
 import { apriballs } from '../../../../common/infoconstants/miscconstants.mjs'
 import { setSortingOptionsState } from './options'
+import { selectivelyReturnIsHAAndEMs } from '../../../utils/functions/misc'
 
 //this slice controls the display for the show list components (showonhandlist, showcollectionlist). 
 //separated from the other slices as it controls the state of the list displays ONLY (not the row content) and allows it to update when the length of the lists change 
@@ -36,8 +37,19 @@ const listDisplay = createSlice({
             return state
         },
         addOnHandPokemonToList: (state, action) => {
-            const {newOnhand, sortingOptions} = action.payload
-            state.onhand[state.onhand.length] = newOnhand
+            const {newOnhand, sortingOptions, speciesEditOnly=false} = action.payload
+            if (!speciesEditOnly) {
+                state.onhand[state.onhand.length] = newOnhand
+            }
+            if (sortingOptions.reorder === true) {
+                state.onhand = sortOnHandList(sortingOptions.sortFirstBy, sortingOptions.default, sortingOptions.ballOrder, state.onhand)
+            }
+            return state
+        },
+        changeOnHandPokemon: (state, action) => {
+            const {onhandId, newPokeData, sortingOptions} = action.payload
+            const indexOfId = state.onhand.findIndex(pData => pData._id === onhandId)
+            state.onhand[indexOfId] = {_id: onhandId, ...newPokeData}
             if (sortingOptions.reorder === true) {
                 state.onhand = sortOnHandList(sortingOptions.sortFirstBy, sortingOptions.default, sortingOptions.ballOrder, state.onhand)
             }
@@ -124,6 +136,6 @@ const listDisplay = createSlice({
     }
 })
 
-export const {setListInitialState, addOnHandPokemonToList, removePokemonFromList, setSortKey, setFilters, filterSearch} = listDisplay.actions
+export const {setListInitialState, addOnHandPokemonToList, changeOnHandPokemon, removePokemonFromList, setSortKey, setFilters, filterSearch} = listDisplay.actions
 
 export default listDisplay

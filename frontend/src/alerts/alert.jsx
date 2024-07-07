@@ -1,5 +1,6 @@
 import {useEffect} from 'react';
 import { Alert, Box, Fade} from '@mui/material';
+import { useSelector } from 'react-redux';
 import ImgData from '../components/collectiontable/tabledata/imgdata';
 import './alerts.css'
 
@@ -51,10 +52,14 @@ const CustomAlert = ({
     )
 }
 
-const AlertsWrapper = ({children}) => {
+const AlertsWrapper = ({dismissAlert}) => {
+    const alerts = useSelector(state => state.alerts)
+
     return (
         <Box className='alertarea'>
-            {children}
+            {alerts.map((alert) => (
+                <CustomAlert key={alert.id} {...alert} handleDismiss={() => {dismissAlert(alert.id)}} />
+            ))}
         </Box>
     )
 }

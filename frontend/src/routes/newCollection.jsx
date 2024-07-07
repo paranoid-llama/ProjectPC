@@ -168,7 +168,8 @@ export default function NewCollection() {
             options: backendOptionsFormat,
             customSort: formData.options.sorting.customSort,
             collectionName: formData.options.collectionName,
-            owner: userData._id
+            // owner: userData._id
+            owner: '66870d03295b9f4018d6accd'
         }
 
         const collectionId = await createNewCollection(newCollectionInfo, formData.collectionType.type)

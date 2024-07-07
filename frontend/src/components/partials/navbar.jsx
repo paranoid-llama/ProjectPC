@@ -295,7 +295,7 @@ export default function NavBar() {
                                 {(!isLogin && !isUserProfile) ?
                                 <Link 
                                     href={iconLinks[idx]} 
-                                    sx={{mr: 2, display: {sm:'flex'}, justifyContent: {xs: 'center'}, width: '5%'}}
+                                    sx={{mr: 2, display: {sm:'flex'}, justifyContent: {xs: 'center'}, width: '50px'}}
                                 >
                                     <IconButton
                                         size="small"
@@ -309,7 +309,7 @@ export default function NavBar() {
                                 isUserProfile ? 
                                 <IconButton
                                     size="small"
-                                    sx={{mr: 2, display: {sm:'flex'}, justifyContent: {xs: 'center'}, width: '5%', position: 'relative'}}
+                                    sx={{mr: 2, display: {sm:'flex'}, justifyContent: {xs: 'center'}, width: '50px', position: 'relative'}}
                                     edge="end"
                                     aria-label={i}
                                     className="NavIcons"
@@ -317,13 +317,13 @@ export default function NavBar() {
                                 >
                                     <img src={`https://res.cloudinary.com/duaf1qylo/image/upload/icons/${i}.png`} height='32px' width= '32px'/>
                                     {unreadNotificationsAmount > 0 && 
-                                    <Box sx={{width: '15px', height: '15px', borderRadius: '50%', position: 'absolute', bottom: '0px', right: '0px', backgroundColor: 'rgb(250, 53, 69)'}}>
+                                    <Box sx={{width: '15px', height: '15px', borderRadius: '50%', position: 'absolute', bottom: '0px', right: '5px', backgroundColor: 'rgb(250, 53, 69)'}}>
                                         <Typography sx={{fontSize: '11px', fontWeight: 700, color: 'white'}}>{unreadNotificationsAmount}</Typography>
                                     </Box>}
                                 </IconButton> : 
                                 <IconButton
                                     size="small"
-                                    sx={{mr: 2, display: {sm:'flex'}, justifyContent: {xs: 'center'}, width: '5%'}}
+                                    sx={{mr: 2, display: {sm:'flex'}, justifyContent: {xs: 'center'}, width: '50px',}}
                                     edge="end"
                                     aria-label={i}
                                     className="NavIcons"

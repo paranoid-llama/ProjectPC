@@ -65,6 +65,16 @@ function NavFooterWrapper() {
   )
 }
 
+function NavFooterError() {
+  return (
+    <>
+    <NavBar />
+      <ErrorPage />
+    <Footer />
+    </>
+  )
+}
+
 function EditCollectionComponent() {
   return(
     <>
@@ -80,7 +90,7 @@ function Router() {
     {
       path: "/",
       element: <NavFooterWrapper />,
-      // errorElement: <ErrorPage />,
+      errorElement: <NavFooterError />,
       loader: getSession,
       id: "root",
       children: [
@@ -114,7 +124,8 @@ function Router() {
         },
         {
           path: "/collections/new",
-          element: <ProtectedRoute Component={NewCollection}/>
+          // element: <ProtectedRoute Component={NewCollection}/>,
+          element: <NewCollection />
         },
         {
           path: "/collections/:id",

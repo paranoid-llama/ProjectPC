@@ -1,38 +1,38 @@
 const ownedPokemonEdit = async(gen, newOwnedCollectionList, collectionId, getPokemonInfo=false, newPokemon=[], updateEggMoves=false, ballScope=[], newCollectingBalls=[]) => {
     if (getPokemonInfo) {
-        const addedPokemon = await fetch(`http://localhost:3000/collections/${collectionId}/edit/ownedpokemonedit`, {
+        const addedPokemon = await fetch(`http://localhost:3000/collections/${collectionId}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({getPokemonInfo, newPokemon, gen, ballScope})
+            body: JSON.stringify({editType: 'ownedPokemonEdit', getPokemonInfo, newPokemon, gen, ballScope})
         }).then(data => data.json())
         return addedPokemon
     } else {
         if (updateEggMoves) {
-            const updatedEggMoveInfo = await fetch(`http://localhost:3000/collections/${collectionId}/edit/ownedpokemonedit`, {
+            const updatedEggMoveInfo = await fetch(`http://localhost:3000/collections/${collectionId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({gen, newOwnedCollectionList, updateEggMoves: true})
+                body: JSON.stringify({editType: 'ownedPokemonEdit', gen, newOwnedCollectionList, updateEggMoves: true})
             }).then(data => data.json())
             return updatedEggMoveInfo
         } else if (newCollectingBalls.length !== 0) { 
-            fetch(`http://localhost:3000/collections/${collectionId}/edit/ownedpokemonedit`, {
+            fetch(`http://localhost:3000/collections/${collectionId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({gen, newOwnedCollectionList, newCollectingBalls})
+                body: JSON.stringify({editType: 'ownedPokemonEdit', gen, newOwnedCollectionList, newCollectingBalls})
             })
         } else {
-            fetch(`http://localhost:3000/collections/${collectionId}/edit/ownedpokemonedit`, {
+            fetch(`http://localhost:3000/collections/${collectionId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({gen, newOwnedCollectionList})
+                body: JSON.stringify({editType: 'ownedPokemonEdit', gen, newOwnedCollectionList})
             })
         }
         

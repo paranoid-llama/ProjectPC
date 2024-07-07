@@ -66,10 +66,6 @@ export default function RegisterPage({}) {
         }
     }
 
-    // const checkUsernameAvailability = () => {
-
-    // }
-
     const checkUsernameAvailability= async() => {
         if (usernameFieldRef.current.value === '') {
             setError({...error, username: false, usernameAvailable: 'none'})
@@ -83,7 +79,11 @@ export default function RegisterPage({}) {
         if (availability.available === false) {
             setError({...error, username: true, usernameAvailable: false})
         } else {
-            setError({...error, usernameAvailable: true})
+            if (usernameFieldRef.current.value === 'login' || usernameFieldRef.current.value === 'logout' || usernameFieldRef.current.value === 'settings')  {//reserved words
+                setError({...error, username: true, usernameAvailable: 'reserved'})
+            } else {
+                setError({...error, usernameAvailable: true})
+            } 
         }
     }
 
@@ -211,10 +211,12 @@ export default function RegisterPage({}) {
                     />
                 </Box>
                 <Box sx={{...theme.components.box.fullCenterRow, alignItems: 'start', justifyContent: 'end', mt: 0.5, width: '100%', height: '10%', position: 'relative'}}>
-                    {(typeof error.usernameAvailable === 'boolean' || error.usernameAvailable === 'notLongEnough') && 
+                    {(typeof error.usernameAvailable === 'boolean' || error.usernameAvailable === 'notLongEnough' || error.usernameAvailable === 'reserved') && 
                     <Box sx={{...theme.components.box.fullCenterCol, alignItems: 'start', width: '70%', height: '100%', position: 'absolute', top: '5px'}}>
                         {error.usernameAvailable === 'notLongEnough' ? 
                             <Typography sx={{color: 'red', fontSize: '12px', ml: 2}}>Username must be at least 4 characters long!</Typography> : 
+                        error.usernameAvailable === 'reserved' ? 
+                            <Typography sx={{color: 'red', fontSize: '12px', ml: 2}}>{usernameFieldRef.current.value} is a reserved word. Please try another username!</Typography> : 
                         error.usernameAvailable === true ? 
                             <Typography sx={{color: 'green', fontSize: '12px', ml: 2}}>{usernameFieldRef.current.value} is available!</Typography> : 
                             <Typography sx={{color: 'red', fontSize: '12px', ml: 2}}>{usernameFieldRef.current.value} is taken. Try another username.</Typography> 

@@ -255,11 +255,11 @@ export default function PokemonGroupDisplay({totalPokemon, activePokemon, ballSc
     const interchangeableOtherOpts = {}
     if (isInterchangeableAltFormSelection) {
         reOrderedInterchangeableSel.forEach(uniqueMon => {
-            const otherOpts = totalPokemon.filter(mon => (mon.imgLink.includes(uniqueMon.imgLink)) && mon.imgLink !== uniqueMon.imgLink)
+            const otherOpts = totalPokemon.filter(mon => (mon.name.includes(uniqueMon.name)) && mon.imgLink !== uniqueMon.imgLink)
             interchangeableOtherOpts[uniqueMon.imgLink] = otherOpts
         })
     }
-   
+
     // const setItemContent = ()
 
     return (

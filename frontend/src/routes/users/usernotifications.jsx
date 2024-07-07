@@ -17,7 +17,7 @@ export default function UserNotifications({}) {
                         <Typography sx={{fontSize: '32px', fontWeight: 700}}>Your Notifications</Typography>
                     </Box>
                 </Box>
-                <Box sx={{height: '650px', width: '90%', ...theme.components.box.fullCenterCol, justifyContent: 'start', mt: 1}}>
+                <Box sx={{height: '650px', width: '90%', ...theme.components.box.fullCenterCol, justifyContent: 'start', flexDirection: 'column-reverse', mt: 1}}>
                     {notifications.map((note, idx) => {
                         const onClickFunc = (note.type.includes('trade-offer')) ? () => navigate(`/trades/${note.tradeData.tradeId}`) : null
                         return (

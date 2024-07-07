@@ -30,7 +30,7 @@ const options = createSlice({
         },
         setSortingOptionsState: (state, action) => {
             const {listType, data} = action.payload
-            state.sortingOptions[listType] = data
+            state.sorting[listType] = data
             return state
         },
         setTradePreferencesState: (state, action) => {

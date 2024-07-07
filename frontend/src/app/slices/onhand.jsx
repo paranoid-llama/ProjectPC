@@ -22,20 +22,8 @@ const onhand = createSlice({
             return state
         },
         setPokemon: (state, action) => {
-            const {idx, name, natDexNum, imgLink, ball, gender, isHA, emCount, EMs, qty} = action.payload
-            const newPokemon = {
-                name, 
-                natDexNum, 
-                imgLink, 
-                ball, 
-                gender, 
-                qty, 
-                ...selectivelyReturnIsHAAndEMs('isHA', isHA), 
-                ...selectivelyReturnIsHAAndEMs('emCount', emCount), 
-                ...selectivelyReturnIsHAAndEMs('EMs',EMs)
-                //functions are required here as not all pokemon have isHA field/EMs field. this dispatch receives those fields as 'undefined' if they don't.
-            }
-            state[idx] = {_id: state[idx]._id, ...newPokemon}
+            const {idx, imgLink, pokemonData} = action.payload
+            state[idx] = {_id: state[idx]._id, imgLink,  ...pokemonData}
             return state
         },
         setQty: (state, action) => {

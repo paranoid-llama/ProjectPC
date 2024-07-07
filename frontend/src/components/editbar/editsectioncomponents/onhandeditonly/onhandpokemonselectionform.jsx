@@ -7,7 +7,7 @@ import {AlertsContext} from '../../../../alerts/alerts-context'
 import {getPokemonWithOwnedBalls, getOwnedBalls, randomGender, setNewOnHandPokemonState, selectivelyReturnIsHAAndEMs, selectNextEmCount, setMaxEmArr, handleEMsState, capitalizeFirstLetter} from './../../../../../utils/functions/misc'
 import { selectCollectionPokemon } from '../../../../app/selectors/selectors'
 import {setPokemon, setNewOnHand} from '../../../../app/slices/onhand'
-import {addOnHandPokemonToList} from '../../../../app/slices/listdisplay'
+import {addOnHandPokemonToList, changeOnHandPokemon} from '../../../../app/slices/listdisplay'
 import { newOnHandPutReq } from '../../../../../utils/functions/backendrequests/addonhand'
 import { bulkEditOnHandInfo } from '../../../../../utils/functions/backendrequests/editcollection'
 import newObjectId from '../../../../../utils/functions/newobjectid'
@@ -51,7 +51,9 @@ export default function OnHandPokemonSelectionForm({speciesEditOnly=false, open,
     const fullSelectionList = getPokemonWithOwnedBalls(collectionData)
     
     const selectionList = pokemonData.searchData !== '' ? fullSelectionList.filter(p => p.name.toLowerCase().includes(pokemonData.searchData)) : fullSelectionList
-    const allowedBalls = pokemonData.selection.balls !== undefined ? getOwnedBalls(pokemonData.selection.balls) : []
+    const allowedBallsStep1 = pokemonData.selection.balls !== undefined ? getOwnedBalls(pokemonData.selection.balls) : []
+    //this step prevents errors if a user makes an onhand of a particular ball combo but later changes the ball scope and removes the ball data
+    const allowedBalls = (!allowedBallsStep1.includes(pokemonData.ball) && speciesEditOnly) ? [...allowedBallsStep1, pokemonData.ball] : allowedBallsStep1
 
     const scalingStyles = speciesEditOnly ? {height: '60%'} : {height: '80%'}
 
@@ -90,26 +92,33 @@ export default function OnHandPokemonSelectionForm({speciesEditOnly=false, open,
     const handleSaveAndCloseSpeciesEditOnly = () => {
         const collectionDataOfNewPokemon = collectionData.filter(p => p.name === pokemonData.selection.name)[0]
         const gender = collectionDataOfNewPokemon.possibleGender === 'both' ? randomGender() : collectionDataOfNewPokemon.possibleGender
-        const isHA = collectionDataOfNewPokemon.balls[pokemonData.ball].isHA
-        const emCount = collectionDataOfNewPokemon.balls[pokemonData.ball].emCount
-        const EMs = collectionDataOfNewPokemon.balls[pokemonData.ball].EMs
-        const shared = {
+        const isHA = collectionDataOfNewPokemon.balls[pokemonData.ball].isHA === undefined ? {} : {isHA: collectionDataOfNewPokemon.balls[pokemonData.ball].isHA}
+        const emData = collectionDataOfNewPokemon.balls[pokemonData.ball].emCount === undefined ? {} : {emCount: collectionDataOfNewPokemon.balls[pokemonData.ball].emCount, EMs: collectionDataOfNewPokemon.balls[pokemonData.ball].EMs}
+        const sharedData = {
             name: pokemonData.selection.name, 
             natDexNum: pokemonData.selection.natDexNum,
             ball: pokemonData.ball,
             gender, 
-            isHA, 
-            emCount, 
-            EMs, 
+            ...isHA,
+            ...emData,
             qty: 1
         }
-        const saveToDataBase = {...shared, _id: initialPokemonData._id}
+        const saveToDataBase = {...sharedData, _id: initialPokemonData._id}
         dispatch(setPokemon({
             idx: idxOfInitialPokemon,
             imgLink: pokemonData.selection.imgLink,
-            ...shared
+            pokemonData: sharedData,
+            sortingOptions
         }))
+        dispatch(changeOnHandPokemon({onhandId: initialPokemonData._id, newPokeData: sharedData, sortingOptions}))
         bulkEditOnHandInfo(saveToDataBase, initialPokemonData._id, collectionID)
+
+        //spawning alert
+        const alertMessage = `Changed the On-Hand to ${capitalizeFirstLetter(pokemonData.ball)} ${pokemonData.selection.name}!`
+        const alertInfo = {severity: 'success', message: alertMessage, timeout: 3, messageImgs: [{type: 'ball', linkKey: pokemonData.ball}, {type: 'poke', linkKey: pokemonData.selection.imgLink}]}
+        const id = addAlert(alertInfo);
+        setAlertIds((prev) => [...prev, id]);
+
         handleClose()
     }
 
@@ -257,7 +266,7 @@ export default function OnHandPokemonSelectionForm({speciesEditOnly=false, open,
 
         //spawning alert
         const alertMessage = `Added ${capitalizeFirstLetter(pokemonData.ball)} ${pokemonData.selection.name}`
-        const alertInfo = {severity: 'success', message: alertMessage, timeout: 3, messageImgs: [{type: 'ball', linkKey: pokemonData.ball}, {type: 'poke', linkKey: stateInfo.imgLink}]}
+        const alertInfo = {severity: 'success', message: alertMessage, timeout: 5, messageImgs: [{type: 'ball', linkKey: pokemonData.ball}, {type: 'poke', linkKey: stateInfo.imgLink}]}
         const id = addAlert(alertInfo);
         setAlertIds((prev) => [...prev, id]);
 

@@ -16,4 +16,20 @@ const initializePassportStrategy = () => passport.use(new LocalStrategy(
     }
 ))
 
-export {initializePassportStrategy}
+const isLoggedIn = (req, res, next) => {
+    if (!req.isAuthenticated()) {
+        const exception = new Error()
+        exception.name = "CustomError";
+
+        exception.response = {
+            status: 401,
+            data: {
+            detail: "This is a custom error",
+            },
+        };
+        return res.json()
+    }
+    next()
+}
+
+export {initializePassportStrategy, isLoggedIn}

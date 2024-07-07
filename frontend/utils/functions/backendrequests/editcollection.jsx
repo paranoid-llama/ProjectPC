@@ -1,15 +1,15 @@
 
 const getCollectionEditData = (key, value, pokename, ballname, otherFieldsData) => {
-    return {pokename, ballname, [key]: value, otherFieldsData}
+    return {pokename, ballname, [key]: value, otherFieldsData, editType: 'singleValue', }
 }
 
 const getOnHandEditData = (key, value, id, otherFieldsData) => {
-    return {idOfPokemon: id, onhandPokemon: true, [key]: value, otherFieldsData}
+    return {idOfPokemon: id, onhandPokemon: true, [key]: value, otherFieldsData, editType: 'singleValue'}
 }
 
 const usePutRequest = (key, value, identifiers, listType, collectionID, userID, otherFieldsData=undefined) => {
     const dataParser = listType === 'collection' ? getCollectionEditData : getOnHandEditData
-    fetch(`http://localhost:3000/collections/${collectionID}/edit`, {
+    fetch(`http://localhost:3000/collections/${collectionID}`, {
         method: 'PUT',
         headers: {
             "Content-Type": "application/json",
@@ -19,22 +19,22 @@ const usePutRequest = (key, value, identifiers, listType, collectionID, userID, 
 }
 
 const useTagRequest = (tag, activeTag, identifiers, collectionID, userID) => {
-    fetch(`http://localhost:3000/collections/${collectionID}/edit/tagedit`, {
+    fetch(`http://localhost:3000/collections/${collectionID}`, {
         method: 'PUT',
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({pokename: identifiers.pokename, ballname: identifiers.ballname, tag, activeTag, isDefaultModifier: identifiers.default})
+        body: JSON.stringify({editType: 'tagEdit', pokename: identifiers.pokename, ballname: identifiers.ballname, tag, activeTag, isDefaultModifier: identifiers.default})
     })
 }
 
 const bulkEditOnHandInfo = (onHandEdit, pokemonID, collectionID, userID) => {
-    fetch(`http://localhost:3000/collections/${collectionID}/edit/bulkedit`, {
+    fetch(`http://localhost:3000/collections/${collectionID}`, {
         method: 'PUT',
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({bulkEdit: onHandEdit, idOfPokemon: pokemonID, onhandPokemon: true})
+        body: JSON.stringify({editType: 'bulkEdit', bulkEdit: onHandEdit, idOfPokemon: pokemonID, onhandPokemon: true})
     })
 }
 

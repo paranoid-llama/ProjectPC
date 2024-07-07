@@ -18,7 +18,7 @@ export default function SearchUserItem({query, username, collectionsInfo, userId
                 <Box sx={{ml: 1.5, display: 'flex', justifyContent: 'center', alignItems: 'center'}}><ImgData type='icons' linkKey='user' size={'45px'}/></Box>
                 <Box sx={{width: '80%', minWidth: '100px', display: 'flex', flexDirection: 'column'}}>
                     <Typography sx={{fontWeight: 700, fontSize: '16px', textAlign: 'start', my: -0.25}}><Highlighter textToHighlight={username} searchWords={[query]}/></Typography>
-                    <Typography sx={{fontSize: '11px', textAlign: 'start', my: 0, opacity: 0.8}}>(tag area - still not implemented)</Typography>
+                    <Typography sx={{fontSize: '11px', textAlign: 'start', my: 0, opacity: 0.8}}>(badge area - still not implemented)</Typography>
                     <Typography sx={{fontSize: '11px', textAlign: 'start', my: -0.25, opacity: 0.8}}>{aprimonCollectionCount} aprimon collections</Typography>
                 </Box>
             </Box>

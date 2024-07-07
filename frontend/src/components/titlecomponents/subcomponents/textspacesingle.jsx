@@ -84,8 +84,8 @@ export default function TextSpaceSingle({colorStyles, text, multipleTexts, label
                 </Box>
             }
         </Box> : 
-        <Box sx={{display: 'flex', justifyContent: 'start', flexDirection: 'row', height: '2rem', width, ...bgStyle}}>
-            <Box sx={{margin: 0}}>
+        <Box sx={{display: 'flex', justifyContent: 'start', flexDirection: 'row', height: '2rem', width, ...bgStyle, ...otherStyles, borderTopLeftRadius: '15px', borderBottomLeftRadius: '15px'}}>
+            <Box sx={{margin: 0, width: '100%', display: 'flex', alignItems: 'center'}}>
                 <Typography sx={{color: textColor, ...otherTextStyles}}>{text}</Typography>
             </Box>
         </Box>

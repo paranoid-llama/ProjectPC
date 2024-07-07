@@ -37,7 +37,7 @@ export default function ShowUser({}) {
         textColor: theme.palette.color3.contrastText,
         labelBgColor: theme.palette.color3.dark
     }
-    const userTags = ['Aprimon Master', 'Multi-Generational Aprimon Master']
+    const userBadges = []
     const userGames = userData.settings.profile.games
 
     const tagTextStyles = {
@@ -47,7 +47,27 @@ export default function ShowUser({}) {
         '@media only screen and (min-width: 1044px) and (max-width: 1150px)': {
             marginRight: '40px'
         },
-        fontSize: userTags.length >= 3 ? '10.5px' : '12px'
+        fontSize: userBadges.length >= 3 ? '10.5px' : '12px',
+        // fontStyle: userBadges.length === 0 ? 'italic' : 'normal',
+        // color: userBadges.length === 0 ? 'grey' : 'inherit',
+        // width: '100%', 
+        // textAlign: userBadges.length === 0 ? 'center' : 'start'
+    }
+
+    const noBadgeTextStyle = {
+        color: 'rgb(50, 50, 50)',
+        fontStyle: 'italic',
+        width: '100%',
+        textAlign: 'center'
+    }
+    const bio = userData.settings.profile.bio
+
+    const noBioStyles = bio !== '' ? {} : {
+        color: 'rgb(200, 200, 200)',
+        fontSize: '16px',
+        fontStyle: 'italic',
+        width: '100%', 
+        textAlign: 'center'
     }
 
     const tagAreaStyles = {
@@ -60,7 +80,7 @@ export default function ShowUser({}) {
         '@media only screen and (min-width: 1151px)': {
             marginLeft: '10%'
         },
-        gap: userTags.length >= 3 ? 0.5 : 2
+        gap: userBadges.length >= 3 ? 0.5 : 2
     }
 
     const horizontalScroll = (e) => {
@@ -71,8 +91,7 @@ export default function ShowUser({}) {
         }
     }
 
-    const bio = userData.settings.profile.bio
-
+    
     const generateEditBioButton = () => {
         return (
             <Button sx={{borderRadius: '50%'}} onClick={() => navigate(`/users/${userData.username}/settings/profile`, {state: {catInit: 'profile'}})}>
@@ -105,10 +124,11 @@ export default function ShowUser({}) {
                     <TextSpaceSingle 
                         colorStyles={textColor2}
                         otherStyles={{borderBottom: '1px solid white', marginBottom: 0}} 
-                        otherTextStyles={tagTextStyles}
+                        otherTextStyles={userBadges.length === 0 ? noBadgeTextStyle : tagTextStyles}
                         tagAreaStyles={tagAreaStyles}
-                        multipleTexts={userTags}
-                        displayingTags={true}
+                        multipleTexts={userBadges}
+                        text={userBadges.length === 0 ? 'No Badges' : undefined}
+                        displayingTags={userBadges.length !== 0}
                         width='100%'
                     />
                     <TextSpaceSingle 
@@ -116,8 +136,8 @@ export default function ShowUser({}) {
                         otherStyles={{borderBottom: '1px solid white', marginBottom: 0}} 
                         largeTextArea={true}
                         largeTextAreaStyles={{height: '50%', minHeight: '80px', display: 'flex', alignItems: 'center', position: 'relative'}}
-                        largeTextStyles={{textAlign: 'start', color: textColor1.textColor, mx: 2, mr: '10%', fontSize: '12px'}}
-                        text={bio}
+                        largeTextStyles={{textAlign: 'start', color: textColor1.textColor, mx: 2, mr: '10%', fontSize: '12px', ...noBioStyles}}
+                        text={bio === '' ? 'No Bio' : bio}
                         width='100%'
                         buttonAdornmentFunc={isUser ? generateEditBioButton : undefined}
                     />

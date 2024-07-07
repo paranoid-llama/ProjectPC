@@ -83,7 +83,7 @@ export default function OptionSelection({collectionType, formOptionsData, collec
                     <ControlledTextInput
                         textFieldProps={{
                             size: 'small',
-                            helperText: `If empty: '${userData.username}'s ${collectionType}'`,
+                            // helperText: `If empty: '${userData.username}'s ${collectionType}'`,
                             FormHelperTextProps: {
                                 sx: {fontSize: '10.5px', height: 2}
                             },

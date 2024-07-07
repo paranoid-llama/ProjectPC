@@ -1,6 +1,7 @@
 import allPokemon from "../aprimonAPI/allpokemoninfo.js"
 import { capitalizeFirstLetter } from "../../../frontend/utils/functions/misc.js"
 import { getImgLink } from "../schemavirtuals/collectionvirtuals.js"
+import { interchangeableAltFormMons } from "../../../common/infoconstants/pokemonconstants.mjs"
 import { handleAlternateForms, handleRegionalForms, handleIncenseAndBabyMons, setOwnedBallList, getBallPath } from "../CreateCollection/functions.js"
 import { getGenNum } from "../../../common/infoconstants/miscconstants.mjs"
 import { genGames } from "../../../common/infoconstants/miscconstants.mjs"
@@ -136,9 +137,21 @@ function getPokemonGroups (gen) {
             pokemonGroups[pokemon.type][pokemon.nestedType] = []
         }
         if (pokemon.nestedType !== undefined && noSubGroupsInBreedables && noSubGroupsInNonBreedables) {
-            pokemonGroups[pokemon.type][pokemon.nestedType].push({name: pokemon.name, natDexNum: pokemon.natDexNum, gen: pokemon.gen, imgLink: getImgLink(pokemon), legalBalls: pokemon.legalBalls})
+            pokemonGroups[pokemon.type][pokemon.nestedType].push({
+                name: pokemon.name, 
+                natDexNum: pokemon.natDexNum, 
+                gen: pokemon.gen, 
+                imgLink: getImgLink(interchangeableAltFormMons.includes(pokemon.name) ? {...pokemon, name: `${pokemon.name} (Any)`} : pokemon), 
+                legalBalls: pokemon.legalBalls
+            })
         } else {
-            pokemonGroups[pokemon.type].push({name: pokemon.name, natDexNum: pokemon.natDexNum, gen: pokemon.gen, imgLink: getImgLink(pokemon), legalBalls: pokemon.legalBalls})
+            pokemonGroups[pokemon.type].push({
+                name: pokemon.name, 
+                natDexNum: pokemon.natDexNum, 
+                gen: pokemon.gen, 
+                imgLink: getImgLink(interchangeableAltFormMons.includes(pokemon.name) ? {...pokemon, name: `${pokemon.name} (Any)`} : pokemon), 
+                legalBalls: pokemon.legalBalls
+            })
         }
     })
     return pokemonGroups
