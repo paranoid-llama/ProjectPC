@@ -27,6 +27,8 @@ import ShowTrade from './routes/trades/showTrade'
 import UserNotifications from './routes/users/usernotifications'
 import UserTrades from './routes/trades/userTrades'
 import ErrorPage from "./error-page";
+import UnknownPath from './components/partials/unknownpath'
+import Error from './routes/error'
 import NavBar from "./components/partials/navbar"
 import Footer from "./components/partials/footer"
 import Box from "@mui/material/Box"
@@ -48,6 +50,7 @@ import './App.css'
 import ProtectedRoute from './components/partials/auth/protectedroute'
 import PrivateRoute from './components/partials/auth/privateroute'
 import AlertsProvider from './alerts/alerts-context'
+import ErrorProvider from './app/contexts/errorcontext'
 import { ThemeProvider } from '@mui/material'
 import theme from '../utils/styles/globalstyles/theme'
 
@@ -84,6 +87,17 @@ function EditCollectionComponent() {
   )
 }
 
+function LoaderErrorHandlerWrapper({Component}) {
+  const loaderData = useLoaderData()
+
+  useEffect(() => {
+
+  }, [])
+  return (
+    <Component />
+  )
+}
+
 function Router() {
   const dispatch = useDispatch()
   const router = createBrowserRouter([
@@ -97,6 +111,10 @@ function Router() {
         {
           path: "/",
           element: <Root />,
+        },
+        {
+          path: '/error',
+          element: <Error />
         },
         {
           path: "/search",
@@ -124,8 +142,7 @@ function Router() {
         },
         {
           path: "/collections/new",
-          // element: <ProtectedRoute Component={NewCollection}/>,
-          element: <NewCollection />
+          element: <ProtectedRoute Component={NewCollection}/>,
         },
         {
           path: "/collections/:id",
@@ -205,6 +222,10 @@ function Router() {
               element: <Other />
             },
           ]
+        },
+        {
+          path: "*",
+          element: <UnknownPath/>
         }
       ]
     }
@@ -221,9 +242,11 @@ function App() {
       <Provider store={store}>
         <ThemeProvider theme={theme}>
           <AlertsProvider>
-            <Box sx={{width: '100%', display: 'flex', flexDirection: 'column', minHeight: '100vh', margin: 0}}>
-              <Router />
-            </Box>
+            <ErrorProvider>
+              <Box sx={{width: '100%', display: 'flex', flexDirection: 'column', minHeight: '100vh', margin: 0}}>
+                <Router />
+              </Box>
+            </ErrorProvider>
           </AlertsProvider>
         </ThemeProvider>
       </Provider>

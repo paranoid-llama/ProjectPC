@@ -11,7 +11,7 @@ import MongoDBStore from 'connect-mongo'
 dotenv.config()
 
 //env variables
-const APIKEY = process.env.API_KEY
+
 const SECRET = process.env.SECRET
 const dbUrl = process.env.DB_URL || "mongodb://127.0.0.1:27017/ProjectPC"
 
@@ -32,10 +32,7 @@ import {router as apiRoutes} from './routes/apiroutes.js'
 import {router as searchRoutes} from './routes/searchroutes.js'
 
 //database connection 
-mongoose.connect(dbUrl, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-})
+mongoose.connect(dbUrl, {})
 
 const db = mongoose.connection;
 
@@ -163,6 +160,12 @@ app.post('/collections/new/seeddb', catchAsync(async(req, res) => {
 
     res.end()
 }))
+
+// app.use((err, req, res, next) => {
+//     const {statusCode = 500} = err;
+//     if (!err.message) err.message = "Oh no, something went wrong!"
+//     res.status(statusCode).send(err)
+// })
 
 // port/server
 const port = process.env.PORT || 3000

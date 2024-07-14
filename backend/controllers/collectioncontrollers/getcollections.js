@@ -3,6 +3,13 @@ import { getPokemonGroups } from "../../utils/pokemongroups/getpokemongroups.js"
 
 export async function getCollectionController(req, res) {
     const collection = await Collection.findById(req.params.id).populate({path: 'owner'})
+    if (collection === null) {
+        const exception = new Error()
+        exception.name = 'Not Found'
+        exception.message = `Could not find a collection with this ID!`
+        exception.status = 404
+        return res.status(404).send(exception)
+    }
     res.json(collection)
 }
 

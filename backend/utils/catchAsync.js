@@ -3,8 +3,10 @@ export default func => {
         try {
             func(req, res, next)
         }
-        catch (e) {
-            return e
+        catch (err) {
+            const {statusCode = 500} = err;
+            if (!err.message) err.message = "Oh no, something went wrong!"
+            return res.status(statusCode)
         }
     }
 }

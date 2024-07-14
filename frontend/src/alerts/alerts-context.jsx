@@ -1,6 +1,6 @@
 import {createContext, useState} from 'react';
 import { CustomAlert, AlertsWrapper } from './alert';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { addAlert as reduxAddAlert, dismissAlert as reduxDismissAlert } from '../app/slices/alerts';
 
 const AlertsContext = createContext();

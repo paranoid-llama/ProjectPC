@@ -39,8 +39,15 @@ export default async function updateCollectionSingleValue(req, res) {
                 }, setModifier
             )
         } else {
+            const setOtherEmField = otherFieldsData !== undefined && (changedField === 'emCount' || changedField === 'EMs')
+            const otherSetModifier = {}
+            if (setOtherEmField) {
+                const otherField = changedField === 'emCount' ? 'EMs' : 'emCount'
+                otherSetModifier[`ownedPokemon.$.balls.${ballname}.${otherField}`] = otherFieldsData[otherField]
+            }
             const setModifier = { $set: {
-                [`ownedPokemon.$.balls.${ballname}.${changedField}`]: newValueOfChangedField
+                [`ownedPokemon.$.balls.${ballname}.${changedField}`]: newValueOfChangedField,
+                ...otherSetModifier
             }}
 
             await Collection.updateOne({

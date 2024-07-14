@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import mongooseUniqueValidator from 'mongoose-unique-validator';
 const Schema = mongoose.Schema;
 
 const opts = {toJSON: {virtuals: true}, minimize: false}
@@ -8,6 +9,7 @@ const userSchema = new Schema ({
         type: String,
         required: true,
         unique: true,
+        uniqueCaseInsensitive: true,
         max: 24
     },
     password: {
@@ -70,5 +72,7 @@ userSchema.virtual('collections', {
     localField: '_id',
     foreignField: 'owner'
 })
+
+userSchema.plugin(mongooseUniqueValidator)
 
 export default mongoose.model('User', userSchema);

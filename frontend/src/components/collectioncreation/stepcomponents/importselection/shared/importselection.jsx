@@ -1,5 +1,6 @@
 import {Box, Button, Typography, CircularProgress} from '@mui/material'
-import { useState, useTransition, useRef, useEffect } from 'react'
+import { useState, useTransition, useRef, useEffect, useContext } from 'react'
+import { ErrorContext } from '../../../../../app/contexts/errorcontext'
 import ImgData from '../../../../collectiontable/tabledata/imgdata'
 import Header from '../../../../titlecomponents/subcomponents/header'
 import AprimonImportForm from '../aprimon/aprimonimportform'
@@ -13,6 +14,7 @@ import './importselection.css'
 export default function ImportSelection({handleChange, cssClass, goBackStep, collectionType, collectionSubTypeValue}) {
     const screens = ['select', 'import', 'preview']
     const [importScreen, setImportScreen] = useState(screens[0])
+    const {handleError} = useContext(ErrorContext)
     // const [isPending, startTransition] = useTransition()
     const [importedCollectionDisplay, setImportedCollectionDisplay] = useState({})
     const screensRef = useRef(importScreen)
@@ -48,12 +50,20 @@ export default function ImportSelection({handleChange, cssClass, goBackStep, col
 
     const handleSubmitImportFormData = async(e, formData) => {
         const apiRequestQuery = formatApiRequestLink(formData)
-        // console.log(apiRequestQuery)
+
         setImportScreen('preview')
-        const importedCollection = await importCollection(formData.spreadsheetId, apiRequestQuery, collectionSubTypeValue)
-        setTimeout(() => {
-            setImportedCollectionDisplay({data: importedCollection, numOfBalls: formData.ballColSpan.order.length, ballScope: formData.ballColSpan.order})
-        }, 500)
+        const successFunc = (importedCollection) => {
+            setTimeout(() => {
+                setImportedCollectionDisplay({data: importedCollection, numOfBalls: formData.ballColSpan.order.length, ballScope: formData.ballColSpan.order})
+            }, 500)
+        }
+        const errorFunc = (errorData) => {
+            setTimeout(() => {
+                setImportedCollectionDisplay({data: errorData})
+            }, 500)
+        }
+        const importCollectionFunc = async() => {return await importCollection(formData.spreadsheetId, apiRequestQuery, collectionSubTypeValue)}
+        handleError(importCollectionFunc, false, successFunc, errorFunc)
     }
 
     const bottomBar = importScreen === 'import' ? {right: '45%'} : {}

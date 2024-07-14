@@ -1,4 +1,5 @@
-import {useState, useEffect, useTransition} from 'react'
+import {useState, useEffect, useTransition, useContext} from 'react'
+import { ErrorContext } from '../../../../app/contexts/errorcontext'
 import {useDispatch, connect, useSelector} from 'react-redux'
 import store from './../../../../app/store'
 import {setIsOwned, setCollectionIsHA, setCollectionEmCount, setCollectionEms, deleteCollectionEms, setDefault} from './../../../../app/slices/collection'
@@ -19,6 +20,7 @@ import EditEggMovesForm from '../../editsectioncomponents/shared/editeggmovesfor
 function RenderCollectionEdit({collectionId, ownerId, pokemon, ballInfo, selectedBall, allEggMoves, isHomeCollection}) {
     const [editEggMoves, setEditEggMoves] = useState({open: 'firstRenderFalse', idx: ''})
     const dispatch = useDispatch()
+    const {handleError} = useContext(ErrorContext)
     const allowedBalls = Object.keys(ballInfo).filter(ball => ballInfo[ball].disabled === undefined)
     // const initState = allowedBalls.length === 3 || allowedBalls.length === 4 ? allowedBalls[1] : allowedBalls[0] 
 
@@ -65,41 +67,63 @@ function RenderCollectionEdit({collectionId, ownerId, pokemon, ballInfo, selecte
     const handleIsOwnedChange = (event) => {
         const newValue = event.target.checked
         const defaultData = getDefaultData(globalDefault, currentDefault, pokemon.balls, maxEMs, possibleEggMoves, renderedBall)
-        dispatch(setIsOwned({idx: selectedIdx, ball: renderedBall, ballDefault: defaultData}))
-        usePutRequest('isOwned', newValue, {pokename: pokemon.name, ballname: renderedBall}, 'collection', collectionId, ownerId, defaultData)
+        const backendFunc = async() => await usePutRequest('isOwned', newValue, {pokename: pokemon.name, ballname: renderedBall}, 'collection', collectionId, ownerId, defaultData)
+        const successFunc = () => dispatch(setIsOwned({idx: selectedIdx, ball: renderedBall, ballDefault: defaultData}))
+        handleError(backendFunc, false, successFunc, () => {})
     }
     const handleIsHAChange = (event) => {
         const newValue = event.target.value === 'true' // event.target.value comes out as a string instead of boolean
-        dispatch(setCollectionIsHA({idx: selectedIdx, ball: renderedBall, listType}))
-        usePutRequest('isHA', newValue, {pokename: pokemon.name, ballname: renderedBall}, 'collection', collectionId, ownerId)
+        const successFunc = () => dispatch(setCollectionIsHA({idx: selectedIdx, ball: renderedBall, listType}))
+        const backendFunc = async() => await usePutRequest('isHA', newValue, {pokename: pokemon.name, ballname: renderedBall}, 'collection', collectionId, ownerId)
+        handleError(backendFunc, false, successFunc, () => {})
     }
     const handleEmCountChange = (event) => {
         const newValue = selectNextEmCount(emCountSelectionList, parseInt(event.target.value))
-        if (newValue < EMs.length) {
-            dispatch(deleteCollectionEms({idx: selectedIdx, ball: renderedBall, listType}))
-            usePutRequest('EMs', [], {pokename: pokemon.name, ballname: renderedBall}, 'collection', collectionId, ownerId)
-        }
-        dispatch(setCollectionEmCount({idx: selectedIdx, ball: renderedBall, listType, numEMs: newValue}))
+        // if (newValue < EMs.length) {
+        //     const noEmSuccessFunc = () => dispatch(deleteCollectionEms({idx: selectedIdx, ball: renderedBall, listType}))
+        //     const noEmBackendReq = async() => await usePutRequest('EMs', [], {pokename: pokemon.name, ballname: renderedBall}, 'collection', collectionId, ownerId)
+        //     handleError(noEmBackendReq, false, noEmSuccessFunc, () => {})
+        // }
+        
         setEditEggMoves({...editEggMoves, idx: ''})
         const hasAllPossibleEggMoves = (possibleEggMoves.length === maxEMs) && (newValue === maxEMs)
-        if (hasAllPossibleEggMoves) {
-            for (let eggmove of possibleEggMoves) {
-                dispatch(setCollectionEms({idx: selectedIdx, ball: renderedBall, listType, emName: eggmove}))
+        const successFunc = () => {
+            if (newValue < EMs.length) {
+                dispatch(deleteCollectionEms({idx: selectedIdx, ball: renderedBall, listType}))
             }
-            usePutRequest('EMs', possibleEggMoves, {pokename: pokemon.name, ballname: renderedBall}, 'collection', collectionId, ownerId)
+            if (hasAllPossibleEggMoves) {
+                for (let eggmove of possibleEggMoves) {
+                    dispatch(setCollectionEms({idx: selectedIdx, ball: renderedBall, listType, emName: eggmove}))
+                }
+            }
+            dispatch(setCollectionEmCount({idx: selectedIdx, ball: renderedBall, listType, numEMs: newValue}))
         }
-        usePutRequest('emCount', newValue, {pokename: pokemon.name, ballname: renderedBall}, 'collection', collectionId, ownerId)
+        // if (hasAllPossibleEggMoves) {
+        //     const allEmSuccessFunc = () => {
+        //         for (let eggmove of possibleEggMoves) {
+        //             dispatch(setCollectionEms({idx: selectedIdx, ball: renderedBall, listType, emName: eggmove}))
+        //         }
+        //     }
+        //     const allEmBackendReq = async() => await usePutRequest('EMs', possibleEggMoves, {pokename: pokemon.name, ballname: renderedBall}, 'collection', collectionId, ownerId)
+        //     handleError(allEmBackendReq, false, allEmSuccessFunc, () => {})
+        // }
+        const backendReq = async() => await usePutRequest('emCount', newValue, {pokename: pokemon.name, ballname: renderedBall}, 'collection', collectionId, ownerId, newValue < EMs.length ? {EMs: []} : hasAllPossibleEggMoves ? {EMs: possibleEggMoves} : undefined)
+        handleError(backendReq, false, successFunc, () => {})
     }
 
     const handleEMChange = (event) => {
         if (event === 'onlyOnePossibleEM') {
-            dispatch(setCollectionEms({idx: selectedIdx, ball: renderedBall, listType, emName: possibleEggMoves[0]}))
-            dispatch(setCollectionEmCount({idx: selectedIdx, ball: renderedBall, listType, numEMs: 1} ))
-            usePutRequest('EMs', possibleEggMoves, {pokename: pokemon.name, ballname: renderedBall}, 'collection', collectionId, ownerId)
+            const onlyOneEmSuccess = () => {
+                dispatch(setCollectionEms({idx: selectedIdx, ball: renderedBall, listType, emName: possibleEggMoves[0]}))
+                dispatch(setCollectionEmCount({idx: selectedIdx, ball: renderedBall, listType, numEMs: 1} ))
+            }
+            const onlyOneEmReq = async() => await usePutRequest('EMs', possibleEggMoves, {pokename: pokemon.name, ballname: renderedBall}, 'collection', collectionId, ownerId)
+            handleError(onlyOneEmReq, false, onlyOneEmSuccess, () => {})
         } else {
             const selectedEM = event.target.innerText
-            dispatch(setCollectionEms({idx: selectedIdx, ball: renderedBall, listType, emName: selectedEM}))
-            const newEMArr = store.getState().collection[selectedIdx].balls[renderedBall].EMs
+            
+            // const newEMArr = store.getState().collection[selectedIdx].balls[renderedBall].EMs
+            const newEMArr = EMs.includes(selectedEM) ? EMs.filter(em => em !== selectedEM) : [...EMs, selectedEM]
             // state change adds or removes egg moves based on innerText event
 
             const increaseEMCount = (newEMArr.length) > emCountState
@@ -107,27 +131,33 @@ function RenderCollectionEdit({collectionId, ownerId, pokemon, ballInfo, selecte
             const decreaseEMCount = maxEMs === possibleEggMoves.length && EMs.length > newEMArr.length
             // if the max possible ems is 4 or less AND we are taking out an egg move, decrease the em count
             const changeEMCount = increaseEMCount || decreaseEMCount
-    
-            // next two if statements determine how the selected EM (selection box) moves depending on whether an egg move is being added (1st) or removed (2nd)
-            if (!(EMs.includes(selectedEM))) {
-                const newSelectedEMIdx = (editEggMoves.idx === 3 && newEMArr === 4) ? '' : editEggMoves.idx+1 // if all egg moves slots are selected, remove selection borders. if not, select next empty slot
-                setEditEggMoves({...editEggMoves, idx: newSelectedEMIdx})
-                usePutRequest('EMs', newEMArr, {pokename: pokemon.name, ballname: renderedBall}, 'collection', collectionId, ownerId)   
-            } else if (EMs.includes(selectedEM)) {
-                setEditEggMoves({...editEggMoves, idx: ''})
-                usePutRequest('EMs', newEMArr, {pokename: pokemon.name, ballname: renderedBall}, 'collection', collectionId, ownerId)
+            const successFunc = () => {
+                dispatch(setCollectionEms({idx: selectedIdx, ball: renderedBall, listType, emName: selectedEM}))
+                if (changeEMCount) {
+                    dispatch(setCollectionEmCount({idx: selectedIdx, ball: renderedBall, listType, numEMs: newEMArr.length}))
+                }
+                // next two if statements determine how the selected EM (selection box) moves depending on whether an egg move is being added (1st) or removed (2nd)
+                if (!(EMs.includes(selectedEM))) {
+                    const newSelectedEMIdx = (editEggMoves.idx === 3 && newEMArr === 4) ? '' : editEggMoves.idx+1 // if all egg moves slots are selected, remove selection borders. if not, select next empty slot
+                    setEditEggMoves({...editEggMoves, idx: newSelectedEMIdx})
+                } else if (EMs.includes(selectedEM)) {
+                    setEditEggMoves({...editEggMoves, idx: ''})
+                }
             }
-            if (changeEMCount) {
-                dispatch(setCollectionEmCount({idx: selectedIdx, ball: renderedBall, listType, numEMs: newEMArr.length}))
-                usePutRequest('emCount', newEMArr.length, {pokename: pokemon.name, ballname: renderedBall}, 'collection', collectionId, ownerId)
-            }
+            const backendReq = async() => await usePutRequest('EMs', newEMArr, {pokename: pokemon.name, ballname: renderedBall}, 'collection', collectionId, ownerId, changeEMCount ? {emCount: newEMArr.length} : undefined)   
+            handleError(backendReq, false, successFunc, () => {})
+            // if (changeEMCount) {
+            //     const changeEmCountSuccess = () => dispatch(setCollectionEmCount({idx: selectedIdx, ball: renderedBall, listType, numEMs: newEMArr.length}))
+            //     const changeEmCountReq = async() => await usePutRequest('emCount', newEMArr.length, {pokename: pokemon.name, ballname: renderedBall}, 'collection', collectionId, ownerId)
+            //     handleError(changeEmCountReq, false, changeEmCountSuccess, () => {})
+            // }
         }
     }
 
     const handleDefaultChange = () => {
-        
-        dispatch(setDefault({idx: selectedIdx, ball: renderedBall, prevDefault: currentDefault}))
-        useTagRequest(renderedBall, currentDefault, {pokename: pokemon.name, ballname: renderedBall, default: true}, collectionId)
+        const successFunc = () => dispatch(setDefault({idx: selectedIdx, ball: renderedBall, prevDefault: currentDefault}))
+        const backendReq = async() => await useTagRequest(renderedBall, currentDefault, {pokename: pokemon.name, ballname: renderedBall, default: true}, collectionId)
+        handleError(backendReq, false, successFunc, () => {})
     }
 
     const toggleEditEggMoveScreen = (idx) => {

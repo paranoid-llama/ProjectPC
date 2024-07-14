@@ -1,7 +1,11 @@
 import Collection from "../../models/collections.js";
 import CollectionClass from '../../utils/createCollection.js'
 import lton from "letter-to-number";
-import { detectBadRanges, formatImportedValues, setCollection } from "../../utils/CreateCollection/importCollection.js";
+import { formatImportQuery, setEMQueries, detectBadRanges, formatImportedValues, setCollection } from "../../utils/CreateCollection/importCollection.js";
+import dotenv from 'dotenv'
+dotenv.config()
+
+const APIKEY = process.env.API_KEY
 
 export async function createNewCollection(req, res) {
     const {newCollectionInfo, type} = req.body

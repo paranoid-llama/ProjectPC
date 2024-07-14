@@ -10,7 +10,8 @@ export async function editUserSettings(req, res) {
 
 export async function readUserNotification(req, res) {
     const {noteId, tradeId} = req.body
-    const user = await User.findOne({username: req.params.username})
+    const userRegex = `^${req.params.username}$`
+    const user = await User.findOne({username: {$regex: new RegExp(userRegex, 'i')}})
     user.notifications.forEach((noti) => {
         if (tradeId !== undefined) {
             if (noti.type.includes('trade-offer')) {

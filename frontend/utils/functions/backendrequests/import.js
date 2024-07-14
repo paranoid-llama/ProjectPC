@@ -3,11 +3,17 @@
 const importCollection = async(spreadsheetId, apiRequestQueries, collectionTypeValue) => {
     const collectionData = await fetch(`http://localhost:3000/collections/new/import`, {
         method: 'POST',
+        credentials: 'include',
         headers: {
             "Content-Type": "application/json",
         },
         body: JSON.stringify({spreadsheetId, apiRequestQueries, collectionTypeValue})
-    }).then((res) => res.json())
+    }).then(async(res) => {
+        return {
+            load: await res.json(),
+            ok: res.ok
+        }
+    })
     return collectionData
 }
 

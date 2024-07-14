@@ -1,15 +1,18 @@
 import {useEffect} from 'react';
-import { Alert, Box, Fade} from '@mui/material';
+import { Alert, Box, Fade, Typography} from '@mui/material';
 import { useSelector } from 'react-redux';
 import ImgData from '../components/collectiontable/tabledata/imgdata';
 import './alerts.css'
 
 const CustomAlert = ({
     message = '',
+    errName = '',
+    errStatus = '',
     messageImgs = [],
     severity = 'success',
     timeout = 0,
     fadeoutTime = 1,
+    isErrorLiteral = false,
     handleDismiss = null
 }) => {
     useEffect(() => {
@@ -22,6 +25,7 @@ const CustomAlert = ({
     }, []);
 
     const fadeoutDelay = timeout - fadeoutTime
+    const otherStyles = isErrorLiteral ? {display: 'flex', flexDirection: 'row', justifyContent: 'start', alignItems: 'center'} : {}
 
     // could not get images to work in-line with the alert due to mui alert formatting issues
     // const generateImages = () => {
@@ -42,10 +46,21 @@ const CustomAlert = ({
                     sx={{
                         marginTop: '5px',
                         animation: `${timeout}s ${fadeoutDelay}s 1 fade-out`,
+                        ...otherStyles,
                         pointerEvents: 'all'
                     }}
                 >
-                    {message}
+                    {isErrorLiteral ? 
+                        <Box sx={{display: 'flex', flexDirection: 'column', justifyContent: 'start', alignItems: 'start'}}>
+                            <Box>
+                                <Typography sx={{fontSize: '16px'}}><b>ERROR:</b> {errName} ({errStatus})</Typography>
+                            </Box>
+                            <Box>
+                                <Typography sx={{fontSize: '14px'}}>{message}</Typography>
+                            </Box>
+                        </Box> :
+                        {message}
+                    }
                 </Alert>
             </Fade>
         )

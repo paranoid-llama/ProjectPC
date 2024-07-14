@@ -8,7 +8,7 @@ import { backendCheckUsernameAvailability } from '../../utils/functions/backendr
 import { userRegisterRequest } from '../../utils/functions/backendrequests/users/register'
 
 const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-const usernameRegex = /^[a-zA-Z0-9\$\(\)\-\_\;\:\'\,\.]*$/i
+const usernameRegex = /^[a-zA-Z0-9\$\(\)\-\_\;\:\'\,\. ]+[a-zA-Z0-9\$\(\)\-\_\;\:\'\,\.]*$/i
 const securityQuestions = [
     "What was your childhood best friend's name?",
     "In which city did your parents meet?",
@@ -74,6 +74,17 @@ export default function RegisterPage({}) {
         if (usernameFieldRef.current.value.length < 4) {
             setError({...error, username: true, usernameAvailable: 'notLongEnough'})
             return
+        }
+        if (usernameFieldRef.current.value[0] === ' ' || usernameFieldRef.current.value[usernameFieldRef.current.value.length-1] === ' ') {
+            setError({...error, username: true, usernameAvailable: 'trailingSpace'})
+            return
+        }
+        if (usernameFieldRef.current.value.includes(' ')) {
+            const doubleSpaceMatches = [...usernameFieldRef.current.value.matchAll(new RegExp('  ', 'gi'))].length !== 0
+            if (doubleSpaceMatches) {
+                setError({...error, username: true, usernameAvailable: 'doubleSpace'})
+            return
+            }
         }
         const availability = await backendCheckUsernameAvailability(usernameFieldRef.current.value)
         if (availability.available === false) {
@@ -211,12 +222,16 @@ export default function RegisterPage({}) {
                     />
                 </Box>
                 <Box sx={{...theme.components.box.fullCenterRow, alignItems: 'start', justifyContent: 'end', mt: 0.5, width: '100%', height: '10%', position: 'relative'}}>
-                    {(typeof error.usernameAvailable === 'boolean' || error.usernameAvailable === 'notLongEnough' || error.usernameAvailable === 'reserved') && 
+                    {(typeof error.usernameAvailable === 'boolean' || error.usernameAvailable === 'notLongEnough' || error.usernameAvailable === 'reserved' || error.usernameAvailable === 'trailingSpace' || error.usernameAvailable === 'doubleSpace') && 
                     <Box sx={{...theme.components.box.fullCenterCol, alignItems: 'start', width: '70%', height: '100%', position: 'absolute', top: '5px'}}>
                         {error.usernameAvailable === 'notLongEnough' ? 
                             <Typography sx={{color: 'red', fontSize: '12px', ml: 2}}>Username must be at least 4 characters long!</Typography> : 
                         error.usernameAvailable === 'reserved' ? 
                             <Typography sx={{color: 'red', fontSize: '12px', ml: 2}}>{usernameFieldRef.current.value} is a reserved word. Please try another username!</Typography> : 
+                        error.usernameAvailable === 'trailingSpace' ? 
+                            <Typography sx={{color: 'red', fontSize: '12px', ml: 2}}>Username cannot have leading/trailing empty spaces.</Typography> : 
+                        error.usernameAvailable === 'doubleSpace' ? 
+                            <Typography sx={{color: 'red', fontSize: '12px', ml: 2}}>Username cannot have multiple adjacent spaces.</Typography> : 
                         error.usernameAvailable === true ? 
                             <Typography sx={{color: 'green', fontSize: '12px', ml: 2}}>{usernameFieldRef.current.value} is available!</Typography> : 
                             <Typography sx={{color: 'red', fontSize: '12px', ml: 2}}>{usernameFieldRef.current.value} is taken. Try another username.</Typography> 

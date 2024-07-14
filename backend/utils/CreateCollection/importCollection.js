@@ -452,9 +452,9 @@ const setCollection = (identifier, names, ballData, gapRows, ballOrder, collecti
         })
         const nameDexMismatchObj = errorInfo.filter((info) => info.nameAndDexNumMismatch !== undefined && info.nameAndDexNumMismatch !== false)[0]
         
-        const dexNumNotFound = errorInfo.filter(info => info.dexNumIsInList !== undefined && info.dexNumIsInList !== false).length === 0
-        const multipleSameDexNum = errorInfo.filter(info => (info.dexNumIsInList !== undefined && info.dexNumIsInList !== false) && info.nameIsInList !== false).length !== 1
-        const nameNotFound = errorInfo.filter(info => info.nameIsInList !== false).length === 0 
+        const dexNumNotFound = errorInfo.filter(info => info.dexNumIsInList !== undefined && info.dexNumIsInList !== true).length === 0
+        const multipleSameDexNum = errorInfo.filter(info => (info.dexNumIsInList !== undefined && info.dexNumIsInList !== true) && info.nameIsInList !== true).length !== 1
+        const nameNotFound = errorInfo.filter(info => info.nameIsInList === false).length === 0 
         // console.log(`name: ${pokemonName} dexNumNotFound: ${dexNumNotFound} nameNotFound: ${nameNotFound} nameDexMismatch: ${nameDexMismatchObj}`)
         if (!noDexNums && nameDexMismatchObj !== undefined && nameDexMismatchObj.nameAndDexNumMismatch === true) {
             const errorMessage = nameDexMismatchObj.misMatchInfo === 'rightNameWrongNum' ? `Detected ${nameDexMismatchObj.collectionName} in the imported names column, but they had the wrong dex number (#${dexNum}, expected #${nameDexMismatchObj.dexNum}). Double-check that it imported correctly.` : 

@@ -1,5 +1,6 @@
 import * as React from 'react';
-import {useState, useEffect, useRef} from 'react'
+import {useState, useEffect, useRef, useContext} from 'react'
+import { ErrorContext } from '../../../app/contexts/errorcontext';
 import Box from '@mui/material/Box'
 import './../../../routes/showCollection.css'
 import TableCell from '@mui/material/TableCell'
@@ -100,6 +101,7 @@ export function TableRowGroupingNoRedux({columns, row, id, collectionId, ownerId
 function TableRowGrouping({columns, row, id, collectionId, ownerId, styles, isSelected, setSelected, isEditMode, isHomeCollection, availableGames}) {
     const dispatch = useDispatch()
     // console.log(`rendered ${row.name}`)
+    const {handleError} = useContext(ErrorContext)
 
     //following data is used for editing values in the list
     const possibleEggMoves = (isEditMode && !isHomeCollection) ? useSelector((state) => state.listDisplay.eggMoveInfo[row.name]) : null
@@ -120,7 +122,10 @@ function TableRowGrouping({columns, row, id, collectionId, ownerId, styles, isSe
                 key === 'emCount' ? selectNextEmCount(emCountSelectionList, parseInt(e.target.value)) :
                 key === 'EMs' && 'none'
             )
-        const defaultData = getDefaultData(globalDefaults, currentDefault, row.balls, maxEMs, possibleEggMoves, ballname)
+        const deleteEMs = key === 'emCount' && row.balls[ballname].EMs.length > newValue
+        const hasAllPossibleEMs = key === 'emCount' && newValue === possibleEggMoves.length
+        const defaultData = key === 'emCount' ? (deleteEMs ? {EMs: []} : hasAllPossibleEMs ? {EMs: possibleEggMoves} : undefined) : getDefaultData(globalDefaults, currentDefault, row.balls, maxEMs, possibleEggMoves, ballname)
+        const successFunc = () => {
         if (key === 'isOwned') {
             if (newValue === true) {
                 dispatch(setSelectedAfterChangingOwned({idx: id, ball: ballname}))
@@ -130,12 +135,17 @@ function TableRowGrouping({columns, row, id, collectionId, ownerId, styles, isSe
             dispatch(setCollectionIsHA({idx, ball: ballname, listType: 'collection'}))
         } else if (key === 'emCount') {
             dispatch(setCollectionEmCount({idx, ball: ballname, listType: 'collection', numEMs: newValue}))
-            if (row.balls[ballname].EMs.length > newValue) {
+            if (deleteEMs) {
                 dispatch(deleteCollectionEms({idx, ball: ballname, listType: 'collection'}))
-                usePutRequest('EMs', [], {pokename, ballname}, 'collection', collectionID, ownerID)
             }
-        }
-        usePutRequest(key, newValue, {pokename, ballname}, 'collection', collectionID, ownerID, defaultData)
+            if (hasAllPossibleEMs) {
+                for (let eggmove of possibleEggMoves) {
+                    dispatch(setCollectionEms({idx, ball: ballname, listType: 'collection', emName: eggmove}))
+                }
+            }
+        }}
+        const backendFunc = async() => await usePutRequest(key, newValue, {pokename, ballname}, 'collection', collectionID, ownerID, defaultData)
+        handleError(backendFunc, false, successFunc, () => {})
     }
 
     const blackTableCellStyles = { //for illegal ball combos

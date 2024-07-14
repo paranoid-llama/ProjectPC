@@ -1,7 +1,8 @@
 import {useNavigate, useRouteLoaderData, useRevalidator} from "react-router-dom";
 import { createNewCollection } from "../../utils/functions/backendrequests/newcollection";
-import { useState, useTransition, useRef, useEffect } from "react";
+import { useState, useTransition, useRef, useEffect, useContext } from "react";
 import { Virtuoso } from "react-virtuoso";
+import { ErrorContext } from "../app/contexts/errorcontext";
 import {Box, Typography, Button} from "@mui/material";
 import Header from "../components/titlecomponents/subcomponents/header";
 import BodyWrapper from "../components/partials/routepartials/bodywrapper";
@@ -22,6 +23,7 @@ import './newCollection.css'
 
 export default function NewCollection() {
     const navigate = useNavigate()
+    const {handleError} = useContext(ErrorContext)
     const userData = useRouteLoaderData("root").user
     const revalidator = useRevalidator()
     const steps = [0, 25, 50, 75, 100]
@@ -168,16 +170,24 @@ export default function NewCollection() {
             options: backendOptionsFormat,
             customSort: formData.options.sorting.customSort,
             collectionName: formData.options.collectionName,
-            // owner: userData._id
-            owner: '66870d03295b9f4018d6accd'
+            owner: userData._id
         }
+        const finalizeCreationFunc = async() => {return await createNewCollection(newCollectionInfo, formData.collectionType.type)}
+        handleError(finalizeCreationFunc, false, finalizeCreationSuccess, () => {})
+        // const collectionId = await createNewCollection(newCollectionInfo, formData.collectionType.type)
+        
+        // setTimeout(() => {
+        //     setFormData({...formData, redirectLink: collectionId})
+        //     revalidator.revalidate()
+        // }, 250)
 
-        const collectionId = await createNewCollection(newCollectionInfo, formData.collectionType.type)
+    }
+
+    const finalizeCreationSuccess = (newId) => {
         setTimeout(() => {
-            setFormData({...formData, redirectLink: collectionId})
+            setFormData({...formData, redirectLink: newId})
             revalidator.revalidate()
         }, 250)
-
     }
 
     const goBackStep = () => {

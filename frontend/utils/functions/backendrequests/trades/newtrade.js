@@ -48,6 +48,7 @@ export const newTradeBackendFormatting = (pokemonOffer, itemOffer, pokemonReceiv
 export const newTradeBackend = async(offer, receiving, offerMessage, traderId, ownerId, traderUsername, ownerUsername, gen) => {
     const newTradeId = await fetch(`http://localhost:3000/trades/new`, {
         method: 'POST',
+        credentials: 'include',
         headers: {
             "Content-Type": "application/json",
         },

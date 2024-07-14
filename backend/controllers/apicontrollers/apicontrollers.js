@@ -12,7 +12,8 @@ export async function getSession(req, res) {
 
 export async function checkUsernameEmailAvailability(req, res) {
     const {username, email, checkEmailInstead} = req.query
-    const search = await User.find(checkEmailInstead ? {email} : {username}).exec()
+    const usernameQuery = !checkEmailInstead && `^${username}$`
+    const search = await User.find(checkEmailInstead ? {email} : {username: {$regex: new RegExp(usernameQuery, "i")}}).exec()
     const userWithThatName = Object.keys(search).length !== 0
     if (userWithThatName) {
         res.json({available: false})

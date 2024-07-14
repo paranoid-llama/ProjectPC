@@ -8,6 +8,7 @@ export default function AprimonImportDisplay({data, numOfBalls}) {
     const badRanges = data.rangeIssue !== undefined 
     const missingInfo = data.missingInfo !== undefined
     const ballColIssue = data.ballColIssue !== undefined
+    const backendError = data.status !== undefined && !apiCallError && !badRanges && !missingInfo && !ballColIssue 
 
     const setBallColIssue = (type) => {
         return (
@@ -76,6 +77,21 @@ export default function AprimonImportDisplay({data, numOfBalls}) {
             </Typography>
         </Box> :
         ballColIssue ? setBallColIssue(data.type) : 
+        backendError ? 
+        <Box sx={{mb: 4, mt: 5, textAlign: 'center', width: '80%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: 3}}>
+            <Typography variant='h6' sx={{fontWeight: 700, fontSize: '20px', mb: -1}}> 
+                There was a problem with the import!
+            </Typography>
+            <Typography variant='p' sx={{fontFamily: 'Arial', fontSize: '14px'}}>
+                <b>ERROR:</b> {data.name} ({data.status})
+            </Typography>
+            <Typography variant='p' sx={{fontFamily: 'Arial', fontSize: '14px'}}>
+                {data.message}
+            </Typography>
+            <Typography variant='p' sx={{fontFamily: 'Arial', fontSize: '14px'}}>
+                Please try again.
+            </Typography>
+        </Box> :
         <AprimonPreviewImport data={data} numOfBalls={numOfBalls}/>
     )
 }

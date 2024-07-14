@@ -4,17 +4,18 @@ import catchAsync from "../utils/catchAsync.js";
 import { getCollectionController, retrievePokemonGroups } from "../controllers/collectioncontrollers/getcollections.js";
 import { editCollectionFunc, deleteCollectionFunc } from "../controllers/collectioncontrollers/editcollection.js";
 import { createNewCollection, importCollectionFromSheets } from "../controllers/collectioncontrollers/newcollection.js";
-import { isLoggedIn } from "../middleware.js";
+import { isLoggedIn, isCollectionOwner, isValidId } from "../middleware.js";
+import validateNewCollectionData from "../controllers/validators/collectionvalidator.js";
 
 router.get('/pokemongroups', catchAsync(retrievePokemonGroups))
 
-router.post('/new/import', catchAsync(importCollectionFromSheets))
+router.post('/new/import', isLoggedIn, catchAsync(importCollectionFromSheets))
 
-router.post('/new', isLoggedIn, catchAsync(createNewCollection))
+router.post('/new', isLoggedIn, validateNewCollectionData, catchAsync(createNewCollection))
 
 router.route('/:id')
-    .get(catchAsync(getCollectionController))
-    .put(catchAsync(editCollectionFunc))
-    .delete(catchAsync(deleteCollectionFunc)) //delete collection function currently only deletes on-hand pokemon
+    .get(isValidId, catchAsync(getCollectionController))
+    .put(isValidId, isLoggedIn, isCollectionOwner, catchAsync(editCollectionFunc))
+    .delete(isValidId, isLoggedIn, isCollectionOwner, catchAsync(deleteCollectionFunc)) //delete collection function currently only deletes on-hand pokemon
 
 export {router}

@@ -8,10 +8,10 @@ export default function ErrorPage() {
 
     return (
         <BodyWrapper>
-            <Box sx={{height: '750px', width: '100%', borderRadius: '10px', ...theme.components.box.fullCenterCol, backgroundColor: 'rgba(220, 53, 69, 0.8)', color: 'white'}}>
-            <Typography>Oops! An unexpected error has occurred!</Typography>
-            <Typography>{error.data}</Typography>
-            <Typography>{error.status} <i>{error.statusText || error.message}</i></Typography>
+            <Box sx={{height: '750px', width: '100%', borderRadius: '10px', ...theme.components.box.fullCenterCol, justifyContent: 'start', backgroundColor: 'rgba(220, 53, 69, 0.7)', color: 'rgba(140, 53, 69, 1)'}}>
+            <Typography sx={{fontSize: '28px', fontWeight: 700, my: 1, mt: 5}}>An unexpected error has occurred!</Typography>
+            <Typography sx={{fontSize: '24px'}}>{error.status} {error.name}</Typography>
+            <Typography> <i>{error.message}</i></Typography>
             </Box>
         </BodyWrapper>
     )

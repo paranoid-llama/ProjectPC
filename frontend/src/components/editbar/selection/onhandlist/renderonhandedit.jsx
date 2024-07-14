@@ -1,4 +1,5 @@
-import {useState} from 'react'
+import {useState, useContext} from 'react'
+import { ErrorContext } from '../../../../app/contexts/errorcontext'
 import {Box, Typography, FormGroup} from '@mui/material'
 import {useDispatch, connect, useSelector} from 'react-redux'
 import {selectCollectionPokemon} from './../../../../app/selectors/selectors'
@@ -18,6 +19,7 @@ import store from '../../../../app/store'
 
 export default function RenderOnHandEdit({collectionId, ownerId, pokemon, idxOfPokemon, allEggMoves, isHomeCollection}) {
     const [popOutScreens, setPopOutScreens] = useState({eggmoveScreen: {open: 'firstRenderFalse', idx: ''}, pokemonSelection: false})
+    const {handleError} = useContext(ErrorContext)
     const dispatch = useDispatch()
     const listType = 'onhand'
 
@@ -32,45 +34,62 @@ export default function RenderOnHandEdit({collectionId, ownerId, pokemon, idxOfP
     }
 
     const handleBallChange = (e, newBall) => {
-        dispatch(setBall({idx: idxOfPokemon, ball: newBall}))
-        usePutRequest('ball', newBall, {id: pokemon._id}, 'onhand', collectionId, ownerId)
+        const successFunc = () => dispatch(setBall({idx: idxOfPokemon, ball: newBall}))
+        const backendFunc = async() => await usePutRequest('ball', newBall, {id: pokemon._id}, 'onhand', collectionId, ownerId)
+        handleError(backendFunc, false, successFunc, () => {})
     }
     const handleGenderChange = () => {
-        if (pokemon.gender === 'male') {
-            dispatch(setGender({idx: idxOfPokemon, gender: 'female'}))
-            usePutRequest('gender', 'female', {id: pokemon._id}, 'onhand', collectionId, ownerId) //replace ownerId with user session id later, or else everyone will be able to edit any collection
-        } else {
-            dispatch(setGender({idx: idxOfPokemon, gender: 'male'}))
-            usePutRequest('gender', 'male', {id: pokemon._id}, 'onhand', collectionId, ownerId)
-        }
+        // if (pokemon.gender === 'male') {
+        //     dispatch(setGender({idx: idxOfPokemon, gender: 'female'}))
+        //     usePutRequest('gender', 'female', {id: pokemon._id}, 'onhand', collectionId, ownerId) //replace ownerId with user session id later, or else everyone will be able to edit any collection
+        // } else {
+        //     dispatch(setGender({idx: idxOfPokemon, gender: 'male'}))
+        //     usePutRequest('gender', 'male', {id: pokemon._id}, 'onhand', collectionId, ownerId)
+        // }
+        const successFunc = () => dispatch(setGender({idx: idxOfPokemon, gender: pokemon.gender === 'male' ? 'female' : 'male'}))
+        const backendFunc = async() => await usePutRequest('gender', pokemon.gender === 'male' ? 'female' : 'male', {id: pokemon._id}, 'onhand', collectionId, ownerId)
+        handleError(backendFunc, false, successFunc, () => {})
     }
     const handleIsHAChange = (event) => {
         const newValue = event.target.value === 'true'
-        dispatch(setOnHandIsHA({idx: idxOfPokemon, listType}))
-        usePutRequest('isHA', newValue, {id: pokemon._id}, 'onhand', collectionId, ownerId)
+        const successFunc = () => dispatch(setOnHandIsHA({idx: idxOfPokemon, listType}))
+        const backendFunc = async() => await usePutRequest('isHA', newValue, {id: pokemon._id}, 'onhand', collectionId, ownerId)
+        handleError(backendFunc, false, successFunc, () => {})
     }
 
     const handleEmCountChange = (event) => {
         const newValue = selectNextEmCount(emCountSelectionList, parseInt(event.target.value))
-        if (newValue < pokemon.EMs.length) {
-            dispatch(deleteOnHandEms({idx: idxOfPokemon, listType}))
-            usePutRequest('EMs', [], {id: pokemon._id}, 'onhand', collectionId, ownerId)
-        }
-        dispatch(setOnHandEmCount({idx: idxOfPokemon, listType, numEMs: newValue}))
-        setPopOutScreens({...popOutScreens, eggmoveScreen: {...popOutScreens.eggmoveScreen, idx: ''}})
+        // if (newValue < pokemon.EMs.length) {
+        //     dispatch(deleteOnHandEms({idx: idxOfPokemon, listType}))
+        //     usePutRequest('EMs', [], {id: pokemon._id}, 'onhand', collectionId, ownerId)
+        // }
         const hasAllPossibleEggMoves = (possibleEggMoves.length === maxEMs) && (newValue === maxEMs)
-        if (hasAllPossibleEggMoves) {
-            for (let eggmove of possibleEggMoves) {
-                dispatch(setOnHandEms({idx: idxOfPokemon, listType, emName: eggmove}))
+        const successFunc = () => {
+            setPopOutScreens({...popOutScreens, eggmoveScreen: {...popOutScreens.eggmoveScreen, idx: ''}})
+            dispatch(setOnHandEmCount({idx: idxOfPokemon, listType, numEMs: newValue}))
+            if (newValue < pokemon.EMs.length) {
+                dispatch(deleteOnHandEms({idx: idxOfPokemon, listType}))
             }
-            usePutRequest('EMs', possibleEggMoves, {id: pokemon._id}, 'onhand', collectionId, ownerId)
+            if (hasAllPossibleEggMoves) {
+                for (let eggmove of possibleEggMoves) {
+                    dispatch(setOnHandEms({idx: idxOfPokemon, listType, emName: eggmove}))
+                }
+            }
         }
-        usePutRequest('emCount', newValue, {id: pokemon._id}, 'onhand', collectionId, ownerId)
+        const backendReq = async() => await usePutRequest('emCount', newValue, {id: pokemon._id}, 'onhand', collectionId, ownerId, newValue < pokemon.EMs.length ? {EMs: []} : hasAllPossibleEggMoves ? {EMs: possibleEggMoves} : undefined)
+        handleError(backendReq, false, successFunc, () => {})
+        // if (hasAllPossibleEggMoves) {
+        //     for (let eggmove of possibleEggMoves) {
+        //         dispatch(setOnHandEms({idx: idxOfPokemon, listType, emName: eggmove}))
+        //     }
+        //     usePutRequest('EMs', possibleEggMoves, {id: pokemon._id}, 'onhand', collectionId, ownerId)
+        // }
+        
     }
     const handleEMChange = (event) => {
         const selectedEM = event.target.innerText
-        dispatch(setOnHandEms({idx: idxOfPokemon, listType, emName: selectedEM}))
-        const newEMArr = store.getState().onhand[idxOfPokemon].EMs
+        
+        const newEMArr = pokemon.EMs.includes(selectedEM) ? pokemon.EMs.filter(em => em !== selectedEM) : [...pokemon.EMs, selectedEM]
         // state change adds or removes egg moves based on innerText event
 
         const increaseEMCount = (newEMArr.length) > pokemon.emCount
@@ -78,33 +97,41 @@ export default function RenderOnHandEdit({collectionId, ownerId, pokemon, idxOfP
         const decreaseEMCount = maxEMs === possibleEggMoves.length && pokemon.EMs.length > newEMArr.length
         // if the max possible ems is 4 or less AND we are taking out an egg move, decrease the em count
         const changeEMCount = increaseEMCount || decreaseEMCount
-  
-        // next two if statements determine how the selected EM (selection box) moves depending on whether an egg move is being added (1st) or removed (2nd)
-        if (!(pokemon.EMs.includes(selectedEM))) {
-            const newSelectedEMIdx = (popOutScreens.eggmoveScreen.idx === 3 && newEMArr === 4) ? '' : popOutScreens.eggmoveScreen.idx+1 // if all egg moves slots are selected, remove selection borders. if not, select next empty slot
-            setPopOutScreens({...popOutScreens, eggmoveScreen: {...popOutScreens.eggmoveScreen, idx: newSelectedEMIdx}})
-            usePutRequest('EMs', newEMArr, {id: pokemon._id}, 'onhand', collectionId, ownerId)   
-        } else if (pokemon.EMs.includes(selectedEM)) {
-            setPopOutScreens({...popOutScreens, eggmoveScreen: {...popOutScreens.eggmoveScreen, idx: ''}})
-            usePutRequest('EMs', newEMArr, {id: pokemon._id}, 'onhand', collectionId, ownerId)
+        
+        const successFunc = () => {
+            dispatch(setOnHandEms({idx: idxOfPokemon, listType, emName: selectedEM}))
+            // next two if statements determine how the selected EM (selection box) moves depending on whether an egg move is being added (1st) or removed (2nd)
+            if (!(pokemon.EMs.includes(selectedEM))) {
+                const newSelectedEMIdx = (popOutScreens.eggmoveScreen.idx === 3 && newEMArr === 4) ? '' : popOutScreens.eggmoveScreen.idx+1 // if all egg moves slots are selected, remove selection borders. if not, select next empty slot
+                setPopOutScreens({...popOutScreens, eggmoveScreen: {...popOutScreens.eggmoveScreen, idx: newSelectedEMIdx}})
+            } else if (pokemon.EMs.includes(selectedEM)) {
+                setPopOutScreens({...popOutScreens, eggmoveScreen: {...popOutScreens.eggmoveScreen, idx: ''}})
+            }
+            if (changeEMCount) {
+                dispatch(setOnHandEmCount({idx: idxOfPokemon, listType, numEMs: newEMArr.length}))
+            }
         }
-        if (changeEMCount) {
-            dispatch(setOnHandEmCount({idx: idxOfPokemon, listType, numEMs: newEMArr.length}))
-            usePutRequest('emCount', newEMArr.length, {id: pokemon._id}, 'onhand', collectionId, ownerId)
-        }
+        const backendReq = async() => await usePutRequest('EMs', newEMArr, {id: pokemon._id}, 'onhand', collectionId, ownerId, changeEMCount ? {emCount: newEMArr.length} : undefined)
+        handleError(backendReq, false, successFunc, () => {})
+        // if (changeEMCount) {
+        //     dispatch(setOnHandEmCount({idx: idxOfPokemon, listType, numEMs: newEMArr.length}))
+        //     usePutRequest('emCount', newEMArr.length, {id: pokemon._id}, 'onhand', collectionId, ownerId)
+        // }
     }
     const handleIncrementQty = () => {
         if (pokemon.qty < 99) {
-            dispatch(setQty({idx: idxOfPokemon, qty: pokemon.qty+1}))
-            const newQty = store.getState().onhand[idxOfPokemon].qty
-            usePutRequest('qty', newQty, {id: pokemon._id}, 'onhand', collectionId, ownerId)
+            const newQty = pokemon.qty+1
+            const successFunc = () => dispatch(setQty({idx: idxOfPokemon, qty: newQty}))
+            const backendFunc = async() => await usePutRequest('qty', newQty, {id: pokemon._id}, 'onhand', collectionId, ownerId)
+            handleError(backendFunc, false, successFunc, () => {})
         }
     }
     const handleDecrementQty = () => {
         if (pokemon.qty > 1) {
-            dispatch(setQty({idx: idxOfPokemon, qty: pokemon.qty-1}))
-            const newQty = store.getState().onhand[idxOfPokemon].qty
-            usePutRequest('qty', newQty, {id: pokemon._id}, 'onhand', collectionId, ownerId)
+            const newQty = pokemon.qty-1
+            const successFunc = () => dispatch(setQty({idx: idxOfPokemon, qty: newQty}))
+            const backendFunc = async() => await usePutRequest('qty', newQty, {id: pokemon._id}, 'onhand', collectionId, ownerId)
+            handleError(backendFunc, false, successFunc, () => {})
         }
     }
     

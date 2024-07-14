@@ -1,8 +1,9 @@
 export default async function collectionLoader({params}, dispatch, editPage, initializeState, initList, initCol, initOnhand, initOptions) {
     const collection = await fetch(`http://localhost:3000/collections/${params.id}`)
-                            .then((res) => {
-                                if (res.ok) {return res.json()} 
-                                else {console.log('UH OH ERROR')}
+                            .then(async(res) => {
+                                const data = await res.json()
+                                if (res.ok) {return data} 
+                                else {throw data}
                             })
     if (initializeState) {
         dispatch(initList({collection: collection.ownedPokemon, onhand: collection.onHand, updatedEggMoveInfo: collection.eggMoveInfo, resetCollectionFilters: true, resetOnHandFilters: true}))

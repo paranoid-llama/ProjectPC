@@ -9,7 +9,7 @@ import { useTheme, Button } from "@mui/material";
 import ControlledTextInput from "../functionalcomponents/controlledtextinput";
 import { Fragment, useState, useRef, useEffect, useContext } from "react";
 import { AlertsContext } from "../../alerts/alerts-context";
-import { useNavigate, useLoaderData, useRevalidator, useLocation } from "react-router-dom";
+import { useNavigate, useRouteLoaderData, useLoaderData, useRevalidator, useLocation } from "react-router-dom";
 import userLoginRequest from "../../../utils/functions/backendrequests/users/login";
 import userLogoutRequest from "../../../utils/functions/backendrequests/users/logout";
 import hexToRgba from "hex-to-rgba";
@@ -18,7 +18,7 @@ export default function NavBar() {
     const theme = useTheme()
     const navigate = useNavigate()
     const revalidator = useRevalidator()
-    const userData = useLoaderData()
+    const userData = useRouteLoaderData('root')
     const location = useLocation().pathname
     const usernameFieldRef = useRef(null)
     const passwordFieldRef = useRef(null)
@@ -112,7 +112,7 @@ export default function NavBar() {
     }
 
     const icons = userData.loggedIn ? ['homeicon', 'search', 'createcollection', 'user'] : ['homeicon', 'search', 'createcollection', 'login']
-    const iconLinks = userData.loggedIn ? ['/', '/search', '/collections/new', `/users/${userData.user.id}`] : ['/', '/search', '/collections/new', '/login']
+    const iconLinks = userData.loggedIn ? ['/', '/search', '/collections/new', `/users/${userData.username}`] : ['/', '/search', '/collections/new', '/login']
     const userProfileOptions = ['Notifications', 'Profile', 'Collections', 'Trades', 'Settings', 'Logout']
     const unreadNotificationsAmount = userData.loggedIn && userData.user.notifications.map((noti) => noti.unread ? 1 : 0).reduce((accumulator, currValue) => accumulator+currValue, 0)
 
