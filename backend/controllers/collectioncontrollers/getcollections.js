@@ -16,7 +16,7 @@ export async function getCollectionController(req, res) {
 
 export async function retrievePokemonGroups(req, res) {
     const {gen} = req.query
-    if (!collectionSubTypes.aprimon.value.includes(gen)) {
+    if (!collectionSubTypes.aprimon.value.includes(isNaN(parseInt(gen)) ? gen : parseInt(gen))) {
         const exception = new Error()
         exception.name = 'Bad Request'
         exception.message = `Invalid aprimon collection gen!`

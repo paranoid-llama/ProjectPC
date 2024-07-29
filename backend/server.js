@@ -161,11 +161,11 @@ app.post('/collections/new/seeddb', catchAsync(async(req, res) => {
     res.end()
 }))
 
-// app.use((err, req, res, next) => {
-//     const {statusCode = 500} = err;
-//     if (!err.message) err.message = "Oh no, something went wrong!"
-//     res.status(statusCode).send(err)
-// })
+app.use((err, req, res, next) => {
+    const {statusCode = 500} = err;
+    if (!err.message) err.message = "Oh no, something went wrong!"
+    res.status(statusCode).send(err)
+})
 
 // port/server
 const port = process.env.PORT || 3000
