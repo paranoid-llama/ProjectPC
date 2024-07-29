@@ -10,11 +10,13 @@ import { changeModalState } from '../../../../app/slices/editmode';
 import { saveScopeChangesAndGetNewList } from '../../../../../utils/functions/scope/savescopechanges';
 import SaveChangesConfirmModal from '../savechangesconfirmmodal';
 import { AlertsContext } from '../../../../alerts/alerts-context';
+import { ErrorContext } from '../../../../app/contexts/errorcontext';
 import { setCollectionInitialState } from '../../../../app/slices/collection';
 import { setListInitialState } from '../../../../app/slices/listdisplay';
 
 export default function PokemonScope({elementBg, collectionGen, collectionId}) {
     const dispatch = useDispatch()
+    const {handleError} = useContext(ErrorContext)
     const scopeTotal = useSelector((state) => state.editmode.pokemonScopeTotal)
     const oneArrLegalityInfo = getOneArrData(scopeTotal, false)
     const collectionState = useSelector((state) => state.collection)
@@ -102,24 +104,32 @@ export default function PokemonScope({elementBg, collectionGen, collectionId}) {
 
     const finalizeChanges = async(saveChanges, nextScreen) => {
         if (saveChanges) {
-            const newListState = await saveScopeChangesAndGetNewList(formData.addedPokemon, formData.removedPokemon, collectionState, collectionGen, collectionId, collectionAutoSort, collectionSortOrder, ballScope, oneArrLegalityInfo)
+            const backendFunc = async() => await saveScopeChangesAndGetNewList(formData.addedPokemon, formData.removedPokemon, collectionState, collectionGen, collectionId, collectionAutoSort, collectionSortOrder, ballScope, oneArrLegalityInfo)
             setModalState({...modalState, saving: true})
-            setTimeout(() => {
-                const actualListState = newListState.list !== undefined ? newListState.list : newListState
-                const updatedEggMoveInfo = newListState.updatedEggMoveInfo 
-                const updateEggMoveData = updatedEggMoveInfo !== undefined
-                dispatch(setCollectionInitialState(actualListState))
-                dispatch(setListInitialState({collection: actualListState, onlyUpdateCollection: true, resetCollectionFilters: true, updatedEggMoveInfo: updateEggMoveData ? updatedEggMoveInfo : undefined}))
+            const successFunc = (newListState) => {
+                setTimeout(() => {
+                    const actualListState = newListState.list !== undefined ? newListState.list : newListState
+                    const updatedEggMoveInfo = newListState.updatedEggMoveInfo 
+                    const updateEggMoveData = updatedEggMoveInfo !== undefined
+                    const updatedHomeGames = newListState.updatedHomeGames
+                    dispatch(setCollectionInitialState(actualListState))
+                    dispatch(setListInitialState({collection: actualListState, onlyUpdateCollection: true, resetCollectionFilters: true, updatedEggMoveInfo: updateEggMoveData ? updatedEggMoveInfo : undefined, updatedHomeGames}))
 
-                //spawning alert
-                const alertMessage = `Updated Pokemon Scope!`
-                const alertInfo = {severity: 'success', message: alertMessage, timeout: 3}
-                const id = addAlert(alertInfo);
-                setAlertIds((prev) => [...prev, id]);
+                    //spawning alert
+                    const alertMessage = `Updated Pokemon Scope!`
+                    const alertInfo = {severity: 'success', message: alertMessage, timeout: 3}
+                    const id = addAlert(alertInfo);
+                    setAlertIds((prev) => [...prev, id]);
 
-                dispatch(changeModalState({open: false}))
-            }, 1000)
-            
+                    dispatch(changeModalState({open: false}))
+                }, 1000)
+            }
+            const errorFunc = () => {
+                setTimeout(() => {
+                    dispatch(changeModalState({open: false})) 
+                }, 1000)
+            }
+            handleError(backendFunc, false, successFunc, errorFunc)
         } else if (nextScreen === 'goBack') {
             setModalState({...modalState, saveChangesConfirmOpen: false})
         } else if (nextScreen === 'exit') {

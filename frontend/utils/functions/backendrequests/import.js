@@ -1,3 +1,4 @@
+import handleApiResponse from "./handleapiresponse"
 
 //frontend needs data back to display the data
 const importCollection = async(spreadsheetId, apiRequestQueries, collectionTypeValue) => {
@@ -8,12 +9,7 @@ const importCollection = async(spreadsheetId, apiRequestQueries, collectionTypeV
             "Content-Type": "application/json",
         },
         body: JSON.stringify({spreadsheetId, apiRequestQueries, collectionTypeValue})
-    }).then(async(res) => {
-        return {
-            load: await res.json(),
-            ok: res.ok
-        }
-    })
+    }).then(async(data) => {return await handleApiResponse(data, true)})
     return collectionData
 }
 

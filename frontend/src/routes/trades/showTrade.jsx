@@ -1,7 +1,8 @@
 import {Box, Typography, useTheme, Button, Tooltip, Select, MenuItem} from '@mui/material'
 import ImgData from '../../components/collectiontable/tabledata/imgdata'
 import { useNavigate, useLoaderData, useRouteLoaderData, useRevalidator } from 'react-router'
-import { useState, useTransition, useEffect } from 'react'
+import { useState, useTransition, useEffect, useContext } from 'react'
+import { ErrorContext } from '../../app/contexts/errorcontext'
 import hexToRgba from 'hex-to-rgba'
 import ShowOffer from './showtradecomponents/showoffer'
 import BodyWrapper from '../../components/partials/routepartials/bodywrapper'
@@ -11,6 +12,7 @@ import readNotification from '../../../utils/functions/backendrequests/users/rea
 export default function ShowTrade({}) {
     const theme = useTheme()
     const navigate = useNavigate()
+    const {handleError} = useContext(ErrorContext)
     const loggedInUserData = useRouteLoaderData('root').user
     const tradeAndLOfferData = useLoaderData()
     const tradeData = tradeAndLOfferData.tradeData 
@@ -22,8 +24,10 @@ export default function ShowTrade({}) {
     const tradeCollection2Display = isNaN(parseInt(tradeData.users[1].tradeCollection.gen)) ? `${tradeData.users[1].tradeCollection.gen.toUpperCase()} Aprimon Collection` : `Gen ${tradeData.users[1].tradeCollection.gen} Aprimon Collection`
     
     const requestBackendOfferData = async(newSelectedOfferIdx) => {
-        const offerData = await getOfferData(tradeData._id, newSelectedOfferIdx)
-        setSelectedOffer({selected: newSelectedOfferIdx, data: offerData})    
+        const backendFunc = async() => await getOfferData(tradeData._id, newSelectedOfferIdx)
+        const successFunc = (offerData) => {setSelectedOffer({selected: newSelectedOfferIdx, data: offerData})}
+        const errorFunc = (errorDetails) => {setSelectedOffer({...selectedOffer, selected: newSelectedOfferIdx, error: true, errorDetails})}
+        handleError(backendFunc, false, successFunc, errorFunc)
     }
 
     const changeSelectedOffer = (newSelectedOfferIdx) => {
@@ -59,7 +63,8 @@ export default function ShowTrade({}) {
     useEffect(() => {
         const userHasPendingNotiOfTrade = loggedInUserData !== undefined && tradeData.users.filter(userData => loggedInUserData.username === userData.username)[0].notifications.length !== 0
         if (userHasPendingNotiOfTrade) {
-            readNotification(loggedInUserData.username, tradeData._id, true)
+            const backendFunc = async() => await readNotification(loggedInUserData.username, tradeData._id, true)
+            handleError(backendFunc, false, () => {}, () => {}, false, true)
         }
     }, [])
 
@@ -169,7 +174,8 @@ export default function ShowTrade({}) {
                     isPending={isPending}
                     markedCompleteData={tradeData.markedCompleteBy}
                     tradeStatus={tradeData.status}
-                />
+                    errorSelection={selectedOffer.error}
+                /> 
             </Box>
         </BodyWrapper>
     )

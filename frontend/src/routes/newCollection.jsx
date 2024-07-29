@@ -78,12 +78,24 @@ export default function NewCollection() {
     }
 
     const setScopeState = async(importedCollection, collectionGen, ballScope) => {
-        const pokemonGroups = await getPokemonGroups(collectionGen)
-        const scopeFormData = creationInitializeScopeFormData(importedCollection, pokemonGroups, collectionGen)
-        const oneArrTotal = getOneArrData(pokemonGroups)
-        const importedCollectionInitialScope = Object.keys(importedCollection).length !== 0 ? {importedCollectionInitScope: getOneArrData(scopeFormData, false, true)} : {}
-        const customSortState = Object.values(importedCollection).length !== 0 ? {customSort: importedCollection.map(mon => {return {name: mon.name, natDexNum: mon.natDexNum, id: mon.imgLink}})} : {}
-        setFormData({...formData, importedCollection, ...importedCollectionInitialScope, ballScope, scope: {gen: collectionGen, total: pokemonGroups, formData: scopeFormData, oneArrTotal}, ...customSortState})
+        const backendFunc = async() => {return await getPokemonGroups(collectionGen)}
+        const successFunc = (pokemonGroups) => {
+            const scopeFormData = creationInitializeScopeFormData(importedCollection, pokemonGroups, collectionGen)
+            const oneArrTotal = getOneArrData(pokemonGroups)
+            const importedCollectionInitialScope = Object.keys(importedCollection).length !== 0 ? {importedCollectionInitScope: getOneArrData(scopeFormData, false, true)} : {}
+            const customSortState = Object.values(importedCollection).length !== 0 ? {customSort: importedCollection.map(mon => {return {name: mon.name, natDexNum: mon.natDexNum, id: mon.imgLink}})} : {}
+            setFormData({...formData, importedCollection, ...importedCollectionInitialScope, ballScope, scope: {gen: collectionGen, total: pokemonGroups, formData: scopeFormData, oneArrTotal}, ...customSortState})
+        }
+        const errorFunc = (errorData) => {
+            setFormData({...formData, importedCollection, ballScope, scope: {error: true, ...errorData}})
+        }
+        handleError(backendFunc, false, successFunc, errorFunc)
+        // const pokemonGroups = await getPokemonGroups(collectionGen)
+        // const scopeFormData = creationInitializeScopeFormData(importedCollection, pokemonGroups, collectionGen)
+        // const oneArrTotal = getOneArrData(pokemonGroups)
+        // const importedCollectionInitialScope = Object.keys(importedCollection).length !== 0 ? {importedCollectionInitScope: getOneArrData(scopeFormData, false, true)} : {}
+        // const customSortState = Object.values(importedCollection).length !== 0 ? {customSort: importedCollection.map(mon => {return {name: mon.name, natDexNum: mon.natDexNum, id: mon.imgLink}})} : {}
+        // setFormData({...formData, importedCollection, ...importedCollectionInitialScope, ballScope, scope: {gen: collectionGen, total: pokemonGroups, formData: scopeFormData, oneArrTotal}, ...customSortState})
     }
 
     const handleImportedCollectionChange = (e, data, ballScope=[]) => {

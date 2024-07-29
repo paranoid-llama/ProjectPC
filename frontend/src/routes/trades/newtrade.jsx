@@ -4,7 +4,8 @@ import { useLoaderData, useRouteLoaderData, useLocation } from 'react-router'
 import { useDispatch } from 'react-redux'
 import { resetTradeData } from '../../app/slices/tradeoffer'
 import hexToRgba from 'hex-to-rgba'
-import { useState, useRef, useEffect, useTransition } from 'react'
+import { useState, useRef, useEffect, useContext, useTransition } from 'react'
+import { ErrorContext } from '../../app/contexts/errorcontext'
 import './newtrade.css'
 import SelectAndCompare from './newtradesteps/selectandcompare'
 import SetOfferReceiving from './newtradesteps/setofferreceiving'
@@ -15,6 +16,7 @@ import getUserCollectionData from '../../../utils/functions/backendrequests/getu
 
 export default function NewTrade({}) {
     const theme = useTheme()
+    const {handleError} = useContext(ErrorContext)
     const dispatch = useDispatch()
     const locationData = useLocation()
     const loaderData = useLoaderData()
@@ -61,8 +63,12 @@ export default function NewTrade({}) {
     }, [tradeData.compareWith])
 
     const changeSelectedCol = async(newColId, otherStateChanges={}) => {
-        const userCollectionData = await getUserCollectionData(newColId)
-        setTradeData({...tradeData, compareWith: newColId, userCollectionData, ...otherStateChanges})
+        const successFunc = (userCollectionData) => {
+            setTradeData({...tradeData, compareWith: newColId, userCollectionData, ...otherStateChanges})
+        }
+        const backendFunc = async() => await getUserCollectionData(newColId)
+        handleError(backendFunc, false, successFunc, () => {})
+        
     }
     const setComparisonData = (data) => {
         data.comparedWith = tradeData.compareWith
@@ -70,7 +76,7 @@ export default function NewTrade({}) {
     }
 
     const initDataFromComparison = async() => {
-        const userCollectionData = await getUserCollectionData(locationData.state.compareWith)
+        const userCollectionData = await getUserCollectionData(locationData.state.compareWith) //no error handling here since this is taken directly from a comparison from the prev page. 
         setTradeData({...tradeData, displaySteps: {...tradeData.displaySteps, 2: true}, compareWith: locationData.state.compareWith, userCollectionData, comparisonData: locationData.state.comparisonData})
     }
 

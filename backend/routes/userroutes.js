@@ -15,7 +15,7 @@ router.post('/login', passport.authenticate('local'), catchAsync(userLogin))
 
 router.post('/logout', catchAsync(userLogout))
 
-router.put('/settings/:settingType', isLoggedIn, isTheUser, catchAsync(editUserSettings))
+router.put('/:username/settings/:settingType', isLoggedIn, isTheUser, catchAsync(editUserSettings))
 
 router.put('/:username/read-notification', isValidUsername, isLoggedIn, isTheUser, catchAsync(readUserNotification))
 

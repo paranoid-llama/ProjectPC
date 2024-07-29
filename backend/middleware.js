@@ -69,6 +69,19 @@ const isValidId = (req, res, next) => {
     next()
 }
 
+const isValidOnHandId = (req, res, next) => {
+    const {editType, pokemonId, idOfPokemon} = req.body //single value update uses "idOfPokemon" while delete on hand uses "pokemonId". probably should have it uniform.
+    const actualId = (editType !== undefined && editType === 'singleValue' && idOfPokemon !== undefined) ? idOfPokemon : pokemonId
+    if (actualId !== undefined && !mongoose.Types.ObjectId.isValid(actualId)) { 
+        const exception = new Error()
+        exception.name = 'Bad Request'
+        exception.message = "Invalid On-Hand ID!"
+        exception.status = 400
+        return res.status(400).send(exception)
+    }
+    next()
+}
+
 const usernameRegex = /^[a-zA-Z0-9\$\(\)\-\_\;\:\'\,\. ]+[a-zA-Z0-9\$\(\)\-\_\;\:\'\,\.]*$/i
 const reservedWordsForUsernames = ['new', 'login', 'logout', 'settings']
 
@@ -113,10 +126,10 @@ const canOfferTrade = async(req, res, next) => {
         return res.status(400).send(exception)
     }
     const stringTradeGen = typeof gen === 'string'
-    const validTradeGen = stringTradeGen && ((collectionSubTypes.aprimon.includes(isNaN(parseInt(gen)) ? gen : parseInt(gen))) || 
+    const validTradeGen = stringTradeGen && ((collectionSubTypes.aprimon.value.includes(isNaN(parseInt(gen)) ? gen : parseInt(gen))) || 
         (gen.includes('-') && 
-            collectionSubTypes.aprimon.includes(isNaN(parseInt(gen.slice(0, gen.indexOf('-')))) ? gen.slice(0, gen.indexOf('-')) : parseInt(gen.slice(0, gen.indexOf('-')))) &&
-            collectionSubTypes.aprimon.includes(isNaN(parseInt(gen.slice(gen.indexOf('-')+1, gen.length))) ? gen.slice(gen.indexOf('-')+1, gen.length) : parseInt(gen.slice(gen.indexOf('-')+1, gen.length)))
+            collectionSubTypes.aprimon.value.includes(isNaN(parseInt(gen.slice(0, gen.indexOf('-')))) ? gen.slice(0, gen.indexOf('-')) : parseInt(gen.slice(0, gen.indexOf('-')))) &&
+            collectionSubTypes.aprimon.value.includes(isNaN(parseInt(gen.slice(gen.indexOf('-')+1, gen.length))) ? gen.slice(gen.indexOf('-')+1, gen.length) : parseInt(gen.slice(gen.indexOf('-')+1, gen.length)))
         ))
     if (!validTradeGen) {
         const exception = new Error()
@@ -158,6 +171,13 @@ const canOfferTrade = async(req, res, next) => {
 const canRespondToTrade = async(req, res, next) => {
     const { id } = req.params
     const tradeData = await Trade.findById(id)
+    if (tradeData === null) {
+        const exception = new Error()
+        exception.name = 'Not Found'
+        exception.message = `Could not find a trade with this ID!`
+        exception.status = 404
+        return res.status(404).send(exception)
+    }
     const tradeIsOver = tradeData.status === 'completed' || tradeData.status === 'rejected'
     if (tradeIsOver) {
         const exception = new Error()
@@ -166,7 +186,7 @@ const canRespondToTrade = async(req, res, next) => {
         exception.status = 403
         return res.status(403).send(exception)
     }
-    const isTradeParticipant = tradeData.users.map(userIds => userIds.toString()).includes(req.user._id)
+    const isTradeParticipant = tradeData.users.map(userIds => userIds.toString()).includes(req.user._id.toString())
     if (!isTradeParticipant) {
         const exception = new Error()
         exception.name = 'Forbidden'
@@ -185,4 +205,4 @@ const canRespondToTrade = async(req, res, next) => {
     next()
 }
 
-export {initializePassportStrategy, isLoggedIn, isCollectionOwner, isTheUser, canOfferTrade, canRespondToTrade, isValidId, isValidUsername}
+export {initializePassportStrategy, isLoggedIn, isCollectionOwner, isTheUser, canOfferTrade, canRespondToTrade, isValidId, isValidOnHandId, isValidUsername}

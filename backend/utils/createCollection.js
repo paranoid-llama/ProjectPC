@@ -144,8 +144,8 @@ function getIndividualPokemonInfo(gen, newPokemon, ballScope) {
                     gen: isBabyPokemon ? pokemon.info.special.child.gen : pokemon.gen,
                     balls: ownedBallList
                 }
-                pokemonInfo.imgLink = getImgLink(pokemonInfo)
-                pokemonInfo.possibleGender = getPossibleGender(pokemonInfo)
+                // pokemonInfo.imgLink = getImgLink(pokemonInfo)
+                // pokemonInfo.possibleGender = getPossibleGender(pokemonInfo)
                 return removeBallsOutsideScope(pokemonInfo, ballScope, {}, undefined)
             } else {
                 return undefined

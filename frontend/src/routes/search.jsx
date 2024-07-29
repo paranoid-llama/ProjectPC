@@ -1,5 +1,6 @@
 import { useTheme, Box, Typography, ToggleButton, ToggleButtonGroup, Button } from "@mui/material"; 
-import { useState, useRef, useEffect, useTransition } from "react";
+import { useState, useRef, useEffect, useTransition, useContext } from "react";
+import { ErrorContext } from "../app/contexts/errorcontext";
 import SearchIcon from '@mui/icons-material/Search';
 import BodyWithBanner from "../components/partials/routepartials/bodywithbanner";
 import SearchAreaRoute from "../components/functionalcomponents/search/searcharearoute";
@@ -8,6 +9,7 @@ import { searchDB } from "../../utils/functions/backendrequests/search";
 import { useDebouncedCallback } from "use-debounce";
 
 export default function Search({}) {
+    const {handleError} = useContext(ErrorContext)
     const [searchData, setSearchData] = useState({type: 'all', query: '', queryFunction: '', page: 1, result: {collections: [], users: [], collectionCount: 0, userCount: 0}})
     //query controls what is shown in the input while query function controls the query that operators take. since the function operators are debounced,
     //we want the child components to update when the debounce update, necessitating a new variable which only updates when the debounce occurs
@@ -34,13 +36,25 @@ export default function Search({}) {
     }
 
     const debounceSearchFunction = async(query, pageNum=1, changeSearchType=false, newSearchType) => {
-         if (changeSearchType) {
-            const newSearchResult = await searchDB(newSearchType, query, pageNum)
-            setSearchData({...searchData, queryFunction: query, result: newSearchResult, page: 1, type: newSearchType})
-            return
+        const backendFunc = async() => {return await searchDB(changeSearchType ? newSearchType : searchData.type, query, pageNum)}
+        const successFunc = (searchResult) => {
+            if (changeSearchType) { 
+                setSearchData({...searchData, queryFunction: query, result: searchResult, page: 1, type: newSearchType, error: false})
+                return
+            }
+            setSearchData({...searchData, queryFunction: query, result: searchResult, page: pageNum, error: false})
         }
-        const searchResult = await searchDB(searchData.type, query, pageNum)
-        setSearchData({...searchData, queryFunction: query, result: searchResult, page: pageNum})
+        const errorFunc = (errorData) => {
+            setSearchData({...searchData, error: true, errorData})
+        }
+        handleError(backendFunc, false, successFunc, errorFunc)
+        // if (changeSearchType) {
+        //     const newSearchResult = await searchDB(newSearchType, query, pageNum)
+        //     setSearchData({...searchData, queryFunction: query, result: newSearchResult, page: 1, type: newSearchType})
+        //     return
+        // }
+        // const searchResult = await searchDB(searchData.type, query, pageNum)
+        // setSearchData({...searchData, queryFunction: query, result: searchResult, page: pageNum})
     }
 
     const debouncedSearch = useDebouncedCallback(
@@ -104,6 +118,18 @@ export default function Search({}) {
                 controlInputFunc={changeQuery}
                 useRegex={true}
             />
+            {searchData.error ? 
+            <Box sx={{width: '80%', minHeight: '600px', mt: 2, ...theme.components.box.fullCenterCol, justifyContent: 'start'}}>
+                <Typography sx={{fontSize: '24px', color: 'rgb(200, 50, 50)', fontWeight: 700, mb: 2, mt: 10}}>
+                    Error {searchData.errorData.status}: {searchData.errorData.name}
+                </Typography>
+                <Typography sx={{fontSize: '16px', color: 'rgb(200, 50, 50)', fontWeight: 700}}>
+                    {searchData.errorData.message}
+                </Typography>
+                <Typography sx={{fontSize: '16px', color: 'rgb(200, 50, 50)', fontWeight: 700}}>
+                    Try again later!
+                </Typography>
+            </Box> :
             <SearchAreaRoute 
                 query={searchData.queryFunction} 
                 result={searchData.result} 
@@ -112,7 +138,7 @@ export default function Search({}) {
                 changePage={changePage} 
                 changeSearchType={changeSearchType} 
                 changingPage={isPending}
-            />
+            />}
         </BodyWithBanner>
     )
 }

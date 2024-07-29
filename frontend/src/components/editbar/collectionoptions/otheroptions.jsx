@@ -3,6 +3,7 @@ import ArrowForward from '@mui/icons-material/ArrowForward'
 import { useDispatch, useSelector } from 'react-redux'
 import { useState, useEffect, useContext, useRef } from 'react'
 import { AlertsContext } from '../../../alerts/alerts-context'
+import { ErrorContext } from '../../../app/contexts/errorcontext'
 import { changeModalState } from '../../../app/slices/editmode'
 import { setNameState, setGlobalDefaultState } from '../../../app/slices/options'
 import { backendChangeOptions } from '../../../../utils/functions/backendrequests/collectionoptionsedit'
@@ -11,6 +12,7 @@ import SaveChangesConfirmModal from './savechangesconfirmmodal'
 
 export default function OtherOptions({elementBg, collectionId, collectionGen, collectionType, owner}) {
     const dispatch = useDispatch()
+    const {handleError} = useContext(ErrorContext)
     const collectionNameState = useSelector((state) => state.options.collectionName)
     const globalDefaultInit = useSelector((state) => state.options.globalDefaults)
     const collectionNameRef = useRef(collectionNameState)
@@ -86,23 +88,30 @@ export default function OtherOptions({elementBg, collectionId, collectionGen, co
             const noGlobalDefaultChanges = (globalDefaultInit.isHA === otherOptions.globalDefaults.isHA) && (globalDefaultInit.emCount === otherOptions.globalDefaults.emCount)
             setOtherOptions({...otherOptions, saving: true})
             setTimeout(() => {
-                if (!noNameChanges && !noGlobalDefaultChanges) {
-                    backendChangeOptions('name', {name: newName, globalDefault: otherOptions.globalDefaults}, collectionId)
-                    dispatch(setNameState({name: newName, globalDefault: otherOptions.globalDefaults}))
-                } else if (!noNameChanges) {
-                    backendChangeOptions('name', {name: newName}, collectionId)
-                    dispatch(setNameState({name: newName}))
-                } else if (!noGlobalDefaultChanges) {
-                    backendChangeOptions('globalDefault', {globalDefault: otherOptions.globalDefaults}, collectionId)
-                    dispatch(setGlobalDefaultState(otherOptions.globalDefaults))
+                const backendType = noNameChanges && !noGlobalDefaultChanges ? 'globalDefault' : 'name'
+                const info = noNameChanges && !noGlobalDefaultChanges ? {globalDefault: otherOptions.globalDefaults} : !noNameChanges && noGlobalDefaultChanges ? {name: newName} : {name: newName, globalDefault: otherOptions.globalDefaults}
+                const backendFunc = async() => await backendChangeOptions(backendType, info, collectionId)
+                
+                const successFunc = () => {
+                    if (!noNameChanges && !noGlobalDefaultChanges) {
+                        // backendChangeOptions('name', {name: newName, globalDefault: otherOptions.globalDefaults}, collectionId)
+                        dispatch(setNameState({name: newName, globalDefault: otherOptions.globalDefaults}))
+                    } else if (!noNameChanges) {
+                        // backendChangeOptions('name', {name: newName}, collectionId)
+                        dispatch(setNameState({name: newName}))
+                    } else if (!noGlobalDefaultChanges) {
+                        // backendChangeOptions('globalDefault', {globalDefault: otherOptions.globalDefaults}, collectionId)
+                        dispatch(setGlobalDefaultState(otherOptions.globalDefaults))
+                    }
+
+                    //spawning alert
+                    const alertMessage = `Set Other Options!`
+                    const alertInfo = {severity: 'success', message: alertMessage, timeout: 3}
+                    const id = addAlert(alertInfo);
+                    setAlertIds((prev) => [...prev, id]);
                 }
 
-                //spawning alert
-                const alertMessage = `Set Other Options!`
-                const alertInfo = {severity: 'success', message: alertMessage, timeout: 3}
-                const id = addAlert(alertInfo);
-                setAlertIds((prev) => [...prev, id]);
-
+                handleError(backendFunc, false, successFunc, () => {})
                 dispatch(changeModalState({open: false}))
             }, 1000)
         } else if (nextScreen === 'goBack') {

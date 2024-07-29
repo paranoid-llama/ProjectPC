@@ -7,6 +7,13 @@ export async function respondToTrade(req, res) {
     const {id} = req.params
 
     const trade = await Trade.findById(id)
+    if (trade === null) {
+        const exception = new Error()
+        exception.name = 'Not Found'
+        exception.message = `Could not find a trade with this ID!`
+        exception.status = 404
+        return res.status(404).send(exception)
+    }
     const latestOffer = trade.history[trade.history.length-1]
 
     if (response === 'accept') {

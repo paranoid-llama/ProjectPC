@@ -1,4 +1,5 @@
 import { useTransition, useState, useContext, useEffect } from 'react'
+import { ErrorContext } from '../../../../app/contexts/errorcontext'
 import {AlertsContext} from '../../../../alerts/alerts-context'
 import {useDispatch} from 'react-redux'
 import {Modal, Box, Backdrop, Fade, Typography, Button} from '@mui/material'
@@ -13,6 +14,7 @@ import { capitalizeFirstLetter } from '../../../../../utils/functions/misc'
 export default function DeleteOnHandConfirm({open, handleClose, pokemonName, ball, imgLink, isHA, emCount, gender, isMaxEMs, pokemonId, collectionID}) {
 
     const dispatch = useDispatch()
+    const {handleError} = useContext(ErrorContext)
 
     const [alertIds, setAlertIds] = useState([])
     const {addAlert, dismissAlert} = useContext(AlertsContext)
@@ -24,8 +26,8 @@ export default function DeleteOnHandConfirm({open, handleClose, pokemonName, bal
 
     const deleteAndClose = () => {
         setIsDeleting(true)
-        deleteOnHandPutRequest(pokemonId, collectionID)
-        setTimeout(() => {
+        const backendFunc = async() => await deleteOnHandPutRequest(pokemonId, collectionID)
+        const successFunc = () => {
             dispatch(deselect()) 
 
             dispatch(removePokemonFromList({pokemonid: pokemonId, listType: 'onhand'})) //list display state - refer to slice
@@ -44,7 +46,9 @@ export default function DeleteOnHandConfirm({open, handleClose, pokemonName, bal
             const alertInfo = {severity: 'success', message: alertMessage, timeout: 3, messageImgs: [{type: 'ball', linkKey: ball}, {type: 'poke', linkKey: imgLink}]}
             const id = addAlert(alertInfo);
             setAlertIds((prev) => [...prev, id]);
-
+        }
+        setTimeout(() => {
+            handleError(backendFunc, false, successFunc, () => {})
             handleClose()
             
         }, 1000)

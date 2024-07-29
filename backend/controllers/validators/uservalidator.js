@@ -8,11 +8,12 @@ export default async function validateNewUserData(req, res, next) {
 
     const searchUserRegex = `^${username}$`
     const usersWithThatUsername = await User.findOne({username: {$regex: new RegExp(searchUserRegex, 'i')}})
+    const userIsAvailable = usersWithThatUsername === null
     const doubleSpaceMatches = [...username.matchAll(new RegExp('  ', 'gi'))].length !== 0
-    const usernameFitsRequirements = usernameRegex.test(username) &&
-        username[0] !== ' ' && username[username.length-1] !== ' ' && !doubleSpaceMatches
-        username.length >= 4 && username.length <= 24 &&
-        usersWithThatUsername === null
+    const usernameFitsRequirements = (usernameRegex.test(username)) &&
+        (username[0] !== ' ' && username[username.length-1] !== ' ') && !(doubleSpaceMatches) &&
+        (username.length >= 4 && username.length <= 24) && userIsAvailable
+
     if (!usernameFitsRequirements) {
         const exception = new Error()
         exception.name = 'Bad Request'
@@ -33,7 +34,9 @@ export default async function validateNewUserData(req, res, next) {
         return res.status(400).send(exception)
     }
 
-    const emailFitsRequirements = emailRegex.test(email)
+    const usersWithThatEmail = await User.findOne({email})
+    const emailIsAvailable = usersWithThatEmail === null
+    const emailFitsRequirements = emailRegex.test(email) && emailIsAvailable
 
     if (!emailFitsRequirements) {
         const exception = new Error()

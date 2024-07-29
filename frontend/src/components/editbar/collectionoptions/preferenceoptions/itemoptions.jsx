@@ -1,5 +1,6 @@
 import { useState, useEffect, useContext } from "react";
 import { AlertsContext } from "../../../../alerts/alerts-context";
+import { ErrorContext } from "../../../../app/contexts/errorcontext";
 import { useDispatch, useSelector } from "react-redux";
 import { changeModalState } from "../../../../app/slices/editmode";
 import { setItemState } from "../../../../app/slices/options";
@@ -10,6 +11,7 @@ import SaveChangesConfirmModal from "../savechangesconfirmmodal";
 
 export default function ItemOptions({elementBg, collectionGen, collectionId}) {
     const dispatch = useDispatch()
+    const {handleError} = useContext(ErrorContext)
     const tradePreferences = useSelector((state) => state.options.tradePreferences)
     const lfDisabled = tradePreferences.items === 'none' || tradePreferences.items === 'ft'
     const ftDisabled = tradePreferences.items === 'none' || tradePreferences.items === 'lf'
@@ -103,15 +105,17 @@ export default function ItemOptions({elementBg, collectionGen, collectionId}) {
             const newItems = {lfItems: items.data.lfItems, ftItems: items.data.ftItems}
             setItems({...items, saving: true})
             setTimeout(() => {
-                backendChangeOptions('items', newItems, collectionId)
-                dispatch(setItemState(newItems))
+                const backendReq = async() => await backendChangeOptions('items', newItems, collectionId)
+                const successFunc = () => {
+                    dispatch(setItemState(newItems))
 
-                //spawning alert
-                const alertMessage = `Set Item Options!`
-                const alertInfo = {severity: 'success', message: alertMessage, timeout: 3}
-                const id = addAlert(alertInfo);
-                setAlertIds((prev) => [...prev, id]);
-
+                    //spawning alert
+                    const alertMessage = `Set Item Options!`
+                    const alertInfo = {severity: 'success', message: alertMessage, timeout: 3}
+                    const id = addAlert(alertInfo);
+                    setAlertIds((prev) => [...prev, id]);
+                }
+                handleError(backendReq, false, successFunc, () => {})
                 dispatch(changeModalState({open: false}))
             }, 1000)
         } else if (nextScreen === 'goBack') {

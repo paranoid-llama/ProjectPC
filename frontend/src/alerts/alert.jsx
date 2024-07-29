@@ -6,6 +6,7 @@ import './alerts.css'
 
 const CustomAlert = ({
     message = '',
+    message2 = '',
     errName = '',
     errStatus = '',
     messageImgs = [],
@@ -57,9 +58,12 @@ const CustomAlert = ({
                             </Box>
                             <Box>
                                 <Typography sx={{fontSize: '14px'}}>{message}</Typography>
+                                {message2 !== '' && <Typography sx={{fontSize: '12px'}}>{message2}</Typography>}
                             </Box>
                         </Box> :
+                        <>
                         {message}
+                        </>
                     }
                 </Alert>
             </Fade>

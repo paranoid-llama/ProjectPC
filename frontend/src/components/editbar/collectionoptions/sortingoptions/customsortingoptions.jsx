@@ -1,5 +1,6 @@
 import {useState, useEffect, useContext} from 'react'
 import { AlertsContext } from '../../../../alerts/alerts-context'
+import { ErrorContext } from '../../../../app/contexts/errorcontext'
 import { useDispatch, useSelector } from 'react-redux'
 import { selectCustomSortData } from '../../../../app/selectors/selectors'
 import { changeModalState } from '../../../../app/slices/editmode'
@@ -12,6 +13,7 @@ import { setCollectionInitialState } from '../../../../app/slices/collection'
 
 export default function CustomSortingOptions({elementBg, collectionGen, collectionId}) {
     const dispatch = useDispatch()
+    const {handleError} = useContext(ErrorContext)
     const customSortStateInit = useSelector((state) => selectCustomSortData(state))
     const collectionState = useSelector((state) => state.collection)
 
@@ -86,16 +88,18 @@ export default function CustomSortingOptions({elementBg, collectionGen, collecti
             })
             setSortData({...sortData, saving: true})
             setTimeout(() => {
-                ownedPokemonEdit(collectionGen, backendListFormat, collectionId)
-                dispatch(setCollectionInitialState(newCollectionListState))
-                dispatch(setListInitialState({collection: newCollectionListState, resetCollectionFilters: true, onlyUpdateCollection: true}))
+                const backendReq = async() => await ownedPokemonEdit(collectionGen, backendListFormat, collectionId)
+                const successFunc = () => {
+                    dispatch(setCollectionInitialState(newCollectionListState))
+                    dispatch(setListInitialState({collection: newCollectionListState, resetCollectionFilters: true, onlyUpdateCollection: true}))
 
-                //spawning alert
-                const alertMessage = `Sorted Collection List!`
-                const alertInfo = {severity: 'success', message: alertMessage, timeout: 3}
-                const id = addAlert(alertInfo);
-                setAlertIds((prev) => [...prev, id]);
-
+                    //spawning alert
+                    const alertMessage = `Sorted Collection List!`
+                    const alertInfo = {severity: 'success', message: alertMessage, timeout: 3}
+                    const id = addAlert(alertInfo);
+                    setAlertIds((prev) => [...prev, id]);
+                }
+                handleError(backendReq, false, successFunc, () => {})
                 dispatch(changeModalState({open: false}))
             }, 1000)
         } else if (nextScreen === 'goBack') {

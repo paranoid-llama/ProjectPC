@@ -1,39 +1,39 @@
-const ownedPokemonEdit = async(gen, newOwnedCollectionList, collectionId, getPokemonInfo=false, newPokemon=[], updateEggMoves=false, ballScope=[], newCollectingBalls=[]) => {
+import handleApiResponse from "./handleapiresponse"
+
+const ownedPokemonEdit = async(gen, newOwnedCollectionList, collectionId, getPokemonInfo=false, newPokemon=[], ballScope=[], newCollectingBalls=[]) => {
     if (getPokemonInfo) {
-        const addedPokemon = await fetch(`http://localhost:3000/collections/${collectionId}`, {
+        const addedPokemonReq = await fetch(`http://localhost:3000/collections/${collectionId}`, {
             method: 'PUT',
+            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({editType: 'ownedPokemonEdit', getPokemonInfo, newPokemon, gen, ballScope})
-        }).then(data => data.json())
-        return addedPokemon
+            body: JSON.stringify({editType: 'ownedPokemonEdit', newOwnedCollectionList, getPokemonInfo, newPokemon, gen, ballScope}) //implied will update egg move data
+        }).then(async(data) => {return await handleApiResponse(data, true)})
+        return addedPokemonReq
     } else {
-        if (updateEggMoves) {
-            const updatedEggMoveInfo = await fetch(`http://localhost:3000/collections/${collectionId}`, {
+        if (newCollectingBalls.length !== 0) { 
+            const res = await fetch(`http://localhost:3000/collections/${collectionId}`, {
                 method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({editType: 'ownedPokemonEdit', gen, newOwnedCollectionList, updateEggMoves: true})
-            }).then(data => data.json())
-            return updatedEggMoveInfo
-        } else if (newCollectingBalls.length !== 0) { 
-            fetch(`http://localhost:3000/collections/${collectionId}`, {
-                method: 'PUT',
+                credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({editType: 'ownedPokemonEdit', gen, newOwnedCollectionList, newCollectingBalls})
-            })
+            }).then(async(data) => {return await handleApiResponse(data)})
+
+            return res
         } else {
-            fetch(`http://localhost:3000/collections/${collectionId}`, {
+            const res = await fetch(`http://localhost:3000/collections/${collectionId}`, {
                 method: 'PUT',
+                credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({editType: 'ownedPokemonEdit', gen, newOwnedCollectionList})
-            })
+            }).then(async(data) => {return await handleApiResponse(data)})
+            
+            return res
         }
         
     }

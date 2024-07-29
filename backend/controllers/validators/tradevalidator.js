@@ -2,9 +2,12 @@
 export default function validateNewTradeData(req, res, next) {
     //certain parts of the trade data is already being validated through canOfferTrade middleware.
     const {offer, receiving, offerMessage} = req.body
-
+    
     const validatedOfferMessage = typeof offerMessage === 'string' && offerMessage.length <= 200
     const validatedOfferData = validateOfferData(offer, receiving)
+    // console.log(validatedOfferMessage)
+    // console.log(validatedOfferData)
+
     if (!validatedOfferMessage || !validatedOfferData) {
         const exception = new Error()
         exception.name = 'Bad Request'

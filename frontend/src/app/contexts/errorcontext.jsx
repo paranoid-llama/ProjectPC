@@ -7,7 +7,7 @@ const ErrorProvider = ({children}) => {
     //alerts
     const {addAlert} = useContext(AlertsContext)
 
-    const handleError = async(backendFunc, errorRedirect=false, successFunc, errorFunc) => { 
+    const handleError = async(backendFunc, errorRedirect=false, successFunc, errorFunc, checkingAvailability=false, nothingHappenIfError=false) => { 
         //ifErrorRedirect -> new page showing error. if false -> sends alert response.
         //successFunc primarily consists of updating the states in accordance with the action, but also includes sending alerts.
         //errorFunc is any other functions that need to occur when an error occurs (primarily only when it's an alert error), but also the redirect func (cant have useNavigate here.)
@@ -18,8 +18,12 @@ const ErrorProvider = ({children}) => {
             if (errorRedirect) {
                 errorFunc(response.load)
             } else {
-                const alertData = {severity: 'error', isErrorLiteral: true, timeout: 8, errName: response.load.name, errStatus: response.load.status, message: response.load.message}
-                addAlert(alertData)
+                const alertData = checkingAvailability ? 
+                    {severity: 'error', isErrorLiteral: true, timeout: 8, errName: response.load.name, errStatus: response.load.status, message: response.load.message, message2: 'We could not verify if the username/e-mail is available. The input information may be declined if you go through!'} : 
+                    {severity: 'error', isErrorLiteral: true, timeout: 8, errName: response.load.name, errStatus: response.load.status, message: response.load.message}
+                if (!nothingHappenIfError) {
+                    addAlert(alertData)
+                }   
                 errorFunc(response.load)
             }
         }

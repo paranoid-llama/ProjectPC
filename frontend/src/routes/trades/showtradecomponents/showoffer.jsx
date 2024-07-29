@@ -2,6 +2,7 @@ import {Box, Typography, useTheme, Select, MenuItem, Tooltip, Button, CircularPr
 import { useRouteLoaderData, useNavigate, useRevalidator } from 'react-router'
 import hexToRgba from 'hex-to-rgba'
 import { forwardRef, useContext, useEffect, useState } from 'react'
+import { ErrorContext } from '../../../app/contexts/errorcontext'
 import { AlertsContext } from '../../../alerts/alerts-context'
 import { Virtuoso } from 'react-virtuoso'
 import { reFormatToIndividual } from '../../../../utils/functions/comparecollections/comparison'
@@ -9,9 +10,10 @@ import { listTradeItem, listTradePokemon } from '../partialcomponents/listtrades
 import ScrollBar from '../../../components/functionalcomponents/scrollbar'
 import { acceptTradeOffer, rejectTradeOffer, counterTradeOffer, toggleMarkedAsComplete } from '../../../../utils/functions/backendrequests/trades/traderesponse'
 
-export default function ShowOffer({numOfOffers, tradeParticipants, offersBasicData, selectedOfferIdx, selectedOfferData, handleSelectedOfferChange, tradeId, tradeUsers, isPending, markedCompleteData, tradeStatus}) {
+export default function ShowOffer({numOfOffers, tradeParticipants, offersBasicData, selectedOfferIdx, selectedOfferData, handleSelectedOfferChange, tradeId, tradeUsers, isPending, markedCompleteData, tradeStatus, errorSelection}) {
     const theme = useTheme()
     const navigate = useNavigate()
+    const {handleError} = useContext(ErrorContext)
     const revalidator = useRevalidator()
     const loggedInUserData = useRouteLoaderData('root')
     const [statuses, setStatuses] = useState({tradeStatus, offerStatus: selectedOfferData.status})
@@ -100,28 +102,34 @@ export default function ShowOffer({numOfOffers, tradeParticipants, offersBasicDa
     const acceptOffer = () => {
         const offererColId = tradeUsers.filter(userD => userD.username === selectedOfferData.offerer)[0].tradeCollection._id
         const recipientColId = tradeUsers.filter(userD => userD.username === selectedOfferData.recipient)[0].tradeCollection._id
-        acceptTradeOffer(tradeId, tradeUsers.filter(userD => userD.username === otherParticipant)[0]._id, offererColId, recipientColId, loggedInUserData.user.username)
-        setTimeout(() => {
-            revalidator.revalidate()
-        }, 250)
-        setStatuses({tradeStatus: 'pending', offerStatus: 'accepted'})
-        //spawning alert
-        const alertMessage = `Accepted the trade offer!`
-        const alertInfo = {severity: 'success', message: alertMessage, timeout: 3}
-        const id = addAlert(alertInfo);
-        setAlertIds((prev) => [...prev, id]);
+        const backendFunc = async() => await acceptTradeOffer(tradeId, tradeUsers.filter(userD => userD.username === otherParticipant)[0]._id, offererColId, recipientColId, loggedInUserData.user.username)
+        const successFunc = () => {
+            setTimeout(() => {
+                revalidator.revalidate()
+            }, 250)
+            setStatuses({tradeStatus: 'pending', offerStatus: 'accepted'})
+            //spawning alert
+            const alertMessage = `Accepted the trade offer!`
+            const alertInfo = {severity: 'success', message: alertMessage, timeout: 3}
+            const id = addAlert(alertInfo);
+            setAlertIds((prev) => [...prev, id]);
+        }
+        handleError(backendFunc, false, successFunc, () => {})
     } 
     const rejectOffer = () => {
-        rejectTradeOffer(tradeId, tradeUsers.filter(userD => userD.username === otherParticipant)[0]._id, loggedInUserData.user.username)
-        setTimeout(() => {
-            revalidator.revalidate()
-        }, 250)
-        //spawning alert
-        setStatuses({tradeStatus: 'rejected', offerStatus: 'rejected'})
-        const alertMessage = `Rejected the trade offer!`
-        const alertInfo = {severity: 'error', message: alertMessage, timeout: 3}
-        const id = addAlert(alertInfo);
-        setAlertIds((prev) => [...prev, id]);
+        const backendFunc = async() => await rejectTradeOffer(tradeId, tradeUsers.filter(userD => userD.username === otherParticipant)[0]._id, loggedInUserData.user.username)
+        const successFunc = () => {
+            setTimeout(() => {
+                revalidator.revalidate()
+            }, 250)
+            //spawning alert
+            setStatuses({tradeStatus: 'rejected', offerStatus: 'rejected'})
+            const alertMessage = `Rejected the trade offer!`
+            const alertInfo = {severity: 'error', message: alertMessage, timeout: 3}
+            const id = addAlert(alertInfo);
+            setAlertIds((prev) => [...prev, id]);
+        }
+        handleError(backendFunc, false, successFunc, () => {})
     }
     const counterOffer = () => {
         navigate(`/trades/${tradeId}/counter-offer`, {state: {isCounteroffer: true, offererNumber: responderNum}})
@@ -131,21 +139,27 @@ export default function ShowOffer({numOfOffers, tradeParticipants, offersBasicDa
         if (tradeIsNowComplete) {
             const offererColId = tradeUsers.filter(userD => userD.username === selectedOfferData.offerer)[0].tradeCollection._id
             const recipientColId = tradeUsers.filter(userD => userD.username === selectedOfferData.recipient)[0].tradeCollection._id
-            toggleMarkedAsComplete(tradeId, tradeUsers.filter(userD => userD.username === otherParticipant)[0]._id, offererColId, recipientColId, loggedInUserData.user.username)
-            setTimeout(() => {
-                revalidator.revalidate()
-            }, 250)
-            setStatuses({...statuses, tradeStatus: 'completed'})
-            //spawning alert
-            const alertMessage = `Trade is now complete! Collection updated!`
-            const alertInfo = {severity: 'success', message: alertMessage, timeout: 5}
-            const id = addAlert(alertInfo);
-            setAlertIds((prev) => [...prev, id]);
+            const backendFunc = async() => await toggleMarkedAsComplete(tradeId, tradeUsers.filter(userD => userD.username === otherParticipant)[0]._id, offererColId, recipientColId, loggedInUserData.user.username)
+            const successFunc = () => {
+                setTimeout(() => {
+                    revalidator.revalidate()
+                }, 250)
+                setStatuses({...statuses, tradeStatus: 'completed'})
+                //spawning alert
+                const alertMessage = `Trade is now complete! Collection updated!`
+                const alertInfo = {severity: 'success', message: alertMessage, timeout: 5}
+                const id = addAlert(alertInfo);
+                setAlertIds((prev) => [...prev, id]);
+            }
+            handleError(backendFunc, false, successFunc, () => {})
         } else {
-            toggleMarkedAsComplete(tradeId, tradeUsers.filter(userD => userD.username === otherParticipant)[0]._id, '', '', loggedInUserData.user.username)
-            setTimeout(() => {
-                revalidator.revalidate()
-            }, 250)
+            const backendFunc = async() => await toggleMarkedAsComplete(tradeId, tradeUsers.filter(userD => userD.username === otherParticipant)[0]._id, '', '', loggedInUserData.user.username)
+            const successFunc = () => {
+                setTimeout(() => {
+                    revalidator.revalidate()
+                }, 250)
+            }
+            handleError(backendFunc, false, successFunc, () => {})
         }
     }
 
@@ -167,6 +181,10 @@ export default function ShowOffer({numOfOffers, tradeParticipants, offersBasicDa
                     <CircularProgress size='72px'/>
                 </Box>
             </> :
+            errorSelection ? 
+            <Box sx={{width: '100%', height: '100%', mb: 1, ...theme.components.box.fullCenterCol}}>
+                <Typography sx={{fontSize: '24px', color: 'grey'}}><i>Cannot retrieve offer data</i></Typography>
+            </Box> : 
             <>
             <Box sx={{...theme.components.box.fullCenterCol, width: '100%', height: '85%'}}>
                 <Typography sx={{color: 'white', mb: 1}}>

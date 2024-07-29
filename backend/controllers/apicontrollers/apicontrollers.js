@@ -1,7 +1,7 @@
 import User from '../../models/users.js'
 
 export async function getSession(req, res) {
-    const noUser = req.session.passport === undefined
+    const noUser = req.session === undefined || req.session.passport === undefined
     if (noUser) {
         res.json({})
     } else {

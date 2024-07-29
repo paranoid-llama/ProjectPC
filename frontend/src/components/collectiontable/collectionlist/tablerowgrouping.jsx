@@ -98,7 +98,7 @@ export function TableRowGroupingNoRedux({columns, row, id, collectionId, ownerId
 }
 
 //dont remove id, mapStateToProps uses it
-function TableRowGrouping({columns, row, id, collectionId, ownerId, styles, isSelected, setSelected, isEditMode, isHomeCollection, availableGames}) {
+function TableRowGrouping({columns, row, id, collectionId, ownerId, styles, isSelected, setSelected, isEditMode, isHomeCollection}) {
     const dispatch = useDispatch()
     // console.log(`rendered ${row.name}`)
     const {handleError} = useContext(ErrorContext)
@@ -108,6 +108,9 @@ function TableRowGrouping({columns, row, id, collectionId, ownerId, styles, isSe
     const maxEMs = (isEditMode && !isHomeCollection) ? possibleEggMoves.length > 4 ? 4 : possibleEggMoves.length : null
     const emCountSelectionList = (isEditMode && !isHomeCollection) ? setMaxEmArr(maxEMs) : null
     const idx = isEditMode ? useSelector(state => state.collection.indexOf(row)) : null
+
+    //available games
+    const availableGames = (isHomeCollection) ? useSelector((state) => state.listDisplay.availableGamesInfo[row.name]) : null
 
     //default data
     const globalDefaults = isEditMode ? useSelector((state) => state.options.globalDefaults) : null
@@ -187,7 +190,7 @@ function TableRowGrouping({columns, row, id, collectionId, ownerId, styles, isSe
                             isEditMode={isEditMode}
                             isSelected={isSelected}
                             onClickFunc={setSelected}
-                            availableGames={(availableGames === undefined) ? undefined : c.dataKey === 'name' ? availableGames[row.name] : undefined}
+                            availableGames={(availableGames === null) ? undefined : c.dataKey === 'name' ? availableGames : undefined}
                         />:
                     row.balls[c.dataKey] === undefined ? 
                         <TableCell sx={blackTableCellStyles} key={`${row.imgLink}-${c.label}`}>

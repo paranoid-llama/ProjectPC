@@ -15,10 +15,10 @@ import { selectivelyReturnIsHAAndEMs } from '../../../utils/functions/misc'
 
 const listDisplay = createSlice({
     name: 'listDisplay',
-    initialState: {collection: [], onhand: [], collectionFilters: {sort: '', filters: {ballFilters: [], genFilters: [], otherFilters: []}}, onhandFilters: {sort: [''], filters: {ballFilters: [], genFilters: [], otherFilters: []}}, eggMoveInfo: {}},
+    initialState: {collection: [], onhand: [], collectionFilters: {sort: '', filters: {ballFilters: [], genFilters: [], otherFilters: []}}, onhandFilters: {sort: [''], filters: {ballFilters: [], genFilters: [], otherFilters: []}}, eggMoveInfo: {}, availableGamesInfo: {}},
     reducers: {
         setListInitialState: (state, action) => {
-            const {collection, onhand, resetCollectionFilters, resetOnHandFilters, updatedEggMoveInfo, onlyUpdateCollection, onlyUpdateOnHand} = action.payload
+            const {collection, onhand, resetCollectionFilters, resetOnHandFilters, updatedEggMoveInfo, updatedHomeGames, onlyUpdateCollection, onlyUpdateOnHand} = action.payload
             if (onlyUpdateOnHand === undefined) {
                 state.collection = collection.filter(pokemon => pokemon.disabled === undefined)
             }
@@ -33,6 +33,9 @@ const listDisplay = createSlice({
             }
             if (updatedEggMoveInfo !== undefined) {
                 state.eggMoveInfo = updatedEggMoveInfo
+            }
+            if (updatedHomeGames !== undefined) {
+                state.availableGamesInfo = updatedHomeGames
             }
             return state
         },

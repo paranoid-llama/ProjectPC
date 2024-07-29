@@ -1,5 +1,6 @@
 import {Box, useTheme, Typography, Button, Alert, Select, MenuItem} from '@mui/material'
-import { useState, useRef } from 'react'
+import { useState, useRef, useContext } from 'react'
+import { ErrorContext } from '../app/contexts/errorcontext'
 import { Link, useLocation, useNavigate, useRevalidator } from 'react-router-dom'
 import BodyWrapper from '../components/partials/routepartials/bodywrapper'
 import ControlledTextInput from '../components/functionalcomponents/controlledtextinput'
@@ -29,6 +30,7 @@ const securityQuestions = [
 
 export default function RegisterPage({}) {
     const theme = useTheme()
+    const {handleError} = useContext(ErrorContext)
     const navigate = useNavigate()
 
     const [error, setError] = useState({username: false, usernameAvailable: 'none', email: false, emailAvailable: 'none', password: false, passwordFocused: false, confirmPassword: false, passwordsMatch: 'none', error: false, errorMessage: ''}) 
@@ -86,16 +88,20 @@ export default function RegisterPage({}) {
             return
             }
         }
-        const availability = await backendCheckUsernameAvailability(usernameFieldRef.current.value)
-        if (availability.available === false) {
-            setError({...error, username: true, usernameAvailable: false})
-        } else {
-            if (usernameFieldRef.current.value === 'login' || usernameFieldRef.current.value === 'logout' || usernameFieldRef.current.value === 'settings')  {//reserved words
-                setError({...error, username: true, usernameAvailable: 'reserved'})
+        const backendFunc = async() => {return await backendCheckUsernameAvailability(usernameFieldRef.current.value)}
+        const successFunc = (availability) => {
+            if (availability.available === false) {
+                setError({...error, username: true, usernameAvailable: false})
             } else {
-                setError({...error, usernameAvailable: true})
-            } 
+                if (usernameFieldRef.current.value === 'login' || usernameFieldRef.current.value === 'logout' || usernameFieldRef.current.value === 'settings')  {//reserved words
+                    setError({...error, username: true, usernameAvailable: 'reserved'})
+                } else {
+                    setError({...error, usernameAvailable: true})
+                } 
+            }
         }
+        const errorFunc = () => {setError({...error, username: false, usernameAvailable: 'unknown'})}
+        handleError(backendFunc, false, successFunc, errorFunc, true)
     }
 
     const checkEmailAvailability = async() => {
@@ -107,12 +113,16 @@ export default function RegisterPage({}) {
             setError({...error, email: true, emailAvailable: 'Invalid'})
             return
         }
-        const availability = await backendCheckUsernameAvailability(emailFieldRef.current.value, true)
-        if (availability.available === false) {
-            setError({...error, email: true, emailAvailable: false})
-        } else {
-            setError({...error, email: false, emailAvailable: 'none'})
+        const backendFunc = async() => {return await backendCheckUsernameAvailability(emailFieldRef.current.value, true)}
+        const successFunc = (availability) => {
+            if (availability.available === false) {
+                setError({...error, email: true, emailAvailable: false})
+            } else {
+                setError({...error, email: false, emailAvailable: 'none'})
+            }
         }
+        const errorFunc = () => {setError({...error, email: false, emailAvailable: 'unknown'})}
+        handleError(backendFunc, false, successFunc, errorFunc, true)
     }
 
     const handlePasswordChange = (newValue) => {
@@ -186,9 +196,12 @@ export default function RegisterPage({}) {
             const securityQuestion2 = questionTwoAns.current.value === '' ? {} : {secQuestion2: securityQuestions[securityQuestion.questionTwo], secAnswer2: questionTwoAns.current.value}
             const securityQuestion3 = questionThreeAns.current.value === '' ? {} : {secQuestion3: securityQuestions[securityQuestion.questionThree], secAnswer3: questionThreeAns.current.value}
             const securityQuestionData = {...securityQuestion1, ...securityQuestion2, ...securityQuestion3}
-            const newUserId = await userRegisterRequest(usernameFieldRef.current.value, emailFieldRef.current.value, password.value, securityQuestionData)
-            // navigate('/verify-account', {state: {newUserId, email: emailFieldRef.current.value}})
-            navigate('/login', {state: {success: true, message: 'Account created!'}})
+            const backendFunc = async() => {return await userRegisterRequest(usernameFieldRef.current.value, emailFieldRef.current.value, password.value, securityQuestionData)}
+            const successFunc = (newUserId) => {
+                // navigate('/verify-account', {state: {newUserId, email: emailFieldRef.current.value}})
+                navigate('/login', {state: {success: true, message: 'Account created!'}})
+            }
+            handleError(backendFunc, false, successFunc, () => {})
         }
     }
 
@@ -222,7 +235,7 @@ export default function RegisterPage({}) {
                     />
                 </Box>
                 <Box sx={{...theme.components.box.fullCenterRow, alignItems: 'start', justifyContent: 'end', mt: 0.5, width: '100%', height: '10%', position: 'relative'}}>
-                    {(typeof error.usernameAvailable === 'boolean' || error.usernameAvailable === 'notLongEnough' || error.usernameAvailable === 'reserved' || error.usernameAvailable === 'trailingSpace' || error.usernameAvailable === 'doubleSpace') && 
+                    {(typeof error.usernameAvailable === 'boolean' || error.usernameAvailable === 'notLongEnough' || error.usernameAvailable === 'reserved' || error.usernameAvailable === 'trailingSpace' || error.usernameAvailable === 'doubleSpace' || error.usernameAvailable === 'unknown') && 
                     <Box sx={{...theme.components.box.fullCenterCol, alignItems: 'start', width: '70%', height: '100%', position: 'absolute', top: '5px'}}>
                         {error.usernameAvailable === 'notLongEnough' ? 
                             <Typography sx={{color: 'red', fontSize: '12px', ml: 2}}>Username must be at least 4 characters long!</Typography> : 
@@ -232,6 +245,8 @@ export default function RegisterPage({}) {
                             <Typography sx={{color: 'red', fontSize: '12px', ml: 2}}>Username cannot have leading/trailing empty spaces.</Typography> : 
                         error.usernameAvailable === 'doubleSpace' ? 
                             <Typography sx={{color: 'red', fontSize: '12px', ml: 2}}>Username cannot have multiple adjacent spaces.</Typography> : 
+                        error.usernameAvailable === 'unknown' ? 
+                            <Typography sx={{color: '#b59d0e', fontSize: '12px', ml: 2}}>Availability unknown!</Typography> : 
                         error.usernameAvailable === true ? 
                             <Typography sx={{color: 'green', fontSize: '12px', ml: 2}}>{usernameFieldRef.current.value} is available!</Typography> : 
                             <Typography sx={{color: 'red', fontSize: '12px', ml: 2}}>{usernameFieldRef.current.value} is taken. Try another username.</Typography> 
@@ -252,9 +267,10 @@ export default function RegisterPage({}) {
                     />
                 </Box>
                 <Box sx={{...theme.components.box.fullCenterRow, alignItems: 'start', justifyContent: 'end', mt: 0.5, width: '100%', height: '10%', position: 'relative'}}>
-                    {(typeof error.emailAvailable === 'boolean' || error.emailAvailable === 'Invalid') && 
+                    {(typeof error.emailAvailable === 'boolean' || error.emailAvailable === 'Invalid' || error.emailAvailable === 'unknown') && 
                         <Box sx={{...theme.components.box.fullCenterCol, alignItems: 'start', width: '70%', height: '100%', position: 'absolute', top: '5px'}}>
                             {(error.emailAvailable === 'Invalid') && <Typography sx={{color: 'red', fontSize: '12px', ml: 2}}>Invalid e-mail address</Typography>}
+                            {(error.emailAvailable === 'unknown') && <Typography sx={{color: '#b59d0e', fontSize: '12px', ml: 2}}>Availability unknown!</Typography>}
                             {(error.emailAvailable === false) && <Typography sx={{color: 'red', fontSize: '12px', ml: 2}}>That e-mail is already taken by another user!</Typography>}
                         </Box>
                     }

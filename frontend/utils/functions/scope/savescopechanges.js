@@ -42,17 +42,28 @@ const saveScopeChangesAndGetNewList = async(addedPokemon, removedPokemon, collec
             } 
         })
     }
+
     if (backendRequestPokeInfo.pokemon.length !== 0) {
-        const newPokemonInfo = await ownedPokemonEdit(collectionGen, [], collectionId, true, backendRequestPokeInfo.pokemon, false, ballScope)
-        const finalListState = collectionAutoSort === true ? sortList(collectionAutoSortKey, [...newListDisplayState, ...newPokemonInfo]) : [...newListDisplayState, ...newPokemonInfo]
-        const backendListFormat = finalListState.map((mon) => {return mon.disabled ? {name: mon.name, natDexNum: mon.natDexNum, gen: mon.gen, disabled: true, balls: mon.balls} : {name: mon.name, natDexNum: mon.natDexNum, gen: mon.gen, balls: mon.balls}})
-        const updatedEggMoveInfo = await ownedPokemonEdit(collectionGen, backendListFormat, collectionId, false, [], true)
-        return {list: finalListState, updatedEggMoveInfo}
+        const backendNewListState = JSON.parse(JSON.stringify(newListDisplayState)).map(mon => {
+            delete mon.imgLink
+            delete mon.possibleGender
+            return mon
+        })
+        const newAddedPokemonAndEMData = await ownedPokemonEdit(collectionGen, backendNewListState, collectionId, true, backendRequestPokeInfo.pokemon, ballScope)
+        
+        if (!newAddedPokemonAndEMData.ok) {
+            return newAddedPokemonAndEMData
+        }
+        const finalListState = collectionAutoSort === true ? sortList(collectionAutoSortKey, [...newListDisplayState, ...newAddedPokemonAndEMData.load.newPokemon]) : [...newListDisplayState, ...newAddedPokemonAndEMData.load.newPokemon]
+        // const backendListFormat = finalListState.map((mon) => {return mon.disabled ? {name: mon.name, natDexNum: mon.natDexNum, gen: mon.gen, disabled: true, balls: mon.balls} : {name: mon.name, natDexNum: mon.natDexNum, gen: mon.gen, balls: mon.balls}})
+        const updatedEggMoveInfo = newAddedPokemonAndEMData.load.updatedEggMoves
+        return {ok: true, load: {list: finalListState, updatedEggMoveInfo, updatedHomeGames: newAddedPokemonAndEMData.load.updatedHomeGames}}
     } else {
         const finalListState = collectionAutoSort === true ? sortList(collectionAutoSortKey, newListDisplayState) : newListDisplayState
         const backendListFormat = finalListState.map((mon) => {return mon.disabled ? {name: mon.name, natDexNum: mon.natDexNum, gen: mon.gen, disabled: true, balls: mon.balls} : {name: mon.name, natDexNum: mon.natDexNum, gen: mon.gen, balls: mon.balls}})
-        await ownedPokemonEdit(collectionGen, backendListFormat, collectionId, false)
-        return finalListState
+        const res = await ownedPokemonEdit(collectionGen, backendListFormat, collectionId, false)
+        if (!res.ok) {return res}
+        return {ok: res.ok, load: finalListState}
     }
 }
 

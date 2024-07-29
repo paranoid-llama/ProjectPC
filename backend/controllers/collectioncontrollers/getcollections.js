@@ -1,5 +1,6 @@
 import Collection from "../../models/collections.js";
 import { getPokemonGroups } from "../../utils/pokemongroups/getpokemongroups.js";
+import { collectionSubTypes } from "../../../common/infoconstants/miscconstants.mjs";
 
 export async function getCollectionController(req, res) {
     const collection = await Collection.findById(req.params.id).populate({path: 'owner'})
@@ -15,6 +16,13 @@ export async function getCollectionController(req, res) {
 
 export async function retrievePokemonGroups(req, res) {
     const {gen} = req.query
+    if (!collectionSubTypes.aprimon.value.includes(gen)) {
+        const exception = new Error()
+        exception.name = 'Bad Request'
+        exception.message = `Invalid aprimon collection gen!`
+        exception.status = 400
+        return res.status(400).send(exception)
+    }
     const pokemonGroups = getPokemonGroups(gen)
     res.json(pokemonGroups)
 }

@@ -1,4 +1,6 @@
-const backendChangeOptions = (optionType, accompanyingData, collectionId) => {
+import handleApiResponse from "./handleapiresponse"
+
+const backendChangeOptions = async(optionType, accompanyingData, collectionId) => {
     const changingSortingOption = optionType === 'sort'
     const changingRate = optionType === 'rates'
     const changingPreference = optionType === 'preferences'
@@ -7,58 +9,76 @@ const backendChangeOptions = (optionType, accompanyingData, collectionId) => {
     const changingGlobalDefault = optionType === 'globalDefault'
     if (changingSortingOption) {
         const {listType, data, sortedList} = accompanyingData
-        fetch(`http://localhost:3000/collections/${collectionId}`, {
+        const res = await fetch(`http://localhost:3000/collections/${collectionId}`, {
             method: 'PUT',
+            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({editType: 'optionsEdit', optionType, listType, data, sortedList})
-        })
+        }).then(async(data) => {return await handleApiResponse(data)})
+
+        return res
     } else if (changingRate) {
         const {newRates} = accompanyingData
-        fetch(`http://localhost:3000/collections/${collectionId}`, {
+        const res = await fetch(`http://localhost:3000/collections/${collectionId}`, {
             method: 'PUT',
+            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({editType: 'optionsEdit', optionType, newRates})
-        })
+        }).then(async(data) => {return await handleApiResponse(data)})
+
+        return res
     } else if (changingPreference) {
         const {newPreferences} = accompanyingData
-        fetch(`http://localhost:3000/collections/${collectionId}`, {
+        const res = await fetch(`http://localhost:3000/collections/${collectionId}`, {
             method: 'PUT',
+            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({editType: 'optionsEdit', optionType, newPreferences})
-        })
+        }).then(async(data) => {return await handleApiResponse(data)})
+
+        return res
     } else if (changingItems) {
         const {lfItems, ftItems} = accompanyingData
-        fetch(`http://localhost:3000/collections/${collectionId}`, {
+        const res = await fetch(`http://localhost:3000/collections/${collectionId}`, {
             method: 'PUT',
+            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({editType: 'optionsEdit', optionType, lfItems, ftItems})
-        })
+        }).then(async(data) => {return await handleApiResponse(data)})
+
+        return res
     } else if (changingCollectionName) {
         const {name, globalDefault} = accompanyingData
-        fetch(`http://localhost:3000/collections/${collectionId}`, {
+        const res = await fetch(`http://localhost:3000/collections/${collectionId}`, {
             method: 'PUT',
+            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({editType: 'optionsEdit', optionType, name, globalDefault})
-        })
+        }).then(async(data) => {return await handleApiResponse(data)})
+
+        return res
     } else if (changingGlobalDefault) {
         const {globalDefault} = accompanyingData
-        fetch(`http://localhost:3000/collections/${collectionId}`, {
+        const res = await fetch(`http://localhost:3000/collections/${collectionId}`, {
             method: 'PUT',
+            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({editType: 'optionsEdit', optionType, globalDefault})
-        })
+        }).then(async(data) => {return await handleApiResponse(data)})
+
+        return res
     }
 }
 

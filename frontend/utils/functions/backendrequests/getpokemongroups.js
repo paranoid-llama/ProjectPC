@@ -4,7 +4,12 @@ const getPokemonGroups = async(gen) => {
         headers: {
             'Content-Type': 'application/json'
         }
-    }).then(data => data.json())
+    }).then(async(data) => {
+        return {
+            ok: data.ok,
+            load: await data.json()
+        }
+    })
     return pokemonGroups
 }
 

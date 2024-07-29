@@ -1,6 +1,33 @@
 import { collectionSubTypes, apriballs, tradePreferenceDisplay, items as totalItems, apriballLiterals } from "../../../common/infoconstants/miscconstants.mjs";
+import allPokemon from "../../utils/aprimonAPI/allpokemoninfo.js";
 import mongoose from "mongoose";
 import User from '../../models/users.js'
+
+const allPokemonNames = allPokemon.map(p => p.name.toLowerCase())
+const allPokemonDexNums = allPokemon.map(p => p.info.natDexNum)
+
+export function validateNewOnHand(req, res, next) {
+    const {newOnHand, editType} = req.body
+
+    if (editType === 'addOnHand') {
+        const pokemonIdx = allPokemonNames.map(pName => newOnHand.name.toLowerCase().includes(pName)).indexOf(true)
+        const validatedPokemon = pokemonIdx !== -1
+        const validQty = newOnHand.qty > 0 && newOnHand.qty <= 999
+        const rightNatDexNum = pokemonIdx !== -1 && allPokemonDexNums[pokemonIdx] === newOnHand.natDexNum
+        const validApriball = apriballs.includes(newOnHand.ball)
+        const validPoke = validatedPokemon && validQty && rightNatDexNum && validApriball
+    
+        if (!validPoke) {
+            const exception = new Error()
+            exception.name = 'Bad Request'
+            exception.message = "The on-hand pokemon information is invalid."
+            exception.status = 400
+            return res.status(400).send(exception)
+        }
+    } 
+    
+    next()
+}
 
 export default async function validateNewCollectionData(req, res, next) {
     const {ownedPokemonList, remakeList, gen, pokemonScope, ballScope, excludedCombos, options, customSort, collectionName, owner} = req.body.newCollectionInfo
@@ -8,16 +35,24 @@ export default async function validateNewCollectionData(req, res, next) {
     const collectionOwner = !isValidOwnerId ? null : await User.findById(owner)
 
     const validatedOwnedPokemonList = ownedPokemonList === undefined || (Array.isArray(ownedPokemonList) && ownedPokemonList.length >= 1)
-    const validatedRemakeList = typeof remakeList === 'boolean' && (ownedPokemonList === undefined ? remakeList === true : true)
-    const validatedGen = collectionSubTypes.aprimon.includes(gen)
+    const validatedRemakeList = typeof remakeList === 'boolean'
+    const validatedGen = collectionSubTypes.aprimon.value.includes(gen)
 
     const validatedScopes = validateScopes(pokemonScope, ballScope, excludedCombos)
-    const validatedOptions = validateOptions(options)
+    const validatedOptions = validateOptions(options, ballScope, gen === 'home')
     const validatedCustomSort = Array.isArray(customSort)
     const validatedCollectionName = typeof collectionName === 'string' && collectionName.length <= 60
     const validatedOwnerId = collectionOwner !== null
+
+    // console.log(validatedGen)
+    // console.log(validatedScopes)
+    // console.log(validatedOptions)
+    // console.log(validatedCustomSort)
+    // console.log(validatedCollectionName)
+    // console.log(validatedOwnerId)
     const allValidated = validatedOwnedPokemonList && validatedRemakeList && validatedGen && validatedScopes && validatedOptions && validatedCustomSort && validatedCollectionName && validatedOwnerId
     if (!allValidated) {
+        const exception = new Error()
         exception.name = 'Bad Request'
         exception.message = "One or multiple input fields were invalid."
         exception.status = 400
@@ -61,11 +96,11 @@ function validateScopes(pokeScope, ballScope, excludedCombos) {
     return validatedPokeScope && validatedBallScope && validatedExcludedCombos
 }
 
-function validateOptions(options, ballScope) {
+function validateOptions(options, ballScope, homeCol) {
     const {collectingBalls, globalDefaults, sorting, tradePreferences} = options
     const validatedCollectingBalls = !collectingBalls.map(ball => ballScope.includes(ball)).includes(false) && collectingBalls.length === ballScope.length
     const validatedGlobalDefaults = Object.keys(globalDefaults).includes('isHA') && typeof globalDefaults.isHA === 'boolean' && (globalDefaults.emCount === undefined ? true : typeof globalDefaults.emCount === 'number')
-    const validatedTradePreferences = validateTradePreferences(tradePreferences)
+    const validatedTradePreferences = validateTradePreferences(tradePreferences, homeCol)
     const validatedSortingOpts = validateSortingOpts(sorting)
     return validatedCollectingBalls && validatedTradePreferences && validatedGlobalDefaults && validatedSortingOpts
 }
@@ -85,19 +120,18 @@ function validateSortingOpts(sortingOpts) {
     return validatedCollectionSorting && validatedOnhandSorting
 }
 
-function validateTradePreferences(tradePreferences) {
+function validateTradePreferences(tradePreferences, homeCol) {
     const {status, rates, size, onhandOnly, items, lfItems, ftItems} = tradePreferences
 
     const validatedStatus = status === undefined ? false : Object.keys(tradePreferenceDisplay.status).includes(status)
     const validatedRates = rates === undefined ? false : validateRates(rates)
     const validatedSize = size === undefined ? false : Object.keys(tradePreferenceDisplay.size).includes(size)
     const validatedOnHandOnly = onhandOnly === 'yes' || onhandOnly === 'no' || onhandOnly === 'preferred'
-    const validatedItems = items === undefined ? false : Object.keys(tradePreferenceDisplay.items).includes(items)
-    const validatedLfItems = Array.isArray(lfItems) && !lfItems.map(item => totalItems.filter(i => i.value === item).length !== 0).includes(false)
-    const validatedFtItems = typeof ftItems === 'object' && !Array.isArray(ftItems) &&
+    const validatedItems = (homeCol && items === undefined) ? false : (Object.keys(tradePreferenceDisplay.items).includes(items) || items === 'none')
+    const validatedLfItems = (homeCol && lfItems === undefined) ? true : (Array.isArray(lfItems) && !lfItems.map(item => totalItems.filter(i => i.value === item).length !== 0).includes(false))
+    const validatedFtItems = (homeCol && ftItems === undefined) ? true : (typeof ftItems === 'object' && !Array.isArray(ftItems) &&
         !Object.keys(ftItems).map(item => totalItems.filter(i => i.value === item).length !== 0).includes(false) &&
-        !Object.values(ftItems).map(qty => qty >= 0 && qty <= 999).includes(false)
-
+        !Object.values(ftItems).map(qty => qty >= 0 && qty <= 999).includes(false))
     return validatedStatus && validatedRates && validatedSize && validatedOnHandOnly && validatedItems && validatedLfItems && validatedFtItems
 }
 
@@ -120,7 +154,7 @@ function validateRates(rates) {
             return false
         }
     }).includes(false)
-    const validatedItemOffers = Array.isArray(itemOffers) && !itemOffers.map(indRate => {
+    const validatedItemOffers = itemOffers === undefined ? true : (Array.isArray(itemOffers) && !itemOffers.map(indRate => {
         const isRightType = typeof indRate === 'object' && !Array.isArray(indRate)
         const hasRightKeys = isRightType && Object.keys(indRate).length === 2 && indRate.items !== undefined && indRate.rate !== undefined
         const childrenAreRightType = hasRightKeys && Array.isArray(indRate.items) && Array.isArray(indRate.rate)
@@ -131,7 +165,7 @@ function validateRates(rates) {
         } else {
             return false
         }
-    }).includes(false)
+    }).includes(false))
 
     return validatedPokemonOffers && validatedItemOffers
 }

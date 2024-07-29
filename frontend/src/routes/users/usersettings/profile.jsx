@@ -1,6 +1,7 @@
 import {Box, useTheme, Typography, Paper, styled, Grid, Button} from '@mui/material'
 import MuiToggleButton from '@mui/material/ToggleButton'
 import { useState, useEffect, useContext, useRef} from 'react'
+import { ErrorContext } from '../../../app/contexts/errorcontext'
 import { AlertsContext } from '../../../alerts/alerts-context'
 import ControlledTextInput from '../../../components/functionalcomponents/controlledtextinput'
 import { useRouteLoaderData, useRevalidator, useOutletContext } from 'react-router'
@@ -13,6 +14,7 @@ import { Virtuoso } from 'react-virtuoso'
 export default function Profile({}) {
     const theme = useTheme()
     const user = useRouteLoaderData("userSettings")
+    const {handleError} = useContext(ErrorContext)
     const revalidator = useRevalidator()
     const revalidate = useOutletContext()
     const [formData, setFormData] = useState({bioValue: user.settings.profile.bio, bioLength: user.settings.profile.bio.length, games: user.settings.profile.games})
@@ -58,17 +60,20 @@ export default function Profile({}) {
             setAlertIds((prev) => [...prev, id]);
         } else {
             const newProfileSettings = {...user.settings.profile, bio: formData.bioValue, games: formData.games}
-            userSettingsBackendRequest('profile', newProfileSettings, user._id)
-            // revalidator.revalidate()
-            revalidate()
-            changesRef.current = {bio: formData.bioValue, games: formData.games}
-            setTimeout(() => {
-                //spawning alert
-                const alertMessage = `Changed profile settings!`
-                const alertInfo = {severity: 'success', message: alertMessage, timeout: 3}
-                const id = addAlert(alertInfo);
-                setAlertIds((prev) => [...prev, id]);
-            }, 250)
+            const backendFunc = async() => await userSettingsBackendRequest('profile', newProfileSettings, user.username)
+            const successFunc = () => {
+                // revalidator.revalidate()
+                revalidate()
+                changesRef.current = {bio: formData.bioValue, games: formData.games}
+                setTimeout(() => {
+                    //spawning alert
+                    const alertMessage = `Changed profile settings!`
+                    const alertInfo = {severity: 'success', message: alertMessage, timeout: 3}
+                    const id = addAlert(alertInfo);
+                    setAlertIds((prev) => [...prev, id]);
+                }, 250)
+            }
+            handleError(backendFunc, false, successFunc, () => {})
         }
     }
 

@@ -1,6 +1,7 @@
 import {Box, Typography, ToggleButton} from '@mui/material'
 import {useState, useEffect, useContext} from 'react'
 import { AlertsContext } from '../../../../alerts/alerts-context'
+import { ErrorContext } from '../../../../app/contexts/errorcontext'
 import { useDispatch, useSelector } from 'react-redux'
 import { getBallsInGen } from '../../../../../../common/infoconstants/miscconstants'
 import { changeModalState } from '../../../../app/slices/editmode'
@@ -13,6 +14,7 @@ import SaveChangesConfirmModal from '../savechangesconfirmmodal'
 
 export default function OnHandSortingOptions({elementBg, collectionGen, collectionId}) {
     const dispatch = useDispatch()
+    const {handleError} = useContext(ErrorContext)
     const totalBalls = getBallsInGen(collectionGen)
     const currentOptions = useSelector((state) => state.options.sorting.onhand)
     const onhandListState = useSelector((state) => state.onhand)
@@ -88,24 +90,26 @@ export default function OnHandSortingOptions({elementBg, collectionGen, collecti
             setSortingOptions({...sortingOptions, saving: true})
             setTimeout(() => {
                 const sortedOnHandList = sortingOptions.reSortWillHappen ? sortOnHandList(sortingOptions.options.sortFirstBy, sortingOptions.options.default, tentativeBallOrder, onhandListState) : undefined
-                if (sortingOptions.reSortWillHappen) {
-                    const backendSortedList = JSON.parse(JSON.stringify(sortedOnHandList)).map(mon => {
-                        delete mon.imgLink
-                        return mon
-                    })
-                    backendChangeOptions('sort', {listType: 'onhand', data: editedOptionsObj, sortedList: backendSortedList}, collectionId)
-                    // dispatch(setListInitialState({onhand: sortedOnHandList, resetOnHandFilters: true, onlyUpdateOnHand: true}))
-                } else {
-                   backendChangeOptions('sort', {listType: 'onhand', data: editedOptionsObj}, collectionId) 
+                const backendSortedList = sortingOptions.reSortWillHappen && JSON.parse(JSON.stringify(sortedOnHandList)).map(mon => {
+                    delete mon.imgLink
+                    delete mon.possibleGender
+                    return mon
+                })
+                const backendReqData = sortingOptions.reSortWillHappen ? {listType: 'onhand', data: sortingOptions.options, sortedList: backendSortedList} : {listType: 'onhand', data: sortingOptions.options}
+                const backendReq = async() => await backendChangeOptions('sort', backendReqData, collectionId)
+                const successFunc = () => {
+                    dispatch(setSortingOptionsState({listType: 'onhand', data: editedOptionsObj}))
+                    if (sortingOptions.reSortWillHappen) {
+                        dispatch(setListInitialState({onhand: sortedOnHandList, resetOnHandFilters: true, onlyUpdateOnHand: true}))
+                    }
+                    //spawning alert
+                    const alertMessage = `Updated On-Hand Sorting Options${sortingOptions.reSortWillHappen ? ' and re-sorted the list!' : '!'}`
+                    const alertInfo = {severity: 'success', message: alertMessage, timeout: 3}
+                    const id = addAlert(alertInfo);
+                    setAlertIds((prev) => [...prev, id]);
                 }
-                dispatch(setSortingOptionsState({listType: 'onhand', data: editedOptionsObj}))
-
-                //spawning alert
-                const alertMessage = `Updated On-Hand Sorting Options${sortingOptions.reSortWillHappen ? ' and re-sorted the list!' : '!'}`
-                const alertInfo = {severity: 'success', message: alertMessage, timeout: 3}
-                const id = addAlert(alertInfo);
-                setAlertIds((prev) => [...prev, id]);
-
+                
+                handleError(backendReq, false, successFunc, () => {})
                 dispatch(changeModalState({open: false}))
             }, 1000)
         } else if (nextScreen === 'goBack') {

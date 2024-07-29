@@ -1,5 +1,6 @@
 import {Box, Typography, Button, LinearProgress} from '@mui/material'
-import { useTransition } from 'react'
+import { useTransition, useContext, useState } from 'react'
+import { ErrorContext } from '../../../app/contexts/errorcontext'
 import { useDispatch, useSelector } from 'react-redux'
 import { changeModalState } from '../../../app/slices/editmode'
 import { getPokemonGroups } from '../../../../utils/functions/backendrequests/getpokemongroups'
@@ -7,7 +8,9 @@ import ArrowForward from '@mui/icons-material/ArrowForward'
 
 export default function OptionsSub({elementBg, screenType, collectionGen}) {
     const dispatch = useDispatch()
+    const {handleError} = useContext(ErrorContext)
     const [isPending, startTransition] = useTransition()
+    const [groupError, setGroupError] = useState({error: false})
     const scopeTotal = useSelector((state) => state.editmode.pokemonScopeTotal)
     const itemsState = useSelector((state) => state.options.tradePreferences.items)
 
@@ -45,9 +48,12 @@ export default function OptionsSub({elementBg, screenType, collectionGen}) {
     const initializePokemonGroups = async(screen) => {
         const backendRequestGroups = Object.keys(scopeTotal).length === 0
         if (backendRequestGroups) {
-            const totalGroups = await getPokemonGroups(collectionGen)
+            const backendFunc = async() => await getPokemonGroups(collectionGen)
+            const successFunc = (totalGroups) => {dispatch(changeModalState({screen, initializeScopeTotal: true, scopeTotal: totalGroups}))}
+            const errorFunc = (errorData) => {setGroupError({error: true, ...errorData})}
+            // const totalGroups = await getPokemonGroups(collectionGen)
             startTransition(() => {
-                dispatch(changeModalState({screen, initializeScopeTotal: true, scopeTotal: totalGroups}))
+                handleError(backendFunc, false, successFunc, errorFunc)
             }) 
         } else {
             dispatch(changeModalState({screen}))
@@ -62,10 +68,22 @@ export default function OptionsSub({elementBg, screenType, collectionGen}) {
             <Typography sx={{color: 'white', fontWeight: 700, mx: 1}}>{navIndicator}</Typography>
         </Box>
         <Box sx={{...elementBg, width: '95%', height: '92%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', mt: 1}}>
+            {!isPending ? 
+            groupError.error ?
+            <>
+                <Typography sx={{fontSize: '24px', color: 'rgb(200, 50, 50)', fontWeight: 700, mb: 2}}>
+                    Error {groupError.status}: {groupError.name}
+                </Typography>
+                <Typography sx={{fontSize: '16px', color: 'rgb(200, 50, 50)', fontWeight: 700}}>
+                    {groupError.message}
+                </Typography>
+                <Typography sx={{fontSize: '16px', color: 'rgb(200, 50, 50)', fontWeight: 700}}>
+                    Try again later!
+                </Typography>
+            </> :
             <Box sx={{width: '95%', height: isPending ? '80%' : '95%', padding: '1%', mb: 2, display: 'flex', flexDirection: 'column', gap: 5, alignItems: 'center', justifyContent: 'center'}}>
                 {generateButtons()}
-            </Box>
-            {isPending && 
+            </Box> :
             <>
             <Typography sx={{fontSize: '24px'}}>
                 Getting Pokemon Groups...

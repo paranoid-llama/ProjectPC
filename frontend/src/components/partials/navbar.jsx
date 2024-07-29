@@ -8,6 +8,7 @@ import ArrowBack from "@mui/icons-material/ArrowBack";
 import { useTheme, Button } from "@mui/material";
 import ControlledTextInput from "../functionalcomponents/controlledtextinput";
 import { Fragment, useState, useRef, useEffect, useContext } from "react";
+import { ErrorContext } from "../../app/contexts/errorcontext";
 import { AlertsContext } from "../../alerts/alerts-context";
 import { useNavigate, useRouteLoaderData, useLoaderData, useRevalidator, useLocation } from "react-router-dom";
 import userLoginRequest from "../../../utils/functions/backendrequests/users/login";
@@ -17,6 +18,7 @@ import hexToRgba from "hex-to-rgba";
 export default function NavBar() {
     const theme = useTheme()
     const navigate = useNavigate()
+    const {handleError} = useContext(ErrorContext)
     const revalidator = useRevalidator()
     const userData = useRouteLoaderData('root')
     const location = useLocation().pathname
@@ -75,9 +77,9 @@ export default function NavBar() {
             setUserArea({open: false})
             navigate(link)
         } else {
-            const status = await userLogoutRequest()
-            if (status.successful === true) {
-                 //spawning alert
+            const backendFunc = async() => await userLogoutRequest()
+            const successFunc = () => {
+                //spawning alert
                 const alertMessage = `Logged out successfully!`
                 const alertInfo = {severity: 'success', message: alertMessage, timeout: 3}
                 const id = addAlert(alertInfo);
@@ -86,6 +88,7 @@ export default function NavBar() {
                 setUserArea({open: false})
                 revalidator.revalidate()
             }
+            handleError(backendFunc, false, successFunc, () => {})   
         }
     }
 
@@ -95,20 +98,23 @@ export default function NavBar() {
             setLoginArea({...loginArea, usernameError: userData.username.length === 0, passwordError: userData.password.length === 0})
             return 
         }
-        const loginStatus = await userLoginRequest(userData)
-        if (loginStatus.successful === false) {
-            navigate('/login', {state: {error: true, message: 'One or more fields are incorrect!'}})
-            setLoginArea({open: false, usernameError: false, passwordError: false})
-        } else {
-            // navigate(0)
-            //spawning alert
-            const alertMessage = `Logged in as ${userData.username}!`
-            const alertInfo = {severity: 'success', message: alertMessage, timeout: 3}
-            const id = addAlert(alertInfo);
-            setAlertIds((prev) => [...prev, id]);
-            setLoginArea({open: false})
-            revalidator.revalidate()
+        const backendFunc = async() => await userLoginRequest(userData)
+        const successFunc = (loginStatus) => {
+            if (loginStatus.successful === false) {
+                navigate('/login', {state: {error: true, message: 'One or more fields are incorrect!'}})
+                setLoginArea({open: false, usernameError: false, passwordError: false})
+            } else {
+                // navigate(0)
+                //spawning alert
+                const alertMessage = `Logged in as ${userData.username}!`
+                const alertInfo = {severity: 'success', message: alertMessage, timeout: 3}
+                const id = addAlert(alertInfo);
+                setAlertIds((prev) => [...prev, id]);
+                setLoginArea({open: false})
+                revalidator.revalidate()
+            }
         }
+        handleError(backendFunc, false, successFunc, () => {})
     }
 
     const icons = userData.loggedIn ? ['homeicon', 'search', 'createcollection', 'user'] : ['homeicon', 'search', 'createcollection', 'login']

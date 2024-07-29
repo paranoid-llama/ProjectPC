@@ -22,7 +22,8 @@ export async function createNewUser(req, res) {
                 {
                     type: 'site message', 
                     title: 'Welcome to Pokellections!', 
-                    message: 'Welcome to Pokellections! Thank you for joining the site. We hope you enjoy aprimon collecting made easy!'
+                    message: 'Welcome to Pokellections! Thank you for joining the site. We hope you enjoy aprimon collecting made easy!',
+                    unread: true
                 }
             ]
         })

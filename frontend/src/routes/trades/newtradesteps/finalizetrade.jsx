@@ -3,7 +3,8 @@ import hexToRgba from 'hex-to-rgba'
 import ControlledTextInput from '../../../components/functionalcomponents/controlledtextinput'
 import { useNavigate, Link} from 'react-router-dom'
 import { useSelector } from 'react-redux'
-import { useState, useEffect, useRef, startTransition } from 'react'
+import { useState, useEffect, useContext, useRef, startTransition } from 'react'
+import { ErrorContext } from '../../../app/contexts/errorcontext'
 import modalStyles from '../../../../utils/styles/componentstyles/modalstyles'
 import ImgData from '../../../components/collectiontable/tabledata/imgdata'
 import { selectSpecificRelativeValue } from '../../../app/selectors/tradeselectors'
@@ -19,6 +20,7 @@ import { counterTradeOffer } from '../../../../utils/functions/backendrequests/t
 export default function FinalizeTrade({selectedColDisplay, proposedValues, traderId, ownerId, traderUsername, ownerUsername, traderGen, ownerGen, isCounteroffer, tradeId}) {
     const theme = useTheme()
     const navigate = useNavigate()
+    const {handleError} = useContext(ErrorContext)
     const offeringPokemon = useSelector((state) => state.tradeOffer.offering)
     const receivingPokemon = useSelector((state) => state.tradeOffer.receiving)
     const offeringItems = useSelector((state) => state.tradeOffer.offeringItems)
@@ -64,8 +66,10 @@ export default function FinalizeTrade({selectedColDisplay, proposedValues, trade
     const changeCanConfirm = () => {setDetailsModal((curr) => {return {...curr, canConfirm: true, countDown: false}})}
 
     const backendCreateTrade = async(offer, receiving, gen) => {
-        const newTradeId = await newTradeBackend(offer, receiving, message, traderId, ownerId, traderUsername, ownerUsername, gen)
-        setNewTradeId({pending: false, id: newTradeId, countDown: true, second: 5})
+        const backendFunc = async() => await newTradeBackend(offer, receiving, message, traderId, ownerId, traderUsername, ownerUsername, gen)
+        const successFunc = (newTradeId) => {setNewTradeId({pending: false, id: newTradeId, countDown: true, second: 5})}
+        const errorFunc = (errorData) => {setNewTradeId({...newTradeId, pending: false, error: true, errorData})}
+        handleError(backendFunc, false, successFunc, errorFunc)
     }
 
     const finalizeAndCreateTrade = async() => {
@@ -81,11 +85,15 @@ export default function FinalizeTrade({selectedColDisplay, proposedValues, trade
                     receiving
                 }
             }
-            await counterTradeOffer(tradeId, ownerId, offerBackendFormat, traderUsername)
             setNewTradeId({...newTradeId, pending: true})
-            setTimeout(() => {
-                setNewTradeId({pending: false, id: tradeId, countDown: true, second: 5})
-            }, 500)
+            const backendFunc = async() => await counterTradeOffer(tradeId, ownerId, offerBackendFormat, traderUsername)
+            const successFunc = () => {
+                setTimeout(() => {
+                    setNewTradeId({pending: false, id: tradeId, countDown: true, second: 5})
+                }, 500) 
+            }
+            const errorFunc = (errorData) => {setNewTradeId({...newTradeId, pending: false, error: true, errorData})}
+            handleError(backendFunc, false, successFunc, errorFunc)
         } else {
             const {offer, receiving, gen} = newTradeBackendFormatting(offeringPokemon, offeringItems, receivingPokemon, receivingItems, totalOfferValue, totalReceivingValue, traderGen, ownerGen)
             setNewTradeId({...newTradeId, pending: true})
@@ -151,6 +159,7 @@ export default function FinalizeTrade({selectedColDisplay, proposedValues, trade
 
     const tradeCreationPending = newTradeId.pending === true
     const tradeCompletedCreation = newTradeId.id !== ''
+    const tradeCreationError = newTradeId.error
 
     useEffect(() => {
         if (newTradeId.countDown === true) {
@@ -269,6 +278,13 @@ export default function FinalizeTrade({selectedColDisplay, proposedValues, trade
                             <Typography sx={{fontSize: '24px', mb: 5}}>Sending Trade Offer...</Typography>
                             <CircularProgress/>
                         </>: 
+                        tradeCreationError ? 
+                        <>
+                            <Typography sx={{fontSize: '24px', mb: 2}}>There was a problem with the trade offer!</Typography>
+                            <Typography sx={{fontSize: '16px', color: 'rgb(200, 50, 50)'}}><b>ERROR {newTradeId.errorData.status}:</b> {newTradeId.errorData.name}</Typography>
+                            <Typography sx={{fontSize: '16px', color: 'rgb(200, 50, 50)'}}>{newTradeId.errorData.message}</Typography>
+                            <Button onClick={finalizeAndCreateTrade} sx={{fontSize: '16px', mt: 2}}>Try Again</Button>
+                        </> : 
                         tradeCompletedCreation ? 
                         <>
                             <Typography sx={{fontSize: '24px', mb: 1}}>Trade Offer Sent!</Typography>

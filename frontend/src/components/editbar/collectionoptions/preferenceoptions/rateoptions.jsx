@@ -6,6 +6,7 @@ import { changeModalState } from '../../../../app/slices/editmode'
 import { setRate } from '../../../../app/slices/options';
 import { useState, useEffect, useContext } from 'react'
 import { AlertsContext } from '../../../../alerts/alerts-context'
+import { ErrorContext } from '../../../../app/contexts/errorcontext';
 import IndividualRateSelection from '../../../collectioncreation/stepcomponents/optionsselection/aprimon/individualrateselection'
 import { backendChangeOptions } from '../../../../../utils/functions/backendrequests/collectionoptionsedit';
 import { getPossibleItems, apriballLiterals } from '../../../../../../common/infoconstants/miscconstants';
@@ -13,6 +14,7 @@ import SaveChangesConfirmModal from '../savechangesconfirmmodal'
 
 export default function RateOptions({elementBg, collectionGen, collectionId}) {
     const dispatch = useDispatch()
+    const {handleError} = useContext(ErrorContext)
     const ratesInit = useSelector((state) => state.options.tradePreferences.rates)
     const items = getPossibleItems(collectionGen)
     const rateTotalItemsStep = items.map(item => apriballLiterals.includes(item.value) ? 'Apriballs' : item.display)
@@ -101,15 +103,18 @@ export default function RateOptions({elementBg, collectionGen, collectionId}) {
             const newRatesSection = {pokemonOffers: rates.pokemonOffers.filter(rate => !rate.items.map(item => item === '').includes(true)), itemOffers: rates.itemOffers.filter(rate => !rate.items.map(item => item === '').includes(true))}
             setRates({...rates, saving: true})
             setTimeout(() => {
-                backendChangeOptions('rates', {newRates: newRatesSection}, collectionId)
-                dispatch(setRate({newRates: newRatesSection}))
+                const backendReq = async() => await backendChangeOptions('rates', {newRates: newRatesSection}, collectionId)
+                const successFunc = () => {
+                    dispatch(setRate({newRates: newRatesSection}))
 
-                //spawning alert
-                const alertMessage = `Set Trade Rates!`
-                const alertInfo = {severity: 'success', message: alertMessage, timeout: 3}
-                const id = addAlert(alertInfo);
-                setAlertIds((prev) => [...prev, id]);
+                    //spawning alert
+                    const alertMessage = `Set Trade Rates!`
+                    const alertInfo = {severity: 'success', message: alertMessage, timeout: 3}
+                    const id = addAlert(alertInfo);
+                    setAlertIds((prev) => [...prev, id]);
+                }
 
+                handleError(backendReq, false, successFunc, () => {})
                 dispatch(changeModalState({open: false}))
             }, 1000)
         } else if (nextScreen === 'goBack') {

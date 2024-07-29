@@ -2,18 +2,21 @@ import { useState, useEffect, useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { changeModalState } from "../../../../app/slices/editmode";
 import { setCollectionInitialState } from "../../../../app/slices/collection";
+import { setListInitialState } from "../../../../app/slices/listdisplay";
 import { selectScopeFormData, selectExcludedBallCombos } from "../../../../app/selectors/selectors";
 import { getOneArrData } from "../../../../../utils/functions/scope/getonearrdata";
 import { getBallsInGen } from "../../../../../../common/infoconstants/miscconstants.mjs";
 import { excludedCombosChange, getExcludedCombosChange } from "../../../../../utils/functions/scope/statechanges";
 import { saveExcludedCombos } from "../../../../../utils/functions/scope/savescopechanges";
 import { AlertsContext } from "../../../../alerts/alerts-context";
+import { ErrorContext } from "../../../../app/contexts/errorcontext";
 import { ownedPokemonEdit } from "../../../../../utils/functions/backendrequests/ownedpokemonedit";
 import PokemonBallCombosModalContents from "../../../collectioncreation/stepcomponents/scopeselection/aprimon/pokemonballcombosmodalcontents";
 import SaveChangesConfirmModal from "../savechangesconfirmmodal";
 
 export default function BallCombosScope({elementBg, collectionGen, collectionId}) {
     const dispatch = useDispatch()
+    const {handleError} = useContext(ErrorContext)
     const scopeTotal = useSelector((state) => state.editmode.pokemonScopeTotal)
     const totalList = getOneArrData(scopeTotal)
     const pokemonScope = useSelector((state) => selectScopeFormData(state, scopeTotal))
@@ -77,19 +80,26 @@ export default function BallCombosScope({elementBg, collectionGen, collectionId}
                 delete mon.possibleGender
                 return mon
             })
-            await ownedPokemonEdit(collectionGen, newListBackendFormat, collectionId)
+            const backendFunc = async() => await ownedPokemonEdit(collectionGen, newListBackendFormat, collectionId)
             setExcludedCombos({...excludedCombos, saving: true})
-            setTimeout(() => {
-                dispatch(setCollectionInitialState(newCollectionListState))
-
-                //spawning alert
-                const alertMessage = `Updated Excluded Pokemon/Ball Combos!`
-                const alertInfo = {severity: 'success', message: alertMessage, timeout: 3}
-                const id = addAlert(alertInfo);
-                setAlertIds((prev) => [...prev, id]);
-
-                dispatch(changeModalState({open: false}))
-            }, 1000)
+            const successFunc = () => {
+                setTimeout(() => {
+                    dispatch(setCollectionInitialState(newCollectionListState))
+                    dispatch(setListInitialState({collection: newCollectionListState, onlyUpdateCollection: true, resetCollectionFilters: true}))
+    
+                    //spawning alert
+                    const alertMessage = `Updated Excluded Pokemon/Ball Combos!`
+                    const alertInfo = {severity: 'success', message: alertMessage, timeout: 3}
+                    const id = addAlert(alertInfo);
+                    setAlertIds((prev) => [...prev, id]);
+    
+                    dispatch(changeModalState({open: false}))
+                }, 1000)
+            }
+            const errorFunc = () => {
+                setTimeout(() => {dispatch(changeModalState({open: false}))}, 1000)
+            }
+            handleError(backendFunc, false, successFunc, errorFunc)
         } else if (nextScreen === 'goBack') {
             setExcludedCombos({...excludedCombos, saveChangesConfirmOpen: false})
         } else if (nextScreen === 'exit') {

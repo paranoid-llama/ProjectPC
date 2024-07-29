@@ -3,6 +3,7 @@ import ArrowForward from '@mui/icons-material/ArrowForward'
 import ImgData from '../../../collectiontable/tabledata/imgdata'
 import SaveChangesConfirmModal from '../savechangesconfirmmodal'
 import { AlertsContext } from '../../../../alerts/alerts-context'
+import { ErrorContext } from '../../../../app/contexts/errorcontext'
 import { useState, useEffect, useContext } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { changeModalState } from '../../../../app/slices/editmode'
@@ -18,6 +19,7 @@ import { ownedPokemonEdit } from '../../../../../utils/functions/backendrequests
 
 export default function BallScope({elementBg, collectionGen, collectionId}) {
     const dispatch = useDispatch()
+    const {handleError} = useContext(ErrorContext)
     const oneArrLegalBalls = getOneArrData(useSelector((state) => state.editmode.pokemonScopeTotal), false, false)
     const legalBallInfo = oneArrLegalBalls.filter(mon => useSelector((state) => state.listDisplay.collection).map(listMon => listMon.imgLink === mon.imgLink).includes(true))
     const ballScopeInit = useSelector((state) => state.options.collectingBalls)
@@ -85,21 +87,29 @@ export default function BallScope({elementBg, collectionGen, collectionId}) {
                 delete mon.possibleGender
                 return mon
             }) 
-            await ownedPokemonEdit(collectionGen, newListBackendFormat, collectionId, false, [], false, [], formData.balls)
+            const backendFunc = async() => await ownedPokemonEdit(collectionGen, newListBackendFormat, collectionId, false, [], [], formData.balls)
             setFormData({...formData, saving: true})
-            setTimeout(() => {
-                dispatch(setBallScope(formData.balls))
-                dispatch(setCollectionInitialState(newListState))
-                dispatch(setListInitialState({collection: newListState, onlyUpdateCollection: true, resetCollectionFilters: true}))
-
-                //spawning alert
-                const alertMessage = `Updated Ball Scope!`
-                const alertInfo = {severity: 'success', message: alertMessage, timeout: 3}
-                const id = addAlert(alertInfo);
-                setAlertIds((prev) => [...prev, id]);
-
-                dispatch(changeModalState({open: false}))
-            }, 1000)
+            const successFunc = () => {
+                setTimeout(() => {
+                    dispatch(setBallScope(formData.balls))
+                    dispatch(setCollectionInitialState(newListState))
+                    dispatch(setListInitialState({collection: newListState, onlyUpdateCollection: true, resetCollectionFilters: true}))
+    
+                    //spawning alert
+                    const alertMessage = `Updated Ball Scope!`
+                    const alertInfo = {severity: 'success', message: alertMessage, timeout: 3}
+                    const id = addAlert(alertInfo);
+                    setAlertIds((prev) => [...prev, id]);
+    
+                    dispatch(changeModalState({open: false}))
+                }, 1000)
+            }
+            const errorFunc = () => {
+                setTimeout(() => {
+                    dispatch(changeModalState({open: false}))
+                }, 1000)
+            }
+            handleError(backendFunc, false, successFunc, errorFunc)
         } else if (nextScreen === 'goBack') {
             closeConfirmChangesModal()
         } else if (nextScreen === 'exit') {

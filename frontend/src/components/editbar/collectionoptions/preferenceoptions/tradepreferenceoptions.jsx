@@ -3,6 +3,7 @@ import ArrowForward from '@mui/icons-material/ArrowForward'
 import HelpIcon from '@mui/icons-material/Help'
 import {useState, useEffect, useContext} from 'react'
 import { AlertsContext } from '../../../../alerts/alerts-context'
+import { ErrorContext } from '../../../../app/contexts/errorcontext'
 import { useDispatch, useSelector } from 'react-redux'
 import { changeModalState } from '../../../../app/slices/editmode'
 import { setTradePreferencesState } from '../../../../app/slices/options'
@@ -11,6 +12,7 @@ import SaveChangesConfirmModal from '../savechangesconfirmmodal'
 
 export default function TradePreferenceOptions({elementBg, collectionId, isHomeCollection}) {
     const dispatch = useDispatch()
+    const {handleError} = useContext(ErrorContext)
     const preferencesInit = useSelector((state) => state.options.tradePreferences)
     const [preferences, setPreferences] = useState({pref: {...preferencesInit, rates: undefined}, saveChangesConfirmOpen: false})
 
@@ -73,15 +75,17 @@ export default function TradePreferenceOptions({elementBg, collectionId, isHomeC
             const newPreferences = {...preferencesInit, status: preferences.pref.status, size: preferences.pref.size, onhandOnly: preferences.pref.onhandOnly, items: preferences.pref.items}
             setPreferences({...preferences, saving: true})
             setTimeout(() => {
-                backendChangeOptions('preferences', {newPreferences}, collectionId)
-                dispatch(setTradePreferencesState(newPreferences))
+                const backendReq = async() => await backendChangeOptions('preferences', {newPreferences}, collectionId)
+                const successFunc = () => {
+                    dispatch(setTradePreferencesState(newPreferences))
 
-                //spawning alert
-                const alertMessage = `Set Trade Preferences!`
-                const alertInfo = {severity: 'success', message: alertMessage, timeout: 3}
-                const id = addAlert(alertInfo);
-                setAlertIds((prev) => [...prev, id]);
-
+                    //spawning alert
+                    const alertMessage = `Set Trade Preferences!`
+                    const alertInfo = {severity: 'success', message: alertMessage, timeout: 3}
+                    addAlert(alertInfo);
+                    // setAlertIds((prev) => [...prev, id]);
+                }
+                handleError(backendReq, false, successFunc, () => {})
                 dispatch(changeModalState({open: false}))
             }, 1000)
         } else if (nextScreen === 'goBack') {

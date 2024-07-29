@@ -1,4 +1,5 @@
-import {useState, useContext, useEffect} from 'react'
+import {useState, useEffect, useContext} from 'react'
+import { ErrorContext } from '../../../../app/contexts/errorcontext'
 import {Modal, Fade, Box, Typography, Backdrop, TextField, Button} from '@mui/material'
 import {Virtuoso} from 'react-virtuoso'
 import { useLoaderData } from 'react-router'
@@ -27,6 +28,7 @@ import SpeciesSelect from './modalcomponents/speciesselect'
 export default function OnHandPokemonSelectionForm({speciesEditOnly=false, open, handleClose, initialPokemonData, idxOfInitialPokemon, isHomeCollection}) {
     //usage in regular functions
     const dispatch = useDispatch()
+    const {handleError} = useContext(ErrorContext)
 
     const allEggMoveInfo = useSelector((state) => state.listDisplay.eggMoveInfo)
     const sortingOptions = useSelector((state) => state.options.sorting.onhand)
@@ -104,21 +106,22 @@ export default function OnHandPokemonSelectionForm({speciesEditOnly=false, open,
             qty: 1
         }
         const saveToDataBase = {...sharedData, _id: initialPokemonData._id}
-        dispatch(setPokemon({
-            idx: idxOfInitialPokemon,
-            imgLink: pokemonData.selection.imgLink,
-            pokemonData: sharedData,
-            sortingOptions
-        }))
-        dispatch(changeOnHandPokemon({onhandId: initialPokemonData._id, newPokeData: sharedData, sortingOptions}))
-        bulkEditOnHandInfo(saveToDataBase, initialPokemonData._id, collectionID)
-
-        //spawning alert
-        const alertMessage = `Changed the On-Hand to ${capitalizeFirstLetter(pokemonData.ball)} ${pokemonData.selection.name}!`
-        const alertInfo = {severity: 'success', message: alertMessage, timeout: 3, messageImgs: [{type: 'ball', linkKey: pokemonData.ball}, {type: 'poke', linkKey: pokemonData.selection.imgLink}]}
-        const id = addAlert(alertInfo);
-        setAlertIds((prev) => [...prev, id]);
-
+        const successFunc = () => {
+            dispatch(setPokemon({
+                idx: idxOfInitialPokemon,
+                imgLink: pokemonData.selection.imgLink,
+                pokemonData: sharedData,
+                sortingOptions
+            }))
+            dispatch(changeOnHandPokemon({onhandId: initialPokemonData._id, newPokeData: sharedData, sortingOptions}))
+            //spawning alert
+            const alertMessage = `Changed the On-Hand to ${capitalizeFirstLetter(pokemonData.ball)} ${pokemonData.selection.name}!`
+            const alertInfo = {severity: 'success', message: alertMessage, timeout: 3, messageImgs: [{type: 'ball', linkKey: pokemonData.ball}, {type: 'poke', linkKey: pokemonData.selection.imgLink}]}
+            const id = addAlert(alertInfo);
+            setAlertIds((prev) => [...prev, id]);
+        }
+        const backendFunc = async() => await bulkEditOnHandInfo(saveToDataBase, initialPokemonData._id, collectionID)
+        handleError(backendFunc, false, successFunc, () => {})
         handleClose()
     }
 
@@ -260,16 +263,17 @@ export default function OnHandPokemonSelectionForm({speciesEditOnly=false, open,
             ...saveToDataBase,
             imgLink: pokemonData.selection.imgLink
         }
-        dispatch(setNewOnHand(stateInfo)) //updates row content state
-        dispatch(addOnHandPokemonToList({newOnhand: stateInfo, sortingOptions})) //updates show list state, which allows the new on hand to appear
-        newOnHandPutReq(saveToDataBase, collectionID)
-
-        //spawning alert
-        const alertMessage = `Added ${capitalizeFirstLetter(pokemonData.ball)} ${pokemonData.selection.name}`
-        const alertInfo = {severity: 'success', message: alertMessage, timeout: 5, messageImgs: [{type: 'ball', linkKey: pokemonData.ball}, {type: 'poke', linkKey: stateInfo.imgLink}]}
-        const id = addAlert(alertInfo);
-        setAlertIds((prev) => [...prev, id]);
-
+        const successFunc = () => {
+            dispatch(setNewOnHand(stateInfo)) //updates row content state
+            dispatch(addOnHandPokemonToList({newOnhand: stateInfo, sortingOptions})) //updates show list state, which allows the new on hand to appear
+            //spawning alert
+            const alertMessage = `Added ${capitalizeFirstLetter(pokemonData.ball)} ${pokemonData.selection.name}`
+            const alertInfo = {severity: 'success', message: alertMessage, timeout: 5, messageImgs: [{type: 'ball', linkKey: pokemonData.ball}, {type: 'poke', linkKey: stateInfo.imgLink}]}
+            const id = addAlert(alertInfo);
+            setAlertIds((prev) => [...prev, id]);
+        }
+        const backendFunc = async() => await newOnHandPutReq(saveToDataBase, collectionID)
+        handleError(backendFunc, false, successFunc, () => {})
         handleClose()
     }
 

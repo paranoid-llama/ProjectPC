@@ -1,3 +1,5 @@
+import handleApiResponse from "../handleapiresponse"
+
 export const newTradeBackendFormatting = (pokemonOffer, itemOffer, pokemonReceiving, itemReceiving, offerValue, receivingValue, traderGen, ownerGen) => {
     const formattedGen = traderGen === ownerGen ? ownerGen : `${traderGen}-${ownerGen}`
 
@@ -27,10 +29,10 @@ export const newTradeBackendFormatting = (pokemonOffer, itemOffer, pokemonReceiv
     //         return pData
     //     })
 
-    const offerP = pokemonOffer.length !== 0 ? {pokemon: pokemonOffer} : {}
-    const offerI = itemOffer.length !== 0 ? {items: itemOffer} : {}
-    const receiveP = pokemonReceiving.length !== 0 ? {pokemon: pokemonReceiving} : {}
-    const receiveI = itemReceiving.length !== 0 ? {items: itemReceiving} : {}
+    const offerP = {pokemon: pokemonOffer.length !== 0 ? pokemonOffer : []} 
+    const offerI = {items: itemOffer.length !== 0 ? itemOffer : []}
+    const receiveP = {pokemon: pokemonReceiving.length !== 0 ? pokemonReceiving : []} 
+    const receiveI = {items: itemReceiving.length !== 0 ? itemReceiving : []}
     const formattedOffer = {
         value: offerValue,
         ...offerP,
@@ -46,13 +48,12 @@ export const newTradeBackendFormatting = (pokemonOffer, itemOffer, pokemonReceiv
 }
 
 export const newTradeBackend = async(offer, receiving, offerMessage, traderId, ownerId, traderUsername, ownerUsername, gen) => {
-    const newTradeId = await fetch(`http://localhost:3000/trades/new`, {
+    return await fetch(`http://localhost:3000/trades/new`, {
         method: 'POST',
         credentials: 'include',
         headers: {
             "Content-Type": "application/json",
         },
         body: JSON.stringify({offer, receiving, offerMessage, traderId, ownerId, traderUsername, ownerUsername, gen})
-    }).then(data => data.json())
-    return newTradeId
+    }).then(async(data) => {return await handleApiResponse(data, true)})
 }

@@ -2,6 +2,7 @@ import {Box, Typography, Select, MenuItem, ToggleButton, Button} from '@mui/mate
 import ArrowForward from '@mui/icons-material/ArrowForward'
 import { useState, useEffect, useContext } from 'react'
 import { AlertsContext } from '../../../../alerts/alerts-context'
+import { ErrorContext } from '../../../../app/contexts/errorcontext'
 import { useDispatch, useSelector } from 'react-redux'
 import { setListInitialState } from '../../../../app/slices/listdisplay'
 import { changeModalState } from '../../../../app/slices/editmode'
@@ -12,6 +13,7 @@ import SaveChangesConfirmModal from '../savechangesconfirmmodal'
 
 export default function CollectionSortingOptions({elementBg, collectionGen, collectionId}) {
     const dispatch = useDispatch()
+    const {handleError} = useContext(ErrorContext)
     const currentOptions = useSelector((state) => state.options.sorting.collection)
     const collectionListState = useSelector((state) => state.collection)
 
@@ -75,24 +77,26 @@ export default function CollectionSortingOptions({elementBg, collectionGen, coll
             setSortingOptions({...sortingOptions, saving: true})
             setTimeout(() => {
                 const sortedCollectionList = sortingOptions.reSortWillHappen ? sortList(sortingOptions.options.default, collectionListState) : undefined
-                if (sortingOptions.reSortWillHappen) {
-                    const backendSortedList = JSON.parse(JSON.stringify(sortedCollectionList)).map(mon => {
-                        delete mon.imgLink
-                        delete mon.possibleGender
-                        return mon
-                    })
-                    backendChangeOptions('sort', {listType: 'collection', data: sortingOptions.options, sortedList: backendSortedList}, collectionId)
-                    // dispatch(setListInitialState({collection: sortedCollectionList, resetCollectionFilters: true, onlyUpdateCollection: true}))
-                } else {
-                   backendChangeOptions('sort', {listType: 'collection', data: sortingOptions.options}, collectionId) 
+                const backendSortedList = sortingOptions.reSortWillHappen && JSON.parse(JSON.stringify(sortedCollectionList)).map(mon => {
+                    delete mon.imgLink
+                    delete mon.possibleGender
+                    return mon
+                })
+                const backendReqData = sortingOptions.reSortWillHappen ? {listType: 'collection', data: sortingOptions.options, sortedList: backendSortedList} : {listType: 'collection', data: sortingOptions.options}
+                const backendReq = async() => await backendChangeOptions('sort', backendReqData, collectionId) 
+                const successFunc = () => {
+                    dispatch(setSortingOptionsState({listType: 'collection', data: sortingOptions.options}))
+                    if (sortingOptions.reSortWillHappen) {
+                        dispatch(setListInitialState({collection: sortedCollectionList, resetCollectionFilters: true, onlyUpdateCollection: true}))
+                    }
+                    //spawning alert
+                    const alertMessage = `Updated Collection Sorting Options${sortingOptions.reSortWillHappen ? ' and re-sorted the list!' : '!'}`
+                    const alertInfo = {severity: 'success', message: alertMessage, timeout: 3}
+                    const id = addAlert(alertInfo);
+                    setAlertIds((prev) => [...prev, id]);
                 }
-                dispatch(setSortingOptionsState({listType: 'collection', data: sortingOptions.options}))
 
-                //spawning alert
-                const alertMessage = `Updated Collection Sorting Options${sortingOptions.reSortWillHappen ? ' and re-sorted the list!' : '!'}`
-                const alertInfo = {severity: 'success', message: alertMessage, timeout: 3}
-                const id = addAlert(alertInfo);
-                setAlertIds((prev) => [...prev, id]);
+                handleError(backendReq, false, successFunc, () => {})
 
                 dispatch(changeModalState({open: false}))
             }, 1000)

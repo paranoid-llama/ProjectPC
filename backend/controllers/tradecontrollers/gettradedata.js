@@ -45,5 +45,12 @@ export async function getTradeData(req, res) {
 export async function getOfferData(req, res) {
     const {id, offerIdx} = req.params
     const offerData = await Trade.findById(id, 'history').lean()
+    if (offerData === null) {
+        const exception = new Error()
+        exception.name = 'Not Found'
+        exception.message = `Could not find a trade with this ID!`
+        exception.status = 404
+        return res.status(404).send(exception)
+    }
     res.json(offerData.history[offerIdx])
 }

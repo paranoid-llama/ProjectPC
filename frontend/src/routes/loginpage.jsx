@@ -1,5 +1,6 @@
 import {Box, useTheme, Typography, Button, Alert} from '@mui/material'
 import {useState, useRef, useEffect, useContext} from 'react'
+import { ErrorContext } from '../app/contexts/errorcontext'
 import { AlertsContext } from '../alerts/alerts-context'
 import ControlledTextInput from '../components/functionalcomponents/controlledtextinput'
 import BodyWrapper from '../components/partials/routepartials/bodywrapper'
@@ -11,6 +12,7 @@ export default function LoginPage({}) {
     const location = useLocation()
     const navigate = useNavigate()
     const revalidator = useRevalidator()
+    const {handleError} = useContext(ErrorContext)
     const errorInit = location.state !== null && location.state.error
     const successInit = location.state !== null && location.state.success
     const errorMessageInit = location.state !== null && location.state.message || ''
@@ -66,22 +68,27 @@ export default function LoginPage({}) {
             setError({...error, username: userData.username.length === 0, password: userData.password.length === 0})
             return 
         }
-        const loginStatus = await userLoginRequest(userData)
-        if (loginStatus.successful === false) {
-            setError({username: false, password: false, error: true, errorMessage: 'One or more fields are incorrect!'})
-        } else {
-            //spawning alert
-            const alertMessage = `Logged in as ${userData.username}!`
-            const alertInfo = {severity: 'success', message: alertMessage, timeout: 3}
-            const id = addAlert(alertInfo);
-            setAlertIds((prev) => [...prev, id]);
-            revalidator.revalidate()
-            if (redirectTo !== undefined) {
-                navigate(redirectTo)
+        const backendFunc = async() => await userLoginRequest(userData)
+        const successFunc = (loginStatus) => { 
+            //this works a bit different from other error handlers. status 401 (unauthorized) is counted as "ok" so we dont have to write login specific
+            //logic in the context. see useLoginRequest for how it's done.
+            if (loginStatus.successful === false) {
+                setError({username: false, password: false, error: true, errorMessage: 'One or more fields are incorrect!'})
             } else {
-                navigate('/')
+                //spawning alert
+                const alertMessage = `Logged in as ${userData.username}!`
+                const alertInfo = {severity: 'success', message: alertMessage, timeout: 3}
+                const id = addAlert(alertInfo);
+                setAlertIds((prev) => [...prev, id]);
+                revalidator.revalidate()
+                if (redirectTo !== undefined) {
+                    navigate(redirectTo)
+                } else {
+                    navigate('/')
+                }
             }
         }
+        handleError(backendFunc, false, successFunc, () => {})
     }
 
     return (

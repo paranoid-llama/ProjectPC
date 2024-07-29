@@ -11,7 +11,37 @@ import PokemonBallCombosModal from '../aprimon/pokemonballcombosmodal'
 import PokemonGroupCardArea from '../aprimon/pokemongroupcardarea'
 
 export default function ScopeSelection({collectionType, collectionGen, importedCollection, scope, ballScopeInit, goBackStep, cssClass, handleChange}) {
-
+    if (scope !== undefined && scope.error) {
+        return (
+            <Box sx={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', mt: 1, height: '581px', position: 'relative'}} className={cssClass}>
+                <Header additionalStyles={{color: 'black', paddingBottom: '2px', height: '32px'}}>Set Collection Scope</Header>
+                <Typography sx={{fontSize: '12px'}}>{collectionType}</Typography>
+                <Box sx={{width: '100%', height: '95%', position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+                <>
+                    <Typography sx={{fontSize: '24px', color: 'rgb(200, 50, 50)', fontWeight: 700, mb: 2, mt: 10}}>
+                        Error {scope.status}: {scope.name}
+                    </Typography>
+                    <Typography sx={{fontSize: '16px', color: 'rgb(200, 50, 50)', fontWeight: 700}}>
+                        {scope.message}
+                    </Typography>
+                    <Typography sx={{fontSize: '16px', color: 'rgb(200, 50, 50)', fontWeight: 700}}>
+                        Go back and try again, or try again later!
+                    </Typography>
+                </> 
+                </Box>
+                <Box sx={{width: '100%', display: 'flex', justifyContent: 'start', flexDirection: 'column', alignItems: 'center', position: 'absolute', top: '95%', zIndex: 1}}>
+                    <Box sx={{display: 'flex', width: '90%'}}>
+                        <Box sx={{width: '50%', display: 'flex', justifyContent: 'start'}}>
+                            <Button onClick={goBackStep.func}>
+                                <ArrowBackIcon/>
+                                <Typography sx={{mx: 2, fontSize: '14px'}}>{goBackStep.stepName}</Typography>
+                            </Button>
+                        </Box>
+                    </Box>
+                </Box>
+            </Box>
+        )
+    }
     const ToggleButton = styled(MuiToggleButton)({
         '&.Mui-selected': {
             backgroundColor: 'rgba(99, 99, 99, 0.3)',
