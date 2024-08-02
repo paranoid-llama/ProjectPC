@@ -20,6 +20,7 @@ import Auth from './routes/auth'
 import SettingsPage from './routes/users/usersettings/settingspage'
 import Profile from './routes/users//usersettings/profile'
 import Account from './routes/users//usersettings/account'
+import Privacy from './routes/users/usersettings/privacy'
 import Display from './routes/users//usersettings/display'
 import Other from './routes/users/usersettings/other'
 import NewTrade from './routes/trades/newtrade'
@@ -162,7 +163,14 @@ function Router() {
             },
             {
               path: 'trade',
-              element: <ProtectedRoute Component={NewTrade}/>,
+              element: 
+                <ProtectedRoute 
+                  Component={NewTrade} 
+                  extraAuthType='newTrade'
+                  // extraAuthFunc={(col, user) => user.loggedIn && !col.owner.settings.privacy.blockedUsers.includes(user.user.username)}
+                  // extraAuthErrorMessage='You were blocked by this user and cannot trade with them!'
+                  // extraAuthRedirectOffset={-5}
+                />,
               loader: (params) => collectionLoader(params, undefined, false, false)
             }
           ]
@@ -216,6 +224,10 @@ function Router() {
             {
               path: 'display',
               element: <Display />
+            },
+            {
+              path: 'privacy',
+              element: <Privacy />
             },
             {
               path: 'other',

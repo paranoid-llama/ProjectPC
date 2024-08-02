@@ -13,7 +13,7 @@ export default function SettingsPage({}) {
     const locationData = useLocation()
     const revalidator = useRevalidator()
     const catInit = locationData.state !== null ? (locationData.state.catInit !== undefined ? locationData.state.catInit : '') : ''
-    const settingCategories = ['profile', 'account', 'display', 'other']
+    const settingCategories = ['profile', 'account', 'privacy', 'display', 'other']
     const [settingCategory, setSettingCategory] = useState(catInit)
 
     const changeCategory = (newCat) => {
@@ -45,7 +45,7 @@ export default function SettingsPage({}) {
                         return (
                             <Box 
                                 sx={{
-                                    height: '150px', 
+                                    height: '120px', 
                                     width: '100%', 
                                     borderTop: idx === 0 ? 'none' : '1px solid black', 
                                     position: 'relative',

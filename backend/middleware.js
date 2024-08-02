@@ -165,6 +165,21 @@ const canOfferTrade = async(req, res, next) => {
         exception.status = 403
         return res.status(403).send(exception)
     }
+    if (ownerData.settings.privacy.disabledTrades) {
+        const exception = new Error()
+        exception.name = 'Forbidden'
+        exception.message = `This user has trades disabled!`
+        exception.status = 403
+        return res.status(403).send(exception)
+    }
+    const traderIsBlockedByOwner = ownerData.settings.privacy.blockedUsers.includes(traderData.username)
+    if (traderIsBlockedByOwner) {
+        const exception = new Error()
+        exception.name = 'Forbidden'
+        exception.message = `You were blocked by this user and cannot trade with them!`
+        exception.status = 403
+        return res.status(403).send(exception)
+    }
     next()
 }
 

@@ -1,6 +1,6 @@
 import {Box, Typography, useTheme, Tabs, Tab, styled, Paper, Button, Grid, Tooltip} from '@mui/material'
 import { useState, forwardRef } from 'react'
-import { useNavigate } from 'react-router'
+import { useNavigate, useRouteLoaderData } from 'react-router'
 import modalStyles from '../../../../utils/styles/componentstyles/modalstyles'
 import { Virtuoso, VirtuosoGrid } from 'react-virtuoso'
 import { reFormatToIndividual, reFormatIndividualRow } from '../../../../utils/functions/comparecollections/comparison'
@@ -9,9 +9,10 @@ import { compareDisplayGridComponents, listCompareDisplayIndividual, listCompare
 
 
 
-export default function ComparisonDisplay({userCollectionDisplay, userColId, ownerCollectionDisplay, ownerColId, comparisonData, ownerUsername, oneHomeCollection, goBackScreen, ownerTradeStatus, isTradePage, closeModal}) {
+export default function ComparisonDisplay({userCollectionDisplay, userColId, ownerCollectionDisplay, ownerColId, comparisonData, ownerUsername, oneHomeCollection, goBackScreen, ownerTradeStatus, ownerBlockedUsers, ownerTradesDisabled, isTradePage, closeModal}) {
     const theme = useTheme()
     const navigate = useNavigate()
+    const loggedInUserData = useRouteLoaderData("root")
     const [list, setList] = useState('canOffer')
     const [displayType, setDisplayType] = useState('byIndividual')
     const canOfferAmount = comparisonData.canOffer.map((p) => p.balls.length).reduce((accumulator, currentValue) => accumulator+currentValue, 0)
@@ -83,7 +84,13 @@ export default function ComparisonDisplay({userCollectionDisplay, userColId, own
                     <Button variant='contained' sx={{'&.Mui-disabled': {opacity: 0.5, backgroundColor: theme.palette.primary.main, color: 'white'}}} disabled>Offer Trade</Button>
                     </Box>
                 </Tooltip> : 
-                <Button variant='contained' onClick={isTradePage ? closeModal : () => navigate(`/collections/${ownerColId}/trade`, navigateOpts)}>{isTradePage ? 'Next' : 'Offer Trade'}</Button>
+                <Button 
+                    disabled={!isTradePage && ((loggedInUserData.loggedIn && ownerBlockedUsers.includes(loggedInUserData.user.username) || ownerTradesDisabled))} 
+                    variant='contained' 
+                    onClick={isTradePage ? closeModal : () => navigate(`/collections/${ownerColId}/trade`, navigateOpts)}
+                >
+                    {isTradePage ? 'Next' : 'Offer Trade'}
+                </Button>
                 }
             </Box>
         </Box>

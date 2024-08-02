@@ -76,8 +76,11 @@ export default function NewTrade({}) {
     }
 
     const initDataFromComparison = async() => {
-        const userCollectionData = await getUserCollectionData(locationData.state.compareWith) //no error handling here since this is taken directly from a comparison from the prev page. 
-        setTradeData({...tradeData, displaySteps: {...tradeData.displaySteps, 2: true}, compareWith: locationData.state.compareWith, userCollectionData, comparisonData: locationData.state.comparisonData})
+        const backendFunc = async() => await getUserCollectionData(locationData.state.compareWith) 
+        const successFunc = (userCollectionData) => {setTradeData({...tradeData, displaySteps: {...tradeData.displaySteps, 2: true}, compareWith: locationData.state.compareWith, userCollectionData, comparisonData: locationData.state.comparisonData})}
+        handleError(backendFunc, false, successFunc, () => {})
+        //might be worth passing all collection data into the location state rather than re-requesting it. I think that's how its handled for counter-offers anyway
+        //not sure why i did it this way but its worth looking into.
     }
 
     const changeProposedValues = () => {
@@ -104,7 +107,7 @@ export default function NewTrade({}) {
             }, 500) 
         }
     }, [])
-
+    
     const userTradeableCollections = userData.user.collections.filter(col => checkIfCanTrade(col, targetColData))
     
     return (

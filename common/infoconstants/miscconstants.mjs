@@ -16,6 +16,18 @@ const findGenByDexNum = (dexNum) => {
                 (906 <= dexNum && dexNum <= 1025) && 9
     return gen
 }
+const findRegionByDexNum = (dexNum, getRegionSuffix=false) => {
+    const region = (1 <= dexNum && dexNum <= 151) ? getRegionSuffix ? 'Kantonian' : 'Kanto' :
+                (152 <= dexNum && dexNum <= 251) ? getRegionSuffix ? 'Johtonian' : 'Johto' : 
+                (252 <= dexNum && dexNum <= 386) ? getRegionSuffix ? 'Hoennian' : 'Hoenn' : 
+                (387 <= dexNum && dexNum <= 493) ? getRegionSuffix ? 'Sinnohan' : 'Sinnoh' : 
+                (494 <= dexNum && dexNum <= 649) ? getRegionSuffix ? 'Unovan' : 'Unova' : 
+                (650 <= dexNum && dexNum <= 721) ? getRegionSuffix ? 'Kalosian' :'Kalos' : 
+                (722 <= dexNum && dexNum <= 809) ? getRegionSuffix ? 'Alolan' :'Alola' : 
+                (810 <= dexNum && dexNum <= 905) ? getRegionSuffix ? 'Galarian' :'Galar' : 
+                (906 <= dexNum && dexNum <= 1025) && getRegionSuffix ? 'Paldean' : 'Paldea'
+    return region
+}
 
 //update this array if theres ever a new apriball to collect
 const apriballs = ['fast', 'friend', 'heavy', 'level', 'love', 'lure', 'moon', 'beast', 'dream', 'safari', 'sport'];
@@ -147,7 +159,7 @@ const valueDefaults = {
 }
 
 export {
-    generations, genRomans, genGames, findGenByDexNum,
+    generations, genRomans, genGames, findGenByDexNum, findRegionByDexNum,
     apriballs, apriballLiterals, specialBalls, ballIntros,
     getGenNum, getBallsInGen,
     collectionTypes, collectionDescription, collectionSubTypes,

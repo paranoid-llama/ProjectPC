@@ -129,11 +129,34 @@ const getAllAlcremieFormsArr = () => {
 //this information is only used for sorting operations. multiple pokemon with the same dex number (alt or regional forms) && their name has a space in it
 const multipleDexNumAndSpaceHavingPokemon = ['Mr. Mime']
 
+//pokemon name display information for frontend
+const regionalNameDisplayOpts = [
+    {value: 'default', display: 'Default'}, {value: 'brackets-full-out', display: 'In Brackets after Name'}, 
+    {value: 'brackets-full-in', display: 'In Brackets before Name'}, {value: 'dash-full-out', display: 'Dash after Name'}, {value: 'dash-full-in', display: 'Dash before Name'},
+    {value: 'dash-short-out', display: 'Shortened Dash after Name'}, {value: 'dash-short-in', display: 'Shortened Dash before Name'}
+]
+const originRegionalNameDisplayOpts = [
+    {value: 'default', display: 'Default'}, {value: 'default-regional', display: 'Default for Regional Forms'}, {value: 'brackets-full-out', display: 'In Brackets after Name'},
+    {value: 'brackets-full-in', display: 'In Brackets before Name'}, {value: 'dash-full-out', display: 'Dash after Name'}, {value: 'dash-full-in', display: 'Dash before Name'},
+    {value: 'dash-short-out', display: 'Shortened Dash after Name'}, {value: 'dash-short-in', display: 'Shortened Dash before Name'}
+]
+const altFormNameDisplayOpts = [
+    {value: 'default', display: 'Default'}, {value: 'brackets-full-formname-out', display: 'In Brackets with Form Name'},
+    {value: 'brackets-full-in', display: 'In Brackets before Name'}, {value: 'dash-full-out', display: 'Dash after Name'}, {value: 'dash-full-in', display: 'Dash before Name'},
+    {value: 'dash-short-out', display: 'Shortened Dash after Name'}, {value: 'dash-short-in', display: 'Shortened Dash before Name'}
+]
+const altFormNames = {
+    'Burmy': 'Cloak', 'Shellos': 'Sea', 'Basculin': 'Striped', 'Deerling': 'Form', 'Vivillon': 'Pattern', 'Flabébé': 'Flower', 'Pumpkaboo': 'Size', 'Gourgeist': 'Size',
+    'Oricorio': 'Style', 'Minior': 'Core', 'Sinistea': 'Form', 'Squawkabilly': 'Plumage', 'Tatsugiri': 'Form', 'Poltchageist': 'Form'
+}
+const threeLetterShorten = ['Vivillon', 'Pumpkaboo', 'Gourgeist', 'Oricorio', 'Deerling']
+
 export {
     regionalFormRegions, alolanFormMons, galarianFormMons, hisuianFormMons, paldeanFormMons, regionalFormMons, multipleRegionalFormMons,
     allAltFormMons, genderAltFormMons, interchangeableAltFormMons, nonBreedableAltFormMons, nonBreedableAltRegIdentifiers,
     altFormMonsWithExclusiveEMs, incenseAdultsWithExclusiveEMs, incenseBabiesWithExclusiveEMs, babiesOfGen1Pokemon, babiesOfGen2Pokemon, babiesOfGen3Pokemon,
     pokeBabies, pokeAdults, pokeIncenseBabies, pokeIncenseAdults, legendaryPokemon, nonBreedablePokemon, effectiveNonBreedable, evolvedRegionals, noCompareWithoutOnhand,
     uniqueRegionalFormPokemon, uniqueAlternateFormPokemon, pokemonNamesWithSpaces,
-    pokemonGroups, pokemonSubGroups, differentRegionalFormEvolutions, vivillonForms, getAllAlcremieFormsArr, multipleDexNumAndSpaceHavingPokemon
+    pokemonGroups, pokemonSubGroups, differentRegionalFormEvolutions, vivillonForms, getAllAlcremieFormsArr, multipleDexNumAndSpaceHavingPokemon,
+    regionalNameDisplayOpts, originRegionalNameDisplayOpts, altFormNameDisplayOpts, altFormNames, threeLetterShorten
 }

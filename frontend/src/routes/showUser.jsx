@@ -1,7 +1,9 @@
-import {Box, useTheme, Typography, Grid, styled, Button} from '@mui/material'
-import { useRef, forwardRef } from 'react'
+import {Box, useTheme, Typography, Grid, styled, Button, Tooltip} from '@mui/material'
+import { useRef, useContext, forwardRef } from 'react'
+import { AlertsContext } from '../alerts/alerts-context'
+import { ErrorContext } from '../app/contexts/errorcontext'
 import BodyWithBanner from '../components/partials/routepartials/bodywithbanner'
-import { useNavigate, useLoaderData, useRouteLoaderData } from 'react-router-dom'
+import { useNavigate, useLoaderData, useRouteLoaderData, useRevalidator } from 'react-router-dom'
 import ImgData from '../components/collectiontable/tabledata/imgdata'
 import TextSpaceSingle from '../components/titlecomponents/subcomponents/textspacesingle'
 import hexToRgba from 'hex-to-rgba'
@@ -12,6 +14,8 @@ import SearchCollectionItem from '../components/functionalcomponents/search/sear
 import SimpleBar from 'simplebar-react'
 import EditIcon from '@mui/icons-material/Edit';
 import SettingsIcon from '@mui/icons-material/Settings';
+import BlockIcon from '@mui/icons-material/Block';
+import userSettingsBackendRequest from '../../utils/functions/backendrequests/users/settings'
 import 'simplebar-react/dist/simplebar.min.css'
 import "./showUser.css"
 
@@ -19,8 +23,13 @@ import "./showUser.css"
 export default function ShowUser({}) {
     const navigate = useNavigate()
     const userData = useLoaderData()
+    const revalidator = useRevalidator()
+    const {handleError} = useContext(ErrorContext)
+    const {addAlert} = useContext(AlertsContext)
     const loggedInUserData = useRouteLoaderData("root")
     const isUser = loggedInUserData.loggedIn === true && (loggedInUserData.user._id === userData._id)
+    const userIsBlocked = !isUser && loggedInUserData.loggedIn && loggedInUserData.user.settings.privacy.blockedUsers.includes(userData.username)
+    
     const theme = useTheme()
     const gameScrollRef = useRef()
 
@@ -91,6 +100,14 @@ export default function ShowUser({}) {
         }
     }
 
+    const blockUserRequest = () => {
+        const backendFunc = async() => await userSettingsBackendRequest('blockUser', userData.username, loggedInUserData.user.username)
+        const successFunc = () => {
+            revalidator.revalidate()
+            addAlert({severity: 'success', timeout: 3, message: `${userIsBlocked ? 'Unb' : 'B'}locked this user!`})
+        }
+        handleError(backendFunc, false, successFunc, () => {})
+    }
     
     const generateEditBioButton = () => {
         return (
@@ -108,6 +125,17 @@ export default function ShowUser({}) {
         )
     }
 
+    const generateBlockButton = () => {
+        const bgStyle = userIsBlocked ? {':hover': {backgroundColor: 'rgba(200, 100, 100, 0.5)'}, width: '32px', backgroundColor: 'rgba(200, 100, 100, 0.5)', boxShadow: '0px 5px 4px -4px rgba(200,100,100,0.4), 0px 5px 5px 0px rgba(200,100,100,0.14), 0px 5px 7px 0px rgba(200,100,100,0.12)'} : {}
+        return (
+            <Tooltip title={`${userIsBlocked ? 'Unb' : 'B'}lock User`}>
+                <Button size='small' sx={{borderRadius: '50%', padding: 0, width: '100%', height: '100%', color: 'red', ...bgStyle}} onClick={blockUserRequest}>
+                    <BlockIcon color='red'/>
+                </Button>
+            </Tooltip>
+        )
+    }
+
     return (
         <BodyWithBanner bannerSx={{backgroundColor: theme.palette.color1.light, color: theme.palette.color1.contrastTextLight}} bodySx={{mb: 0, mt: 2}} text={`${userData.username}'s profile`}>
             <Box sx={{minHeight: '250px', ...theme.components.box.fullCenterRow}}>
@@ -119,7 +147,7 @@ export default function ShowUser({}) {
                         text={userData.username}
                         label={'Username'}
                         width='100%'
-                        buttonAdornmentFunc={isUser ? generateSettingsButton : undefined}
+                        buttonAdornmentFunc={isUser ? generateSettingsButton : loggedInUserData.loggedIn ? generateBlockButton : undefined}
                     />
                     <TextSpaceSingle 
                         colorStyles={textColor2}

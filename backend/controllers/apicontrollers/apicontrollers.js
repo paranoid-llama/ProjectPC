@@ -5,7 +5,7 @@ export async function getSession(req, res) {
     if (noUser) {
         res.json({})
     } else {
-        const userData = await User.findById(req.session.passport.user).lean().populate({path: 'collections', select: 'type gen -owner'}).select('username collections notifications.unread').exec()
+        const userData = await User.findById(req.session.passport.user).lean().populate({path: 'collections', select: 'type gen -owner'}).select('username collections notifications.unread settings.privacy.blockedUsers').exec()
         res.json(userData)
     }
 }

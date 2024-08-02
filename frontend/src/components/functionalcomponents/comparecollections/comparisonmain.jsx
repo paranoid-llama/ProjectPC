@@ -1,6 +1,8 @@
 import {Box, Modal, Fade, Backdrop, Typography, useTheme, CircularProgress} from '@mui/material'
 import modalStyles from '../../../../utils/styles/componentstyles/modalstyles'
-import { useState, useTransition } from 'react'
+import { useState, useContext, useTransition } from 'react'
+import {ErrorContext} from '../../../app/contexts/errorcontext.jsx'
+import getUserCollectionData from '../../../../utils/functions/backendrequests/getusercollectiondata.js'
 import hexToRgba from 'hex-to-rgba'
 import ComparisonSelection from './comparisonselection'
 import ComparisonDisplay from './comparisondisplay'
@@ -9,8 +11,10 @@ import startComparison from '../../../../utils/functions/comparecollections/comp
 
 export default function ComparisonMain({open, toggleModal, tradeableCollections, collectionData, isTradePage=false, externalSelectedCol=undefined, externalChangeSelectedCol=undefined, externalComparisonData=undefined, extSetComparisonData=undefined, extSelectedColData=undefined, extCantChangeSelected=false}) {
     const theme = useTheme()
+    const {handleError} = useContext(ErrorContext)
     const [comparisonData, setComparisonData] = useState({screen: 'selection', selectedCol: tradeableCollections[0]._id, optionType: 'basic', options: {userList: {ha: true, em: false, onhand: false}, ownerList: {ha: true, em: false, onhand: false}}, advancedOptions: {equalizeBabyAdults: false, legendary: false, nonBreedable: false, evolvedRegional: false}, pendingTransition: false})
     // console.log(tradeableCollections)
+
 
     const trueSelectedCol = externalSelectedCol !== undefined ? externalSelectedCol : comparisonData.selectedCol
     const trueComparisonData = externalComparisonData !== undefined ? externalComparisonData : comparisonData.data
@@ -41,15 +45,19 @@ export default function ComparisonMain({open, toggleModal, tradeableCollections,
     }
 
     const compareData = async(selectedColId, opts, advOpts) => {
-        const result = await startComparison(selectedColId, collectionData, opts, advOpts, extSelectedColData)
-        setTimeout(() => {
-            if (externalComparisonData !== undefined) {
-                extSetComparisonData(result)
-                setComparisonData({...comparisonData, screen: 'comparison', pendingTransition: false})
-            } else {
-                setComparisonData({...comparisonData, screen: 'comparison', data: result, pendingTransition: false})
-            }
-        }, 1000)
+        const backendFunc = async() => await getUserCollectionData(selectedColId)
+        const successFunc = (userCollectionData) => {
+            const result = startComparison(userCollectionData, collectionData, opts, advOpts, extSelectedColData)
+            setTimeout(() => {
+                if (externalComparisonData !== undefined) {
+                    extSetComparisonData(result)
+                    setComparisonData({...comparisonData, screen: 'comparison', pendingTransition: false})
+                } else {
+                    setComparisonData({...comparisonData, screen: 'comparison', data: result, pendingTransition: false})
+                }
+            }, 1000)
+        }
+        handleError(backendFunc, false, successFunc, () => {})  
     }
 
     const selectedCollectionData = tradeableCollections.filter(col => col._id === trueSelectedCol)[0]
@@ -108,6 +116,8 @@ export default function ComparisonMain({open, toggleModal, tradeableCollections,
                             oneHomeCollection={oneHomeCollection}
                             goBackScreen={() => changeScreen('selection')}
                             ownerTradeStatus={collectionData.options.tradePreferences.status}
+                            ownerTradesDisabled={collectionData.owner.settings.privacy.disabledTrades}
+                            ownerBlockedUsers={collectionData.owner.settings.privacy.blockedUsers}
                             isTradePage={isTradePage}
                             closeModal={toggleModal}
                         />

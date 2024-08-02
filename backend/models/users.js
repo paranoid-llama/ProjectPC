@@ -34,7 +34,9 @@ const userSchema = new Schema ({
             games: {type: Array}
         },
         privacy: {
-
+            _id: false,
+            disabledTrades: {type: Boolean},
+            blockedUsers: {type: Array}
         },
         account: {
             _id: false,
@@ -49,7 +51,35 @@ const userSchema = new Schema ({
             }
         },
         display: {
-            
+            _id: false,
+            pokemonNames: {
+                _id: false,
+                general: {
+                    _id: false,
+                    regionalForms: {
+                        type: String, 
+                        enum: {
+                            values: ['default', 'brackets-full-out', 'brackets-full-in', 'dash-full-out', 'dash-full-in', 'dash-short-out', 'dash-short-in']
+                        }
+                    },
+                    originRegionalForms: {
+                        type: String, 
+                        enum: {
+                            values: ['default', 'default-regional', 'brackets-full-out', 'brackets-full-in', 'dash-full-out', 'dash-full-in', 'dash-short-out', 'dash-short-in']
+                        }
+                    },
+                    alternateForms: {
+                        type: String, 
+                        enum: {
+                            values: ['default', 'brackets-full-formname-out', 'brackets-full-in', 'dash-full-out', 'dash-full-in', 'dash-short-out', 'dash-short-in']
+                        }
+                    }
+                },
+                specific: {
+                    _id: false,
+                    type: Object
+                }
+            }
         }
     }, 
     notifications: {

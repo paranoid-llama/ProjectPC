@@ -25,6 +25,7 @@ export default function PrivateRoute({Component, PlaceholderComponent, routeType
     const isAuthorized = !notLoggedIn && ((routeType === 'editCollection' || routeType === 'tradeCounteroffer') ? (userData.user._id === comparisonRef && (routeType === 'tradeCounteroffer' ? loaderData.tradeData.history.length < 5 : true)) : 
         (routeType === 'userSettings' || routeType === 'userNotifications' || routeType === 'userTrades') && userData.user.username === comparisonRef)
 
+
     //alerts
     const [alertIds, setAlertIds] = useState([])
     const {addAlert, dismissAlert} = useContext(AlertsContext)

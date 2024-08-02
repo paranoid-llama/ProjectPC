@@ -1,4 +1,4 @@
-import {Box, AppBar, Button, ToggleButton, ToggleButtonGroup} from '@mui/material'
+import {Box, AppBar, Button, ToggleButton, ToggleButtonGroup, Tooltip, Typography, useTheme} from '@mui/material'
 import { useState, useEffect } from 'react'
 import { useLoaderData, useLocation, useNavigate } from 'react-router-dom'
 import { Link } from 'react-router-dom'
@@ -20,6 +20,7 @@ import { setOptionsInitialState } from '../../app/slices/options'
 
 export default function ShowCollectionTitle({collectionID, options, isEditMode, isOwner, userIsLoggedIn, userData}) {
     const collectionInfo = useLoaderData()
+    const theme = useTheme()
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const link = useLocation().pathname
@@ -28,12 +29,14 @@ export default function ShowCollectionTitle({collectionID, options, isEditMode, 
     const gen8Collection = isNaN(parseInt(collectionInfo.gen))
     const tradePreferencesState = useSelector((state) => state.options.tradePreferences)
     const tradePreferences = isEditMode ? tradePreferencesState : options.tradePreferences
+    const ownerTradesDisabled = collectionInfo.owner.settings.privacy.disabledTrades
     const itemsState = tradePreferences.items
     const collectionType = gen8Collection ? `${collectionInfo.gen.toUpperCase()} Aprimon Collection` : `Gen ${collectionInfo.gen} Aprimon Collection`
     const formattedTradePreferences = [tradePreferenceDisplay.onhandOnly[tradePreferences.onhandOnly], tradePreferenceDisplay.size[tradePreferences.size], tradePreferenceDisplay.items[tradePreferences.items]].filter(display => display !== undefined)
     
     const tradeableCollections = (userData !== undefined && collectionInfo.owner._id !== userData._id) && userData.collections.filter(col => checkIfCanTrade(collectionInfo, col))
-    const canInitiateTrade = (userData !== undefined && collectionInfo.owner._id !== userData._id) && tradeableCollections.length !== 0
+    const canInitiateTrade = (userData !== undefined && collectionInfo.owner._id !== userData._id) && tradeableCollections.length !== 0 
+    const loggedInUserIsBlockedByOwner = userData !== undefined && collectionInfo.owner._id !== userData._id && collectionInfo.owner.settings.privacy.blockedUsers.includes(userData.username)
 
     useEffect(() => {
         if (itemsState === 'none' && displayScreen === 'items') {
@@ -127,14 +130,14 @@ export default function ShowCollectionTitle({collectionID, options, isEditMode, 
                     colorStyles={colorStyles1}
                     otherStyles={{borderBottom: '1px solid white', marginBottom: 0}} 
                     otherLabelStyles={tradeStatusLabelStyles}
-                    text={tradePreferenceDisplay.status[tradePreferences.status]}
+                    text={ownerTradesDisabled ? 'Not accepting offers!' : tradePreferenceDisplay.status[tradePreferences.status]}
                     label={'Trade Status'}
                     width='100%'
                 />
                 <TextSpaceSingle 
                     colorStyles={colorStyles2}
                     otherTextStyles={tradeTagTextStyles}
-                    tagAreaStyles={tradePreferences.status === 'closed' ? {...tagAreaStyles, opacity: 0.5} : tagAreaStyles}
+                    tagAreaStyles={(tradePreferences.status === 'closed' || ownerTradesDisabled) ? {...tagAreaStyles, opacity: 0.5} : tagAreaStyles}
                     multipleTexts={formattedTradePreferences}
                     displayingTags={true}
                     width='100%'
@@ -148,7 +151,17 @@ export default function ShowCollectionTitle({collectionID, options, isEditMode, 
                 </Box>
                 <Box sx={{width: '100%', height: '15%', display: 'flex', justifyContent: 'center'}}>
                     {canInitiateTrade && <Button sx={{width: '60%', fontSize: '11px'}} onClick={toggleComparisonModal}>Compare Collections</Button>}
-                    {canInitiateTrade && <Button sx={{width: '40%', fontSize: '11px'}} onClick={() => navigate(`/collections/${collectionID}/trade`)}>Offer Trade</Button>}
+                    {canInitiateTrade && 
+                        <>
+                        {
+                        (loggedInUserIsBlockedByOwner || ownerTradesDisabled) ? 
+                        <Tooltip title={ownerTradesDisabled ? 'This user has trades disabled at the moment!' : 'You were blocked by this user, and cannot initiate a trade!'}>
+                            <Typography sx={{':hover': {cursor: 'pointer'}, width: '40%', height: '18px', paddingTop: '6px', fontSize: '11px', color: 'grey', textAlign: 'center'}}>OFFER TRADE</Typography>
+                        </Tooltip> :
+                        <Button sx={{width: '40%', fontSize: '11px'}} onClick={() => navigate(`/collections/${collectionID}/trade`)}>Offer Trade</Button>
+                        }
+                        </>
+                    }
                     {isOwner && <Button sx={{width: '40%', fontSize: '12px'}} onClick={initializeEditMode}>Edit Mode</Button>}
                     {isEditMode && <Button sx={{fontSize: '12px'}} onClick={() => dispatch(changeModalState({open: true, screen: 'main'}))}>Collection Options</Button>}
                 </Box>
