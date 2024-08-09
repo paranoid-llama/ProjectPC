@@ -28,6 +28,7 @@ export default function ComparisonDisplay({userCollectionDisplay, userColId, own
     const aprimonCount = comparisonData[list].map(p => p.balls.filter(ballData => ballData.onhandId === undefined)).flat()
     const onhandCount = comparisonData[list].map(p => p.balls.filter(ballData => ballData.onhandId !== undefined)).flat()
     const canGoNextScreen = (isTradePage || (canOfferAmount !== 0 || canReceiveAmount !== 0) || ownerTradeStatus !== 'open')
+    const userNameDisplaySettings = loggedInUserData.loggedIn ? loggedInUserData.user.settings.display.pokemonNames : undefined
 
     const navigateOpts = {
         state: {
@@ -55,7 +56,7 @@ export default function ComparisonDisplay({userCollectionDisplay, userColId, own
                     totalCount={formattedComparisonData[list].length}
                     {...useGridComponents}
                     style={{width: '99%', height: '95%', border: '1px solid white', borderRadius: '10px'}}
-                    itemContent={(idx) => listContentFunc(formattedComparisonData[list][idx], oneHomeCollection, theme, list.slice(3, list.length).toLowerCase())}
+                    itemContent={(idx) => listContentFunc(formattedComparisonData[list][idx], oneHomeCollection, theme, list.slice(3, list.length).toLowerCase(), undefined, undefined, undefined, userNameDisplaySettings)}
                 /> : 
                 <Box sx={{width: '99%', height: '95%', border: '1px solid white', borderRadius: '10px', ...theme.components.box.fullCenterCol}}>
                     <Typography sx={{fontSize: '20px', color: 'grey'}}>

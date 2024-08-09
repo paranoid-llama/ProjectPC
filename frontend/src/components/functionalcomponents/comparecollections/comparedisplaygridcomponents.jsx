@@ -6,6 +6,7 @@ import { forwardRef } from 'react';
 import ImgData from '../../collectiontable/tabledata/imgdata'
 import hexToRgba from 'hex-to-rgba';
 import { capitalizeFirstLetter } from '../../../../utils/functions/misc'
+import getNameDisplay from '../../../../utils/functions/display/getnamedisplay';
 
 const Item = styled(Paper)(() => ({
     backgroundColor: 'transparent',
@@ -129,7 +130,7 @@ const listCompareDisplayIndividualComp = (p, theme, oneHomeCollection, showHAEMA
 }
 
 
-export function listCompareDisplayPokemon(p, oneHomeCollection, theme, list, toggle=false) {
+export function listCompareDisplayPokemon(p, oneHomeCollection, theme, list, toggle=false, randPar1, randPar2, userNameDisplaySettings) {
     const amountOfBalls = p.balls.length
     return (
         <>
@@ -144,7 +145,7 @@ export function listCompareDisplayPokemon(p, oneHomeCollection, theme, list, tog
                     <Typography sx={{fontSize: '12px'}}>#{p.natDexNum}</Typography>
                 </Box>
                 <Box sx={{height: '100%', width: '40%', mx: 0.5, pointerEvents: 'none', ...theme.components.box.fullCenterRow, justifyContent: 'start'}}>
-                    <Typography sx={{fontSize: '12px', textAlign: 'center'}}>{p.name}</Typography>
+                    <Typography sx={{fontSize: '12px', textAlign: 'center'}}>{userNameDisplaySettings === undefined ? p.name : getNameDisplay(userNameDisplaySettings, p.name, p.natDexNum)}</Typography>
                 </Box>
                 {p.for !== undefined &&
                 <Box sx={{height: '100%', width: '43%', mx: 0.5, pointerEvents: 'none', ...theme.components.box.fullCenterRow, justifyContent: 'end'}}>
@@ -195,11 +196,11 @@ export function listCompareDisplayPokemon(p, oneHomeCollection, theme, list, tog
 
 //this component uses a virtuoso grid. virtuoso grids bug out if every item is not the same height, which is why the height is defined.
 //do not add a variable height to this component.
-export function listCompareDisplayIndividual(p, oneHomeCollection, theme, list, toggle=false, isSelected, toggleFunc) {
+export function listCompareDisplayIndividual(p, oneHomeCollection, theme, list, toggle=false, isSelected, toggleFunc, userNameDisplaySettings) {
     const showHAEMArea = (oneHomeCollection && p.isHA !== undefined) || (!oneHomeCollection && (p.isHA !== undefined || p.emCount !== undefined))
     const displayHA = p.isHA !== undefined
     const displayEM = (!oneHomeCollection && p.emCount !== undefined)
-    const displayName = `${capitalizeFirstLetter(p.ball)} ${p.name}`
+    const displayName = `${capitalizeFirstLetter(p.ball)} ${userNameDisplaySettings === undefined ? p.name : getNameDisplay(userNameDisplaySettings, p.name, p.natDexNum)}`
     const sizeScaling = displayName.length >= 18 && displayName.length < 35 ? 'small' : displayName.length >= 35 ? 'smaller' : 'regular'
     const nameSizeAdjust = sizeScaling === 'small' ? {fontSize: '10px'} : sizeScaling === 'smaller' ? {fontSize: '8.5px'} : {fontSize: '12px'}
     const nameBallAreaMarge = sizeScaling === 'small' ? {mb: 0.25, mt: 0.5} : sizeScaling === 'smaller' ? {mb: 0.25, mt: 0} : {my: 0.25, mb: 1}
@@ -228,7 +229,7 @@ export function listCompareDisplayIndividual(p, oneHomeCollection, theme, list, 
     )
 }
 
-export function IndividualCompareDisplayComponent({p, oneHomeCollection, list}) {
+export function IndividualCompareDisplayComponent({p, oneHomeCollection, list, userNameDisplaySettings}) {
     const theme = useTheme()
     const dispatch = useDispatch()
     const formatList = list === 'offer' ? 'offering' : 'receiving'
@@ -240,11 +241,11 @@ export function IndividualCompareDisplayComponent({p, oneHomeCollection, list}) 
     delete ballDataForToggle.natDexNum
     const onClickFunc = () => dispatch(setPokemon({pData: pDataForToggle, ballData: ballDataForToggle, tradeSide: formatList}))
     return (
-        listCompareDisplayIndividual(p, oneHomeCollection, theme, list, true, pokemonIsSelected, onClickFunc)
+        listCompareDisplayIndividual(p, oneHomeCollection, theme, list, true, pokemonIsSelected, onClickFunc, userNameDisplaySettings)
     )
 }
 
-export function PokemonCompareDisplayComponent({p, oneHomeCollection, list, }) {
+export function PokemonCompareDisplayComponent({p, oneHomeCollection, list, userNameDisplaySettings}) {
     const theme = useTheme()
     const amountOfBalls = p.balls.length
     const dispatch = useDispatch()
@@ -271,7 +272,7 @@ export function PokemonCompareDisplayComponent({p, oneHomeCollection, list, }) {
                     <Typography sx={{fontSize: '12px'}}>#{p.natDexNum}</Typography>
                 </Box>
                 <Box sx={{height: '100%', width: '40%', mx: 0.5, pointerEvents: 'none', ...theme.components.box.fullCenterRow, justifyContent: 'start'}}>
-                    <Typography sx={{fontSize: '12px', textAlign: 'center'}}>{p.name}</Typography>
+                    <Typography sx={{fontSize: '12px', textAlign: 'center'}}>{userNameDisplaySettings === undefined ? p.name : getNameDisplay(userNameDisplaySettings, p.name, p.natDexNum)}</Typography>
                 </Box>
                 {p.for !== undefined &&
                 <Box sx={{height: '100%', width: '43%', mx: 0.5, pointerEvents: 'none', ...theme.components.box.fullCenterRow, justifyContent: 'end'}}>

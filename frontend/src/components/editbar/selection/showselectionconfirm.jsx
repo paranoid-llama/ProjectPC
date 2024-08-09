@@ -1,5 +1,7 @@
 import { useEffect } from 'react'
 import {Box, Typography, Button} from '@mui/material'
+import { useRouteLoaderData } from 'react-router'
+import getNameDisplay from '../../../../utils/functions/display/getnamedisplay'
 import ImgData from '../../collectiontable/tabledata/imgdata'
 import {useSelector, useDispatch} from 'react-redux'
 import {toggleEditScreenState} from './../../../app/slices/editmode'
@@ -7,6 +9,7 @@ import { setSelectedBall } from './../../../app/slices/editmode'
 
 export default function ShowSelectionConfirm({listType, pokemon}) {
     const dispatch = useDispatch()
+    const userData = useRouteLoaderData('root')
     const capitalizedBallName = listType === 'onHand' && `${pokemon.ball[0].toUpperCase()}${pokemon.ball.slice(1)}`
     if (listType === 'collection') {
         const allowedBalls = Object.keys(pokemon.balls).filter(ball => pokemon.balls[ball].disabled === undefined)
@@ -22,7 +25,7 @@ export default function ShowSelectionConfirm({listType, pokemon}) {
                 {listType === 'onHand' && <ImgData linkKey={pokemon.ball} type='ball'/>}
                 <ImgData linkKey={pokemon.imgLink}/>
                 <Typography sx={{fontSize: '15px', marginLeft: '10px', paddingRight: '15px'}}>
-                    {listType === 'onHand' && capitalizedBallName} {pokemon.name} is selected
+                    {listType === 'onHand' && capitalizedBallName} {getNameDisplay(userData.user.settings.display.pokemonNames, pokemon.name, pokemon.natDexNum)} is selected
                 </Typography>
             </Box>
         </Box>

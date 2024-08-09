@@ -43,6 +43,7 @@ import RenderOnHandEdit from './onhandlist/renderonhandedit'
             pokemonInfo={(buttonArea === 'onHandEdit') ? 
                 {
                     name: pokemon.name, 
+                    natDexNum: pokemon.natDexNum,
                     ball: pokemon.ball, 
                     imgLink: pokemon.imgLink, 
                     isHA: pokemon.isHA, 

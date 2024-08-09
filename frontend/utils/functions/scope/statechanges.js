@@ -1,4 +1,5 @@
 import { apriballLiterals } from "../../../../common/infoconstants/miscconstants.mjs"
+import { interchangeableAltFormMons } from "../../../../common/infoconstants/pokemonconstants.mjs"
 
 const getPokemonChange = (individualPokeInfo, monAdded, currAddedPoke, currRemovedPoke, groupChanges=false, oldGroupFormData, newGroupFormData) => {
     //monAdded is if the mon was NOT selected when the user clicked, and is now selected. can be gathered from the onChange
@@ -320,8 +321,8 @@ const creationInitializeScopeFormData = (importedCollection, pokemonGroups, coll
             }
             if (pokemonGroups.alternateForms.interchangeable !== undefined) {
                 formData.alternateForms.interchangeable = pokemonGroups.alternateForms.interchangeable.filter(pinfo => pinfo.name.includes('(')).map((pinfo) => formDataMonFormat(pinfo))
+                }
             }
-        }
         return formData
     } else {
         importedCollection.forEach((pokemon) => {
@@ -333,7 +334,8 @@ const creationInitializeScopeFormData = (importedCollection, pokemonGroups, coll
                     const nestedGroups = Object.values(pokemonGroups[groupName])
                     nestedGroups.forEach((nestedGroup, nGrIdx) => {
                         nestedGroup.forEach((pokemonInGroup) => {
-                            if (pokemonInGroup.name === pokemon.name) {
+                            const comparator = interchangeableAltFormMons.includes(pokemonInGroup.name) ? `${pokemonInGroup.name} (Any)` : pokemonInGroup.name
+                            if (comparator === pokemon.name) {
                                 fields.field = groupName
                                 fields.nestedField = nestedGroupKeys[nGrIdx]
                             }

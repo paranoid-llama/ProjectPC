@@ -1,11 +1,11 @@
 import {Box} from '@mui/material'
+import { useRouteLoaderData } from 'react-router'
 import { useRef, forwardRef, useMemo } from 'react'
 import { Virtuoso } from 'react-virtuoso'
 import DraggableSortItem from './draggablesortitem'
 import { Draggable } from 'react-beautiful-dnd'
 
-export default function DroppableList({totalCount, listContent, isHoldList, onHoverStyles, virtuosoStyles, otherContainerStyles, virtuosoProps, droppableProps, innerRef, snapshot}) {
-
+export default function DroppableList({totalCount, listContent, isHoldList, onHoverStyles, virtuosoStyles, otherContainerStyles, virtuosoProps, droppableProps, innerRef, snapshot, nameDisplaySettings}) {
     const HeightPreservingItem = ({children, ...props}) => {
         return (
             <Box sx={{height: '36px', py: 0.25}} {...props}>
@@ -27,7 +27,7 @@ export default function DroppableList({totalCount, listContent, isHoldList, onHo
                 className={onHoverStyles ? 'virtuosohover' : 'none'}
                 style={{height: '100%', width: '90%', borderRadius: '10px', overflowX: 'auto', ...virtuosoStyles}}
                 totalCount={totalCount}
-                itemContent={(index) => <DraggableSortItem pokemon={listContent[index]} isHoldList={isHoldList} index={index}/>}
+                itemContent={(index) => <DraggableSortItem pokemon={listContent[index]} isHoldList={isHoldList} index={index} nameDisplaySettings={nameDisplaySettings}/>}
             />
         </Box>
         

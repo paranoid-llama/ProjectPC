@@ -1,4 +1,6 @@
 import {Box, Typography, ToggleButton, Button, Select, MenuItem} from '@mui/material'
+import { useRouteLoaderData } from 'react-router'
+import getNameDisplay from '../../../../../../utils/functions/display/getnamedisplay'
 import OnHandSortSettingsModal from './onhandsortsettingsmodal'
 import CustomSortModal from './customsortmodal'
 import SpeciesSelect from '../../../../editbar/editsectioncomponents/onhandeditonly/modalcomponents/speciesselect'
@@ -8,6 +10,7 @@ import { useState, forwardRef } from 'react'
 
 export default function SortingSelection({sortData, handleChange, handleCustomSortChange, totalBalls, tentativeBallOrder, holdPokemon}) {
     const [modalStates, setModalStates] = useState({onhandSortSettings: {open: false}, collectionSort: {open: false}})
+    const nameDisplaySettings = useRouteLoaderData('root').user.settings.display.pokemonNames
 
     const openModal = (type) => {
         setModalStates({...modalStates, [type]: {...modalStates[type], open: true}})
@@ -57,7 +60,7 @@ export default function SortingSelection({sortData, handleChange, handleCustomSo
                     <Typography sx={{fontSize: '10px'}}>#{pokemon.natDexNum}</Typography>
                 </Box>
                 <Box sx={{height: '100%', width: '35%', ml: 1, pointerEvents: 'none'}}>
-                    <Typography sx={{fontSize: '12px'}}>{pokemon.name}</Typography>
+                    <Typography sx={{fontSize: '12px'}}>{getNameDisplay(nameDisplaySettings, pokemon.name, pokemon.natDexNum)}</Typography>
                 </Box>
                 <Box sx={{height: '100%', width: '40%', display: 'flex', justifyContent: 'flex-end', alignItems: 'center', mr: 4, pointerEvents: 'none'}}>
                     <Typography sx={{fontSize: '12px', width: '70%', ml: 2}}>Position {index+1}</Typography>

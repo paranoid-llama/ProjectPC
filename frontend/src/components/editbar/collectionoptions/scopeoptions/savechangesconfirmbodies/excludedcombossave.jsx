@@ -1,10 +1,13 @@
 import {Box, Typography} from '@mui/material'
+import { useRouteLoaderData } from 'react-router'
+import getNameDisplay from '../../../../../../utils/functions/display/getnamedisplay'
 import { apriballs } from '../../../../../../../common/infoconstants/miscconstants.mjs'
 import { sortByDexNum } from '../../../../../../../common/sortingfunctions/sortbydexnum.mjs'
 import SpeciesSelect from '../../../editsectioncomponents/onhandeditonly/modalcomponents/speciesselect'
 import ImgData from '../../../../collectiontable/tabledata/imgdata'
 
 export default function ExcludedComboSave({addedPokemon, removedPokemon, ballChanges}) {
+    const nameDisplaySettings = useRouteLoaderData('root').user.settings.display.pokemonNames
     const totalList = sortByDexNum('NatDexNumL2H', [
         ...addedPokemon,
         ...removedPokemon,
@@ -50,7 +53,7 @@ export default function ExcludedComboSave({addedPokemon, removedPokemon, ballCha
                     <Typography sx={{fontSize: '10px'}}>#{pokemonInfo.natDexNum}</Typography>
                 </Box>
                 <Box sx={{height: '100%', width: '35%', zIndex: 1}}>
-                    <Typography sx={{fontSize: '12px'}}>{pokemonName}</Typography>
+                    <Typography sx={{fontSize: '12px'}}>{getNameDisplay(nameDisplaySettings, pokemonInfo.name, pokemonInfo.natDexNum)}</Typography>
                 </Box>
                 <Box sx={{height: '100%', width: '50%', display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginRight: 0.25, zIndex: 1}}>
                     {(pokemonType === 'addedPokemon' || pokemonType === 'removedPokemon') && pokemonInfo.excludedBalls.map((ball) => {

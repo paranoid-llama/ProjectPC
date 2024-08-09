@@ -1,5 +1,7 @@
 import {Box, Typography, Grid, ToggleButton, Button, Tooltip} from '@mui/material'
 import { useState } from 'react'
+import { useRouteLoaderData } from 'react-router'
+import getNameDisplay from '../../../../../../utils/functions/display/getnamedisplay'
 import { useDebouncedCallback } from 'use-debounce'
 import ArrowForward from '@mui/icons-material/ArrowForward'
 import ListSearch from '../../../../functionalcomponents/listsearch'
@@ -12,6 +14,7 @@ import { capitalizeFirstLetter } from '../../../../../../utils/functions/misc'
 
 export default function PokemonBallCombosModalContents({elementBg, selectedMon, totalList, ballComboData, pokemonScopeData, ballScope, changePokemonSelection, allPossibleBalls, handleChange, changingScope=false, changeScopeSave, saveErrorNoticeShow}) {
     const [filteredList, setFilteredList] = useState(totalList)
+    const nameDisplaySettings = useRouteLoaderData('root').user.settings.display.pokemonNames
 
     const noSelection = Object.keys(selectedMon).length === 0
     const selectedMonLegalBalls = !noSelection && selectedMon.legalBalls.map(lB => lB === 'apriball' ? apriballLiterals : lB).flat()
@@ -21,7 +24,7 @@ export default function PokemonBallCombosModalContents({elementBg, selectedMon, 
         debouncedSearch(query)
     }
     const debounceFunction = (query) => {
-        const newListState = query === '' ? totalList : totalList.filter(mon => mon.name.toLowerCase().includes(query.toLowerCase()))
+        const newListState = query === '' ? totalList : totalList.filter(mon => getNameDisplay(nameDisplaySettings, mon.name, mon.natDexNum).toLowerCase().includes(query.toLowerCase()))
         setFilteredList(newListState)
     }
     const debouncedSearch = useDebouncedCallback(
@@ -59,7 +62,7 @@ export default function PokemonBallCombosModalContents({elementBg, selectedMon, 
                     <Typography sx={{fontSize: '10px'}}>#{pokemon.natDexNum}</Typography>
                 </Box>
                 <Box sx={{height: '100%', width: '35%'}}>
-                    <Typography sx={{fontSize: '12px'}}>{pokemon.name}</Typography>
+                    <Typography sx={{fontSize: '12px'}}>{getNameDisplay(nameDisplaySettings, pokemon.name, pokemon.natDexNum)}</Typography>
                 </Box>
                 <Box sx={{height: '100%', width: '50%', display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginRight: 2}}>
                     {disabledSelection ? 
@@ -100,7 +103,7 @@ export default function PokemonBallCombosModalContents({elementBg, selectedMon, 
                     <Typography sx={{fontSize: '10px'}}>#{pokemonInfo.natDexNum}</Typography>
                 </Box>
                 <Box sx={{height: '100%', width: '35%'}}>
-                    <Typography sx={{fontSize: '12px'}}>{pokemonName}</Typography>
+                    <Typography sx={{fontSize: '12px'}}>{getNameDisplay(nameDisplaySettings, pokemonName, pokemonInfo.natDexNum)}</Typography>
                 </Box>
                 <Box sx={{height: '100%', width: '50%', display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginRight: 0.25}}>
                     {pokemonInfo.excludedBalls.map((ball) => {
@@ -190,7 +193,7 @@ export default function PokemonBallCombosModalContents({elementBg, selectedMon, 
                         #{selectedMon.natDexNum}
                     </Typography>
                     <Typography>
-                        {selectedMon.name}
+                        {getNameDisplay(nameDisplaySettings, selectedMon.name, selectedMon.natDexNum)}
                     </Typography>
                 </Box>
                 <Box sx={{width: '80%', height: '50%', display: 'flex', justifyContent: 'center', mt: 1, gap: 1}}>

@@ -9,7 +9,7 @@ const paldeanFormMons = ['Tauros', 'Wooper']
 //above specific regional forms above are only used to concat the large array below, which is being used. can import smaller lists if needed. 
 const regionalFormMons = alolanFormMons.concat(galarianFormMons, hisuianFormMons, paldeanFormMons)
 const multipleRegionalFormMons = ['Meowth']
-const allAltFormMons = ['Nidoran', 'Paldean Tauros', 'Burmy', 'Shellos', 'Basculin', 'Deerling', 'Flabébé', 'Pumpkaboo', 'Rockruff', 'Oricorio', 'Minior', 'Indeedee', 'Squawkabilly', 'Tatsugiri']
+const allAltFormMons = ['Nidoran', 'Paldean Tauros', 'Burmy', 'Shellos', 'Basculin', 'Deerling', 'Flabébé', 'Pumpkaboo', 'Rockruff', 'Oricorio', 'Minior', 'Indeedee', 'Squawkabilly', 'Tatsugiri'] //vivillon and alcremie are excluded due to being particular cases (so many forms)
 const genderAltFormMons = ['Nidoran', 'Indeedee']
 const interchangeableAltFormMons = ['Burmy', 'Deerling', 'Oricorio']
 const nonBreedableAltFormMons = ['Sinistea', 'Poltchageist']
@@ -146,8 +146,8 @@ const altFormNameDisplayOpts = [
     {value: 'dash-short-out', display: 'Shortened Dash after Name'}, {value: 'dash-short-in', display: 'Shortened Dash before Name'}
 ]
 const altFormNames = {
-    'Burmy': 'Cloak', 'Shellos': 'Sea', 'Basculin': 'Striped', 'Deerling': 'Form', 'Vivillon': 'Pattern', 'Flabébé': 'Flower', 'Pumpkaboo': 'Size', 'Gourgeist': 'Size',
-    'Oricorio': 'Style', 'Minior': 'Core', 'Sinistea': 'Form', 'Squawkabilly': 'Plumage', 'Tatsugiri': 'Form', 'Poltchageist': 'Form'
+    'Paldean Tauros': 'Breed', 'Burmy': 'Cloak', 'Shellos': 'Sea', 'Basculin': 'Striped', 'Deerling': 'Form', 'Vivillon': 'Pattern', 'Flabébé': 'Flower', 'Pumpkaboo': 'Size', 'Gourgeist': 'Size',
+    'Oricorio': 'Style', 'Rockruff': 'Form', 'Minior': 'Core', 'Sinistea': 'Form', 'Squawkabilly': 'Plumage', 'Tatsugiri': 'Form', 'Poltchageist': 'Form'
 }
 const threeLetterShorten = ['Vivillon', 'Pumpkaboo', 'Gourgeist', 'Oricorio', 'Deerling']
 

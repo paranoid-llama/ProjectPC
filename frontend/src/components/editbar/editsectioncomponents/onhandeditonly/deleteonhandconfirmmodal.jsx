@@ -1,5 +1,7 @@
 import { useTransition, useState, useContext, useEffect } from 'react'
 import { ErrorContext } from '../../../../app/contexts/errorcontext'
+import { useRouteLoaderData } from 'react-router'
+import getNameDisplay from '../../../../../utils/functions/display/getnamedisplay'
 import {AlertsContext} from '../../../../alerts/alerts-context'
 import {useDispatch} from 'react-redux'
 import {Modal, Box, Backdrop, Fade, Typography, Button} from '@mui/material'
@@ -11,9 +13,10 @@ import { removePokemonFromList } from '../../../../app/slices/listdisplay'
 import { deleteOnHandPutRequest } from '../../../../../utils/functions/backendrequests/deleteonhand'
 import { capitalizeFirstLetter } from '../../../../../utils/functions/misc'
 
-export default function DeleteOnHandConfirm({open, handleClose, pokemonName, ball, imgLink, isHA, emCount, gender, isMaxEMs, pokemonId, collectionID}) {
+export default function DeleteOnHandConfirm({open, handleClose, pokemonName, dexNum, ball, imgLink, isHA, emCount, gender, isMaxEMs, pokemonId, collectionID}) {
 
     const dispatch = useDispatch()
+    const userData = useRouteLoaderData('root').user
     const {handleError} = useContext(ErrorContext)
 
     const [alertIds, setAlertIds] = useState([])
@@ -93,7 +96,7 @@ export default function DeleteOnHandConfirm({open, handleClose, pokemonName, bal
                             <ImgData type='ball' linkKey={ball}/><Box sx={{width: '5%'}}></Box><ImgData linkKey={imgLink}/>
                         </Box>
                         <Box sx={{height: '30%', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                            <Typography>{capitalizeFirstLetter(ball)} Ball {gender !== 'none' && <ImgData type='gender' linkKey={gender} size='20px'/>} {pokemonName}</Typography>
+                            <Typography>{capitalizeFirstLetter(ball)} Ball {gender !== 'none' && <ImgData type='gender' linkKey={gender} size='20px'/>} {getNameDisplay(userData.settings.display.pokemonNames, pokemonName, dexNum)}</Typography>
                         </Box>
                         <Box sx={{height: '25%', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                             {isHA !== undefined && <Typography sx={haStyles}>{isHA === false ? 'Non-HA' : 'HA'}</Typography>}

@@ -57,6 +57,7 @@ export default function MiscButtonArea({currentView, collectionID, pokemonInfo={
             open={onHandDeleteConfirm} 
             handleClose={closeOnHandDeleteConfirm} 
             pokemonName={pokemonInfo.name} 
+            dexNum={pokemonInfo.natDexNum}
             ball={pokemonInfo.ball} 
             imgLink={pokemonInfo.imgLink}
             isHA={pokemonInfo.isHA}

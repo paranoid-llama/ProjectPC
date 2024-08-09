@@ -169,7 +169,7 @@ function RenderCollectionEdit({collectionId, ownerId, pokemon, ballInfo, selecte
     }
 
     return (
-        <EditWrapper imgLink={pokemon.imgLink} name={pokemon.name}>
+        <EditWrapper imgLink={pokemon.imgLink} name={pokemon.name} natDexNum={pokemon.natDexNum}>
             <BallSelectionForm 
                 allowedBalls={allowedBalls} 
                 handleChange={handleBallChange} 

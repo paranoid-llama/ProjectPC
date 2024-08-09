@@ -1,8 +1,11 @@
 import {Box, Typography} from '@mui/material'
+import { useRouteLoaderData } from 'react-router'
+import getNameDisplay from '../../../../../../utils/functions/display/getnamedisplay'
 import SpeciesSelect from '../../../editsectioncomponents/onhandeditonly/modalcomponents/speciesselect'
 import ImgData from '../../../../collectiontable/tabledata/imgdata'
 
 export default function PokemonScopeSave({addedPokemon, removedPokemon, collectionAutoSort, collectionSortOrder}) {
+    const nameDisplaySettings = useRouteLoaderData('root').user.settings.display.pokemonNames
     const sortDisplays = {
         'NatDexNumL2H': 'Dex Number - Lowest to Highest',
         'NatDexNumH2L': 'Dex Number - Highest to Lowest',
@@ -32,7 +35,7 @@ export default function PokemonScopeSave({addedPokemon, removedPokemon, collecti
                     <Typography sx={{fontSize: '10px'}}>#{pokemonInfo.natDexNum}</Typography>
                 </Box>
                 <Box sx={{height: '100%', width: '60%', ml: 2}}>
-                    <Typography sx={{fontSize: '12px'}}>{pokemonInfo.name}</Typography>
+                    <Typography sx={{fontSize: '12px'}}>{getNameDisplay(nameDisplaySettings, pokemonInfo.name, pokemonInfo.natDexNum)}</Typography>
                 </Box>
             </Box> 
             </>

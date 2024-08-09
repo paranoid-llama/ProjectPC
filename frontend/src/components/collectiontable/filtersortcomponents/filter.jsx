@@ -1,5 +1,5 @@
 import {Box, Typography, styled, TextField, ToggleButtonGroup} from '@mui/material'
-import { useLoaderData } from 'react-router'
+import { useLoaderData, useRouteLoaderData } from 'react-router'
 import { useSelector, useDispatch } from 'react-redux'
 import { setFilters, filterSearch } from '../../../app/slices/listdisplay' 
 import { deselect } from '../../../app/slices/editmode'
@@ -15,6 +15,8 @@ export default function Filter({listType, collection, isEditMode}) {
     const collectionGen = useLoaderData().gen
     const genNum = collectionGen === 'swsh' ? 8 :
      collectionGen === 'bdsp' ? 4 : collectionGen
+    const userData = useRouteLoaderData('root')
+    const nameDisplaySettings = !userData.loggedIn ? undefined : userData.user.settings.display.pokemonNames
     const gens = collection.gen === 'home' ? genRomans : genRomans.slice(0, genNum)
 
     const ToggleButton = styled(MuiToggleButton)({
@@ -116,7 +118,7 @@ export default function Filter({listType, collection, isEditMode}) {
     }   
 
     const debounceFunction = (query, reFilterList) => {
-        dispatch(filterSearch({searchQuery: query, listState, listType, reFilterList, totalList, currentSortKey}))
+        dispatch(filterSearch({searchQuery: query, listState, listType, reFilterList, totalList, currentSortKey, nameDisplaySettings}))
     }
 
     const debouncedSearch = useDebouncedCallback(
@@ -171,11 +173,11 @@ export default function Filter({listType, collection, isEditMode}) {
                     <ListSearch 
                         queryFunc={handleSearchChange} 
                         textFieldProps={{
-                            label: 'Search Pokemon',
-                            variant: 'outlined',
-                            size: 'small', 
-                            InputLabelProps: {sx: {color: 'white'}},
-                            InputProps: {sx: {color: 'white'}}}}
+                        label: 'Search Pokemon',
+                        variant: 'outlined',
+                        size: 'small', 
+                        InputLabelProps: {sx: {color: 'white'}},
+                        InputProps: {sx: {color: 'white'}}}}
                     />
                 </Box>
             </Box>

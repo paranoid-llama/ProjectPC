@@ -7,10 +7,11 @@ import './../../../routes/showCollection.css'
 import TableCell from '@mui/material/TableCell'
 import DataCell from '../tabledata/datacell'
 import {seeIfPokemonIsSelected, selectOnHandPokemon} from './../../../app/selectors/selectors'
+import getNameDisplay from '../../../../utils/functions/display/getnamedisplay';
 import {setSelected} from './../../../app/slices/editmode'
 import {connect, useDispatch} from 'react-redux'
 
-function OnHandRowContent({columns, row, pokemonId, collectionId, styles, isSelected, setSelected, allEggMoveInfo, isEditMode, isHomeCollection, isTradePage, tradeSide, wantedByOtherList}) {
+function OnHandRowContent({columns, row, pokemonId, collectionId, styles, isSelected, setSelected, allEggMoveInfo, isEditMode, isHomeCollection, isTradePage, tradeSide, wantedByOtherList, userData}) {
     const dispatch = useDispatch()
 
     const possibleEMs = !isHomeCollection && (allEggMoveInfo[row.name])
@@ -37,7 +38,9 @@ function OnHandRowContent({columns, row, pokemonId, collectionId, styles, isSele
                     (c.dataKey === 'EMs' && row[c.dataKey] !== undefined) ? row[c.dataKey][c.idx] :
                     genderlessLabel ? 'N/A' :
                     (c.dataKey === 'emCount' && row[c.dataKey] === undefined) ? 'N/A' :
-                    row[c.dataKey] !== undefined ? row[c.dataKey] : undefined
+                    row[c.dataKey] !== undefined ? (
+                        c.dataKey === 'name' && userData.loggedIn ? getNameDisplay(userData.user.settings.display.pokemonNames, row[c.dataKey], row.natDexNum) : row[c.dataKey]
+                    ) : undefined
                 const textSizeAdjustor = label === ('Paldean Tauros (Aqua)' || 'Paldean Tauros (Blaze)') ? {fontSize: '11.96px'} : 
                     label === 'Basculin (White-Striped)' ? {fontSize: '11.19px'} : {}
                 const imgKey = c.isImg === true ? 

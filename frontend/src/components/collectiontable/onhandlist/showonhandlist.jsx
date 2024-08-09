@@ -10,7 +10,7 @@ import './../../../routes/showCollection.css'
 import { interchangeableAltFormMons } from '../../../../../common/infoconstants/pokemonconstants.mjs';
 import {connect} from 'react-redux'
 
-export default function ShowOnHandList({onhandList, collectionID, styles, eggMoveInfo, isEditMode, isHomeCollection, localDisplayState=undefined, height=800, isTradePage, tradeSide, wantedByOtherListData=[]}) {
+export default function ShowOnHandList({onhandList, collectionID, styles, eggMoveInfo, isEditMode, isHomeCollection, localDisplayState=undefined, height=800, isTradePage, tradeSide, wantedByOtherListData=[], userData}) {
     const theme = useTheme()
     const listState = useSelector(state => state.listDisplay.onhand)
     const listDisplay = localDisplayState === undefined ? listState : localDisplayState
@@ -103,6 +103,7 @@ export default function ShowOnHandList({onhandList, collectionID, styles, eggMov
                 isTradePage={isTradePage}
                 tradeSide={tradeSide}
                 wantedByOtherList={finalPokeWantedData}
+                userData={userData}
                 {...includePokemonProp}
             />
         )

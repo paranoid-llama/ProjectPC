@@ -1,5 +1,7 @@
 import { forwardRef } from 'react';
 import {Box, Typography, Grid, Paper, styled, Tooltip} from '@mui/material'
+import { useRouteLoaderData } from 'react-router';
+import getNameDisplay from '../../../../../../utils/functions/display/getnamedisplay';
 import { apriballLiterals } from '../../../../../../../common/infoconstants/miscconstants.mjs';
 import MuiToggleButton from '@mui/material/ToggleButton'
 import ImgData from '../../../../collectiontable/tabledata/imgdata';
@@ -45,7 +47,7 @@ const gridComponents = {
     ))
 }
 
-const generateOneOrOtherContent = (option1, option2, activePokemon, handleChange, isBabyAdultSelection, groupInfo, ballScope) => {
+const generateOneOrOtherContent = (option1, option2, activePokemon, handleChange, isBabyAdultSelection, groupInfo, ballScope, nameDisplaySettings) => {
     const multipleOption2 = Array.isArray(option2)
     const noLegalBalls = !option1 === undefined && (!option1.legalBalls.map(ball => (
         ball === 'apriball' ?
@@ -83,7 +85,7 @@ const generateOneOrOtherContent = (option1, option2, activePokemon, handleChange
                 >
                     <Item sx={{padding: '5%', width: '50%', backgroundColor: '#283f57', position: 'relative', ':hover': {cursor: 'pointer'}, opacity: 0.5}}>
                         <Typography sx={{fontSize: '10px'}}>#{option1.natDexNum}</Typography>
-                        <Typography sx={{fontSize: '12px'}}>{option1.name}</Typography>
+                        <Typography sx={{fontSize: '12px'}}>{getNameDisplay(nameDisplaySettings, option1.name, option1.natDexNum)}</Typography>
                         <ImgData type='poke' linkKey={option1.imgLink}/>
                         <Box sx={{position: 'absolute', top: '80%', display: 'flex', flexDirection: 'row', width: '90%', alignItems: 'center', justifyContent: 'center'}}>
                             <Typography sx={{fontSize: '10px'}}>
@@ -100,7 +102,7 @@ const generateOneOrOtherContent = (option1, option2, activePokemon, handleChange
                 >
                     <Item sx={{boxShadow: 'none'}}>
                         <Typography sx={{fontSize: '10px'}}>#{option1.natDexNum}</Typography>
-                        <Typography sx={{fontSize: '12px'}}>{option1.name} {multipleOption2 && '(Any)'}</Typography>
+                        <Typography sx={{fontSize: '12px'}}>{getNameDisplay(nameDisplaySettings, option1.name, option1.natDexNum)} {multipleOption2 && '(Any)'}</Typography>
                         <ImgData type='poke' linkKey={option1.imgLink}/>
                         {activePokemon.includes(option1.imgLink) &&
                         <Box sx={{position: 'absolute', top: '1%', left: '80%'}}>
@@ -140,7 +142,7 @@ const generateOneOrOtherContent = (option1, option2, activePokemon, handleChange
                     >
                         <Item sx={{padding: '5%', width: '90%',  height: '90%', backgroundColor: '#283f57', position: 'relative', ':hover': {cursor: 'pointer'}, opacity: 0.5}}>
                             <Typography sx={{fontSize: '10px'}}>#{option.natDexNum}</Typography>
-                            <Typography sx={{fontSize: '12px'}}>{option.name}</Typography>
+                            <Typography sx={{fontSize: '12px'}}>{getNameDisplay(nameDisplaySettings, option.name, option.natDexNum)}</Typography>
                             <ImgData type='poke' linkKey={option.imgLink}/>
                             <Box sx={{position: 'absolute', top: '80%', display: 'flex', flexDirection: 'row', width: '90%', alignItems: 'center', justifyContent: 'center'}}>
                                 <Typography sx={{fontSize: '10px'}}>
@@ -155,9 +157,9 @@ const generateOneOrOtherContent = (option1, option2, activePokemon, handleChange
                         selected={activePokemon.includes(option.imgLink)}
                         onChange={(e) => handleChange(e, groupInfo, option.imgLink, option.name, option.natDexNum)}
                     >
-                        <Item sx={{boxShadow: 'none'}}>
+                        <Item sx={{boxShadow: 'none', minWidth: '90.5px'}}>
                             <Typography sx={{fontSize: '10px'}}>#{option.natDexNum}</Typography>
-                            <Typography sx={{fontSize: '12px'}}>{option.name}</Typography>
+                            <Typography sx={{fontSize: '12px'}}>{getNameDisplay(nameDisplaySettings, option.name, option.natDexNum)}</Typography>
                             <ImgData type='poke' linkKey={option.imgLink}/>
                             {activePokemon.includes(option.imgLink) &&
                             <Box sx={{position: 'absolute', top: '0%', left: '80%'}}>
@@ -192,7 +194,7 @@ const generateOneOrOtherContent = (option1, option2, activePokemon, handleChange
                 >
                     <Item sx={{padding: '5%', width: '50%', backgroundColor: '#283f57', position: 'relative', ':hover': {cursor: 'pointer'}, opacity: 0.5}}>
                         <Typography sx={{fontSize: '10px'}}>#{option2.natDexNum}</Typography>
-                        <Typography sx={{fontSize: '12px'}}>{option2.name}</Typography>
+                        <Typography sx={{fontSize: '12px'}}>{getNameDisplay(nameDisplaySettings, option2.name, option2.natDexNum)}</Typography>
                         <ImgData type='poke' linkKey={option2.imgLink}/>
                         <Box sx={{position: 'absolute', top: '80%', display: 'flex', flexDirection: 'row', width: '90%', alignItems: 'center', justifyContent: 'center'}}>
                             <Typography sx={{fontSize: '10px'}}>
@@ -209,7 +211,7 @@ const generateOneOrOtherContent = (option1, option2, activePokemon, handleChange
                 >
                     <Item sx={{boxShadow: 'none'}}>
                         <Typography sx={{fontSize: '10px'}}>#{option2.natDexNum}</Typography>
-                        <Typography sx={{fontSize: '12px'}}>{option2.name}</Typography>
+                        <Typography sx={{fontSize: '12px'}}>{getNameDisplay(nameDisplaySettings, option2.name, option2.natDexNum)}</Typography>
                         <ImgData type='poke' linkKey={option2.imgLink}/>
                         {activePokemon.includes(option2.imgLink) &&
                         <Box sx={{position: 'absolute', top: '1%', left: '80%'}}>
@@ -240,6 +242,7 @@ const generateOneOrOtherContent = (option1, option2, activePokemon, handleChange
 }
 
 export default function PokemonGroupDisplay({totalPokemon, activePokemon, ballScope, isInterchangeableAltFormSelection, groupInfo, handleChange, tyroguePresent}) {
+    const nameDisplaySettings = useRouteLoaderData('root').user.settings.display.pokemonNames
     const isBabyAdultSelection = !Array.isArray(totalPokemon)
     const fullBabyData = isBabyAdultSelection && {
         total: totalPokemon.babies,
@@ -269,8 +272,8 @@ export default function PokemonGroupDisplay({totalPokemon, activePokemon, ballSc
             totalCount={isBabyAdultSelection ? (groupInfo.subGroup === 'regular') ? totalPokemon.babies.length+1 : totalPokemon.babies.length : reOrderedInterchangeableSel.length}
             itemContent={(index) => 
                 isBabyAdultSelection ? 
-                generateOneOrOtherContent(totalPokemon.babies[index], totalPokemon.adults[index], [...fullBabyData.active, ...fullAdultData.active], handleChange, true, groupInfo, ballScope) : 
-                generateOneOrOtherContent(reOrderedInterchangeableSel[index], interchangeableOtherOpts[reOrderedInterchangeableSel[index].imgLink], activePokemon, handleChange, false, groupInfo, ballScope)}
+                generateOneOrOtherContent(totalPokemon.babies[index], totalPokemon.adults[index], [...fullBabyData.active, ...fullAdultData.active], handleChange, true, groupInfo, ballScope, nameDisplaySettings) : 
+                generateOneOrOtherContent(reOrderedInterchangeableSel[index], interchangeableOtherOpts[reOrderedInterchangeableSel[index].imgLink], activePokemon, handleChange, false, groupInfo, ballScope, nameDisplaySettings)}
         /> :
         <VirtuosoGrid
             style={{ height: '300px', width: '100%', overflowY: 'scroll' }}
@@ -309,7 +312,7 @@ export default function PokemonGroupDisplay({totalPokemon, activePokemon, ballSc
                     >
                         <Item sx={{padding: '5%', width: '90%',  height: '90%', backgroundColor: '#283f57', position: 'relative', ':hover': {cursor: 'pointer'}, opacity: 0.5}}>
                             <Typography sx={{fontSize: '10px'}}>#{totalPokemon[index].natDexNum}</Typography>
-                            <Typography sx={{fontSize: '12px'}}>{totalPokemon[index].name}</Typography>
+                            <Typography sx={{fontSize: '12px'}}>{getNameDisplay(nameDisplaySettings, totalPokemon[index].name, totalPokemon[index].natDexNum)}</Typography>
                             <ImgData type='poke' linkKey={totalPokemon[index].imgLink}/>
                             <Box sx={{position: 'absolute', top: '80%', display: 'flex', flexDirection: 'row', width: '90%', alignItems: 'center', justifyContent: 'center'}}>
                                 <Typography sx={{fontSize: '10px'}}>
@@ -326,7 +329,7 @@ export default function PokemonGroupDisplay({totalPokemon, activePokemon, ballSc
                     >
                             <Item sx={{padding: '5%', width: '90%', backgroundColor: '#283f57', position: 'relative', zIndex: -1}}>
                                 <Typography sx={{fontSize: '10px'}}>#{totalPokemon[index].natDexNum}</Typography>
-                                <Typography sx={{fontSize: '12px'}}>{totalPokemon[index].name}</Typography>
+                                <Typography sx={{fontSize: '12px'}}>{getNameDisplay(nameDisplaySettings, totalPokemon[index].name, totalPokemon[index].natDexNum)}</Typography>
                                 <ImgData type='poke' linkKey={totalPokemon[index].imgLink}/>
                                 {activePokemon.includes(totalPokemon[index].imgLink) &&
                                 <Box sx={{position: 'absolute', top: '1%', left: '80%'}}>

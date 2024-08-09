@@ -149,7 +149,7 @@ export default function RenderOnHandEdit({collectionId, ownerId, pokemon, idxOfP
     const toggleClass = popOutScreens.eggmoveScreen.open === true ? 'egg-moves-slide-in' : 
         popOutScreens.eggmoveScreen.open === false && 'egg-moves-slide-out'
     return (
-        <EditWrapper imgLink={pokemon.imgLink} name={pokemon.name} onClickFunc={handleOpen}>
+        <EditWrapper imgLink={pokemon.imgLink} name={pokemon.name} natDexNum={pokemon.natDexNum} onClickFunc={handleOpen}>
             <OnHandPokemonSelectionForm speciesEditOnly={true} open={popOutScreens.pokemonSelection} handleClose={handleClose} initialPokemonData={pokemon} idxOfInitialPokemon={idxOfPokemon}/>
             <BallSelectionForm allowedBalls={allowedBalls} handleChange={handleBallChange} value={pokemon.ball} width='18%'/>
             <GenderSelectionForm gender={pokemon.gender} possibleGenders={possibleGenders} handleChange={handleGenderChange}/>

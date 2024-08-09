@@ -1,4 +1,5 @@
 import {Box, Typography, Grid, Button} from '@mui/material'
+import { useRouteLoaderData } from 'react-router'
 import ArrowForward from '@mui/icons-material/ArrowForward'
 import Header from '../../../../titlecomponents/subcomponents/header'
 import { DragDropContext } from 'react-beautiful-dnd'
@@ -7,7 +8,7 @@ import SortItem from './dndcomponents/sortitem'
 import DroppableList from './dndcomponents/droppablelist'
 
 export default function CustomSortModalContents({elementBg, customSortState, holdPokemon, handleChange, handleChangeBySortKey, changingCustomSort=false, changeOptionsSave, saveErrorNoticeShow}) {
-
+    const nameDisplaySettings = useRouteLoaderData('root').user.settings.display.pokemonNames
     const sortKeys = ['NatDexNumL2H', 'NatDexNumH2L', 'A2Z', 'Z2A']
     const sortKeyButton = ['Dex Number - Lowest to Highest', 'Dex Number - Highest to Lowest', 'Name - A to Z', 'Name - Z to A']
 
@@ -37,7 +38,7 @@ export default function CustomSortModalContents({elementBg, customSortState, hol
                         droppableId="customSort" 
                         mode='virtual' 
                         renderClone={(provided, snapshot, rubric) => (
-                            <SortItem provided={provided} pokemon={customSortState[rubric.source.index]} isClone={true} snapshot={snapshot}/>
+                            <SortItem provided={provided} pokemon={customSortState[rubric.source.index]} isClone={true} snapshot={snapshot} nameDisplaySettings={nameDisplaySettings}/>
                         )}
                     >
                         {(provided) => (
@@ -51,6 +52,7 @@ export default function CustomSortModalContents({elementBg, customSortState, hol
                                 totalCount={customSortState.length}
                                 virtuosoStyles={{border: '1px solid black'}}
                                 otherContainerStyles={{backgroundColor: '#1e2f41', height: '95%'}}
+                                nameDisplaySettings={nameDisplaySettings}
                             /> 
                         )}
                         
@@ -62,7 +64,7 @@ export default function CustomSortModalContents({elementBg, customSortState, hol
                         droppableId="holdList"
                         mode='virtual' 
                         renderClone={(provided, snapshot, rubric) => (
-                            <SortItem provided={provided} pokemon={holdPokemon[rubric.source.index]} isDragging={snapshot.isDragging} snapshot={snapshot} isHoldList={true}/>
+                            <SortItem provided={provided} pokemon={holdPokemon[rubric.source.index]} isDragging={snapshot.isDragging} snapshot={snapshot} isHoldList={true} nameDisplaySettings={nameDisplaySettings}/>
                         )}
                     >
                         {(provided, snapshot) => (
@@ -76,6 +78,7 @@ export default function CustomSortModalContents({elementBg, customSortState, hol
                                 totalCount={holdPokemon.length}
                                 virtuosoStyles={{border: '1px solid black'}}
                                 otherContainerStyles={{backgroundColor: '#1e2f41', height: '95%'}}
+                                nameDisplaySettings={nameDisplaySettings}
                             />
                         )}
                     </StrictModeDroppable>

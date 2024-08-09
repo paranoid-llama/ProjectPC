@@ -2,7 +2,8 @@ import {useState, useEffect, useContext} from 'react'
 import { ErrorContext } from '../../../../app/contexts/errorcontext'
 import {Modal, Fade, Box, Typography, Backdrop, TextField, Button} from '@mui/material'
 import {Virtuoso} from 'react-virtuoso'
-import { useLoaderData } from 'react-router'
+import { useLoaderData, useRouteLoaderData } from 'react-router'
+import getNameDisplay from '../../../../../utils/functions/display/getnamedisplay'
 import {useSelector, useDispatch} from 'react-redux'
 import {AlertsContext} from '../../../../alerts/alerts-context'
 import {getPokemonWithOwnedBalls, getOwnedBalls, randomGender, setNewOnHandPokemonState, selectivelyReturnIsHAAndEMs, selectNextEmCount, setMaxEmArr, handleEMsState, capitalizeFirstLetter} from './../../../../../utils/functions/misc'
@@ -28,6 +29,7 @@ import SpeciesSelect from './modalcomponents/speciesselect'
 export default function OnHandPokemonSelectionForm({speciesEditOnly=false, open, handleClose, initialPokemonData, idxOfInitialPokemon, isHomeCollection}) {
     //usage in regular functions
     const dispatch = useDispatch()
+    const userNameDisplaySettings = useRouteLoaderData('root').user.settings.display.pokemonNames
     const {handleError} = useContext(ErrorContext)
 
     const allEggMoveInfo = useSelector((state) => state.listDisplay.eggMoveInfo)
@@ -52,7 +54,7 @@ export default function OnHandPokemonSelectionForm({speciesEditOnly=false, open,
 
     const fullSelectionList = getPokemonWithOwnedBalls(collectionData)
     
-    const selectionList = pokemonData.searchData !== '' ? fullSelectionList.filter(p => p.name.toLowerCase().includes(pokemonData.searchData)) : fullSelectionList
+    const selectionList = pokemonData.searchData !== '' ? fullSelectionList.filter(p => getNameDisplay(userNameDisplaySettings, p.name, p.natDexNum).toLowerCase().includes(pokemonData.searchData)) : fullSelectionList
     const allowedBallsStep1 = pokemonData.selection.balls !== undefined ? getOwnedBalls(pokemonData.selection.balls) : []
     //this step prevents errors if a user makes an onhand of a particular ball combo but later changes the ball scope and removes the ball data
     const allowedBalls = (!allowedBallsStep1.includes(pokemonData.ball) && speciesEditOnly) ? [...allowedBallsStep1, pokemonData.ball] : allowedBallsStep1
@@ -162,7 +164,7 @@ export default function OnHandPokemonSelectionForm({speciesEditOnly=false, open,
                     <ImgData linkKey={pokemon.imgLink}/>
                 </Box>
                 <Box sx={{height: '100%', width: '80%'}}>
-                    <Typography>{pokemon.name}</Typography>
+                    <Typography>{getNameDisplay(userNameDisplaySettings, pokemon.name, pokemon.natDexNum)}</Typography>
                 </Box>
             </Box> 
             </>
@@ -296,7 +298,7 @@ export default function OnHandPokemonSelectionForm({speciesEditOnly=false, open,
                     {!(speciesEditOnly) ? 
                     <>
                         <Header label={'Add New Pokémon'} height='7%'/>
-                        <SpeciesSelect searchOnChange={searchOnChange} pokemonData={pokemonData} listItemContent={listItemContent} totalCount={selectionList.length} height='60%'/>
+                        <SpeciesSelect searchOnChange={searchOnChange} pokemonData={pokemonData} listItemContent={listItemContent} totalCount={selectionList.length} height='60%' nameDisplaySettings={userNameDisplaySettings}/>
                         <Box sx={{height: '25%', display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: '3px', ...modalStyles.onhand.modalElementBg}}>
                             <Box sx={{height: '96%', width: '50%', display: 'flex', flexDirection: 'column'}}>
                                 <Box sx={{height: '60%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
@@ -375,7 +377,7 @@ export default function OnHandPokemonSelectionForm({speciesEditOnly=false, open,
                     </> :
                     <>
                         <Header label={'Change Pokémon'} height='10%'/>
-                        <SpeciesSelect searchOnChange={searchOnChange} pokemonData={pokemonData} listItemContent={listItemContent} totalCount={selectionList.length} height='60%'/>
+                        <SpeciesSelect searchOnChange={searchOnChange} pokemonData={pokemonData} listItemContent={listItemContent} totalCount={selectionList.length} height='60%' nameDisplaySettings={userNameDisplaySettings}/>
                         <Box sx={{height: '20%', display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '3px', ...modalStyles.onhand.modalElementBg}}>
                             <BallSelectionForm allowedBalls={allowedBalls} handleChange={handleBallChange} value={pokemonData.ball} onhandBallSelect={true} width='50%'/>
                         </Box>

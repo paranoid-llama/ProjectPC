@@ -15,6 +15,7 @@ import {setSelected, deselect, setSelectedAfterChangingOwned} from './../../../a
 import {usePutRequest} from './../../../../utils/functions/backendrequests/editcollection'
 import getDefaultData from '../../../../utils/functions/defaultdata';
 import { apriballs } from '../../../../../common/infoconstants/miscconstants.mjs';
+import getNameDisplay from '../../../../utils/functions/display/getnamedisplay';
 import {createSelector} from '@reduxjs/toolkit'
 import {setCollectionInitialState} from '../../../app/slices/collection'
 import store from '../../../app/store'
@@ -29,7 +30,7 @@ const disabledTableCellStyles = { //for disabled ball combos (which the user pur
     backgroundColor: 'grey'
 }
 
-export function TableRowGroupingNoRedux({columns, row, id, collectionId, ownerId, styles, isHomeCollection, availableGames, isTradePage, tradeSide, wantedByOtherList}) {
+export function TableRowGroupingNoRedux({columns, row, id, collectionId, ownerId, styles, isHomeCollection, availableGames, isTradePage, tradeSide, wantedByOtherList, userData}) {
     return (
         <React.Fragment>
             {columns.map(c => {
@@ -38,6 +39,8 @@ export function TableRowGroupingNoRedux({columns, row, id, collectionId, ownerId
                 const validBallCombo = apriballs.includes(c.dataKey) && (row.balls[c.dataKey] !== undefined && row.balls[c.dataKey].disabled !== true)
                 const isBallColumn = row.balls[c.dataKey] !== undefined
                 const wantedData = isBallColumn && (wantedByOtherList[0] === undefined ? {} : wantedByOtherList[0].balls.includes(c.dataKey) ? {wanted: true} : {})
+                const nameLabel = (c.dataKey === 'name' && userData.loggedIn) ? getNameDisplay(userData.user.settings.display.pokemonNames, row[c.dataKey], row.natDexNum) : c.dataKey === 'name' && row[c.dataKey]
+                
                 return (
                     c.label === '#' ? 
                         <DataCell
@@ -53,7 +56,7 @@ export function TableRowGroupingNoRedux({columns, row, id, collectionId, ownerId
                     row[c.dataKey] !== undefined ? 
                         <DataCell 
                             key={`${row.imgLink}-${c.label}`}
-                            label={c.dataKey === 'name' && row[c.dataKey]}
+                            label={c.dataKey === 'name' && nameLabel}
                             styles={styles}
                             alignment={c.label === 'img' && styles.alignment.imgAlignment}
                             imgParams={{isImg: isImg, imgLinkKey: row.imgLink}}
@@ -98,7 +101,7 @@ export function TableRowGroupingNoRedux({columns, row, id, collectionId, ownerId
 }
 
 //dont remove id, mapStateToProps uses it
-function TableRowGrouping({columns, row, id, collectionId, ownerId, styles, isSelected, setSelected, isEditMode, isHomeCollection}) {
+function TableRowGrouping({columns, row, id, collectionId, ownerId, styles, isSelected, setSelected, isEditMode, isHomeCollection, userData}) {
     const dispatch = useDispatch()
     // console.log(`rendered ${row.name}`)
     const {handleError} = useContext(ErrorContext)
@@ -167,6 +170,7 @@ function TableRowGrouping({columns, row, id, collectionId, ownerId, styles, isSe
                 const isImg = c.label === 'img' && true
                 const textSizeAdjustor = c.dataKey === 'name' && row[c.dataKey] === 'Basculin (White-Striped)' ? {fontSize: '13px'} : {}
                 const validBallCombo = apriballs.includes(c.dataKey) && (row.balls[c.dataKey] !== undefined && row.balls[c.dataKey].disabled !== true)
+                const nameLabel = (c.dataKey === 'name' && userData.loggedIn) ? getNameDisplay(userData.user.settings.display.pokemonNames, row[c.dataKey], row.natDexNum) : c.dataKey === 'name' && row[c.dataKey]
                 return (
                     c.label === '#' ? 
                         <DataCell
@@ -182,7 +186,7 @@ function TableRowGrouping({columns, row, id, collectionId, ownerId, styles, isSe
                     row[c.dataKey] !== undefined ? 
                         <DataCell 
                             key={`${row.imgLink}-${c.label}`}
-                            label={c.dataKey === 'name' && row[c.dataKey]}
+                            label={c.dataKey === 'name' && nameLabel}
                             styles={styles}
                             alignment={c.label === 'img' && styles.alignment.imgAlignment}
                             imgParams={{isImg: isImg, imgLinkKey: row.imgLink}}

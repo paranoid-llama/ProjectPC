@@ -1,5 +1,7 @@
 import * as React from 'react';
 import { useState } from 'react';
+import { useRouteLoaderData } from 'react-router';
+import getNameDisplay from '../../../../../../utils/functions/display/getnamedisplay';
 import {Box, Typography, Table, TableRow, TableCell, TableHead, TableBody, TableContainer, Paper, Modal, Fade, Backdrop, Tabs, Tab} from '@mui/material'
 import DataCell from '../../../../collectiontable/tabledata/datacell';
 import ImgData from '../../../../collectiontable/tabledata/imgdata';
@@ -12,6 +14,7 @@ export default function AprimonPreviewImport({data, numOfBalls}) {
     const [openDataModal, setOpenDataModal] = useState(false)
     const [openErrorModal, setOpenErrorModal] = useState(false)
     const [errorDisplayType, setErrorDisplayType] = useState('rows')
+    const nameDisplaySettings = useRouteLoaderData('root').user.settings.display.pokemonNames
 
     const openModal = (type) => {
         if (type === 'data') {
@@ -137,7 +140,7 @@ export default function AprimonPreviewImport({data, numOfBalls}) {
                     col.label !== 'Owned Balls' ? 
                     <DataCell 
                         key={`${row.imgLink}-${col.label}`}
-                        label={(col.dataKey === 'name' && row.displayName !== undefined && row.displayName !== '') ? row.displayName : col.dataKey === 'name' && row[col.dataKey]}
+                        label={(col.dataKey === 'name') && getNameDisplay(nameDisplaySettings, row[col.dataKey], row.natDexNum)}
                         styles={listStyles.collection} 
                         alignment={col.label === 'img' && {'@media only screen and (max-width: 1400px)': {paddingLeft: '0px'}, '@media only screen and (min-width: 1401px)': {paddingLeft: '5px'}}}
                         imgParams={{isImg: isImg, imgLinkKey: row.imgLink}}

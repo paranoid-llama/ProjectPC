@@ -13,7 +13,7 @@ import { interchangeableAltFormMons } from '../../../../../common/infoconstants/
 import {setCollectionInitialState} from '../../../app/slices/collection'
 import {setSelected} from '../../../app/slices/editmode'
 
-export default function ShowCollectionList({collection, styles, isEditMode, localDisplayState=undefined, height=800, noStates=false, isTradePage=false, tradeSide=null, wantedByOtherListData=[]}) {
+export default function ShowCollectionList({collection, styles, isEditMode, localDisplayState=undefined, height=800, noStates=false, isTradePage=false, tradeSide=null, wantedByOtherListData=[], userData}) {
     const ballScopeState = !noStates && useSelector((state) => state.options.collectingBalls)
     const listState = !noStates && useSelector((state) => state.listDisplay.collection)
     const link = useLocation().pathname
@@ -132,6 +132,7 @@ export default function ShowCollectionList({collection, styles, isEditMode, loca
                     isTradePage={isTradePage}
                     tradeSide={tradeSide}
                     wantedByOtherList={finalPokeWantedData}
+                    userData={userData}
                     {...includePokemonProp}
                 />
             // </Fragment>

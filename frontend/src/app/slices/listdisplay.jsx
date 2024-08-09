@@ -4,6 +4,7 @@ import { sortList } from '../../../../common/sortingfunctions/customsorting.mjs'
 import { filterList } from '../../../utils/functions/sortfilterfunctions/filterfunctions'
 import { apriballs } from '../../../../common/infoconstants/miscconstants.mjs'
 import { setSortingOptionsState } from './options'
+import getNameDisplay from '../../../utils/functions/display/getnamedisplay'
 import { selectivelyReturnIsHAAndEMs } from '../../../utils/functions/misc'
 
 //this slice controls the display for the show list components (showonhandlist, showcollectionlist). 
@@ -114,8 +115,8 @@ const listDisplay = createSlice({
             return newState
         },
         filterSearch: (state, action) => {
-            const {searchQuery, listState, listType, reFilterList, totalList, currentSortKey} = action.payload
-            const newListState = reFilterList ? totalList.filter((pokemon) => pokemon.name.toLowerCase().includes(searchQuery.toLowerCase())) : listState.filter((pokemon) => pokemon.name.toLowerCase().includes(searchQuery.toLowerCase()))
+            const {searchQuery, listState, listType, reFilterList, totalList, currentSortKey, nameDisplaySettings} = action.payload
+            const newListState = reFilterList ? totalList.filter((pokemon) => getNameDisplay(nameDisplaySettings, pokemon.name, pokemon.natDexNum).toLowerCase().includes(searchQuery.toLowerCase())) : listState.filter((pokemon) => getNameDisplay(nameDisplaySettings, pokemon.name, pokemon.natDexNum).toLowerCase().includes(searchQuery.toLowerCase()))
             const newListStateSorted = currentSortKey !== '' ? sortList(currentSortKey, newListState) : newListState
             const newState = {...state, [listType]: newListStateSorted}
             return newState

@@ -9,7 +9,7 @@ export default function PrivateRoute({Component, PlaceholderComponent, routeType
     const userData = useRouteLoaderData("root")
     const loaderData = useLoaderData()
     // const privateTradePage = routeType === 'userTrades' ? loaderData.settings.account.privatizeTrades
-
+    const pathname = useLocation().pathname
     const Placeholder = PlaceholderComponent === undefined ? BodyWrapper : PlaceholderComponent
     const unauthorizedRedirect = routeType === 'editCollection' ? useLocation().pathname.slice(0, -5) : 
         routeType === 'tradeCounteroffer' ? useLocation().pathname.slice(0, -14) : 
@@ -39,6 +39,7 @@ export default function PrivateRoute({Component, PlaceholderComponent, routeType
 
     useEffect(() => {
         if (notLoggedIn) {
+            
             navigate('/login', {state: {error: true, message: 'You must be logged in to go to that page!', redirectTo: pathname}})
         } else {
             if (!isAuthorized) {

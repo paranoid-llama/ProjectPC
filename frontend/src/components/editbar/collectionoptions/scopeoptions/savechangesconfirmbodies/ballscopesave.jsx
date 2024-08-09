@@ -1,9 +1,12 @@
 import {Box, Typography, Grid, ToggleButton} from '@mui/material'
+import { useRouteLoaderData } from 'react-router'
+import getNameDisplay from '../../../../../../utils/functions/display/getnamedisplay'
 import SpeciesSelect from '../../../editsectioncomponents/onhandeditonly/modalcomponents/speciesselect'
 import ImgData from '../../../../collectiontable/tabledata/imgdata'
 import { capitalizeFirstLetter } from '../../../../../../utils/functions/misc'
 
 export default function BallScopeSave({addedBalls, removedBalls, newBallScope, fullBalls, removedPokemon}) {
+    const nameDisplaySettings = useRouteLoaderData('root').user.settings.display.pokemonNames
     const notRemovingPokemon = removedPokemon.length === 0
 
     const listItemContent = (index) => {
@@ -27,7 +30,7 @@ export default function BallScopeSave({addedBalls, removedBalls, newBallScope, f
                     <Typography sx={{fontSize: '10px'}}>#{pokemonInfo.natDexNum}</Typography>
                 </Box>
                 <Box sx={{height: '100%', width: '30%', ml: 2}}>
-                    <Typography sx={{fontSize: '12px'}}>{pokemonInfo.name}</Typography>
+                    <Typography sx={{fontSize: '12px'}}>{getNameDisplay(nameDisplaySettings, pokemonInfo.name, pokemonInfo.natDexNum)}</Typography>
                 </Box>
                 <Box sx={{height: '100%', width: '40%', display: 'flex', alignItems: 'center', justifyContent: 'end', gap: 0.5}}>
                     {pokemonInfo.legalBalls.map((lB) => {

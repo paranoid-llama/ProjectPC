@@ -1,7 +1,8 @@
 import {Box, Typography, useTheme, Button, Modal, Fade, Backdrop, Tabs, Tab, Tooltip, CircularProgress} from '@mui/material'
 import hexToRgba from 'hex-to-rgba'
 import ControlledTextInput from '../../../components/functionalcomponents/controlledtextinput'
-import { useNavigate, Link} from 'react-router-dom'
+import { useNavigate, Link, useRouteLoaderData } from 'react-router-dom'
+import getNameDisplay from '../../../../utils/functions/display/getnamedisplay'
 import { useSelector } from 'react-redux'
 import { useState, useEffect, useContext, useRef, startTransition } from 'react'
 import { ErrorContext } from '../../../app/contexts/errorcontext'
@@ -19,6 +20,7 @@ import { counterTradeOffer } from '../../../../utils/functions/backendrequests/t
 
 export default function FinalizeTrade({selectedColDisplay, proposedValues, traderId, ownerId, traderUsername, ownerUsername, traderGen, ownerGen, isCounteroffer, tradeId}) {
     const theme = useTheme()
+    const nameDisplaySettings = useRouteLoaderData('root').user.settings.display.pokemonNames
     const navigate = useNavigate()
     const {handleError} = useContext(ErrorContext)
     const offeringPokemon = useSelector((state) => state.tradeOffer.offering)
@@ -109,53 +111,6 @@ export default function FinalizeTrade({selectedColDisplay, proposedValues, trade
     const shownListOfModalFormatted = detailsModal.subTab === 'item' ? shownListOfModal : reFormatToIndividual(shownListOfModal, true)
 
     const changeMessage = (newVal) => {newVal.length <= 200 ? setMessage(newVal) : null}
-
-    const listPokemon = (p) => {
-        const nameDisplay = `${capitalizeFirstLetter(p.ball)} ${p.name}`
-        // const sizeScaling = displayName.length >= 18 && displayName.length < 35 ? 'small' : displayName.length >= 35 ? 'smaller' : 'regular'
-        // const nameSizeAdjust = sizeScaling === 'small' ? {fontSize: '10px'} : sizeScaling === 'smaller' ? {fontSize: '8.5px'} : {fontSize: '12px'}
-        return (
-            <Box sx={{...theme.components.box.fullCenterRow, height: '25px', width: '100%', borderRadius: '3px', backgroundColor: theme.palette.color1.main, my: 0.5}}>
-                <Box sx={{width: '70%', height: '100%', ...theme.components.box.fullCenterRow, justifyContent: 'start', ml: 1}}>
-                    <Box sx={{width: '12%'}}>
-                        <Typography sx={{fontSize: '12px', mr: 1}}>#{p.natDexNum}</Typography>
-                    </Box>
-                    <Box sx={{...theme.components.box.fullCenterRow}}>
-                        <ImgData type='ball' linkKey={p.ball} size='24px'/>
-                        <ImgData linkKey={p.id}/>
-                    </Box>
-                    <Typography sx={{textAlign: 'center', fontSize: '12px', ml: 1}}>{nameDisplay}</Typography>
-                    {p.onhandId !== undefined && <Typography sx={{textAlign: 'center', fontSize: '12px', ml: 0.5}}>(On-Hand)</Typography>}
-                </Box>
-                <Box sx={{width: '30%', height: '100%', ...theme.components.box.fullCenterRow, justifyContent: 'end', mr: 0.5}}>
-                    {p.isHA !== undefined && <Typography sx={{fontSize: '12px', opacity: p.isHA ? 1 : 0.5, fontWeight: p.isHA ? 700 : 400, mx: 0.5}}>HA</Typography>}
-                    {p.emCount !== undefined && <Typography sx={{fontSize: '12px', opacity: p.emCount !== 0? 1 : 0.5, fontWeight: p.emCount !== 0 ? 700 : 400, mx: 0.5}}>{p.emCount}EM</Typography>}
-                    {p.wanted === true && 
-                        <Tooltip title={`This is marked as 'Highly Wanted' in ${detailsModal.screen === 'offering' ? 'their' : 'your'} collection.`}>
-                            <Typography sx={{fontSize: '10px', mx: 0.5, ':hover': {cursor: 'pointer'}}}>WANT</Typography>
-                        </Tooltip>
-                    }
-                    {p.for !== undefined && 
-                        <Tooltip title={`This is an equivalent pokemon. ${detailsModal.screen === 'offering' ? 'They' : 'You'} are looking for ${p.for}`}>
-                            <Typography sx={{fontSize: '10px', mx: 0.5, ':hover': {cursor: 'pointer'}}}>EQ</Typography>
-                        </Tooltip>
-                    }
-                </Box>
-            </Box>
-        )
-    }
-    const listItem = (i) => {
-        const nameDisplay = items.filter(item => item.value === i.name)[0].display
-        return (
-            <Box sx={{...theme.components.box.fullCenterRow, justifyContent: 'start', height: '25px', width: '100%', borderRadius: '3px', backgroundColor: theme.palette.color1.main, my: 0.5}}>
-                <Box sx={{...theme.components.box.fullCenterRow, ml: 4}}>
-                <ImgData type='items' linkKey={i.name} size='24px'/>
-                <Typography sx={{ml: 1, fontSize: '12px'}}>{nameDisplay} x<b>{i.qty}</b></Typography>
-                </Box>
-            </Box>
-        )
-    }
-    const itemContentFunc = detailsModal.subTab === 'item' ? listItem : listPokemon
 
     const tradeCreationPending = newTradeId.pending === true
     const tradeCompletedCreation = newTradeId.id !== ''
@@ -248,6 +203,7 @@ export default function FinalizeTrade({selectedColDisplay, proposedValues, trade
             toggleModal={toggleDetailsModal}
             changeScreen={changeScreen}
             changeTab={changeTab}
+            nameDisplaySettings={nameDisplaySettings}
         />
         <Modal
             aria-labelledby='confirm-trade'

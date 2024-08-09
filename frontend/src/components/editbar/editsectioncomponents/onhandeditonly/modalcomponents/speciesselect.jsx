@@ -1,4 +1,5 @@
 import {Box, Typography, TextField} from '@mui/material'
+import getNameDisplay from '../../../../../../utils/functions/display/getnamedisplay'
 import styled from '@emotion/styled'
 import {Virtuoso} from 'react-virtuoso'
 import {useRef} from 'react'
@@ -6,9 +7,7 @@ import ImgData from './../../../../collectiontable/tabledata/imgdata'
 import modalStyles from './../../../../../../utils/styles/componentstyles/modalstyles'
 import './speciesselect.css'
 
-export default function SpeciesSelect({searchOnChange, pokemonData, listItemContent, totalCount, height='60%', onlyList=false, otherStyles={}, otherSubContainerStyles={}, virtuosoStyles={border: '1px solid black'}, onHoverStyles=false, virtuosoProps={}}) {
-
-
+export default function SpeciesSelect({searchOnChange, pokemonData, listItemContent, totalCount, height='60%', onlyList=false, otherStyles={}, otherSubContainerStyles={}, virtuosoStyles={border: '1px solid black'}, onHoverStyles=false, virtuosoProps={}, nameDisplaySettings}) {
     return (
         <Box sx={{...modalStyles.onhand.modalElementBg, height, display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', ...otherStyles}}>
             {!onlyList && 
@@ -23,7 +22,7 @@ export default function SpeciesSelect({searchOnChange, pokemonData, listItemCont
                 </Box>
                 <Box sx={{height: '5%', paddingTop: '15px'}}>
                     <Typography sx={{fontSize: '14px'}}>
-                        {pokemonData.selection.name !== undefined && pokemonData.selection.name}
+                        {pokemonData.selection.name !== undefined && (nameDisplaySettings === undefined ? pokemonData.selection.name : getNameDisplay(nameDisplaySettings, pokemonData.selection.name, pokemonData.selection.natDexNum))}
                     </Typography>
                 </Box>
                 <Box sx={{height: '25%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>

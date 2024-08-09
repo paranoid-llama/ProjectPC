@@ -8,7 +8,7 @@ import ImgData from '../../../components/collectiontable/tabledata/imgdata'
 import { reFormatToIndividual } from '../../../../utils/functions/comparecollections/comparison'
 import { listTradePokemon, listTradeItem } from './listtradestuff'
 
-export default function TradeDetailsModal({offerData, receivingData, currentScreen, subTab, isTradeSummaryScreen, open, toggleModal, changeScreen, changeTab}) {
+export default function TradeDetailsModal({offerData, receivingData, currentScreen, subTab, isTradeSummaryScreen, open, toggleModal, changeScreen, changeTab, nameDisplaySettings}) {
     const theme = useTheme()
 
     const noOfferData = {
@@ -82,7 +82,7 @@ export default function TradeDetailsModal({offerData, receivingData, currentScre
                         <Virtuoso 
                             totalCount={shownList.length}
                             style={{height: '480px', width: '90%', border: '1px solid white', borderRadius: '5px'}}
-                            itemContent={(idx) => itemContentFunc(shownList[idx], theme, currentScreen)}
+                            itemContent={(idx) => itemContentFunc(shownList[idx], theme, currentScreen, false, false, nameDisplaySettings)}
                         />
                     </Box>
                 </Box>

@@ -118,6 +118,7 @@ export default function ShowCollection({colorStyles}) {
                     collection={collection}
                     styles={listStyles.collection}
                     isEditMode={isEditMode}
+                    userData={currentlyLoggedInUser}
                 /> :
                 <ShowOnHandList
                     onhandList={collection.onHand}
@@ -126,6 +127,7 @@ export default function ShowCollection({colorStyles}) {
                     styles={listStyles.onhand}
                     isEditMode={isEditMode}
                     isHomeCollection={collection.gen === 'home'}
+                    userData={currentlyLoggedInUser}
                 />
                 }
             </BodyWrapper>

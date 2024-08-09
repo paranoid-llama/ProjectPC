@@ -2,6 +2,7 @@ import {Box, Typography, Tooltip} from '@mui/material'
 import ImgData from '../../../components/collectiontable/tabledata/imgdata'
 import { items } from '../../../../../common/infoconstants/miscconstants.mjs'
 import { capitalizeFirstLetter } from '../../../../utils/functions/misc'
+import getNameDisplay from '../../../../utils/functions/display/getnamedisplay'
 
 const listPokemonBallPeripheralData = (p, smallWidth, sideScreen, isTradeSummaryPage) => {
     return (
@@ -22,8 +23,8 @@ const listPokemonBallPeripheralData = (p, smallWidth, sideScreen, isTradeSummary
     )
 }
 
-export const listTradePokemon = (p, theme, sideScreen, isTradeSummaryPage=false, smallWidth=false) => {
-    const nameDisplay = `${capitalizeFirstLetter(p.ball)} ${p.name}`
+export const listTradePokemon = (p, theme, sideScreen, isTradeSummaryPage=false, smallWidth=false, userNameDisplaySettings) => {
+    const nameDisplay = `${capitalizeFirstLetter(p.ball)} ${userNameDisplaySettings === undefined ? p.name : getNameDisplay(userNameDisplaySettings, p.name, p.natDexNum)}`
     const orientationStyles = smallWidth ? theme.components.box.fullCenterCol : theme.components.box.fullCenterRow
     return (
         <Box sx={{...orientationStyles, height: smallWidth ? '40px' : '25px', width: '100%', borderRadius: '3px', backgroundColor: theme.palette.color1.main, my: 0.5}}>

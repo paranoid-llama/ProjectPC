@@ -80,6 +80,8 @@ export default function ShowOffer({numOfOffers, tradeParticipants, offersBasicDa
         'accepted': 'This offer was accepted.'
     }
 
+    const userNameDisplaySettings = !loggedInUserData.loggedIn ? undefined : loggedInUserData.user.settings.display.pokemonNames
+
     //alerts
     const [alertIds, setAlertIds] = useState([])
     const {addAlert, dismissAlert} = useContext(AlertsContext)
@@ -209,7 +211,7 @@ export default function ShowOffer({numOfOffers, tradeParticipants, offersBasicDa
                             itemContent={(idx) => {
                                 const offerEntity = totalOffer[idx]
                                 const isPokemon = offerEntity.natDexNum !== undefined
-                                return isPokemon ? listTradePokemon(offerEntity, theme, 'offering', true, true) : listTradeItem(offerEntity, theme)
+                                return isPokemon ? listTradePokemon(offerEntity, theme, 'offering', true, true, userNameDisplaySettings) : listTradeItem(offerEntity, theme)
                             }}
                             components={{
                                 Scroller: forwardRef((props, ref) => {
@@ -228,7 +230,7 @@ export default function ShowOffer({numOfOffers, tradeParticipants, offersBasicDa
                             itemContent={(idx) => {
                                 const receivingEntity = totalReceiving[idx]
                                 const isPokemon = receivingEntity.natDexNum !== undefined
-                                return isPokemon ? listTradePokemon(receivingEntity, theme, 'offering', true, true) : listTradeItem(receivingEntity, theme)
+                                return isPokemon ? listTradePokemon(receivingEntity, theme, 'offering', true, true, userNameDisplaySettings) : listTradeItem(receivingEntity, theme)
                             }}
                             components={{
                                 Scroller: forwardRef((props, ref) => {
