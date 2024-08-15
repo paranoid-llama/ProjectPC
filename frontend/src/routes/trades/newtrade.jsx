@@ -16,16 +16,17 @@ import getUserCollectionData from '../../../utils/functions/backendrequests/getu
 
 export default function NewTrade({}) {
     const theme = useTheme()
+    const userData = useRouteLoaderData("root")
     const {handleError} = useContext(ErrorContext)
     const dispatch = useDispatch()
     const locationData = useLocation()
     const loaderData = useLoaderData()
-    const hasLocationState = locationData.state !== null
-    const isCounteroffer = hasLocationState && locationData.state.isCounteroffer
-    
-    const userMakingOfferCol = isCounteroffer ? loaderData[`user${locationData.state.offererNumber}CollectionData`] : {}
-    const targetColData = isCounteroffer ? loaderData[`user${locationData.state.offererNumber === 0 ? 1 : 0}CollectionData`] : loaderData
-    const userData = useRouteLoaderData("root")
+    const isCounteroffer = locationData.pathname.includes('counter-offer')
+
+    const offererNumber = isCounteroffer && (userData.user._id.toString() === loaderData.tradeData.users[0]._id.toString()) ? 0 : 1
+
+    const userMakingOfferCol = isCounteroffer ? loaderData[`user${offererNumber}CollectionData`] : {}
+    const targetColData = isCounteroffer ? loaderData[`user${offererNumber === 0 ? 1 : 0}CollectionData`] : loaderData
     const proposedValues = useRef({})
     const targetColDisplay = isNaN(parseInt(targetColData.gen)) ? `${targetColData.gen.toUpperCase()} Aprimon Collection` : `Gen ${targetColData.gen} Aprimon Collection`
     const step1ClassRef = useRef('')
@@ -171,6 +172,8 @@ export default function NewTrade({}) {
                                 ownerGen={targetColData.gen}
                                 isCounteroffer={isCounteroffer}
                                 tradeId={isCounteroffer && loaderData.tradeData._id}
+                                traderColId={tradeData.userCollectionData._id}
+                                ownerColId={targetColData._id}
                             />}
                         </Box>
                     </Box>

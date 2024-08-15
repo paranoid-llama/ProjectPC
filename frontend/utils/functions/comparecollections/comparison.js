@@ -148,6 +148,7 @@ const compareLists = (refList, compareFromList, specificOpts, advOpts, eggMoveDa
             if (providedByAdultBabyLiteral) {return}
             if (specificOpts.ha === true && (pokemon.isHA === false)) {return}
             if (!ignoreEMs && (specificOpts.em === true && (pokemon.emCount !== maxEMs))) {return}
+            if (pokemon.reserved !== undefined && pokemon.reserved >= pokemon.qty) {return}
             if (otherListBallData.isOwned === false) {
                 const pokemonDataThere = comparedList.filter(p => p.name === pokemon.name).length !== 0
                 if (iAltFormDiffSpecies) {

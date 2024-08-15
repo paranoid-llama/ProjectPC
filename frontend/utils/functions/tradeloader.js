@@ -4,7 +4,11 @@ export default async function tradeLoader({params}, getFullCollectionData=false)
         headers: {
             "Content-Type": "application/json",
         }
-    }).then(data => data.json())
+    }).then(async(res) => {
+        const data = await res.json()
+        if (res.ok) {return data}
+        else {throw data}
+    })
     // .then(data => { //bandaid solution to what should be solved through database querying tools
     //     const tradeData = data.tradeData
     //     const crossGenTrade = tradeData.gen.includes('-')

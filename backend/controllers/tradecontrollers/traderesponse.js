@@ -1,9 +1,10 @@
 import Trade from '../../models/trades.js'
 import Collection from '../../models/collections.js'
 import User from '../../models/users.js'
+import { setOnHandReserved, removeOnHandReserved, getOnhandIdsToReserve } from './collectioneditposttraderes.js'
 
 export async function respondToTrade(req, res) {
-    const {response, otherUserId, offerColId, receivingColId, counterOfferData, username} = req.body
+    const {response, otherUserId, offerColId, receivingColId, counterOfferData, username, } = req.body
     const {id} = req.params
 
     const trade = await Trade.findById(id)
@@ -24,15 +25,12 @@ export async function respondToTrade(req, res) {
 
         const offerCol = await Collection.findById(offerColId)
         const receivingCol = await Collection.findById(receivingColId)
+        // console.log(username)
+        // console.log(offerCol.owner)
+        // console.log(receivingCol.owner)
+        // console.log(offerCol.name)
+        // console.log(receivingCol.name)
         if (latestOffer.trade.offer.pokemon !== undefined) {
-            offerCol.onHand = offerCol.onHand.map(p => { //taking off onhand if offering an onhand
-                const offeringPokemon = latestOffer.trade.offer.pokemon.filter(tradeP => tradeP.balls.filter(tradePBallData => tradePBallData.onhandId !== undefined && tradePBallData.onhandId === p._id.toString()).length !== 0).length !== 0
-                if (offeringPokemon) {
-                    p.qty = p.qty-1
-                    if (p.qty === 0) {return undefined}
-                }
-                return p
-            }).filter(p => p !== undefined)
             receivingCol.ownedPokemon = receivingCol.ownedPokemon.map(p => { //setting offered pokemon as pending
                 if (p.disabled) {return p}
                 const newBallData = {}
@@ -54,7 +52,7 @@ export async function respondToTrade(req, res) {
                 return {...p, balls: newBallData}
             })
         }
-        if (latestOffer.trade.receiving.items !== undefined) {
+        if (latestOffer.trade.receiving.pokemon !== undefined) {
             offerCol.ownedPokemon = offerCol.ownedPokemon.map(p => { //setting received pokemon as pending
                 if (p.disabled) {return p}
                 const newBallData = {}
@@ -75,14 +73,21 @@ export async function respondToTrade(req, res) {
                 })
                 return {...p, balls: newBallData}
             })
-            receivingCol.onHand = receivingCol.onHand.map(p => { //taking off onhand if offering an onhand
-                const offeringPokemon = latestOffer.trade.receiving.pokemon.filter(tradeP => tradeP.balls.filter(tradePBallData => tradePBallData.onhandId !== undefined && tradePBallData.onhandId === p._id).length !== 0).length !== 0
+            //reserving onhand if offering an onhand. only doing it on receiving side since offering side would have had it reserved after creating the offer
+            receivingCol.onHand = receivingCol.onHand.map(p => { 
+                const offeringPokemon = latestOffer.trade.receiving.pokemon.filter(tradeP => tradeP.balls.filter(tradePBallData => tradePBallData.onhandId !== undefined && tradePBallData.onhandId.toString() === p._id.toString()).length !== 0).length !== 0
                 if (offeringPokemon) {
-                    p.qty = p.qty-1
-                    if (p.qty === 0) {return undefined}
+                    if (p.reserved === undefined) {
+                        p.reserved = 1
+                    } else {
+                        if (p.reserved < p.qty) {
+                            p.reserved += 1
+                        } 
+                    }
                 }
                 return p
             }).filter(p => p !== undefined)
+        
         }
         offerCol.save()
         receivingCol.save()
@@ -97,6 +102,13 @@ export async function respondToTrade(req, res) {
         trade.closeDate = Date.now()
         trade.save()
 
+        const latestOfferCol = await Collection.findById(offerColId)
+        const previouslyReservedOnHandIds = getOnhandIdsToReserve(latestOffer.trade.offer.pokemon)
+        if (previouslyReservedOnHandIds.length !== 0) {
+            latestOfferCol.onHand = removeOnHandReserved(latestOfferCol.onHand, previouslyReservedOnHandIds)
+        }
+        await latestOfferCol.save()
+
         const otherUser = await User.findById(otherUserId)
         otherUser.notifications.push({type: 'trade-offer: reject', tradeData: {otherParticipant: username, tradeGen: trade.gen, tradeId: trade._id}, unread: true})
         otherUser.save()
@@ -105,6 +117,21 @@ export async function respondToTrade(req, res) {
         latestOffer.status = 'countered'
         trade.history.push({...counterOfferData})
         trade.save()
+
+        const prevOffer = trade.history[trade.history.length-2]
+        const offerCol = await Collection.findById(offerColId)
+        const receivingCol = await Collection.findById(receivingColId)
+
+        const previouslyReservedOnHandIds = getOnhandIdsToReserve(prevOffer.trade.offer.pokemon)
+        if (previouslyReservedOnHandIds.length !== 0) {
+            receivingCol.onHand = removeOnHandReserved(receivingCol.onHand, previouslyReservedOnHandIds)
+        }
+        if (counterOfferData.trade.offer.pokemon !== undefined) {
+            const reservedOhIds = getOnhandIdsToReserve(counterOfferData.trade.offer.pokemon)
+            offerCol.onHand = setOnHandReserved(offerCol.onHand, reservedOhIds)
+        }
+        await offerCol.save()
+        await receivingCol.save()
 
         const otherUser = await User.findById(otherUserId)
         otherUser.notifications.push({type: 'trade-offer: counter', tradeData: {otherParticipant: username, tradeGen: trade.gen, tradeId: trade._id}, unread: true})
@@ -153,6 +180,26 @@ export async function respondToTrade(req, res) {
                     }) 
                     return {...poke, balls: newBallData}
                 })
+                if (latestOffer.trade.offer.pokemon !== undefined) {
+                    offerCol.onHand = offerCol.onHand.map((poke) => {
+                        const wasOffered = latestOffer.trade.offer.pokemon.filter(pData => pData.balls.filter(pBallData => pBallData.onhandId !== undefined && pBallData.onhandId.toString() === poke._id.toString()).length !== 0).length !== 0
+                        if (wasOffered) {
+                            if (poke.qty === 1) {
+                                return undefined
+                            }
+                            else {
+                                poke.qty -= 1
+                                if (poke.reserved === 1) {
+                                    poke.reserved = undefined
+                                } else {
+                                    poke.reserved -= 1
+                                }
+                            }
+                        }
+                        return poke
+                    }).filter(p => p !== undefined)
+                }
+                
             }
             if (latestOffer.trade.offer.pokemon !== undefined) {
                 receivingCol.ownedPokemon = receivingCol.ownedPokemon.map((poke) => {
@@ -181,6 +228,25 @@ export async function respondToTrade(req, res) {
                     }) 
                     return {...poke, balls: newBallData}
                 })
+                if (latestOffer.trade.receiving.pokemon !== undefined) {
+                    receivingCol.onHand = receivingCol.onHand.map((poke) => {
+                        const wasOffered = latestOffer.trade.receiving.pokemon.filter(pData => pData.balls.filter(pBallData => pBallData.onhandId !== undefined && pBallData.onhandId.toString() === poke._id.toString()).length !== 0).length !== 0
+                        if (wasOffered) {
+                            if (poke.qty === 1) {
+                                return undefined
+                            }
+                            else {
+                                poke.qty -= 1
+                                if (poke.reserved === 1) {
+                                    poke.reserved = undefined
+                                } else {
+                                    poke.reserved -= 1
+                                }
+                            }
+                        }
+                        return poke
+                    }).filter(p => p !== undefined)
+                }
             }
             if (latestOffer.trade.offer.items !== undefined) {
                 latestOffer.trade.offer.items.forEach(itemD => {
@@ -212,8 +278,8 @@ export async function respondToTrade(req, res) {
                     }
                 })
             }
-            offerCol.save()
-            receivingCol.save()
+            await offerCol.save()
+            await receivingCol.save()
         }
     }
     res.end()

@@ -59,6 +59,7 @@ function OnHandRowContent({columns, row, pokemonId, collectionId, styles, isSele
                     (c.dataKey === 'qty') && styles.alignment.qtyValueAlignment
                 const isBallColumn = c.dataKey === 'ball'
                 const wantedData = isBallColumn && (wantedByOtherList[0] === undefined ? {} : wantedByOtherList[0].balls.includes(row[c.dataKey]) ? {wanted: true} : {})
+                const reservedQty = c.dataKey === 'qty' && row.reserved !== undefined ? {reserved: row.reserved} : {}
                 return (
                     <DataCell
                         key={`${row._id}-${c.label}`}
@@ -82,6 +83,7 @@ function OnHandRowContent({columns, row, pokemonId, collectionId, styles, isSele
                                 fullData: row
                             } : {}
                         }
+                        {...reservedQty}
                     />
                 )
             })}

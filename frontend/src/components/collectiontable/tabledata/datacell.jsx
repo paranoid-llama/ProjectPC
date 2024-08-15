@@ -1,4 +1,4 @@
-import {Box, TableCell, Typography, useTheme} from '@mui/material'
+import {Box, TableCell, Typography, useTheme, Tooltip} from '@mui/material'
 import ImgData from './imgdata'
 import {useSelector, useDispatch} from 'react-redux'
 import {setSelected, deselect} from './../../../app/slices/editmode'
@@ -9,7 +9,7 @@ import { setPokemon } from '../../../app/slices/tradeoffer'
 import { selectIfPokemonIsSelected } from '../../../app/selectors/tradeselectors'
 import { getGameColor, homeDisplayGames } from '../../../../../common/infoconstants/miscconstants.mjs'
 
-export default function DataCell({label, styles, alignment='none', isEditMode, imgParams={isImg: false}, leftMostCell=false, isSelected=false, onClickFunc, onhandCells=false, specialStyles={}, blackSquare=false, availableGames, localHandleChange=null, isTradePage=false, tradeSide, tradeDispData}) {
+export default function DataCell({label, styles, alignment='none', isEditMode, imgParams={isImg: false}, leftMostCell=false, isSelected=false, onClickFunc, onhandCells=false, specialStyles={}, blackSquare=false, availableGames=undefined, localHandleChange=null, isTradePage=false, tradeSide, tradeDispData, reserved=0}) {
     const {isImg, imgLinkKey, imgSize='32px', imgType='poke'} = imgParams
     const theme = useTheme()
     const blackSquareStyles = blackSquare ? {backgroundColor: 'black'} : {}
@@ -17,7 +17,9 @@ export default function DataCell({label, styles, alignment='none', isEditMode, i
     const otherTextStyles = noInfo ? {opacity: 0.5} : {}
     const dispatch = useDispatch()
     const deselectFunc = () => dispatch(deselect())
+    
     const displayAvailableGames = availableGames !== undefined
+    const includeBottomText = displayAvailableGames || reserved !== 0
     const relativeStyle = displayAvailableGames ? {position: 'relative'} : {}
     const isOnHandAndTradePage = isTradePage && onhandCells
     // const localSelectedStyles = localHandleChange !== null ? {backgroundColor: 'theme'}
@@ -39,7 +41,7 @@ export default function DataCell({label, styles, alignment='none', isEditMode, i
             {(leftMostCell === true && isSelected === true) && <Selection height={onhandCells ? '71.016px' : '76px'} onhandSelection={onhandCells} deselectFunc={localHandleChange !== null ? localHandleChange : deselectFunc}/>}
             {/* localSelected below only happens for onhand */}
             {(leftMostCell === true && isSelectedForTrade) &&
-                <Box sx={{position: 'absolute', width: '99.7%'}}>
+                <Box sx={{position: 'absolute', width: '99.7%', zIndex: 100}}>
                     <Box sx={{
                         position: 'absolute', 
                         left: '-2px', 
@@ -63,14 +65,21 @@ export default function DataCell({label, styles, alignment='none', isEditMode, i
                     </Box>
                 </Box>
             }
-            <Box sx={!(blackSquare) ? {...alignment, ...styles.bodyColor, ...relativeStyle} : {}}>
+            <Box sx={!(blackSquare) ? {...alignment, ...styles.bodyColor, ...relativeStyle, position: reserved !== 0 ? 'relative' : 'auto'} : {}}>
                 {isImg ? 
-                <ImgData type={imgType} size={imgSize} linkKey={imgLinkKey}/> :
+                <ImgData type={imgType} size={imgSize} linkKey={imgLinkKey}/> :+
                 !(blackSquare) && <Typography sx={{...otherTextStyles, ...specialStyles}} variant={'body2'}>{label}</Typography>
                 }
-                {displayAvailableGames && 
+                {includeBottomText && 
                 <Box sx={{position: 'absolute', fontSize: '10px', width: '80%', right: '10%', bottom: '-3px', display: 'flex', justifyContent: 'center'}}>
-                    {homeDisplayGames.map((game, idx) => {
+                    {reserved !== 0 && 
+                        <Tooltip title='This On-Hand is reserved and is pending in an accepted trade/trade offer. The number indicates the reserved quantity.' arrow>
+                            <Typography sx={{fontSize: '8px', width: '100%', position: 'absolute', bottom: '2px', ':hover': {cursor: 'pointer'}}}>
+                                Res: {reserved}
+                            </Typography>
+                        </Tooltip>
+                    }
+                    {displayAvailableGames && homeDisplayGames.map((game, idx) => {
                         const nameOfGame = game === 9 ? 'S/V' : game === 'swsh' ? 'SW/SH' : game === 'bdsp' && 'BD/SP'
                         const firstGame = nameOfGame.slice(0, nameOfGame.indexOf('/'))
                         const secondGame = nameOfGame.slice(nameOfGame.indexOf('/')+1, nameOfGame.length)

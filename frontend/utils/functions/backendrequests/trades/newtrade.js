@@ -47,13 +47,13 @@ export const newTradeBackendFormatting = (pokemonOffer, itemOffer, pokemonReceiv
     return {offer: formattedOffer, receiving: formattedReceiving, gen: formattedGen}
 }
 
-export const newTradeBackend = async(offer, receiving, offerMessage, traderId, ownerId, traderUsername, ownerUsername, gen) => {
+export const newTradeBackend = async(offer, receiving, offerMessage, traderId, ownerId, traderUsername, ownerUsername, gen, traderColId) => {
     return await fetch(`http://localhost:3000/trades/new`, {
         method: 'POST',
         credentials: 'include',
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({offer, receiving, offerMessage, traderId, ownerId, traderUsername, ownerUsername, gen})
+        body: JSON.stringify({offer, receiving, offerMessage, traderId, ownerId, traderUsername, ownerUsername, gen, traderColId})
     }).then(async(data) => {return await handleApiResponse(data, true)})
 }

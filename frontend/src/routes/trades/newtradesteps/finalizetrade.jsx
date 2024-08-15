@@ -18,7 +18,7 @@ import TradeDetailsModal from '../partialcomponents/tradedetailsmodal'
 import { newTradeBackendFormatting, newTradeBackend } from '../../../../utils/functions/backendrequests/trades/newtrade'
 import { counterTradeOffer } from '../../../../utils/functions/backendrequests/trades/traderesponse'
 
-export default function FinalizeTrade({selectedColDisplay, proposedValues, traderId, ownerId, traderUsername, ownerUsername, traderGen, ownerGen, isCounteroffer, tradeId}) {
+export default function FinalizeTrade({selectedColDisplay, proposedValues, traderId, ownerId, traderUsername, ownerUsername, traderGen, ownerGen, isCounteroffer, tradeId, traderColId, ownerColId}) {
     const theme = useTheme()
     const nameDisplaySettings = useRouteLoaderData('root').user.settings.display.pokemonNames
     const navigate = useNavigate()
@@ -68,7 +68,7 @@ export default function FinalizeTrade({selectedColDisplay, proposedValues, trade
     const changeCanConfirm = () => {setDetailsModal((curr) => {return {...curr, canConfirm: true, countDown: false}})}
 
     const backendCreateTrade = async(offer, receiving, gen) => {
-        const backendFunc = async() => await newTradeBackend(offer, receiving, message, traderId, ownerId, traderUsername, ownerUsername, gen)
+        const backendFunc = async() => await newTradeBackend(offer, receiving, message, traderId, ownerId, traderUsername, ownerUsername, gen, traderColId)
         const successFunc = (newTradeId) => {setNewTradeId({pending: false, id: newTradeId, countDown: true, second: 5})}
         const errorFunc = (errorData) => {setNewTradeId({...newTradeId, pending: false, error: true, errorData})}
         handleError(backendFunc, false, successFunc, errorFunc)
@@ -88,7 +88,7 @@ export default function FinalizeTrade({selectedColDisplay, proposedValues, trade
                 }
             }
             setNewTradeId({...newTradeId, pending: true})
-            const backendFunc = async() => await counterTradeOffer(tradeId, ownerId, offerBackendFormat, traderUsername)
+            const backendFunc = async() => await counterTradeOffer(tradeId, ownerId, traderColId, ownerColId, offerBackendFormat, traderUsername)
             const successFunc = () => {
                 setTimeout(() => {
                     setNewTradeId({pending: false, id: tradeId, countDown: true, second: 5})

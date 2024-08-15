@@ -23,7 +23,7 @@ export default function ShowOffer({numOfOffers, tradeParticipants, offersBasicDa
 
     const responder = selectedOfferData.recipient
     const responderNum = tradeUsers[0].username === responder ? 0 : 1
-    const canRespondToOffer = loggedInUserData.loggedIn && loggedInUserData.user.username === responder && isLatestOffer && statuses.offerStatus !== 'rejected'
+    const canRespondToOffer = loggedInUserData.loggedIn && loggedInUserData.user.username === responder && isLatestOffer && statuses.offerStatus !== 'rejected' && tradeStatus !== 'completed'
     const canMarkComplete = (statuses.offerStatus === 'accepted' && statuses.tradeStatus === 'pending') && loggedInUserData.loggedIn && isTradeParticipant
     const markedCompleteAlready = canMarkComplete && markedCompleteData === loggedInUserData.user.username
     const otherUserHasntMarkedComplete = canMarkComplete && markedCompleteData !== otherParticipant
@@ -119,7 +119,8 @@ export default function ShowOffer({numOfOffers, tradeParticipants, offersBasicDa
         handleError(backendFunc, false, successFunc, () => {})
     } 
     const rejectOffer = () => {
-        const backendFunc = async() => await rejectTradeOffer(tradeId, tradeUsers.filter(userD => userD.username === otherParticipant)[0]._id, loggedInUserData.user.username)
+        const offererColId = tradeUsers.filter(userD => userD.username === selectedOfferData.offerer)[0].tradeCollection._id
+        const backendFunc = async() => await rejectTradeOffer(tradeId, tradeUsers.filter(userD => userD.username === otherParticipant)[0]._id, offererColId, loggedInUserData.user.username)
         const successFunc = () => {
             setTimeout(() => {
                 revalidator.revalidate()
@@ -134,7 +135,7 @@ export default function ShowOffer({numOfOffers, tradeParticipants, offersBasicDa
         handleError(backendFunc, false, successFunc, () => {})
     }
     const counterOffer = () => {
-        navigate(`/trades/${tradeId}/counter-offer`, {state: {isCounteroffer: true, offererNumber: responderNum}})
+        navigate(`/trades/${tradeId}/counter-offer`)
     }
     const markTradeAsComplete = () => {
         const tradeIsNowComplete = markedCompleteData === otherParticipant

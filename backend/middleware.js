@@ -98,6 +98,19 @@ const isValidUsername = (req, res, next) => {
     next()
 }
 
+const tradeExists = async(req, res, next) => {
+    const {id} = req.params
+    const trade = await Trade.findById(id)
+    if (!trade) {
+        const exception = new Error()
+        exception.name = 'Not Found'
+        exception.message = `Could not find a trade with this ID!`
+        exception.status = 404
+        return res.status(404).send(exception)
+    }
+    next()
+}
+
 const canOfferTrade = async(req, res, next) => {
     const {traderId, ownerId, traderUsername, ownerUsername, gen} = req.body
     if (!mongoose.Types.ObjectId.isValid(traderId) || !mongoose.Types.ObjectId.isValid(ownerId)) {
@@ -209,8 +222,8 @@ const canRespondToTrade = async(req, res, next) => {
         exception.status = 403
         return res.status(403).send(exception)
     }
-    const isOfferedUser = tradeData.status !== 'pending' && tradeData.history[tradeData.history.length-1].recipient === req.user.username
-    if (!isOfferedUser) {
+    const isOfferedUser = tradeData.history[tradeData.history.length-1].recipient === req.user.username
+    if (tradeData.status !== 'pending' && !isOfferedUser) {
         const exception = new Error()
         exception.name = 'Forbidden'
         exception.message = `You cannot reply to this offer! You have to wait for the recipient to respond!`
@@ -220,4 +233,4 @@ const canRespondToTrade = async(req, res, next) => {
     next()
 }
 
-export {initializePassportStrategy, isLoggedIn, isCollectionOwner, isTheUser, canOfferTrade, canRespondToTrade, isValidId, isValidOnHandId, isValidUsername}
+export {initializePassportStrategy, isLoggedIn, isCollectionOwner, isTheUser, canOfferTrade, canRespondToTrade, isValidId, isValidOnHandId, isValidUsername, tradeExists}

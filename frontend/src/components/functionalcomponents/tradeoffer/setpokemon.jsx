@@ -33,7 +33,7 @@ export default function SetPokemon({minHeight='650px', type, view, data, relValu
 
     const changeViewData = (newType) => {
         const newListDisplay = newType === 'collection' ? {listDisplay: data.collection.filter(p => (p.disabled === undefined) && (Object.values(p.balls).map(ballData => ballData.isOwned === true).includes(true)))} : 
-            newType === 'onhand' ? {listDisplay: data.onhand} : data
+            newType === 'onhand' ? {listDisplay: data.onhand.filter(p => p.reserved === undefined || p.reserved < p.qty)} : data
         setViewData({...viewData, viewSub: newType, ...newListDisplay})
     }
 

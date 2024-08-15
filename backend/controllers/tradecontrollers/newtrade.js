@@ -1,8 +1,10 @@
 import Trade from '../../models/trades.js'
+import Collection from '../../models/collections.js'
 import User from '../../models/users.js'
+import { getOnhandIdsToReserve } from './collectioneditposttraderes.js'
 
 export async function createNewTrade(req, res) {
-    const {offer, receiving, offerMessage, traderId, ownerId, traderUsername, ownerUsername, gen} = req.body
+    const {offer, receiving, offerMessage, traderId, ownerId, traderUsername, ownerUsername, gen, traderColId} = req.body
     const offerObj = {
         status: 'pending',
         offerer: traderUsername,
@@ -25,6 +27,23 @@ export async function createNewTrade(req, res) {
     const ownerUserData = await User.findById(ownerId)
     ownerUserData.notifications.push({type: 'trade-offer: new', tradeData: {otherParticipant: traderUsername, tradeGen: gen, tradeId: trade._id}, unread: true})
     await ownerUserData.save()
+
+    const traderColData = await Collection.findById(traderColId)
+    const onhandIdsToReserve = getOnhandIdsToReserve(offer.pokemon)
+    if (onhandIdsToReserve.length !== 0) {
+        traderColData.onHand = traderColData.onHand.map(onhandP => {
+            const isReserved = onhandIdsToReserve.includes(onhandP._id.toString())
+            if (isReserved && onhandP.reserved !== onhandP.qty) {
+                if (onhandP.reserved === undefined) {
+                    onhandP.reserved = 1
+                } else {
+                    onhandP.reserved += 1
+                }
+            }
+            return onhandP
+        }) 
+        await traderColData.save()
+    }
 
     res.json(trade._id)
 }

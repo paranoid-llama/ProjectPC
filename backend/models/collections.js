@@ -253,6 +253,7 @@ const collectionSchema = new Schema ({
         isHA: Boolean,
         emCount: Number,
         EMs: Array,
+        reserved: Number,
         qty: Number
     }]
 }, opts)
