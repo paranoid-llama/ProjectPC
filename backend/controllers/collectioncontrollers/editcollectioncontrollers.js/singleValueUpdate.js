@@ -33,7 +33,7 @@ export default async function updateCollectionSingleValue(req, res) {
                 [`ownedPokemon.$.balls.${ballname}.pending`]: ""
             }}
 
-            await Collection.updateOne({
+            await Collection.findOneAndUpdate({
                 _id: id, 
                 "ownedPokemon.name": pokename
                 }, setModifier

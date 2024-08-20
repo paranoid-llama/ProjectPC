@@ -9,8 +9,10 @@ export async function createNewUser(req, res) {
         secAnswer3 === undefined ? undefined : {question: secQuestion3, answer: await bcrypt.hash(secAnswer3, 11)}
     ].filter(item => item !== undefined)
     const settings = {
-        profile: {bio: '', tags: [], games: []},
+        profile: {bio: '', badges: [], games: []},
+        privacy: {disabledTrades: false, blockedUsers: []},
         account: {verified: false, securityQuestions},
+        display: {pokemonNames: {general: {regionalForms: 'default', originRegionalForms: 'default', alternateForms: 'default'}, specific: {}}}
     }
     bcrypt.hash(password, 11, async function(err, hash) {
         const newUser = new User({
@@ -20,7 +22,7 @@ export async function createNewUser(req, res) {
             settings, 
             notifications: [
                 {
-                    type: 'site message', 
+                    type: 'system', 
                     title: 'Welcome to Pokellections!', 
                     message: 'Welcome to Pokellections! Thank you for joining the site. We hope you enjoy aprimon collecting made easy!',
                     unread: true

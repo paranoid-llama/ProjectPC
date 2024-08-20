@@ -32,7 +32,7 @@ export default function CollectionOptionsModal({collectionGen, collectionId, own
     const makeChangesScreens = modalState.screen === 'pokemonScope' || modalState.screen === 'ballScope' || modalState.screen === 'excludedCombos' ||
         modalState.screen === 'collectionSort' || modalState.screen === 'onhandSort' || modalState.screen === 'customSort' || modalState.screen === 'preferences'
 
-    const collectionTypeText = typeof collectionGen === 'string' ? `${collectionGen.toUpperCase()} Aprimon Collection` : `Gen ${collectionGen} Aprimon Collection`
+    const collectionTypeText = isNaN(parseInt(collectionGen)) ? `${collectionGen.toUpperCase()} Aprimon Collection` : `Gen ${collectionGen} Aprimon Collection`
 
     return (
         <Modal 

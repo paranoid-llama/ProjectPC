@@ -1,6 +1,10 @@
 import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 import {getImgLink, getPossibleEggMoves, getPossibleGender, getCollectionProgress, getAvailableHomeGames} from './../utils/schemavirtuals/collectionvirtuals.js'
+import Trade from './trades.js'
+import User from './users.js'
+import { setPendingTrade } from '../controllers/tradecontrollers/colmanagementfuncs.js';
+import { postDeleteColEditTradeCol } from './postpremiddleware.js';
 
 const opts = {toJSON: {virtuals: true}, minimize: false}
 
@@ -107,10 +111,6 @@ const collectionSchema = new Schema ({
             //obj of items they're offering with keys being item names. validated thru frontend. could be validated here
             //for more security but more work than is needed as of april 17 2024
         }
-    },
-    trades: {
-        type: [{type: Schema.Types.ObjectId}],
-        ref: "Trade"
     },
     ownedPokemon: [{
         _id: false,
@@ -283,6 +283,34 @@ collectionSchema.virtual('eggMoveInfo').get(function() {
         null
     } else {
         return getPossibleEggMoves(this.ownedPokemon, this.gen)
+    }
+})
+
+collectionSchema.post('findOneAndUpdate', async function(doc) {
+    //logic for badges here. doc is the collection.
+})
+
+collectionSchema.post('findOneAndDelete', async function(doc) {
+    if (doc) {
+        const tradesThisUserMade = await Trade.find({users: {$in: doc.owner}})
+        const tradesWithThisCollection = tradesThisUserMade.filter(async trade => {
+            const userPos = trade.users.indexOf(doc.owner)
+            const gen = trade.gen.includes('-') ? (userPos === 0 ? trade.gen.slice(0, trade.gen.indexOf('-')) : trade.gen.slice(trade.gen.indexOf('-')+1, trade.gen.length)) : trade.gen
+            const editThisDoc = doc.gen === gen
+            if (editThisDoc) {
+                const editOtherCollection = (trade.status !== 'rejected' && trade.status !== 'completed')
+                if (editOtherCollection) {
+                    postDeleteColEditTradeCol(trade, userPos)
+                    trade.status = 'cancelled'
+                    trade.closeDate = Date.now()
+                }
+                trade.deletedCollection = {...trade.deletedCollection, [userPos]: true}
+            }
+            return editThisDoc
+        })
+        tradesWithThisCollection.forEach(trade => {
+            trade.save()
+        })
     }
 })
 

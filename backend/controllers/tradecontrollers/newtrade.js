@@ -19,6 +19,7 @@ export async function createNewTrade(req, res) {
         status: 'initialoffer',
         gen,
         users: [traderId, ownerId],
+        deletedCollection: {0: false, 1: false},
         history: [offerObj]
     }
     const trade = new Trade(newTradeData)
@@ -26,6 +27,9 @@ export async function createNewTrade(req, res) {
 
     const ownerUserData = await User.findById(ownerId)
     ownerUserData.notifications.push({type: 'trade-offer: new', tradeData: {otherParticipant: traderUsername, tradeGen: gen, tradeId: trade._id}, unread: true})
+    if (ownerUserData.notifications.length > 40) {
+        ownerUserData.notifications.shift()
+    }
     await ownerUserData.save()
 
     const traderColData = await Collection.findById(traderColId)

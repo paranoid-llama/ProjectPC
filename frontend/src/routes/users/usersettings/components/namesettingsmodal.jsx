@@ -73,7 +73,7 @@ export default function NameSettingsModal({open, toggleModal, nameSettingsState,
                 <Typography sx={{fontSize: '18px', textAlign: 'center'}}>Set the name format for pokemon with specific formats here.</Typography>
             </Box>
             <Box sx={{...modalStyles.onhand.modalElementBg, width: '95%', height: '70%', mt: 1, ...theme.components.box.fullCenterCol, justifyContent: 'start'}}>
-                <Box sx={{...theme.components.box.fullCenterRow, backgroundColor: theme.palette.color1.main, borderRadius: '10px', mt: 1, width: '95%', height: '80px'}}>
+                <Box sx={{...theme.components.box.fullCenterRow, backgroundColor: theme.palette.color1.main, borderRadius: '10px', mt: 1, width: '95%', height: '70px'}}>
                     <Box sx={{...theme.components.box.fullCenterCol, width: '15%', height: '100%'}}>
                         <Typography sx={{fontSize: '12px', textAlign: 'center'}}>Nidoran</Typography>
                         <Box sx={{...theme.components.box.fullCenterRow}}>
@@ -105,9 +105,32 @@ export default function NameSettingsModal({open, toggleModal, nameSettingsState,
                         <Typography sx={{fontSize: '12px', textAlign: 'center'}}>{getNameDisplay(nameSettingsState, 'Nidoran♀')}</Typography>
                     </Box>
                 </Box>
-                <Box sx={{...theme.components.box.fullCenterRow, backgroundColor: theme.palette.color1.main, borderRadius: '10px', mt: 1, width: '95%', height: '80px'}}>
+                <Box sx={{...theme.components.box.fullCenterRow, backgroundColor: theme.palette.color1.main, borderRadius: '10px', mt: 1, width: '95%', height: '70px'}}>
                     <Box sx={{...theme.components.box.fullCenterCol, width: '15%', height: '100%'}}>
-                        <Typography sx={{fontSize: '11px', textAlign: 'center'}}>Paldean Tauros (Combat)</Typography>
+                        <Typography sx={{fontSize: '11px', textAlign: 'center'}}>Shellos</Typography>
+                        <Box sx={{...theme.components.box.fullCenterRow}}>
+                            <ImgData linkKey='422-e' />
+                            <ImgData linkKey='422-w' />
+                        </Box>
+                    </Box>
+                    <Box sx={{...theme.components.box.fullCenterRow, width: '70%', height: '100%'}}>
+                        <Select
+                            onChange={(e, newVal) => changeSpecificSetting('Shellos', newVal.props.value)}
+                            sx={selectStyles}
+                            value={nameSettingsState.specific['Shellos'] === undefined ? 'n/a' : nameSettingsState.specific['Shellos']}
+                        >
+                            <MenuItem value='n/a'>Follow General Format</MenuItem>
+                            <MenuItem value='sub'>Show Blue/Pink instead of East/West</MenuItem>
+                        </Select>
+                    </Box>
+                    <Box sx={{...theme.components.box.fullCenterCol, width: '15%', height: '100%'}}>
+                        <Typography sx={{fontSize: '12px', fontWeight: 700, textAlign: 'center', my: 0.5}}>Example:</Typography>
+                        <Typography sx={{fontSize: '12px', textAlign: 'center'}}>{getNameDisplay(nameSettingsState, 'Shellos (East)')}</Typography>
+                    </Box>
+                </Box>
+                <Box sx={{...theme.components.box.fullCenterRow, backgroundColor: theme.palette.color1.main, borderRadius: '10px', mt: 1, width: '95%', height: '70px'}}>
+                    <Box sx={{...theme.components.box.fullCenterCol, width: '15%', height: '100%'}}>
+                        <Typography sx={{fontSize: '10px', textAlign: 'center'}}>Paldean Tauros (Combat)</Typography>
                         <Box sx={{...theme.components.box.fullCenterRow}}>
                             <ImgData linkKey='128-p' />
                         </Box>
@@ -136,9 +159,9 @@ export default function NameSettingsModal({open, toggleModal, nameSettingsState,
                         <Typography sx={{fontSize: '12px', textAlign: 'center'}}>{getNameDisplay(nameSettingsState, 'Paldean Tauros')}</Typography>
                     </Box>
                 </Box>
-                <Box sx={{...theme.components.box.fullCenterRow, backgroundColor: theme.palette.color1.main, borderRadius: '10px', mt: 1, width: '95%', height: '80px'}}>
+                <Box sx={{...theme.components.box.fullCenterRow, backgroundColor: theme.palette.color1.main, borderRadius: '10px', mt: 1, width: '95%', height: '70px'}}>
                     <Box sx={{...theme.components.box.fullCenterCol, width: '15%', height: '100%'}}>
-                        <Typography sx={{fontSize: '11px', textAlign: 'center'}}>Paldean Tauros (Aqua/Blaze)</Typography>
+                        <Typography sx={{fontSize: '10px', textAlign: 'center'}}>Paldean Tauros (Aqua/Blaze)</Typography>
                         <Box sx={{...theme.components.box.fullCenterRow}}>
                             <ImgData linkKey='128-p-a' />
                             <ImgData linkKey='128-p-b' />
@@ -159,7 +182,7 @@ export default function NameSettingsModal({open, toggleModal, nameSettingsState,
                         <Typography sx={{fontSize: '12px', textAlign: 'center'}}>{getNameDisplay(nameSettingsState, 'Paldean Tauros (Aqua)')}</Typography>
                     </Box>
                 </Box>
-                <Box sx={{...theme.components.box.fullCenterRow, backgroundColor: theme.palette.color1.main, borderRadius: '10px', mt: 1, width: '95%', height: '80px'}}>
+                <Box sx={{...theme.components.box.fullCenterRow, backgroundColor: theme.palette.color1.main, borderRadius: '10px', mt: 1, width: '95%', height: '70px'}}>
                     <Box sx={{...theme.components.box.fullCenterCol, width: '15%', height: '100%'}}>
                         <Typography sx={{fontSize: '12px', textAlign: 'center'}}>Rockruff (Dusk)</Typography>
                         <ImgData linkKey='744-d' />
@@ -180,7 +203,7 @@ export default function NameSettingsModal({open, toggleModal, nameSettingsState,
                     </Box>
                 </Box>
                 
-                <Box sx={{...theme.components.box.fullCenterRow, backgroundColor: theme.palette.color1.main, borderRadius: '10px', mt: 1, width: '95%', height: '80px'}}>
+                <Box sx={{...theme.components.box.fullCenterRow, backgroundColor: theme.palette.color1.main, borderRadius: '10px', mt: 1, width: '95%', height: '70px'}}>
                     <Box sx={{...theme.components.box.fullCenterCol, width: '15%', height: '100%'}}>
                         <Typography sx={{fontSize: '12px', textAlign: 'center'}}>Indeedee</Typography>
                         <Box sx={{...theme.components.box.fullCenterRow}}>

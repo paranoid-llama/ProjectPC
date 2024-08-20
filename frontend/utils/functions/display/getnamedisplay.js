@@ -1,7 +1,7 @@
 import { regionalFormRegions, regionalFormMons, altFormNames, threeLetterShorten, genderAltFormMons } from "../../../../common/infoconstants/pokemonconstants.mjs"
 import { findRegionByDexNum } from "../../../../common/infoconstants/miscconstants.mjs"
 
-const specificNameCases = ['Nidoran♀', 'Nidoran♂', 'Indeedee (Male)', 'Indeedee (Female)', 'Rockruff (Dusk)']
+const specificNameCases = ['Nidoran♀', 'Nidoran♂', 'Shellos (East)', 'Shellos (West)', 'Indeedee (Male)', 'Indeedee (Female)', 'Rockruff (Dusk)']
 const Male = '♂'
 const Female = '♀'
 
@@ -10,7 +10,7 @@ export default function getNameDisplay(nameDisplaySettings, pokemonName, dexNum)
         return pokemonName
     }
     const isRegionalFormPokemon = regionalFormMons.map(mon => pokemonName.includes(mon)).includes(true)
-    const isAlternateFormPokemon = pokemonName.includes('(') || pokemonName.includes('♀') || pokemonName.includes('♂')
+    const isAlternateFormPokemon = (pokemonName.includes('(') && !pokemonName.includes('Any')) || pokemonName.includes('♀') || pokemonName.includes('♂')
     if (!isRegionalFormPokemon && !isAlternateFormPokemon) {
         return pokemonName
     } else {
@@ -36,6 +36,10 @@ export default function getNameDisplay(nameDisplaySettings, pokemonName, dexNum)
             if (pokemonName === 'Rockruff (Dusk)') {
                 const formName = specificSetting === 'ability' ? 'Own Tempo' : 'Dusk'
                 return getAlternateNameFormatAfterRegional(nameDisplaySettings.general.alternateForms, 'Rockruff', formName, 'Form', false, specificSetting === 'ability' ? 'OT' : undefined)
+            }
+            if (pokemonName.includes('Shellos')) {
+                const formName = specificSetting === 'sub' ? (pokemonName.includes('East') ? 'Blue' : 'Pink') : pokemonName.slice(9, 13)
+                return getAlternateNameFormatAfterRegional(nameDisplaySettings.general.alternateForms, 'Shellos', formName, 'Sea', false)
             }
         }
         if ((isRegionalFormPokemon && isAlternateFormPokemon) || pokemonName === 'Paldean Tauros') {

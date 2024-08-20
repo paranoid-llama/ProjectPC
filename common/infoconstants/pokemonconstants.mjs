@@ -12,8 +12,13 @@ const multipleRegionalFormMons = ['Meowth']
 const allAltFormMons = ['Nidoran', 'Paldean Tauros', 'Burmy', 'Shellos', 'Basculin', 'Deerling', 'Flabébé', 'Pumpkaboo', 'Rockruff', 'Oricorio', 'Minior', 'Indeedee', 'Squawkabilly', 'Tatsugiri'] //vivillon and alcremie are excluded due to being particular cases (so many forms)
 const genderAltFormMons = ['Nidoran', 'Indeedee']
 const interchangeableAltFormMons = ['Burmy', 'Deerling', 'Oricorio']
+const interchangeableAltFormForms = {
+    'Burmy': ['Plant', 'Sandy', 'Trash'],
+    'Deerling': ['Spring', 'Summer', 'Autumn', 'Winter'],
+    'Oricorio': ['Baile', 'Pom-Pom', "Pa'u", 'Sensu']
+}
 const nonBreedableAltFormMons = ['Sinistea', 'Poltchageist']
-//below is needed as regularly the collection is generated without these identifiers, so theres no place where its shown in the collection list 
+//below is needed as normally the collection is generated without these identifiers, so theres no place where its shown in the collection list 
 const nonBreedableAltRegIdentifiers = {'Sinistea': 'phony', 'Poltchageist': 'counterfeit'}
 
 
@@ -153,7 +158,7 @@ const threeLetterShorten = ['Vivillon', 'Pumpkaboo', 'Gourgeist', 'Oricorio', 'D
 
 export {
     regionalFormRegions, alolanFormMons, galarianFormMons, hisuianFormMons, paldeanFormMons, regionalFormMons, multipleRegionalFormMons,
-    allAltFormMons, genderAltFormMons, interchangeableAltFormMons, nonBreedableAltFormMons, nonBreedableAltRegIdentifiers,
+    allAltFormMons, genderAltFormMons, interchangeableAltFormMons, interchangeableAltFormForms, nonBreedableAltFormMons, nonBreedableAltRegIdentifiers,
     altFormMonsWithExclusiveEMs, incenseAdultsWithExclusiveEMs, incenseBabiesWithExclusiveEMs, babiesOfGen1Pokemon, babiesOfGen2Pokemon, babiesOfGen3Pokemon,
     pokeBabies, pokeAdults, pokeIncenseBabies, pokeIncenseAdults, legendaryPokemon, nonBreedablePokemon, effectiveNonBreedable, evolvedRegionals, noCompareWithoutOnhand,
     uniqueRegionalFormPokemon, uniqueAlternateFormPokemon, pokemonNamesWithSpaces,

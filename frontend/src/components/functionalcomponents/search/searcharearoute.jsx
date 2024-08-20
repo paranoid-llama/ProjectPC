@@ -149,7 +149,7 @@ export default function SearchAreaRoute({query, searchType, result, page, change
                                 py: 0.5
                             }}
                         >
-                                {pageNum}
+                            {pageNum}
                         </ToggleButton> :
                         isDots &&
                         <Typography key={`${searchType}-search-${pagination}`} sx={{px: 2}}>...</Typography>

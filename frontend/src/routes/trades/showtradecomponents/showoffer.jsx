@@ -8,7 +8,8 @@ import { Virtuoso } from 'react-virtuoso'
 import { reFormatToIndividual } from '../../../../utils/functions/comparecollections/comparison'
 import { listTradeItem, listTradePokemon } from '../partialcomponents/listtradestuff'
 import ScrollBar from '../../../components/functionalcomponents/scrollbar'
-import { acceptTradeOffer, rejectTradeOffer, counterTradeOffer, toggleMarkedAsComplete } from '../../../../utils/functions/backendrequests/trades/traderesponse'
+import { acceptTradeOffer, rejectTradeOffer, counterTradeOffer, cancelTrade, toggleMarkedAsComplete } from '../../../../utils/functions/backendrequests/trades/traderesponse'
+import ConfirmDecisionModal from '../../../components/functionalcomponents/confirmdecisionmodal'
 
 export default function ShowOffer({numOfOffers, tradeParticipants, offersBasicData, selectedOfferIdx, selectedOfferData, handleSelectedOfferChange, tradeId, tradeUsers, isPending, markedCompleteData, tradeStatus, errorSelection}) {
     const theme = useTheme()
@@ -17,14 +18,17 @@ export default function ShowOffer({numOfOffers, tradeParticipants, offersBasicDa
     const revalidator = useRevalidator()
     const loggedInUserData = useRouteLoaderData('root')
     const [statuses, setStatuses] = useState({tradeStatus, offerStatus: selectedOfferData.status})
+    const [confirmDecisionModal, setConfirmDecisionModal] = useState({open: false, error: false, type: ''})
     const isLatestOffer = numOfOffers === selectedOfferIdx+1
     const isTradeParticipant = loggedInUserData.loggedIn && tradeParticipants.includes(loggedInUserData.user.username)
     const otherParticipant = isTradeParticipant && tradeParticipants.filter(tradePart => tradePart !== loggedInUserData.user.username)[0]
 
     const responder = selectedOfferData.recipient
-    const responderNum = tradeUsers[0].username === responder ? 0 : 1
-    const canRespondToOffer = loggedInUserData.loggedIn && loggedInUserData.user.username === responder && isLatestOffer && statuses.offerStatus !== 'rejected' && tradeStatus !== 'completed'
-    const canMarkComplete = (statuses.offerStatus === 'accepted' && statuses.tradeStatus === 'pending') && loggedInUserData.loggedIn && isTradeParticipant
+    const notCancelledTrade = statuses.tradeStatus !== 'cancelled'
+    const canRespondToOffer = loggedInUserData.loggedIn && loggedInUserData.user.username === responder && isLatestOffer && statuses.offerStatus !== 'rejected' && statuses.tradeStatus !== 'completed' && statuses.tradeStatus !== 'pending' && notCancelledTrade 
+    const canMarkComplete = (statuses.offerStatus === 'accepted' && statuses.tradeStatus === 'pending') && loggedInUserData.loggedIn && isTradeParticipant && notCancelledTrade 
+    const canCancelTrade = isTradeParticipant && !canRespondToOffer && statuses.tradeStatus !== 'completed' && statuses.tradeStatus !== 'rejected' && notCancelledTrade
+    
     const markedCompleteAlready = canMarkComplete && markedCompleteData === loggedInUserData.user.username
     const otherUserHasntMarkedComplete = canMarkComplete && markedCompleteData !== otherParticipant
     const listOfferSelectionItem = () => {
@@ -110,13 +114,17 @@ export default function ShowOffer({numOfOffers, tradeParticipants, offersBasicDa
                 revalidator.revalidate()
             }, 250)
             setStatuses({tradeStatus: 'pending', offerStatus: 'accepted'})
+            toggleConfirmDecisionModal()
             //spawning alert
             const alertMessage = `Accepted the trade offer!`
             const alertInfo = {severity: 'success', message: alertMessage, timeout: 3}
             const id = addAlert(alertInfo);
             setAlertIds((prev) => [...prev, id]);
         }
-        handleError(backendFunc, false, successFunc, () => {})
+        const errorFunc = (errorData) => {
+            setConfirmDecisionModal({...confirmDecisionModal, error: true, errorData})
+        }
+        handleError(backendFunc, false, successFunc, errorFunc)
     } 
     const rejectOffer = () => {
         const offererColId = tradeUsers.filter(userD => userD.username === selectedOfferData.offerer)[0].tradeCollection._id
@@ -125,6 +133,7 @@ export default function ShowOffer({numOfOffers, tradeParticipants, offersBasicDa
             setTimeout(() => {
                 revalidator.revalidate()
             }, 250)
+            toggleConfirmDecisionModal()
             //spawning alert
             setStatuses({tradeStatus: 'rejected', offerStatus: 'rejected'})
             const alertMessage = `Rejected the trade offer!`
@@ -132,10 +141,33 @@ export default function ShowOffer({numOfOffers, tradeParticipants, offersBasicDa
             const id = addAlert(alertInfo);
             setAlertIds((prev) => [...prev, id]);
         }
-        handleError(backendFunc, false, successFunc, () => {})
+        const errorFunc = (errorData) => {
+            setConfirmDecisionModal({...confirmDecisionModal, error: true, errorData})
+        }
+        handleError(backendFunc, false, successFunc, errorFunc)
     }
     const counterOffer = () => {
         navigate(`/trades/${tradeId}/counter-offer`)
+    }
+    const cancelTradeFunc = () => {
+        const offererColId = tradeUsers.filter(userD => userD.username === selectedOfferData.offerer)[0].tradeCollection._id
+        const recipientColId = tradeUsers.filter(userD => userD.username === selectedOfferData.recipient)[0].tradeCollection._id
+        const backendFunc = async() => await cancelTrade(tradeId, tradeUsers.filter(userD => userD.username === otherParticipant)[0]._id, offererColId, recipientColId, loggedInUserData.user.username)
+        const successFunc = () => {
+            setTimeout(() => {
+                revalidator.revalidate()
+            }, 250)
+            setStatuses({...statuses, tradeStatus: 'cancelled'})
+            toggleConfirmDecisionModal()
+            //spawning alert
+            const alertMessage = `Cancelled the trade!`
+            const alertInfo = {severity: 'success', message: alertMessage, timeout: 3}
+            addAlert(alertInfo)
+        }
+        const errorFunc = (errorData) => {
+            setConfirmDecisionModal({...confirmDecisionModal, error: true, errorData})
+        }
+        handleError(backendFunc, false, successFunc, errorFunc)
     }
     const markTradeAsComplete = () => {
         const tradeIsNowComplete = markedCompleteData === otherParticipant
@@ -166,6 +198,9 @@ export default function ShowOffer({numOfOffers, tradeParticipants, offersBasicDa
         }
     }
 
+    const openConfirmDecisionModal = (type) => {setConfirmDecisionModal({...confirmDecisionModal, open: true, type})}
+    const toggleConfirmDecisionModal = () => {setConfirmDecisionModal({...confirmDecisionModal, open: !confirmDecisionModal.open, error: false})}
+
     return (
         <Box sx={{...theme.components.box.fullCenterCol, justifyContent: 'start', width: '90%', height: canRespondToOffer ? '850px' : '750px', gap: 1, backgroundColor: hexToRgba(theme.palette.color1.main, 0.9), borderRadius: '10px', border: `1px solid ${theme.palette.color3.dark}`, alignItems: 'start'}}>
             <Box sx={{width: '100%', mb: 1}}>
@@ -191,7 +226,7 @@ export default function ShowOffer({numOfOffers, tradeParticipants, offersBasicDa
             <>
             <Box sx={{...theme.components.box.fullCenterCol, width: '100%', height: '85%'}}>
                 <Typography sx={{color: 'white', mb: 1}}>
-                    {selectedOfferIdx === 0 ? 'Offer' : 'Counter-offer'} proposed by {selectedOfferData.offerer} on {selectedOfferData.createdAt.slice(0, 10)}
+                    {selectedOfferIdx === 0 ? 'Offer' : 'Counter-offer'} proposed by {selectedOfferData.offerer === 'deleted' ? '<Deleted User>' : selectedOfferData.offerer} on {selectedOfferData.createdAt.slice(0, 10)}
                 </Typography>
                 <Typography sx={{fontWeight: 700, color: 'white'}}>
                     Offer Status:
@@ -249,7 +284,7 @@ export default function ShowOffer({numOfOffers, tradeParticipants, offersBasicDa
                     {!noOfferMessage ?
                     <>
                     <Typography sx={{width: '100%', textAlign: 'start', fontWeight: 700, ml: 1}}>
-                        Message from {selectedOfferData.offerer}:
+                        Message from {selectedOfferData.offerer === 'deleted' ? '<Deleted User>' : selectedOfferData.offerer}:
                     </Typography>
                     <Typography sx={{width: '90%', mt: 1}}>
                         {selectedOfferData.comment}
@@ -259,22 +294,27 @@ export default function ShowOffer({numOfOffers, tradeParticipants, offersBasicDa
                     }
                 </Box>
             </Box>
-            {(canRespondToOffer || canMarkComplete) &&
-            <Box sx={{height: '100px', width: '100%', ...theme.components.box[`fullCenter${canMarkComplete ? 'Col' : 'Row'}`], gap: 2}}>
+            {(canRespondToOffer || canMarkComplete || canCancelTrade) &&
+            <Box sx={{height: '100px', width: '100%', ...theme.components.box[`fullCenter${canMarkComplete ? 'Col' : 'Row'}`], gap: 2, position: 'relative'}}>
                 {canMarkComplete ?
                 <>
-                <ToggleButton value='' onChange={markTradeAsComplete} selected={markedCompleteData === loggedInUserData.user.userData} variant='contained' sx={{backgroundColor: 'rgb(40, 167, 69)', color: 'white', py: 1, ':hover': {backgroundColor: 'rgba(40, 167, 69, 0.5)'}}}>{markedCompleteAlready ? 'Mark Incomplete' : 'Mark as Complete'}</ToggleButton>
-                <Typography sx={{fontSize: '12px', color: 'white', mt: -1.5}}>
-                    {markedCompleteAlready ? 'You have marked this trade as complete!' : 
-                        !otherUserHasntMarkedComplete ? `${otherParticipant} has marked this trade as complete!` : 
-                        'Neither user has marked this trade as complete!'
-                    } 
-                </Typography>
+                <Box sx={{width: '100%', height: '100%', ...theme.components.box.fullCenterCol, gap: 2}}>
+                    <ToggleButton value='' onChange={markTradeAsComplete} selected={markedCompleteData === loggedInUserData.user.userData} variant='contained' sx={{backgroundColor: 'rgb(40, 167, 69)', color: 'white', py: 1, ':hover': {backgroundColor: 'rgba(40, 167, 69, 0.5)'}}}>{markedCompleteAlready ? 'Mark Incomplete' : 'Mark as Complete'}</ToggleButton>
+                    <Typography sx={{fontSize: '12px', color: 'white', mt: -1.5}}>
+                        {markedCompleteAlready ? 'You have marked this trade as complete!' : 
+                            !otherUserHasntMarkedComplete ? `${otherParticipant} has marked this trade as complete!` : 
+                            'Neither user has marked this trade as complete!'
+                        } 
+                    </Typography>
+                </Box>
+                {canCancelTrade && <Button onClick={() => openConfirmDecisionModal('cancel')} variant='contained' sx={{backgroundColor: 'rgb(150, 12, 28)', ':hover': {backgroundColor: 'rgba(150, 12, 28, 0.5)'}, position: 'absolute', right: '20px', top: '12.5px'}}>Cancel Trade</Button>}
                 </> :
+                canCancelTrade ? 
+                    <Button onClick={() => openConfirmDecisionModal('cancel')} variant='contained' sx={{backgroundColor: 'rgb(150, 12, 28)', ':hover': {backgroundColor: 'rgba(150, 12, 28, 0.5)'}, position: 'absolute', right: '20px', top: '12.5px'}}>Cancel Trade</Button> : 
                 canRespondToOffer && 
                 <>
-                <Button onClick={acceptOffer} variant='contained' sx={{backgroundColor: 'rgb(40, 167, 69)', ':hover': {backgroundColor: 'rgba(40, 167, 69, 0.5)'}}}>Accept Offer</Button>
-                <Button onClick={rejectOffer} variant='contained' sx={{backgroundColor: 'rgb(220, 53, 69)', ':hover': {backgroundColor: 'rgba(220, 53, 69, 0.5)'}}}>Reject Offer</Button>
+                <Button onClick={() => openConfirmDecisionModal('accept')} variant='contained' sx={{backgroundColor: 'rgb(40, 167, 69)', ':hover': {backgroundColor: 'rgba(40, 167, 69, 0.5)'}}}>Accept Offer</Button>
+                <Button onClick={() => openConfirmDecisionModal('reject')} variant='contained' sx={{backgroundColor: 'rgb(220, 53, 69)', ':hover': {backgroundColor: 'rgba(220, 53, 69, 0.5)'}}}>Reject Offer</Button>
                 {numOfOffers === 5 ? 
                 <Tooltip title='Maximum number of offers reached. You have to make a decision!'>
                     <Button disabled variant='contained' sx={{backgroundColor: 'rgb(0, 123, 255)', ':hover': {backgroundColor: 'rgba(0, 123, 255, 0.5)'}}}>Counter-Offer</Button>    
@@ -286,7 +326,32 @@ export default function ShowOffer({numOfOffers, tradeParticipants, offersBasicDa
             </Box>
             }
             </> 
-            }  
+            }
+            {(canRespondToOffer || canCancelTrade) &&
+                <ConfirmDecisionModal 
+                    text={`You are about to ${confirmDecisionModal.type} this trade${confirmDecisionModal.type === 'cancel' ? '' : ' offer'}.`}
+                    subText='Are you sure you want to proceed with this?'
+                    confirmDecisionFunc={confirmDecisionModal.type === 'accept' ? acceptOffer : confirmDecisionModal.type === 'reject' ? rejectOffer : cancelTradeFunc}
+                    toggleModal={toggleConfirmDecisionModal}
+                    open={confirmDecisionModal.open}
+                    state2={confirmDecisionModal.error ? 
+                        () => {
+                            return (
+                                <>
+                                <Typography sx={{fontSize: '24px', textAlign: 'center'}}>ERROR {confirmDecisionModal.errorData.status}: {confirmDecisionModal.errorData.name}</Typography>
+                                <Typography sx={{mt: 1, textAlign: 'center'}}>
+                                    {confirmDecisionModal.errorData.message}
+                                </Typography>
+                                <Typography sx={{mt: 1, textAlign: 'center'}}>
+                                    Try again later!
+                                </Typography>
+                                </>
+                            )
+                        }  : undefined
+                    }
+                    noPendingPage={true}
+                />
+            }
         </Box>
     )
 }

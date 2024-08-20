@@ -1,5 +1,6 @@
 import allPokemon from './aprimonAPI/allpokemoninfo.js'
 import {handleAlternateForms, handleRegionalForms, handleIncenseAndBabyMons, setBallInfo, setOwnedBallList, removeBallsOutsideScope, getBallPath} from './CreateCollection/functions.js'
+import { interchangeableAltFormMons } from '../../common/infoconstants/pokemonconstants.mjs'
 import { customSortCollectionListLogic } from '../../common/sortingfunctions/customsorting.mjs'
 import { getGenNum } from '../../common/infoconstants/miscconstants.mjs'
 import { getImgLink, getPossibleGender } from './schemavirtuals/collectionvirtuals.js'
@@ -139,7 +140,8 @@ function getIndividualPokemonInfo(gen, newPokemon, ballScope) {
                 const isBabyPokemon = pokemon.info.special !== undefined && pokemon.info.special.child.natDexNum === pokemonInNewPokemonArr.natDexNum
                 const ownedBallList = setOwnedBallList(formattedGen, ballsPath, pokemon, false, gen === 'home')
                 const pokemonInfo = {
-                    name: pokemonInNewPokemonArr.name,
+                    //below condition true means it's interchangeable any
+                    name: interchangeableAltFormMons.includes(pokemonInNewPokemonArr.name) ? `${pokemonInNewPokemonArr.name} (Any)` : pokemonInNewPokemonArr.name, 
                     natDexNum: pokemonInNewPokemonArr.natDexNum,
                     gen: isBabyPokemon ? pokemon.info.special.child.gen : pokemon.gen,
                     balls: ownedBallList

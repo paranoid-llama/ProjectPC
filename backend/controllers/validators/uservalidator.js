@@ -2,6 +2,7 @@ import User from '../../models/users.js'
 
 const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 const usernameRegex = /^[a-zA-Z0-9\$\(\)\-\_\;\:\'\,\. ]+[a-zA-Z0-9\$\(\)\-\_\;\:\'\,\.]*$/i
+const reservedWordsForUsers = ['login', 'logout', 'settings', 'deleted']
 
 export default async function validateNewUserData(req, res, next) {
     const {username, password, email, secAnswer1, secAnswer2, secAnswer3} = req.body
@@ -12,7 +13,7 @@ export default async function validateNewUserData(req, res, next) {
     const doubleSpaceMatches = [...username.matchAll(new RegExp('  ', 'gi'))].length !== 0
     const usernameFitsRequirements = (usernameRegex.test(username)) &&
         (username[0] !== ' ' && username[username.length-1] !== ' ') && !(doubleSpaceMatches) &&
-        (username.length >= 4 && username.length <= 24) && userIsAvailable
+        (username.length >= 4 && username.length <= 24) && userIsAvailable && !reservedWordsForUsers.includes(username.toLowerCase())
 
     if (!usernameFitsRequirements) {
         const exception = new Error()

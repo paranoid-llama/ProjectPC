@@ -6,6 +6,7 @@ import ownedPokemonEdit from './editcollectioncontrollers.js/ownedpokemonedit.js
 import optionsEdit from './editcollectioncontrollers.js/optionsedit.js'
 
 import deleteOnHand from './editcollectioncontrollers.js/deleteonhand.js'
+import deleteCollectionController from './deletecollection.js'
 
 export const editCollectionFunc = async(req, res) => {
     const {editType} = req.body
@@ -24,6 +25,7 @@ export const deleteCollectionFunc = async(req, res) => {
     const {deleteType} = req.body
     switch(deleteType) {
         case 'deleteOnHand': return await deleteOnHand(req, res)
+        case 'deleteCollection': return await deleteCollectionController(req, res)
         default: res.end()
     }
 }

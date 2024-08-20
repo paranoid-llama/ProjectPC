@@ -2,9 +2,10 @@ import Trade from '../../models/trades.js'
 import Collection from '../../models/collections.js'
 import User from '../../models/users.js'
 import { setOnHandReserved, removeOnHandReserved, getOnhandIdsToReserve } from './collectioneditposttraderes.js'
+import { setPendingTrade } from './colmanagementfuncs.js'
 
 export async function respondToTrade(req, res) {
-    const {response, otherUserId, offerColId, receivingColId, counterOfferData, username, } = req.body
+    const {response, otherUserId, offerColId, receivingColId, counterOfferData, username} = req.body
     const {id} = req.params
 
     const trade = await Trade.findById(id)
@@ -25,11 +26,6 @@ export async function respondToTrade(req, res) {
 
         const offerCol = await Collection.findById(offerColId)
         const receivingCol = await Collection.findById(receivingColId)
-        // console.log(username)
-        // console.log(offerCol.owner)
-        // console.log(receivingCol.owner)
-        // console.log(offerCol.name)
-        // console.log(receivingCol.name)
         if (latestOffer.trade.offer.pokemon !== undefined) {
             receivingCol.ownedPokemon = receivingCol.ownedPokemon.map(p => { //setting offered pokemon as pending
                 if (p.disabled) {return p}
@@ -94,6 +90,9 @@ export async function respondToTrade(req, res) {
 
         const otherUser = await User.findById(otherUserId)
         otherUser.notifications.push({type: 'trade-offer: accept', tradeData: {otherParticipant: username, tradeGen: trade.gen, tradeId: trade._id}, unread: true})
+        if (otherUser.notifications.length > 40) {
+            otherUser.notifications.shift()
+        }
         otherUser.save()
 
     } else if (response === 'reject') {
@@ -111,6 +110,9 @@ export async function respondToTrade(req, res) {
 
         const otherUser = await User.findById(otherUserId)
         otherUser.notifications.push({type: 'trade-offer: reject', tradeData: {otherParticipant: username, tradeGen: trade.gen, tradeId: trade._id}, unread: true})
+        if (otherUser.notifications.length > 40) {
+            otherUser.notifications.shift()
+        }
         otherUser.save()
     } else if (response === 'counter') {
         trade.status = 'counteroffer'
@@ -135,7 +137,42 @@ export async function respondToTrade(req, res) {
 
         const otherUser = await User.findById(otherUserId)
         otherUser.notifications.push({type: 'trade-offer: counter', tradeData: {otherParticipant: username, tradeGen: trade.gen, tradeId: trade._id}, unread: true})
+        if (otherUser.notifications.length > 40) {
+            otherUser.notifications.shift()
+        }
         otherUser.save()
+    } else if (response === 'cancel') { 
+        trade.status = 'cancelled'
+        trade.closeDate = Date.now()
+        trade.save()
+
+        const latestOffer = trade.history[trade.history.length-1]
+        const offerCol = await Collection.findById(offerColId)
+        const receivingCol = await Collection.findById(receivingColId)
+        
+        if (latestOffer.status === 'accepted') {
+            const {newOfferColOp, newReceivingColOp, newOfferColOnhand, newReceivingColOnhand} = setPendingTrade(offerCol, receivingCol, latestOffer, true)
+            offerCol.ownedPokemon = newOfferColOp
+            offerCol.onHand = newOfferColOnhand
+            receivingCol.ownedPokemon = newReceivingColOp
+            receivingCol.onHand = newReceivingColOnhand
+            await offerCol.save()
+            await receivingCol.save()
+        } else {
+            const previouslyReservedOnHandIds = getOnhandIdsToReserve(latestOffer.trade.offer.pokemon)
+            if (previouslyReservedOnHandIds.length !== 0) {
+                offerCol.onHand = removeOnHandReserved(offerCol.onHand, previouslyReservedOnHandIds)
+            }
+            await offerCol.save()
+        }
+
+        const otherUser = await User.findById(otherUserId)
+        otherUser.notifications.push({type: 'trade-offer: cancel', tradeData: {otherParticipant: username, tradeGen: trade.gen, tradeId: trade._id}, unread: true})
+        if (otherUser.notifications.length > 40) {
+            otherUser.notifications.shift()
+        }
+        otherUser.save()
+
     } else if (response === 'markAsComplete') {
         if (trade.markedCompleteBy === username) {
             trade.markedCompleteBy = ''

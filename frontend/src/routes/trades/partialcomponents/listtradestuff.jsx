@@ -36,8 +36,8 @@ export const listTradePokemon = (p, theme, sideScreen, isTradeSummaryPage=false,
                     <ImgData type='ball' linkKey={p.ball} size='24px'/>
                     <ImgData linkKey={p.id} size='28px'/>
                 </Box>
-                <Typography sx={{textAlign: 'center', fontSize: '12px', ml: 1}}>{nameDisplay}</Typography>
-                {p.onhandId !== undefined && <Typography sx={{textAlign: 'center', fontSize: '12px', ml: 0.5}}>(On-Hand)</Typography>}
+                <Typography sx={{textAlign: 'center', fontSize: p.onhandId !== undefined ? '11px' : '12px', ml: 1}}>{nameDisplay}</Typography>
+                {p.onhandId !== undefined && <Typography sx={{textAlign: 'center', fontSize: '11px', ml: 0.5}}>(On-Hand)</Typography>}
             </Box>
             <Box sx={{width: smallWidth ? '100%' : '30%', height: smallWidth ? '15px' :'100%', ...theme.components.box.fullCenterRow, justifyContent: smallWidth ? 'center' : 'end', mr: smallWidth ? 0 : 0.5}}>
                 {listPokemonBallPeripheralData(p, smallWidth, sideScreen, isTradeSummaryPage)}

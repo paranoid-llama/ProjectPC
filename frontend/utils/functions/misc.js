@@ -1,3 +1,5 @@
+import { interchangeableAltFormMons, interchangeableAltFormForms } from "../../../common/infoconstants/pokemonconstants.mjs"
+
 function capitalizeFirstLetter(word) {
     return `${word.charAt(0).toUpperCase()}${word.slice(1)}`
 }
@@ -45,8 +47,21 @@ function getOwnedBalls(ballsObj) {
 function getPokemonWithOwnedBalls(collection) {
     const listOfPokemon = collection.map(pokemon => {
         const hasOwnedBalls = Object.values(pokemon.balls).map(ballInfo => ballInfo.isOwned).includes(true)
+        const isAnyIntFormMon = interchangeableAltFormMons.map(mon => pokemon.name.includes(mon)).includes(true) && pokemon.name.includes('Any')
+        if (hasOwnedBalls && isAnyIntFormMon) {
+            const species = pokemon.name.slice(0, pokemon.name.indexOf(' '))
+            const forms = interchangeableAltFormForms[species]
+            const newImgLinkId = forms.map(f => species === 'Deerling' ? f.slice(0, 3).toLowerCase() : f === "Pa'u" ? 'pau' : f[0].toLowerCase())
+            return forms.map((f, idx) => {
+                return {
+                    ...pokemon,
+                    name: `${species} (${f})`,
+                    imgLink: `${pokemon.natDexNum}-${newImgLinkId[idx]}`
+                }
+            })
+        }
         return hasOwnedBalls ? pokemon : undefined
-    }).filter(pokemon => pokemon !== undefined)
+    }).flat().filter(pokemon => pokemon !== undefined)
     return listOfPokemon
 }
 

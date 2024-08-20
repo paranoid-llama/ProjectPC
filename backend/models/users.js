@@ -1,5 +1,8 @@
 import mongoose from 'mongoose';
 import mongooseUniqueValidator from 'mongoose-unique-validator';
+import Collection from './collections.js'
+import Trade from './trades.js'
+import { deletedUserNotifications } from './postpremiddleware.js';
 const Schema = mongoose.Schema;
 
 const opts = {toJSON: {virtuals: true}, minimize: false}
@@ -26,7 +29,7 @@ const userSchema = new Schema ({
         profile: {
             _id: false,
             bio: {type: String, max: 300},
-            tags: {
+            badges: {
                 type: [
                     {type: String}
                 ]
@@ -86,7 +89,7 @@ const userSchema = new Schema ({
         type: [{
             type: {type: String, required: true, //object key is 'type' to denote whether its a user message/site message/trade offer update/other message
                 enum: {
-                    values: ['trade-offer: new', 'trade-offer: counter', 'trade-offer: accept', 'trade-offer: reject', 'site message']
+                    values: ['trade-offer: new', 'trade-offer: counter', 'trade-offer: accept', 'trade-offer: reject', 'trade-offer: cancel', 'system', 'site update']
                 }
             }, 
             title: {type: String},
@@ -104,5 +107,27 @@ userSchema.virtual('collections', {
 })
 
 userSchema.plugin(mongooseUniqueValidator)
+
+userSchema.post('findOneAndDelete', async function(user) {
+    if (user) {
+        const allThisUsersCollections = await Collection.find({owner: user._id})
+        const allThisUsersTrades = await Trade.find({users: {$in: user._id}})
+        allThisUsersCollections.forEach(async(col) => {
+            await Collection.findByIdAndDelete(col._id) //we do it this way so it triggers the post middleware for the collection model
+        })
+        allThisUsersTrades.forEach(async(trade) => {
+            const userPos = trade.users.indexOf(user._id)
+            // trade.users[userPos] = 'deleted'
+            trade.history = trade.history.map(offer => {
+                const isOfferer = user.username === offer.offerer
+                const edit = isOfferer ? {offerer: 'deleted'} : {recipient: 'deleted'}
+                return {...offer, ...edit}
+            })
+            trade.markedCompleteBy = trade.markedCompleteBy === user.username ? 'deleted' : trade.markedCompleteBy
+            await trade.save()
+        })
+        await deletedUserNotifications(user.username)
+    }
+})
 
 export default mongoose.model('User', userSchema);

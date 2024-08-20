@@ -1,25 +1,32 @@
 import {Box, useTheme, Typography, Button} from '@mui/material'
 import ControlledTextInput from '../../../components/functionalcomponents/controlledtextinput'
-import { useContext, useState } from 'react'
+import { useNavigate } from 'react-router'
+import { useContext, useState, useEffect, useRef } from 'react'
 import { AlertsContext } from '../../../alerts/alerts-context'
 import { ErrorContext } from '../../../app/contexts/errorcontext'
 import { useRouteLoaderData, useOutletContext } from 'react-router'
+import ConfirmDecisionModal from '../../../components/functionalcomponents/confirmdecisionmodal'
 import changePassword from '../../../../utils/functions/backendrequests/users/changepassword'
+import deleteUserAccount from '../../../../utils/functions/backendrequests/users/deleteaccount'
+import checkPasswordRequest from '../../../../utils/functions/backendrequests/users/checkpassword'
 
 export default function Account({}) {
     const theme = useTheme()
     const {handleError} = useContext(ErrorContext)
     const {addAlert} = useContext(AlertsContext)
+    const navigate = useNavigate()
     const user = useRouteLoaderData('userSettings')
     const revalidate = useOutletContext()
+    const deleteConfirmPasswordRef = useRef(null)
     const [newPasswordError, setNewPasswordError] = useState({password: '', currPassword: '', confirmPassword: '', passwordFocused: false, isError: false, confirmPasswordError: false, currentPasswordError: false, eightChars: false, oneUpper: false, oneLower: false, oneNumber: false, passwordsMatch: 'none', savePending: false})
+    const [confirmDeleteAcc, setConfirmDeleteAcc] = useState({open: false, confirmedPassword: false, passwordError: false, password: '', error: false})
     const textFieldStyles = {
         '&.MuiTextField-root': {
             width: '60%'
         },
         '& .MuiInputBase-input': {
             padding: 0.5,
-            width: '100%'
+            width: '100%',
         }, 
         mx: 1,
         '& .MuiOutlinedInput-root': {
@@ -78,6 +85,78 @@ export default function Account({}) {
             handleError(backendFunc, false, successFunc, errorFunc)
         }
     }
+
+    const toggleConfirmDeleteModal = () => {setConfirmDeleteAcc({...confirmDeleteAcc, open: !confirmDeleteAcc.open})}
+    const confirmPasswordBeforeDelete = () => {
+        const backendFunc = async() => checkPasswordRequest(user.username, deleteConfirmPasswordRef.current.value)
+        const successFunc = () => {
+            setConfirmDeleteAcc({...confirmDeleteAcc, confirmedPassword: true, password: deleteConfirmPasswordRef.current.value})
+        }
+        const errorFunc = (errorData) => {
+            if (errorData.status === 403) {
+                setConfirmDeleteAcc({...confirmDeleteAcc, passwordError: true})
+            } else {
+                setConfirmDeleteAcc({...confirmDeleteAcc, error: true, errorData})
+            }
+        }
+        handleError(backendFunc, false, successFunc, errorFunc)
+    }
+
+    const deleteAccount = () => {
+        const backendFunc = async() => deleteUserAccount(user.username, confirmDeleteAcc.password)
+        const successFunc = () => {
+            navigate('/')
+            addAlert({severity: 'error', timeout: 8, message: 'Successfully deleted your account!'})
+        }
+        const errorFunc = (errorData) => {
+            setConfirmDeleteAcc({...confirmDeleteAcc, error: true, errorData})
+        }
+        handleError(backendFunc, false, successFunc, errorFunc)
+    }
+
+    const generatePasswordCheck = () => {
+        return (
+            <>
+                <Typography sx={{fontSize: '20px', textAlign: 'center', mb: 3}}>Please confirm your password before proceeding:</Typography>
+                <ControlledTextInput 
+                    textFieldStyles={{...textFieldStyles, '& .MuiInputBase-root': {border: '1px solid white', color: 'white'}, '& .MuiInputBase-input': {padding: 0.5, width: '100%', border: 'none'}}}
+                    textFieldProps={{
+                        inputRef: deleteConfirmPasswordRef,
+                        InputProps: {type: 'password'},
+                        error: confirmDeleteAcc.passwordError,
+                        onFocus: () => setConfirmDeleteAcc({...confirmDeleteAcc, passwordError: false}),
+                    }}
+                    charLimit={60}
+                    useExpandedRegex={true}
+                    
+                />
+                <Box sx={{...theme.components.box.fullCenterRow, alignItems: 'start', justifyContent: 'end', mt: 0.5, width: '100%', height: '7%', position: 'relative'}}>
+                    {confirmDeleteAcc.passwordError && 
+                    <Box sx={{...theme.components.box.fullCenterCol, alignItems: 'start', width: '80%', height: '100%', position: 'absolute', top: '-5px'}}>
+                        <Typography sx={{color: 'red', fontSize: '12px'}}>Password is incorrect!</Typography> 
+                    </Box>}
+                </Box>
+                <Box sx={{...theme.components.box.fullCenterRow, mt: 0.5}}>
+                    <Button sx={{mr: 2}} variant='contained' onClick={toggleConfirmDeleteModal}>Close</Button>
+                    <Button sx={{ml: 2}}  variant='contained' onClick={confirmPasswordBeforeDelete}>Confirm</Button>
+                </Box>
+            </>
+        )
+    }
+
+    const generateErrorSection = () => {
+        return (
+            <>
+            <Typography sx={{fontSize: '24px', textAlign: 'center'}}>ERROR {confirmDeleteAcc.errorData.status}: {confirmDeleteAcc.errorData.name}</Typography>
+            <Typography sx={{mt: 1, textAlign: 'center'}}>
+                {confirmDeleteAcc.errorData.message}
+            </Typography>
+            <Typography sx={{mt: 1, textAlign: 'center'}}>
+                Try again later!
+            </Typography>
+            </>
+        )
+    } 
 
     return (
         <Box sx={{...theme.components.box.fullCenterCol, justifyContent: 'start', width: '90%', height: '100%', margin: 2, position: 'relative'}}>
@@ -149,7 +228,22 @@ export default function Account({}) {
                     </Box>}
                 </Box>
                 <Button sx={{mt: 2}} onClick={savePasswordChanges}>Save Password Changes</Button>
+                <Button sx={{backgroundColor: 'rgb(220, 53, 69)', position: 'absolute', bottom: '0px', ':hover': {backgroundColor: 'rgba(220, 53, 69, 0.5)'}}} variant='contained' size='small' onClick={toggleConfirmDeleteModal}>Delete Account</Button>
             </Box>
+            <ConfirmDecisionModal 
+                text='Are you sure you want to delete your account?'
+                subText='Your account and all of your collections will be lost forever!'
+                startingSecond={8}
+                confirmDecisionFunc={deleteAccount}
+                toggleModal={toggleConfirmDeleteModal}
+                open={confirmDeleteAcc.open}
+                state2={
+                    confirmDeleteAcc.error ? generateErrorSection : 
+                    !confirmDeleteAcc.confirmedPassword ? generatePasswordCheck : undefined
+                }
+                pendingTimeout={3}
+                noPendingPage={true}
+            />
         </Box>
     )
 }

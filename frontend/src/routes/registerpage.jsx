@@ -10,6 +10,7 @@ import { userRegisterRequest } from '../../utils/functions/backendrequests/users
 
 const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 const usernameRegex = /^[a-zA-Z0-9\$\(\)\-\_\;\:\'\,\. ]+[a-zA-Z0-9\$\(\)\-\_\;\:\'\,\.]*$/i
+const reservedWordsForUsers = ['login', 'logout', 'settings', 'deleted']
 const securityQuestions = [
     "What was your childhood best friend's name?",
     "In which city did your parents meet?",
@@ -85,19 +86,19 @@ export default function RegisterPage({}) {
             const doubleSpaceMatches = [...usernameFieldRef.current.value.matchAll(new RegExp('  ', 'gi'))].length !== 0
             if (doubleSpaceMatches) {
                 setError({...error, username: true, usernameAvailable: 'doubleSpace'})
-            return
+                return
             }
         }
+        if (reservedWordsForUsers.includes(usernameFieldRef.current.value.toLowerCase()))  {
+            setError({...error, username: true, usernameAvailable: 'reserved'})
+            return
+        } 
         const backendFunc = async() => {return await backendCheckUsernameAvailability(usernameFieldRef.current.value)}
         const successFunc = (availability) => {
             if (availability.available === false) {
                 setError({...error, username: true, usernameAvailable: false})
             } else {
-                if (usernameFieldRef.current.value === 'login' || usernameFieldRef.current.value === 'logout' || usernameFieldRef.current.value === 'settings')  {//reserved words
-                    setError({...error, username: true, usernameAvailable: 'reserved'})
-                } else {
-                    setError({...error, usernameAvailable: true})
-                } 
+                setError({...error, usernameAvailable: true})
             }
         }
         const errorFunc = () => {setError({...error, username: false, usernameAvailable: 'unknown'})}

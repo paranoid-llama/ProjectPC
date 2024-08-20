@@ -198,6 +198,7 @@ const canOfferTrade = async(req, res, next) => {
 
 const canRespondToTrade = async(req, res, next) => {
     const { id } = req.params
+    const {response} = req.body
     const tradeData = await Trade.findById(id)
     if (tradeData === null) {
         const exception = new Error()
@@ -206,7 +207,7 @@ const canRespondToTrade = async(req, res, next) => {
         exception.status = 404
         return res.status(404).send(exception)
     }
-    const tradeIsOver = tradeData.status === 'completed' || tradeData.status === 'rejected'
+    const tradeIsOver = tradeData.status === 'completed' || tradeData.status === 'rejected' || tradeData.status === 'cancelled'
     if (tradeIsOver) {
         const exception = new Error()
         exception.name = 'Forbidden'
@@ -223,10 +224,12 @@ const canRespondToTrade = async(req, res, next) => {
         return res.status(403).send(exception)
     }
     const isOfferedUser = tradeData.history[tradeData.history.length-1].recipient === req.user.username
-    if (tradeData.status !== 'pending' && !isOfferedUser) {
+    const cannotCancel = (response === 'cancel' && isOfferedUser && tradeData.status !== 'pending' )
+    const cannotRespond = (tradeData.status !== 'pending' && !isOfferedUser && response !== 'cancel')
+    if (cannotRespond || cannotCancel) {
         const exception = new Error()
         exception.name = 'Forbidden'
-        exception.message = `You cannot reply to this offer! You have to wait for the recipient to respond!`
+        exception.message = cannotRespond ? `You cannot reply to this offer! You have to wait for the recipient to respond!` : 'You cannot cancel the trade! The other user is awaiting a response!'
         exception.status = 403
         return res.status(403).send(exception)
     }

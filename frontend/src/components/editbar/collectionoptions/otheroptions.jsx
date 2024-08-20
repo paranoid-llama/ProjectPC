@@ -1,14 +1,17 @@
 import {Modal, Fade, Backdrop, Box, Typography, Button, ToggleButton, ToggleButtonGroup} from '@mui/material'
 import ArrowForward from '@mui/icons-material/ArrowForward'
 import { useDispatch, useSelector } from 'react-redux'
+import { useNavigate } from 'react-router'
 import { useState, useEffect, useContext, useRef } from 'react'
 import { AlertsContext } from '../../../alerts/alerts-context'
 import { ErrorContext } from '../../../app/contexts/errorcontext'
 import { changeModalState } from '../../../app/slices/editmode'
 import { setNameState, setGlobalDefaultState } from '../../../app/slices/options'
 import { backendChangeOptions } from '../../../../utils/functions/backendrequests/collectionoptionsedit'
+import deleteCollectionRequest from '../../../../utils/functions/backendrequests/deletecollection'
 import ControlledTextInput from '../../functionalcomponents/controlledtextinput'
 import SaveChangesConfirmModal from './savechangesconfirmmodal'
+import ConfirmDecisionModal from '../../functionalcomponents/confirmdecisionmodal'
 
 export default function OtherOptions({elementBg, collectionId, collectionGen, collectionType, owner}) {
     const dispatch = useDispatch()
@@ -16,8 +19,10 @@ export default function OtherOptions({elementBg, collectionId, collectionGen, co
     const collectionNameState = useSelector((state) => state.options.collectionName)
     const globalDefaultInit = useSelector((state) => state.options.globalDefaults)
     const collectionNameRef = useRef(collectionNameState)
+    const navigate = useNavigate()
 
     const [otherOptions, setOtherOptions] = useState({globalDefaults: globalDefaultInit, deleteCollectionModal: false, saveChangesConfirmOpen: false})
+    const [deleteError, setDeleteError] = useState({error: false})
 
     const buttonStyles = {
         '&.MuiToggleButton-root': {
@@ -81,6 +86,18 @@ export default function OtherOptions({elementBg, collectionId, collectionGen, co
         }
     }
 
+    const deleteCollection = () => {
+        const backendFunc = async() => deleteCollectionRequest(collectionId)
+        const successFunc = () => {
+            navigate(`/users/${owner}`)
+            addAlert({severity: 'error', timeout: 5, message: `Deleted your ${collectionType}!`})
+        }
+        const errorFunc = (errorDetails) => {
+            setDeleteError({error: true, ...errorDetails})
+        }
+        handleError(backendFunc, false, successFunc, errorFunc)
+    }
+
     const finalizeChanges = (saveChanges, nextScreen) => {
         if (saveChanges) {
             const newName = collectionNameRef.current.value
@@ -122,6 +139,13 @@ export default function OtherOptions({elementBg, collectionId, collectionGen, co
             dispatch(changeModalState({screen: nextScreen}))
         }
     }
+
+    useEffect(() => {
+        if (otherOptions.deleteCollectionModal === false && deleteError.error) {
+            setDeleteError({error: false})
+        }
+    }, [otherOptions.deleteCollectionModal])
+
 
     const isHomeCollection = collectionGen === 'home'
     const disabledEMSelection = isHomeCollection ? {filter: 'blur(10px)', pointerEvents: 'none'} : {}
@@ -221,6 +245,30 @@ export default function OtherOptions({elementBg, collectionId, collectionGen, co
         >
 
         </Modal> */}
+        <ConfirmDecisionModal 
+            text='Are you sure you want to delete this collection?'
+            subText='Every ongoing trade with this collection will be cancelled. Also, the collection will be lost forever!'
+            open={otherOptions.deleteCollectionModal}
+            toggleModal={toggleDeleteCollectionModal}
+            noPendingPage={true}
+            confirmDecisionFunc={deleteCollection}
+            state2={deleteError.error ? 
+                () => {
+                    return (
+                        <>
+                        <Typography sx={{fontSize: '24px', textAlign: 'center'}}>ERROR {deleteError.status}: {deleteError.name}</Typography>
+                        <Typography sx={{mt: 1, textAlign: 'center'}}>
+                            {deleteError.message}
+                        </Typography>
+                        <Typography sx={{mt: 1, textAlign: 'center'}}>
+                            Try again later!
+                        </Typography>
+                        </>
+                    )
+                } : 
+                undefined
+            }
+        />
         <SaveChangesConfirmModal 
             open={otherOptions.saveChangesConfirmOpen}
             modalScreen='other'

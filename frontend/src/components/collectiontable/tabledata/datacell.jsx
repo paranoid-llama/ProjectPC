@@ -20,7 +20,7 @@ export default function DataCell({label, styles, alignment='none', isEditMode, i
     
     const displayAvailableGames = availableGames !== undefined
     const includeBottomText = displayAvailableGames || reserved !== 0
-    const relativeStyle = displayAvailableGames ? {position: 'relative'} : {}
+    const relativeStyle = includeBottomText ? {position: 'relative'} : {}
     const isOnHandAndTradePage = isTradePage && onhandCells
     // const localSelectedStyles = localHandleChange !== null ? {backgroundColor: 'theme'}
     if (isOnHandAndTradePage) {
@@ -65,7 +65,7 @@ export default function DataCell({label, styles, alignment='none', isEditMode, i
                     </Box>
                 </Box>
             }
-            <Box sx={!(blackSquare) ? {...alignment, ...styles.bodyColor, ...relativeStyle, position: reserved !== 0 ? 'relative' : 'auto'} : {}}>
+            <Box sx={!(blackSquare) ? {...alignment, ...styles.bodyColor, ...relativeStyle} : {}}>
                 {isImg ? 
                 <ImgData type={imgType} size={imgSize} linkKey={imgLinkKey}/> :+
                 !(blackSquare) && <Typography sx={{...otherTextStyles, ...specialStyles}} variant={'body2'}>{label}</Typography>

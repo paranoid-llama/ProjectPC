@@ -18,15 +18,18 @@ export default function UserNotificationItem({notiType, notiTradeData, notiTitle
         ) : isNaN(parseInt(notiTradeData.tradeGen)) ? notiTradeData.tradeGen.toUpperCase() : `Gen ${notiTradeData.tradeGen}`
     )
 
+    const otherParticipantDisplay = notiTradeData !== undefined && (notiTradeData.otherParticipant === 'deleted' ? '<Deleted User>' : notiTradeData.otherParticipant)
+
     const customColor = isTradeNoti ? (
         notiType.includes('new') ? '#FC8B00' : 
         notiType.includes('counter') ? '#007BFF' : 
         notiType.includes('accept') ? '#28A745' : 
-        notiType.includes('reject') && '#DC3545'
+        notiType.includes('reject') ? '#DC3545' :
+        notiType.includes('cancel') && '#B30C1C'
     ) : theme.palette.color1.darker
 
     return (
-        <SearchItemWrapper customColor={customColor} customStyles={{position: 'relative'}} onClickFunc={onClickFunc}>
+        <SearchItemWrapper customColor={customColor} customStyles={{position: 'relative', mt: 1}} onClickFunc={onClickFunc}>
             {unread && <Box sx={{width: '10px', height: '100%', backgroundColor: customColor, borderTopLeftRadius: '5px', borderBottomLeftRadius: '5px', position: 'absolute', left: '0px'}}></Box>}
             {isTradeNoti ? 
             <Box sx={{...theme.components.box.fullCenterRow, width: '25%', maxWidth: '170px', ml: 2}}>
@@ -36,13 +39,14 @@ export default function UserNotificationItem({notiType, notiTradeData, notiTitle
             </Box> :
             <></>
             }
-            <Box sx={{...theme.components.box.fullCenterCol, alignItems: 'start'}}>
-                <Typography sx={{fontSize: '14px', fontWeight: unread ? 700 : 400}}>
+            <Box sx={{...theme.components.box.fullCenterCol, alignItems: 'start', ml: !isTradeNoti ? 2.5 : 0}}>
+                <Typography sx={{fontSize: '13.5px', fontWeight: unread ? 700 : 400}}>
                     {isTradeNoti ? 
-                        notiType.includes('new') ? `You have a new trade offer from ${notiTradeData.otherParticipant}!` : 
-                        notiType.includes('counter') ? `${notiTradeData.otherParticipant} countered your trade offer!` :
-                        notiType.includes('accept') ? `${notiTradeData.otherParticipant} accepted your trade offer!` : 
-                        notiType.includes('reject') && `${notiTradeData.otherParticipant} rejected your trade offer!` : 
+                        notiType.includes('new') ? `You have a new trade offer from ${otherParticipantDisplay}!` : 
+                        notiType.includes('counter') ? `${otherParticipantDisplay} countered your trade offer!` :
+                        notiType.includes('accept') ? `${otherParticipantDisplay} accepted your trade offer!` : 
+                        notiType.includes('reject') ? `${otherParticipantDisplay} rejected your trade offer!` : 
+                        notiType.includes('cancel') && `${otherParticipantDisplay} cancelled the trade!` : 
                         notiTitle
                     }
                 </Typography>
@@ -51,8 +55,9 @@ export default function UserNotificationItem({notiType, notiTradeData, notiTitle
                         notiType.includes('new') ? `${genDisplay} Trade` : 
                         notiType.includes('counter') ? `Ongoing ${genDisplay} Trade` :
                         notiType.includes('accept') ? `Ongoing ${genDisplay} Trade` :
-                        notiType.includes('reject') && `${genDisplay} Trade` : 
-                        `${notiMessage.slice(0, 100)}...`
+                        notiType.includes('reject') ? `${genDisplay} Trade` : 
+                        notiType.includes('cancel') && `Cancelled ${genDisplay} Trade` : 
+                        `${notiMessage.slice(0, 80)}...`
                     }
                 </Typography>
             </Box>

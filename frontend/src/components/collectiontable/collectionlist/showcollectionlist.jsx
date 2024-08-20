@@ -18,6 +18,9 @@ export default function ShowCollectionList({collection, styles, isEditMode, loca
     const listState = !noStates && useSelector((state) => state.listDisplay.collection)
     const link = useLocation().pathname
     const linkRef = useRef(link)
+
+    // console.log(collection)
+    // console.log(listState)
     // ^^ listdisplay always uses state to cover for filtering/sorting functions (which anyone should be able to do)
 
     //apparently, on first render, this component loads faster than the initial state can initialize, meaning we have the one line below.

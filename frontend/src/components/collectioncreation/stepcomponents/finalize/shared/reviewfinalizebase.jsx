@@ -31,12 +31,14 @@ export default function ReviewFinalizeBase({collectionType, formData, goBackStep
                             <Typography sx={{mx: 2, fontSize: '14px'}}>{goBackStep.stepName}</Typography>
                         </Button>
                     </Box>
+                    {!createdCollection &&
                     <Box sx={{width: '50%', display: 'flex', justifyContent: 'end'}}>
                         <Button onClick={createCollection}>
                             <Typography sx={{mx: 2, fontSize: '14px'}}>Create Collection</Typography>
                             <ArrowForward/>
                         </Button>
                     </Box>
+                    }
                 </Box>
             </Box>
         </Box>

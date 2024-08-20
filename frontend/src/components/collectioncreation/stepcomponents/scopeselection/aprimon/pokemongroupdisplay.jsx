@@ -157,7 +157,7 @@ const generateOneOrOtherContent = (option1, option2, activePokemon, handleChange
                         selected={activePokemon.includes(option.imgLink)}
                         onChange={(e) => handleChange(e, groupInfo, option.imgLink, option.name, option.natDexNum)}
                     >
-                        <Item sx={{boxShadow: 'none', minWidth: '90.5px'}}>
+                        <Item sx={{boxShadow: 'none'}}>
                             <Typography sx={{fontSize: '10px'}}>#{option.natDexNum}</Typography>
                             <Typography sx={{fontSize: '12px'}}>{getNameDisplay(nameDisplaySettings, option.name, option.natDexNum)}</Typography>
                             <ImgData type='poke' linkKey={option.imgLink}/>
@@ -262,7 +262,6 @@ export default function PokemonGroupDisplay({totalPokemon, activePokemon, ballSc
             interchangeableOtherOpts[uniqueMon.imgLink] = otherOpts
         })
     }
-
     // const setItemContent = ()
 
     return (

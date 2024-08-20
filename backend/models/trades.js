@@ -85,7 +85,7 @@ const tradeSchema = new Schema({
         type: String, 
         required: true,
         enum: {
-            values: ['initialoffer', 'rejected', 'counteroffer', 'pending', 'completed']
+            values: ['initialoffer', 'rejected', 'counteroffer', 'pending', 'completed', 'cancelled']
         }
     },
     closeDate: {type: Date},
@@ -102,13 +102,14 @@ const tradeSchema = new Schema({
         validate: [tradeUserLimit, "{PATH} can't have more than 2 users!"]
     },
     markedCompleteBy: {type: String}, //when the trade is pending, this tracks which user marked it complete first
+    deletedCollection: {0: {type: Boolean}, 1: {type: Boolean}}, //keep track of collection if one of them was deleted
     history: {
         type: [{
             type: offerSchema,
         }],
         // get: val => val.map(offer => {return {_id: offer._id, createdAt: offer.createdAt}})
     }
-}, {timestamps: true})
+}, {timestamps: true, minimize: false})
 
 tradeSchema.pre('save', (next) => {
     if (this === undefined) { //when its first created there is no data.

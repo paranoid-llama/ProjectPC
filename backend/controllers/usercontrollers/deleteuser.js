@@ -1,18 +1,7 @@
 import User from '../../models/users.js'
 import bcrypt from 'bcrypt'
 
-export async function userLogin(req, res) {
-    res.send(req.sessionID)
-}
-
-export async function userLogout(req, res, next) {
-    req.logout(function(err) {
-        if (err) { return next(err) }
-        res.end()
-    })
-}
-
-export async function passwordCheck(req, res) {
+export async function deleteUser(req, res) {
     const {username} = req.params
     const {inputPassword} = req.body
     const usernameSearchRegex =  `^${username}$`
@@ -38,5 +27,9 @@ export async function passwordCheck(req, res) {
         exception.status = 403
         return res.status(403).send(exception)
     }
+    req.logout(function(err) {
+        if (err) { return next(err) }
+    })
+    await User.findByIdAndDelete(user._id)
     res.end()
 }

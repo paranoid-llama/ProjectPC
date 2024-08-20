@@ -20,9 +20,17 @@ export default function ShowTrade({}) {
     const [isPending, startTransition] = useTransition()
     const isCrossGenTrade = tradeData.gen.includes('-')
     const tradeGenDisplay = isCrossGenTrade ? 'Cross-Gen Trade' : isNaN(parseInt(tradeData.gen)) ? `${tradeData.gen.toUpperCase()} Trade` : `Gen ${tradeData.gen} Trade`
-    const tradeCollection1Display = isNaN(parseInt(tradeData.users[0].tradeCollection.gen)) ? `${tradeData.users[0].tradeCollection.gen.toUpperCase()} Aprimon Collection` : `Gen ${tradeData.users[0].tradeCollection.gen} Aprimon Collection`
-    const tradeCollection2Display = isNaN(parseInt(tradeData.users[1].tradeCollection.gen)) ? `${tradeData.users[1].tradeCollection.gen.toUpperCase()} Aprimon Collection` : `Gen ${tradeData.users[1].tradeCollection.gen} Aprimon Collection`
+    const deletedUser0 = tradeData.users[0] === null
+    const deletedUser1 = tradeData.users[1] === null
+    const deletedCollection0 = tradeData.deletedCollection !== undefined && tradeData.deletedCollection['0'] === true
+    const deletedCollection1 = tradeData.deletedCollection !== undefined && tradeData.deletedCollection['1'] === true
+    const deletedCollection0Gen = deletedCollection0 ? isCrossGenTrade ? tradeData.gen.slice(0, tradeData.gen.indexOf('-')) : tradeData.gen : undefined
+    const deletedCollection1Gen = deletedCollection1 ? isCrossGenTrade ? tradeData.gen.slice(tradeData.gen.indexOf('-')+1, tradeData.gen.length) : tradeData.gen : undefined
     
+    const tradeCollection1Display = !deletedCollection0 && (isNaN(parseInt(tradeData.users[0].tradeCollection.gen)) ? `${tradeData.users[0].tradeCollection.gen.toUpperCase()} Aprimon Collection` : `Gen ${tradeData.users[0].tradeCollection.gen} Aprimon Collection`)
+    const tradeCollection2Display = !deletedCollection1 && (isNaN(parseInt(tradeData.users[1].tradeCollection.gen)) ? `${tradeData.users[1].tradeCollection.gen.toUpperCase()} Aprimon Collection` : `Gen ${tradeData.users[1].tradeCollection.gen} Aprimon Collection`)
+    
+
     const requestBackendOfferData = async(newSelectedOfferIdx) => {
         const backendFunc = async() => await getOfferData(tradeData._id, newSelectedOfferIdx)
         const successFunc = (offerData) => {setSelectedOffer({selected: newSelectedOfferIdx, data: offerData})}
@@ -43,25 +51,28 @@ export default function ShowTrade({}) {
         'counteroffer': 'COUNTER-OFFER',
         'rejected': 'REJECTED',
         'pending': 'PENDING',
-        'completed': 'COMPLETED'
+        'completed': 'COMPLETED',
+        'cancelled': 'CANCELLED'
     }
     const tradeStatusColors = {
         'initialoffer': {color: 'rgb(23, 162, 184)'},
         'counteroffer': {color: 'rgb(0, 123, 255)'},
         'rejected': {color: 'rgb(220, 53, 69)'},
         'pending': {color: 'rgb(252, 139, 0)'},
-        'completed': {color: 'rgb(40, 167, 69)'}
+        'completed': {color: 'rgb(40, 167, 69)'},
+        'cancelled': {color: 'rgb(150, 12, 28)'},
     }
     const tradeStatusTooltip = {
         'initialoffer': "The trade's initial offer is waiting on a response.",
         'counteroffer': "The trade is in the counter-offer phase.",
         'rejected': `The trade was rejected${tradeData.closeDate !== undefined ? closeDateTotal : '.'}`,
         'pending': "An offer was accepted and the trade is pending.",
-        'completed': `The trade was marked complete by both parties${tradeData.closeDate !== undefined ? closeDateTotal : '.'}`
+        'completed': `The trade was marked complete by both parties${tradeData.closeDate !== undefined ? closeDateTotal : '.'}`,
+        'cancelled': `The trade was cancelled. Either cancelled intentionally by one party, or as a result of a collection being deleted or a party's account being deleted/banned.`
     }
 
     useEffect(() => {
-        const userHasPendingNotiOfTrade = loggedInUserData !== undefined && tradeData.users.filter(userData => loggedInUserData.username === userData.username)[0].notifications.length !== 0
+        const userHasPendingNotiOfTrade = loggedInUserData !== undefined && tradeData.users.filter(userData => !userData ? false : loggedInUserData.username === userData.username)[0].notifications.length !== 0
         if (userHasPendingNotiOfTrade) {
             const backendFunc = async() => await readNotification(loggedInUserData.username, tradeData._id, true)
             handleError(backendFunc, false, () => {}, () => {}, false, true)
@@ -75,9 +86,9 @@ export default function ShowTrade({}) {
                 <Box sx={{...theme.components.box.fullCenterRow, width: '90%', gap: 1, backgroundColor: hexToRgba(theme.palette.color1.main, 0.9), borderRadius: '10px', border: `1px solid ${theme.palette.color3.dark}`, alignItems: 'start'}}>
                     <Box sx={{...theme.components.box.fullCenterCol, width: '30%', height: '100%', margin: 1}}>
                         <ImgData type='icons' linkKey='user' size='150px'/>
-                        <Button sx={{textTransform: 'none', my: 1, padding: 0.5, borderRadius: '10px', ':hover': {backgroundColor: hexToRgba(theme.palette.color1.main, 0.95)}}} onClick={() => navigate(`/users/${tradeData.users[0].username}`)}>
+                        <Button sx={{textTransform: 'none', my: 1, padding: 0.5, borderRadius: '10px', opacity: deletedUser0 ? 0.5 : 1, ':hover': {backgroundColor: hexToRgba(theme.palette.color1.main, 0.95)}}} onClick={deletedUser0 ? null : () => navigate(`/users/${tradeData.users[0].username}`)} disabled={deletedUser0}>
                             <Typography sx={{fontSize: '18px', color: theme.palette.color1.contrastText}}>
-                                {tradeData.users[0].username}
+                                {deletedUser0 ? `<Deleted User>` : tradeData.users[0].username}
                             </Typography>
                         </Button>
                         <Button 
@@ -92,16 +103,27 @@ export default function ShowTrade({}) {
                                 backgroundColor: hexToRgba(theme.palette.color3.main, 0.3), 
                                 border: `1px solid ${theme.palette.color3.dark}`
                             }}
-                            onClick={() => navigate(`/collections/${tradeData.users[0].tradeCollection._id}`)}
+                            onClick={deletedCollection0 ? null : () => navigate(`/collections/${tradeData.users[0].tradeCollection._id}`)}
+                            disabled={deletedCollection0}
                         >
+                            
+                            
                             <Box sx={{width: '100%', ...theme.components.box.fullCenterCol}}>
+                                {deletedCollection0 ? 
+                                <Typography sx={{fontSize: '16px', textAlign: 'center'}}>
+                                    {`<Deleted ${isNaN(parseInt(deletedCollection0Gen)) ? deletedCollection0Gen.toUpperCase() : `Gen ${deletedCollection0Gen}`} Aprimon Collection>`}
+                                </Typography> :
+                                <>
                                 <Typography sx={{fontSize: '16px', textAlign: 'center'}}>
                                     {tradeData.users[0].tradeCollection.name}
                                 </Typography>
                                 <Typography sx={{fontSize: '12px', textAlign: 'center'}}>
                                     {tradeCollection1Display}
                                 </Typography>
+                                </>
+                                }
                             </Box>
+                           
                         </Button>
                     </Box>
                     <Box sx={{...theme.components.box.fullCenterCol, width: '35%', height: '100%', margin: 1, mt: 3, color: theme.palette.color1.contrastText, position: 'relative'}}>
@@ -109,7 +131,7 @@ export default function ShowTrade({}) {
                             Trading With
                         </Typography>
                         <Typography sx={{my: 2}}>
-                            Trade proposed by {tradeData.users[0].username} on {tradeData.createdAt.slice(0, 10)}
+                            Trade proposed by {deletedUser0 ? '<Deleted User>' : tradeData.users[0].username} on {tradeData.createdAt.slice(0, 10)}
                         </Typography>
                         <Typography sx={{fontWeight: 700}}>
                             Trade Status:
@@ -132,9 +154,9 @@ export default function ShowTrade({}) {
                     </Box>
                     <Box sx={{...theme.components.box.fullCenterCol, width: '30%', height: '100%', margin: 1}}>
                         <ImgData type='icons' linkKey='user' size='150px'/>
-                        <Button sx={{textTransform: 'none', my: 1, padding: 0.5, borderRadius: '10px', ':hover': {backgroundColor: hexToRgba(theme.palette.color1.main, 0.95)}}}  onClick={() => navigate(`/users/${tradeData.users[1].username}`)}>
+                        <Button sx={{textTransform: 'none', my: 1, padding: 0.5, borderRadius: '10px', opacity: deletedUser1 ? 0.5 : 1, ':hover': {backgroundColor: hexToRgba(theme.palette.color1.main, 0.95)}}}  onClick={deletedUser1 ? null : () => navigate(`/users/${tradeData.users[1].username}`)} disabled={deletedUser1}>
                             <Typography sx={{fontSize: '18px', color: theme.palette.color1.contrastText}}>
-                                {tradeData.users[1].username}
+                                {deletedUser1 ? '<Deleted User>' : tradeData.users[1].username}
                             </Typography>
                         </Button>
                         <Button 
@@ -149,22 +171,30 @@ export default function ShowTrade({}) {
                                 backgroundColor: hexToRgba(theme.palette.color3.main, 0.3), 
                                 border: `1px solid ${theme.palette.color3.dark}`
                             }}
-                            onClick={() => navigate(`/collections/${tradeData.users[1].tradeCollection._id}`)}
+                            onClick={deletedCollection1 ? null : () => navigate(`/collections/${tradeData.users[1].tradeCollection._id}`)}
+                            disabled={deletedCollection1}
                         >
                             <Box sx={{width: '100%', ...theme.components.box.fullCenterCol}}>
+                                {deletedCollection1 ? 
+                                <Typography sx={{fontSize: '16px', textAlign: 'center'}}>
+                                    {`<Deleted ${isNaN(parseInt(deletedCollection1Gen)) ? deletedCollection1Gen.toUpperCase() : `Gen ${deletedCollection1Gen}`} Aprimon Collection>`}
+                                </Typography> :
+                                <>
                                 <Typography sx={{fontSize: '16px', textAlign: 'center'}}>
                                     {tradeData.users[1].tradeCollection.name}
                                 </Typography>
                                 <Typography sx={{fontSize: '12px', textAlign: 'center'}}>
                                     {tradeCollection2Display}
                                 </Typography>
+                                </>
+                                }
                             </Box>
                         </Button>
                     </Box>
                 </Box>
                 <ShowOffer 
                     numOfOffers={tradeData.history.length}
-                    tradeParticipants={tradeData.users.map(userData => userData.username)}
+                    tradeParticipants={tradeData.users.map(userData => !userData ? null : userData.username)}
                     offersBasicData={tradeData.history}
                     selectedOfferIdx={selectedOffer.selected}
                     selectedOfferData={selectedOffer.data}

@@ -241,7 +241,7 @@ export default function NavBar() {
                                         </Typography>
                                         {(isNotifications && unreadNotificationsAmount > 0) && 
                                             <Box sx={{width: '20px', height: '20px', borderRadius: '50%', position: 'absolute', bottom: '20%', right: '75px', backgroundColor: 'rgb(250, 53, 69)'}}>
-                                                <Typography sx={{fontSize: '14px', fontWeight: 700, color: 'white', position: 'absolute', right: '35%', top: '0px'}}>{unreadNotificationsAmount}</Typography>
+                                                <Typography sx={{fontSize: '14px', width: '19px', fontWeight: 700, color: 'white', position: 'absolute', left: '0px', top: '0px', textAlign: 'center'}}>{unreadNotificationsAmount}</Typography>
                                             </Box>
                                         }
                                         {isCollectionOption && 
