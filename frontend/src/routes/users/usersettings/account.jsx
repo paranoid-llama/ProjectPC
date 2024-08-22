@@ -119,7 +119,32 @@ export default function Account({}) {
             <>
                 <Typography sx={{fontSize: '20px', textAlign: 'center', mb: 3}}>Please confirm your password before proceeding:</Typography>
                 <ControlledTextInput 
-                    textFieldStyles={{...textFieldStyles, '& .MuiInputBase-root': {border: '1px solid white', color: 'white'}, '& .MuiInputBase-input': {padding: 0.5, width: '100%', border: 'none'}}}
+                    textFieldStyles={{
+                        ...textFieldStyles, 
+                        '& .MuiInputBase-root': {
+                            border: '1px solid white', 
+                            color: 'white'
+                        }, 
+                        '& .MuiInputBase-input': {
+                            padding: 0.5,
+                            width: '100%', 
+                            border: 'none'
+                        },
+                        '& .MuiOutlinedInput-root': {
+                            '& fieldset': {
+                                borderColor: 'white'
+                            },
+                            '&:hover fieldset': {
+                                borderColor: '#1976d2'
+                            }
+                        },
+                        '& .MuiInputLabel-root': {
+                            color: 'white'
+                        },
+                        '& .MuiInputBase-inputSizeSmall': {
+                            color: 'white'
+                        }
+                    }}
                     textFieldProps={{
                         inputRef: deleteConfirmPasswordRef,
                         InputProps: {type: 'password'},

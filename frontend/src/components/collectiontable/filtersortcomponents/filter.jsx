@@ -1,4 +1,4 @@
-import {Box, Typography, styled, TextField, ToggleButtonGroup} from '@mui/material'
+import {Box, Typography, styled, TextField, ToggleButtonGroup, useTheme} from '@mui/material'
 import { useLoaderData, useRouteLoaderData } from 'react-router'
 import { useSelector, useDispatch } from 'react-redux'
 import { setFilters, filterSearch } from '../../../app/slices/listdisplay' 
@@ -9,13 +9,16 @@ import MuiToggleButton from '@mui/material/ToggleButton'
 import ImgData from '../tabledata/imgdata'
 import ListSearch from '../../functionalcomponents/listsearch'
 import {useDebouncedCallback} from 'use-debounce'
+import { selectScreenBreakpoint } from '../../../app/selectors/windowsizeselectors'
 
 export default function Filter({listType, collection, isEditMode}) {
     const dispatch = useDispatch()
+    const theme = useTheme()
     const collectionGen = useLoaderData().gen
     const genNum = collectionGen === 'swsh' ? 8 :
      collectionGen === 'bdsp' ? 4 : collectionGen
     const userData = useRouteLoaderData('root')
+    const screenSize = useSelector((state) => selectScreenBreakpoint(state, 'filtersort'))
     const nameDisplaySettings = !userData.loggedIn ? undefined : userData.user.settings.display.pokemonNames
     const gens = collection.gen === 'home' ? genRomans : genRomans.slice(0, genNum)
 
@@ -40,6 +43,42 @@ export default function Filter({listType, collection, isEditMode}) {
     const activeFilters = ballFilters.concat(genFilters, miscFilters)
     const currentSortKey = currentFilters.sort
 
+    const genFilterButtonPadding = {
+        '@media only screen and (max-width: 899px)': {
+            paddingX: '10px'
+        },
+        '@media only screen and (min-width: 900px) and (max-width: 1099px)': {
+            paddingX: '15px'
+        },
+        '@media only screen and (min-width: 1100px) and (max-width: 1300px)': {
+            paddingX: '15px',
+            paddingY: '6px'
+        },
+        '@media only screen and (min-width: 1301px)': {
+            paddingX: '20px',
+            paddingY: '6px'
+        },
+    }
+    const ballFilterButtonPadding = {
+        '@media only screen and (min-width: 768px) and (max-width: 900px)': {
+            paddingX: '0px'
+        },
+        '@media only screen and (min-width: 901px) and (max-width: 975px)': {
+            paddingX: '3px'
+        },
+        '@media only screen and (min-width: 976px) and (max-width: 1099px)': {
+            paddingX: '5px'
+        },
+        '@media only screen and (min-width: 1100px) and (max-width: 1300px)': {
+            paddingX: '3px',
+            paddingY: '1px'
+        },
+        '@media only screen and (min-width: 1301px)': {
+            paddingX: '6px',
+            paddingY: '3px'
+        },
+    }
+
     const generateGenFilters = () => {
         return (
             <ToggleButtonGroup>
@@ -51,7 +90,7 @@ export default function Filter({listType, collection, isEditMode}) {
                             size='small' 
                             value={genNum}
                             selected={genFilters.includes(genNum)}
-                            sx={{borderRadius: '5px', borderWidth: '2px', paddingX: '10px', paddingY: '3px'}}
+                            sx={{borderRadius: '5px', borderWidth: '2px', paddingX: '15px', paddingY: '3px', ...genFilterButtonPadding}}
                             onClick={(e) => handleFilterChange(e, genFilters)}
                         >
                             {gen}
@@ -72,7 +111,7 @@ export default function Filter({listType, collection, isEditMode}) {
                             size='small' 
                             value={ball}
                             selected={ballFilters.includes(ball)}
-                            sx={{borderRadius: '25px', borderWidth: '1px', padding: 0, marginLeft: '1px', zIndex: 200}}
+                            sx={{borderRadius: '25px', borderWidth: '1px', padding: 0, marginLeft: '1px', zIndex: 200, ...ballFilterButtonPadding}}
                             onClick={(e) => handleFilterChange(e, ballFilters)}
                         >
                             <ImgData type='ball' linkKey={ball} customValue={ball}/>
@@ -126,59 +165,73 @@ export default function Filter({listType, collection, isEditMode}) {
         500
     )
 
+    const genBallFilterContainerStyles = screenSize === 'lg' ? {gap: 0, height: '100%', width: '70%'} : {}
+    const otherFilterContainerStyles = screenSize === 'lg' ? {gap: 1.5, height: '100%', width: '30%'} : {}
+    const otherFilterButtonContStyles = screenSize === 'lg' ? {gap: 0.5, mt: 1.5} : {}
+    const hwButPad = screenSize !== 'lg' ? {padding: '1px', paddingX: '4px'} : {}
+    const pendButPad = screenSize !== 'lg' ? {padding: '1px', paddingX: '4px'} : {}
+
     return (
         <Box sx={{width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'start', marginLeft: '10px'}}>
             <Box sx={{height: '20%', width: '100%', display: 'flex', alignItems: 'start'}}>
                 <Typography color='white' variant='h6'>Filter By</Typography>
             </Box>
-            <Box sx={{height: '10%'}}>
-                <Typography color='white' sx={{width: '20%', fontSize: '12px'}}>Generation</Typography>
-            </Box>
-            <Box sx={{height: '20%', width: '100%'}}>
-                {generateGenFilters()}
-            </Box>
-            <Box sx={{height: '10%'}}>
-                <Typography color='white' sx={{width: '100%', fontSize: '12px'}}>Owned Ball</Typography>
-            </Box>
-            <Box sx={{height: '20%', width: '100%'}}>
-                {generateBallFilters()}
-            </Box>
-            <Box sx={{height: '20%', width: '100%', display: 'flex', flexDirection: 'row'}}>
-                { listType !== 'onhand' &&
-                <Box sx={{width: '45%', display: 'flex', flexDirection: 'row'}}>
-                    <Box sx={{width: '50%', marginRight: '5px'}}>
-                        <ToggleButton 
-                            size='small' 
-                            value='highlyWanted' 
-                            selected={miscFilters.includes('highlyWanted')}
-                            sx={{borderRadius: '5px', borderWidth: '1px', padding: '1px', fontSize: '10px'}}
-                            onClick={(e) => handleFilterChange(e, miscFilters)}
-                        >
-                            Highly Wanted
-                        </ToggleButton>
+            <Box sx={{...theme.components.box.fullCenterCol, flexDirection: screenSize === 'lg' ? 'row' : 'column', width: '100%', height: '80%', marginLeft: '10px', gap: 2}}>
+                <Box sx={{...theme.components.box.fullCenterCol, width: '100%', height: '60%', gap: 1.5, ...genBallFilterContainerStyles}}>
+                    <Box sx={{height: '50%', width: '100%', ...theme.components.box.fullCenterCol}}>
+                        <Typography color='white' sx={{width: '100%', fontSize: '12px', textAlign: 'start'}}>Generation</Typography>
+                        {generateGenFilters()}
                     </Box>
-                    <Box sx={{width: '50%', marginLeft: '5px'}}>
-                        <ToggleButton 
-                            size='small'
-                            value='pending' 
-                            selected={miscFilters.includes('pending')}
-                            sx={{borderRadius: '5px', borderWidth: '1px', padding: '5px'}}
-                            onClick={(e) => handleFilterChange(e, miscFilters)}
-                        >
-                            Pending
-                        </ToggleButton>
+                    <Box sx={{height: '50%', width: '100%', ...theme.components.box.fullCenterCol}}>
+                        <Typography color='white' sx={{width: '100%', fontSize: '12px', textAlign: 'start'}}>{listType === 'onhand' ? '' : 'Owned '}Ball</Typography>
+                        {generateBallFilters()}
                     </Box>
-                </Box>}
-                <Box sx={{width: '50%'}}>
-                    <ListSearch 
-                        queryFunc={handleSearchChange} 
-                        textFieldProps={{
-                        label: 'Search Pokemon',
-                        variant: 'outlined',
-                        size: 'small', 
-                        InputLabelProps: {sx: {color: 'white'}},
-                        InputProps: {sx: {color: 'white'}}}}
-                    />
+                </Box>
+                <Box sx={{height: '20%', width: '100%', display: 'flex', flexDirection: screenSize === 'lg' ? 'column' : 'row', ...otherFilterContainerStyles}}>
+                    
+                    <Box sx={{width: screenSize === 'lg' ? '80%' : '55%', height: screenSize === 'lg' ? '60%' : '100%', display: 'flex', flexDirection: screenSize === 'lg' ? 'column' : 'row', mt: 0.75, ...otherFilterButtonContStyles}}>
+                        { listType !== 'onhand' &&
+                        <>
+                        <Box sx={{width: screenSize === 'lg' ? '100%' : '60%', marginRight: '5px'}}>
+                            <ToggleButton 
+                                size='small' 
+                                value='highlyWanted' 
+                                selected={miscFilters.includes('highlyWanted')}
+                                sx={{borderRadius: '5px', borderWidth: '1px', fontSize: '13px', ...hwButPad}}
+                                onClick={(e) => handleFilterChange(e, miscFilters)}
+                            >
+                                Highly Wanted
+                            </ToggleButton>
+                        </Box>
+                        <Box sx={{width: screenSize === 'lg' ? '100%' : '40%', marginLeft: '5px'}}>
+                            <ToggleButton 
+                                size='small'
+                                value='pending' 
+                                selected={miscFilters.includes('pending')}
+                                sx={{borderRadius: '5px', borderWidth: '1px', ...pendButPad}}
+                                onClick={(e) => handleFilterChange(e, miscFilters)}
+                            >
+                                Pending
+                            </ToggleButton>
+                        </Box>
+                        </>
+                        }
+                    </Box>
+                    <Box sx={{width: screenSize === 'lg' ? '80%' : '40%', height: screenSize === 'lg' ? '40%' : '100%', display: 'flex', alignItems: 'center', mt: screenSize === 'lg' ? 0 : 0.5}}>
+                        <ListSearch 
+                            queryFunc={handleSearchChange} 
+                            textFieldProps={{
+                                label: 'Search Pokemon',
+                                variant: 'outlined',
+                                size: 'small', 
+                                // sx: {
+                                
+                                // },
+                                InputLabelProps: {sx: {color: 'white', fontSize: screenSize === 'lg' ? '14px' : '12px'}},
+                                InputProps: {sx: {color: 'white',  '& .MuiInputBase-input': {paddingY: screenSize === 'lg' ? 1 : 0.5}}}
+                            }}
+                        />
+                    </Box>
                 </Box>
             </Box>
         </Box>

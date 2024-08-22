@@ -10,7 +10,8 @@ export default function Selection({height='76px', modal=false, onhandSelection=f
     return (
         <Box sx={{
             position: 'absolute', 
-            width: '100%'
+            width: '100%',
+            zIndex: 1
         }}>
             <Box sx={{
                 position: 'absolute', 

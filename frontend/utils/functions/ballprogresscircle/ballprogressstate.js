@@ -14,6 +14,7 @@ const getBallProgress = (list, ball) => {
         let totalToCollect = 0
         let totalCollected = 0
         list.forEach(p => {
+            if (p.disabled) {return}
             const ballsToCollect = Object.keys(p.balls).filter(ball => p.balls[ball].disabled !== true)
             for (let ball of ballsToCollect) {
                 totalToCollect +=1

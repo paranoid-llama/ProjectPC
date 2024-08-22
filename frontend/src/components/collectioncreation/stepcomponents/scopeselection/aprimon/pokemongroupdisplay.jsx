@@ -1,5 +1,5 @@
 import { forwardRef } from 'react';
-import {Box, Typography, Grid, Paper, styled, Tooltip} from '@mui/material'
+import {Box, Typography, Grid, Paper, styled, Tooltip, useTheme} from '@mui/material'
 import { useRouteLoaderData } from 'react-router';
 import getNameDisplay from '../../../../../../utils/functions/display/getnamedisplay';
 import { apriballLiterals } from '../../../../../../../common/infoconstants/miscconstants.mjs';
@@ -7,6 +7,7 @@ import MuiToggleButton from '@mui/material/ToggleButton'
 import ImgData from '../../../../collectiontable/tabledata/imgdata';
 import { Virtuoso, VirtuosoGrid } from 'react-virtuoso';
 import { capitalizeFirstLetter } from '../../../../../../utils/functions/misc';
+import ScrollBar from '../../../../functionalcomponents/scrollbar';
 
 const ToggleButton = styled(MuiToggleButton)({
     '&.MuiToggleButton-root': {
@@ -242,6 +243,7 @@ const generateOneOrOtherContent = (option1, option2, activePokemon, handleChange
 }
 
 export default function PokemonGroupDisplay({totalPokemon, activePokemon, ballScope, isInterchangeableAltFormSelection, groupInfo, handleChange, tyroguePresent}) {
+    const theme = useTheme()
     const nameDisplaySettings = useRouteLoaderData('root').user.settings.display.pokemonNames
     const isBabyAdultSelection = !Array.isArray(totalPokemon)
     const fullBabyData = isBabyAdultSelection && {
@@ -272,12 +274,25 @@ export default function PokemonGroupDisplay({totalPokemon, activePokemon, ballSc
             itemContent={(index) => 
                 isBabyAdultSelection ? 
                 generateOneOrOtherContent(totalPokemon.babies[index], totalPokemon.adults[index], [...fullBabyData.active, ...fullAdultData.active], handleChange, true, groupInfo, ballScope, nameDisplaySettings) : 
-                generateOneOrOtherContent(reOrderedInterchangeableSel[index], interchangeableOtherOpts[reOrderedInterchangeableSel[index].imgLink], activePokemon, handleChange, false, groupInfo, ballScope, nameDisplaySettings)}
+                generateOneOrOtherContent(reOrderedInterchangeableSel[index], interchangeableOtherOpts[reOrderedInterchangeableSel[index].imgLink], activePokemon, handleChange, false, groupInfo, ballScope, nameDisplaySettings)
+            }
+            // components={{
+            //     Scroller: forwardRef((props, ref) => {
+            //         const otherProps = {...props, ref: undefined, children: undefined, style: undefined}
+            //         return <ScrollBar style={props.style} forwardedRef={ref} color={theme.palette.color3.dark} children={props.children} otherProps={otherProps}/>
+            //     })
+            // }}
         /> :
         <VirtuosoGrid
             style={{ height: '300px', width: '100%', overflowY: 'scroll' }}
             totalCount={totalPokemon.length}
-            components={gridComponents}
+            components={{
+                ...gridComponents,
+                // Scroller: forwardRef((props, ref) => {
+                //     const otherProps = {...props, ref: undefined, children: undefined, style: undefined}
+                //     return <ScrollBar style={props.style} forwardedRef={ref} color={theme.palette.color3.dark} children={props.children} otherProps={otherProps}/>
+                // })
+            }}
             itemContent={(index) => {
                 const noLegalBalls = !totalPokemon[index].legalBalls.map(ball => (
                     ball === 'apriball' ?

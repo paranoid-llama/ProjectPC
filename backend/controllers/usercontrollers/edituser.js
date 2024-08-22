@@ -86,13 +86,17 @@ export async function readUserNotification(req, res) {
         if (tradeId !== undefined) {
             if (noti.type.includes('trade-offer')) {
                 const isTradeOffer = noti.tradeData.tradeId === tradeId
-                if (isTradeOffer) {noti.unread = false}
+                if (isTradeOffer) {
+                    noti.unread = false
+                }
             }
         } else {
-            const isNotification = noti._id === noteId
-            if (isNotification) {noti.unread = false}
+            const isNotification = noti._id.toString() === noteId
+            if (isNotification) {
+                noti.unread = false
+            }
         }
     })
-    user.save()
+    await user.save()
     res.end()
 }

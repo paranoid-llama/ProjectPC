@@ -3,6 +3,7 @@ import Collection from '../../models/collections.js'
 import User from '../../models/users.js'
 import { setOnHandReserved, removeOnHandReserved, getOnhandIdsToReserve } from './collectioneditposttraderes.js'
 import { setPendingTrade } from './colmanagementfuncs.js'
+import { getCollectionProgressPercent, checkBadgeMilestone, checkTradeBadgeMilestone } from '../../models/postpremiddleware.js'
 
 export async function respondToTrade(req, res) {
     const {response, otherUserId, offerColId, receivingColId, counterOfferData, username} = req.body
@@ -317,6 +318,39 @@ export async function respondToTrade(req, res) {
             }
             await offerCol.save()
             await receivingCol.save()
+            const newOfferProg = getCollectionProgressPercent(offerCol)
+            const newReceivingProg = getCollectionProgressPercent(receivingCol)
+
+            const offerUser = await User.findById(offerCol.owner).populate({path: 'collections', select: 'ownedPokemon'})
+            const receivingUser = await User.findById(receivingCol.owner).populate({path: 'collections', select: 'ownedPokemon'})
+            const offerUserOtherColProgs = offerUser.collections.map(col => {return {_id: col._id, progress: getCollectionProgressPercent(col)}}).filter(col => col._id.toString() !== offerCol._id.toString()).map(col => col.progress)
+            const receivingUserOtherColProgs = receivingUser.collections.map(col => {return {_id: col._id, progress: getCollectionProgressPercent(col)}}).filter(col => col._id.toString() !== receivingCol._id.toString()).map(col => col.progress)
+            
+            const offerUserBadgeChange = checkBadgeMilestone(newOfferProg, offerUser.settings.profile.badges, offerUserOtherColProgs)
+            const receivingUserBadgeChange = checkBadgeMilestone(newReceivingProg, receivingUser.settings.profile.badges, receivingUserOtherColProgs)
+            if (offerUserBadgeChange !== 'no-change') {
+                offerUser.settings.profile.badges = offerUserBadgeChange
+                offerUser.save()
+            }
+            if (receivingUserBadgeChange !== 'no-change') {
+                receivingUser.settings.profile.badges = receivingUserBadgeChange
+                receivingUser.save()
+            }
+
+            const offerUserTrades = await Trade.find({status: 'completed', users: {$in: offerCol.owner}}).lean()
+            const receivingUserTrades = await Trade.find({status: 'completed', users: {$in: receivingCol.owner}}).lean()
+
+            const offerUserTradeBadges = checkTradeBadgeMilestone(offerUserTrades.length, offerUser.settings.profile.badges)
+            const receivingUserTradeBadges = checkTradeBadgeMilestone(receivingUserTrades.length, receivingUser.settings.profile.badges)
+            if (offerUserTradeBadges !== 'no-change') {
+                offerUser.settings.profile.badges = offerUserTradeBadges
+                offerUser.save()
+            }
+            if (receivingUserTradeBadges !== 'no-change') {
+                receivingUser.settings.profile.badges = receivingUserTradeBadges
+                receivingUser.save()
+            }
+
         }
     }
     res.end()

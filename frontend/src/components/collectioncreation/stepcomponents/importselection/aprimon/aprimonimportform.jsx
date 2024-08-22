@@ -1,4 +1,4 @@
-import {Box, Typography, TextField, InputAdornment, styled, Button, Tabs, Tab, ToggleButton, ToggleButtonGroup, CircularProgress} from '@mui/material'
+import {Box, Typography, TextField, InputAdornment, styled, Button, Tabs, Tab, ToggleButton, ToggleButtonGroup, CircularProgress, useTheme} from '@mui/material'
 import lton from 'letter-to-number'
 import NameFormatModal from '../shared/nameformatmodal';
 import {NumericFormat} from 'react-number-format'
@@ -17,7 +17,7 @@ import './aprimonimportform.css'
 
 //please re-order/piece apart this form this is div hell.
 
-export default function AprimonImportForm({handleSubmit}) {
+export default function AprimonImportForm({handleSubmit, isHomeCollection}) {
     const [notice, setNotice] = useState(true)
     // useEffect(() => {
     //     setNotice(true) //this makes it so we can update parent local state without the notice coming back
@@ -26,6 +26,7 @@ export default function AprimonImportForm({handleSubmit}) {
     const [formState, setFormState] = useState({ballOrder: [], haImport: {type: 'color-coded', colors: [''], col: ''}, emImport: {type: ['color-coded'], colors: [''], cols: ['', '', '', '']}})
     const [error, setError] = useState({id: false, sheetName: false, rowSpanFrom: false, rowSpanTo: false, nameCol: false, ballColFrom: false, ballColTo: false, ballOrder: false})
     const [importData, setImportData] = useState(aprimonImportFormTemplate)
+    const theme = useTheme()
 
     const noticeClassName = notice === 'transitioning' ? 'fade-notice-out' : ''
     const formClassName = notice === 'transitioning' ? 'fade-form-in' : ''
@@ -213,6 +214,8 @@ export default function AprimonImportForm({handleSubmit}) {
     const identifierToolTip = "These are used to associate data with a particular pokemon. National Dex # is not required, but you have to make sure all your pokemon are spelled correctly if you don't import it!"
     const haImportToolTip = "The data on whether or not a specific pokemon/ball combo you own has their hidden ability as well. You can leave this blank and it will be assumed that they all have their hidden abilities (if applicable)"
     const emImportToolTip = "The data on whether or not a specific pokemon/ball combo you own has egg moves, and what those egg moves are. Color coded only imports whether they have 4/Max EMs, while Column Info imports the EM data but applies it to all owned combos. You can include both types."
+
+    const emSectionDisabledStyles = isHomeCollection ? {filter: 'blur(0.5rem)', pointerEvents: 'none', position: 'relative'} : {}
 
     return (
         <Box sx={{width: '100%', height: '95%'}}>
@@ -430,79 +433,86 @@ export default function AprimonImportForm({handleSubmit}) {
                                 </Box>}
                             </Box>
                             <Box sx={{width: '60%', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
-                                <Typography sx={{fontSize: '16px', fontWeight: 700, mb: 0.1, position: 'relative'}}>
-                                    Egg Move Data Import
-                                    <Tooltip sx={{position: 'absolute', width: '16px', bottom: '5px', right: '-20px', ':hover': {cursor: 'pointer'}}} title={emImportToolTip} arrow>
-                                        <HelpIcon/>
-                                    </Tooltip> 
-                                </Typography>
-                                <Box sx={{height: '15%'}}>
-                                    <ToggleButtonGroup sx={{height: '100%'}} orientation='horizontal' value={formState.emImport.type} onChange={(e) => changeImportType(e, 'em')}>
-                                        <ToggleButton sx={{height: '50%'}} value='color-coded'>
-                                            Color-Coded
-                                        </ToggleButton>
-                                        <ToggleButton sx={{height: '50%'}} value='column-info'>
-                                            Column Info
-                                        </ToggleButton>
-                                    </ToggleButtonGroup>
-                                </Box>
-                                <Box sx={{height: '65%', width: '95%', display: 'flex', flexDirection: 'row', alignItems: 'center', jsutifyContent: 'center'}}>
-                                    <ColorSelection 
-                                        totalColors={formState.emImport.colors.length} 
-                                        colors={formState.emImport.colors} 
-                                        handleChange={handleColorChange} 
-                                        field='em'
-                                        height='100%'
-                                        width='40%'
-                                        firstColorFieldWidth='111.5px'
-                                        includeAdornment={false}
-                                        otherStyles={{opacity: formState.emImport.type.includes('color-coded') ? 1 : 0.5}}
-                                    />
-                                    <Box sx={{height: '100%', width: '55%', marginLeft: 3, opacity: formState.emImport.type.includes('column-info') ? 1 : 0.5}}>
-                                        <Box sx={{height: '30%', width: '100%', display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
-                                            <TextField 
-                                                placeholder='EM 1 Col'
-                                                inputProps={{sx: {paddingY: '2px'}}}
-                                                size='small'
-                                                sx={{marginRight: '3px'}}
-                                                value={formState.emImport.cols[0]}
-                                                onChange={(e) => updateHaEmCols(e, 'em', 0)}
-                                                disabled={!formState.emImport.type.includes('column-info')}
-                                            />
-                                            <TextField 
-                                                placeholder='EM 2 Col'
-                                                inputProps={{sx: {paddingY: '2px'}}}
-                                                size='small'
-                                                sx={{marginLeft: '3px'}}
-                                                value={formState.emImport.cols[1]}
-                                                onChange={(e) => updateHaEmCols(e, 'em', 1)}
-                                                disabled={!formState.emImport.type.includes('column-info')}
-                                            />
-                                        </Box>
-                                        <Box sx={{height: '30%', width: '100%' , display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
-                                            <TextField 
-                                                placeholder='EM 3 Col'
-                                                inputProps={{sx: {paddingY: '2px'}}}
-                                                size='small'
-                                                sx={{marginRight: '3px'}}
-                                                value={formState.emImport.cols[2]}
-                                                onChange={(e) => updateHaEmCols(e, 'em', 2)}
-                                                disabled={!formState.emImport.type.includes('column-info')}
-                                            />
-                                            <TextField 
-                                                placeholder='EM 4 Col'
-                                                inputProps={{sx: {paddingY: '2px'}}}
-                                                size='small'
-                                                sx={{marginLeft: '3px'}}
-                                                value={formState.emImport.cols[3]}
-                                                onChange={(e) => updateHaEmCols(e, 'em', 3)}
-                                                disabled={!formState.emImport.type.includes('column-info')}
-                                            />
-                                        </Box>
-                                        <Box sx={{height: '20%', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', mt: 1, opacity: formState.emImport.type.includes('column-info') ? 1 : 0.5}}>
-                                            <Typography sx={{fontSize: '10px'}}>
-                                                Egg Moves must be on different columns and spelled correctly. All fields must be filled.
-                                            </Typography>
+                                {isHomeCollection &&
+                                    <Box sx={{...theme.components.box.fullCenterCol, position: 'absolute'}}>
+                                        <Typography sx={{fontWeight: 700, fontSize: '14px'}}>Egg moves are disabled in HOME collections!</Typography>
+                                    </Box>
+                                }
+                                <Box sx={{width: '100%', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', ...emSectionDisabledStyles}}>
+                                    <Typography sx={{fontSize: '16px', fontWeight: 700, mb: 0.1, position: 'relative'}}>
+                                        Egg Move Data Import
+                                        <Tooltip sx={{position: 'absolute', width: '16px', bottom: '5px', right: '-20px', ':hover': {cursor: 'pointer'}}} title={emImportToolTip} arrow>
+                                            <HelpIcon/>
+                                        </Tooltip> 
+                                    </Typography>
+                                    <Box sx={{height: '15%'}}>
+                                        <ToggleButtonGroup sx={{height: '100%'}} orientation='horizontal' value={formState.emImport.type} onChange={(e) => changeImportType(e, 'em')}>
+                                            <ToggleButton sx={{height: '50%'}} value='color-coded'>
+                                                Color-Coded
+                                            </ToggleButton>
+                                            <ToggleButton sx={{height: '50%'}} value='column-info'>
+                                                Column Info
+                                            </ToggleButton>
+                                        </ToggleButtonGroup>
+                                    </Box>
+                                    <Box sx={{height: '65%', width: '95%', display: 'flex', flexDirection: 'row', alignItems: 'center', jsutifyContent: 'center'}}>
+                                        <ColorSelection 
+                                            totalColors={formState.emImport.colors.length} 
+                                            colors={formState.emImport.colors} 
+                                            handleChange={handleColorChange} 
+                                            field='em'
+                                            height='100%'
+                                            width='40%'
+                                            firstColorFieldWidth='111.5px'
+                                            includeAdornment={false}
+                                            otherStyles={{opacity: formState.emImport.type.includes('color-coded') ? 1 : 0.5}}
+                                        />
+                                        <Box sx={{height: '100%', width: '55%', marginLeft: 3, opacity: formState.emImport.type.includes('column-info') ? 1 : 0.5}}>
+                                            <Box sx={{height: '30%', width: '100%', display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
+                                                <TextField 
+                                                    placeholder='EM 1 Col'
+                                                    inputProps={{sx: {paddingY: '2px'}}}
+                                                    size='small'
+                                                    sx={{marginRight: '3px'}}
+                                                    value={formState.emImport.cols[0]}
+                                                    onChange={(e) => updateHaEmCols(e, 'em', 0)}
+                                                    disabled={!formState.emImport.type.includes('column-info')}
+                                                />
+                                                <TextField 
+                                                    placeholder='EM 2 Col'
+                                                    inputProps={{sx: {paddingY: '2px'}}}
+                                                    size='small'
+                                                    sx={{marginLeft: '3px'}}
+                                                    value={formState.emImport.cols[1]}
+                                                    onChange={(e) => updateHaEmCols(e, 'em', 1)}
+                                                    disabled={!formState.emImport.type.includes('column-info')}
+                                                />
+                                            </Box>
+                                            <Box sx={{height: '30%', width: '100%' , display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
+                                                <TextField 
+                                                    placeholder='EM 3 Col'
+                                                    inputProps={{sx: {paddingY: '2px'}}}
+                                                    size='small'
+                                                    sx={{marginRight: '3px'}}
+                                                    value={formState.emImport.cols[2]}
+                                                    onChange={(e) => updateHaEmCols(e, 'em', 2)}
+                                                    disabled={!formState.emImport.type.includes('column-info')}
+                                                />
+                                                <TextField 
+                                                    placeholder='EM 4 Col'
+                                                    inputProps={{sx: {paddingY: '2px'}}}
+                                                    size='small'
+                                                    sx={{marginLeft: '3px'}}
+                                                    value={formState.emImport.cols[3]}
+                                                    onChange={(e) => updateHaEmCols(e, 'em', 3)}
+                                                    disabled={!formState.emImport.type.includes('column-info')}
+                                                />
+                                            </Box>
+                                            <Box sx={{height: '20%', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', mt: 1, opacity: formState.emImport.type.includes('column-info') ? 1 : 0.5}}>
+                                                <Typography sx={{fontSize: '10px'}}>
+                                                    Egg Moves must be on different columns and spelled correctly. All fields must be filled.
+                                                </Typography>
+                                            </Box>
                                         </Box>
                                     </Box>
                                 </Box>

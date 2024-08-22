@@ -3,7 +3,7 @@ import { Virtuoso, VirtuosoGrid } from 'react-virtuoso'
 import { capitalizeFirstLetter } from '../../../../utils/functions/misc'
 import { useDispatch, useSelector } from 'react-redux'
 import { useRouteLoaderData } from 'react-router'
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, forwardRef } from 'react'
 import { selectIfPokemonIsSelected } from '../../../app/selectors/tradeselectors'
 import { setPokemon } from '../../../app/slices/tradeoffer'
 import { compareDisplayGridComponents, IndividualCompareDisplayComponent, PokemonCompareDisplayComponent } from '../comparecollections/comparedisplaygridcomponents'
@@ -11,6 +11,7 @@ import ShowCollectionList from '../../collectiontable/collectionlist/showcollect
 import ShowOnHandList from '../../collectiontable/onhandlist/showonhandlist'
 import { reFormatToIndividual, reFormatIndividualRow } from '../../../../utils/functions/comparecollections/comparison'
 import listStyles from '../../../../utils/styles/componentstyles/liststyles'
+import ScrollBar from './../scrollbar'
 
 export default function SetPokemon({minHeight='650px', type, view, data, relValue, oneHomeCollection, fullCollectionData, wantedPokemonData}) {
     const theme = useTheme()
@@ -43,7 +44,7 @@ export default function SetPokemon({minHeight='650px', type, view, data, relValu
     const isIndividualCompareDisplay = view === 'comparison' && viewData.viewSub === 'individual'
     const formattedComparisonDisplay = isIndividualCompareDisplay ? reFormatToIndividual(viewData.listDisplay, true) : viewData.listDisplay
     const ShowComparisonDisplay = isIndividualCompareDisplay ? VirtuosoGrid : Virtuoso
-    const useGridComponentsIfGrid = isIndividualCompareDisplay ? {components: compareDisplayGridComponents} : {}
+    const useGridComponentsIfGrid = isIndividualCompareDisplay ? compareDisplayGridComponents : {}
     const ItemContentFunc = isIndividualCompareDisplay ? IndividualCompareDisplayComponent : PokemonCompareDisplayComponent
 
     return (
@@ -56,7 +57,13 @@ export default function SetPokemon({minHeight='650px', type, view, data, relValu
             {(view === 'comparison') ? 
                 <ShowComparisonDisplay 
                     totalCount={formattedComparisonDisplay.length}
-                    {...useGridComponentsIfGrid}
+                    components={{
+                        ...useGridComponentsIfGrid,
+                        Scroller: forwardRef((props, ref) => {
+                            const otherProps = {...props, ref: undefined, children: undefined, style: undefined}
+                            return <ScrollBar style={props.style} forwardedRef={ref} color={theme.palette.color2.main} children={props.children} otherProps={otherProps}/>
+                        })
+                    }}
                     style={{width: '99%', height: '95%', border: '1px solid white', borderRadius: '10px'}}
                     itemContent={(idx) => {
                         return (

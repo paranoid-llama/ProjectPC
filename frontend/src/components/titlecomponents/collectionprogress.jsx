@@ -8,7 +8,7 @@ import { useLocation } from 'react-router-dom'
 import { setCirclePositionStyles, setRowXScaling } from '../../../utils/functions/ballprogresscircle/ballprogress'
 import { getBallProgress } from '../../../utils/functions/ballprogresscircle/ballprogressstate'
 
-export default function CollectionProgress({ballScopeInit, isEditMode, collectionList}) {
+export default function CollectionProgress({ballScopeInit, isEditMode, collectionList, userData}) {
     const [selectedBall, setSelectedBall] = useState('')
     const link = useLocation().pathname
     const breakpoint = useSelector((state) => selectScreenBreakpoint(state, 'ballprogress'))
@@ -17,10 +17,12 @@ export default function CollectionProgress({ballScopeInit, isEditMode, collectio
     const totalProgress = getBallProgress(listToCompareFrom, 'total')
 
     const totalBallsState = useSelector((state) => state.options.collectingBalls)
+    const setBallOrder = (totalBalls) => userData ? userData.settings.display.ballOrder.filter(b => totalBalls.includes(b)) : totalBalls
     //refer to showcollectionlist for why we do below
-    const totalBalls = (totalBallsState === undefined || !isEditMode) ? JSON.parse(JSON.stringify(ballScopeInit)) : JSON.parse(JSON.stringify(totalBallsState)) //need new reference as we mutate this variable
+    // const totalBalls = (totalBallsState === undefined || !isEditMode) ? JSON.parse(JSON.stringify(ballScopeInit)) : JSON.parse(JSON.stringify(totalBallsState)) //need new reference as we mutate this variable
+    const totalBalls = JSON.parse(JSON.stringify(setBallOrder((totalBallsState === undefined || !isEditMode) ? ballScopeInit : totalBallsState)))
     // const apriballs = balls.slice(0, 11)
-    const setCircleLayout = totalBalls.length > 6 && breakpoint === 'md'
+    const setCircleLayout = totalBalls.length > 6 && breakpoint !== 'lg'
     const setRowLayout = (totalBalls.length <= 6 && breakpoint === 'md') || breakpoint === 'lg'
     
     if (totalBalls.length % 2 === 1 && selectedBall !== '') {

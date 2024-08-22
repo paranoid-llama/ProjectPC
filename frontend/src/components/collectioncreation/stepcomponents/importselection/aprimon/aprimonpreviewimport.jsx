@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useState } from 'react';
 import { useRouteLoaderData } from 'react-router';
 import getNameDisplay from '../../../../../../utils/functions/display/getnamedisplay';
-import {Box, Typography, Table, TableRow, TableCell, TableHead, TableBody, TableContainer, Paper, Modal, Fade, Backdrop, Tabs, Tab} from '@mui/material'
+import {Box, Typography, Table, TableRow, TableCell, TableHead, TableBody, TableContainer, Paper, Modal, Fade, Backdrop, Tabs, Tab, useTheme} from '@mui/material'
 import DataCell from '../../../../collectiontable/tabledata/datacell';
 import ImgData from '../../../../collectiontable/tabledata/imgdata';
 import { capitalizeFirstLetter } from '../../../../../../utils/functions/misc';
@@ -15,6 +15,7 @@ export default function AprimonPreviewImport({data, numOfBalls}) {
     const [openErrorModal, setOpenErrorModal] = useState(false)
     const [errorDisplayType, setErrorDisplayType] = useState('rows')
     const nameDisplaySettings = useRouteLoaderData('root').user.settings.display.pokemonNames
+    const theme = useTheme()
 
     const openModal = (type) => {
         if (type === 'data') {
@@ -131,7 +132,7 @@ export default function AprimonPreviewImport({data, numOfBalls}) {
                         key={`${row.imgLink}-${col.label}`}
                         label={row[col.dataKey]} 
                         styles={listStyles.collection} 
-                        alignment={{'@media only screen and (max-width: 1500px)': {paddingLeft: '5px'}, '@media only screen and (min-width: 1501px)': {paddingLeft: '0px'}}}
+                        alignment={{position: 'relative', width: '100%'}}
                         isEditMode={false}
                         leftMostCell={true}
                         isSelected={false}
@@ -142,8 +143,9 @@ export default function AprimonPreviewImport({data, numOfBalls}) {
                         key={`${row.imgLink}-${col.label}`}
                         label={(col.dataKey === 'name') && getNameDisplay(nameDisplaySettings, row[col.dataKey], row.natDexNum)}
                         styles={listStyles.collection} 
-                        alignment={col.label === 'img' && {'@media only screen and (max-width: 1400px)': {paddingLeft: '0px'}, '@media only screen and (min-width: 1401px)': {paddingLeft: '5px'}}}
+                        alignment={col.label === 'img' ? {} : {position: 'relative', width: '100%'}}
                         imgParams={{isImg: isImg, imgLinkKey: row.imgLink}}
+                        imgAlignment={col.label === 'img' && {position: 'relative'}}
                         specialStyles={textSizeAdjustor}
                         isEditMode={false}
                         isSelected={false}
@@ -187,25 +189,48 @@ export default function AprimonPreviewImport({data, numOfBalls}) {
     function errorRowContent(_index, row, detailed) {
         return (
             <React.Fragment>
-                {errorTableColumns.map((col) => (
+                {errorTableColumns.map((col) => {
+                    const fsOverride = (col.dataKey === 'errorMessage' && row[col.dataKey2] === undefined) ? {fontSizeOverride: '12px'} : {}
+                    return (
                     <DataCell
                         key={`Row-${row.row}-${col.label}-details`}
                         label={col.label2 !== undefined && (detailed && errorDisplayType === 'ems') ? row[col.dataKey2].map((em, idx) => idx+1 !== row[col.dataKey2].length ? `${em}, ` : em) : row[col.dataKey]} 
-                        styles={listStyles.collection} 
+                        styles={{...listStyles.collection, tableCell: {...listStyles.collection.tableCell, height: '70px'}}} 
+                        alignment={{position: 'relative'}}
+                        bodyColorOverride={{height: '30px'}}
+                        {...fsOverride}
                         // alignment={{'@media only screen and (max-width: 1500px)': {paddingLeft: '10px'}}}
                         isEditMode={false}
                         // leftMostCell={true}
                         isSelected={false}
                         onClickFunc={null}
-                    />
-                ))}
+                    />)
+                })}
             </React.Fragment>
         )
     }
 
     const VirtuosoTableComponents = {
         Scroller: React.forwardRef((props, ref) => (
-          <TableContainer component={Paper} {...props} ref={ref} />
+            <TableContainer 
+                component={Paper} 
+                {...props} 
+                ref={ref} 
+                sx={{
+                    ...props.sx,
+                    '&::-webkit-scrollbar': {
+                        width: '0.3rem'
+                    },
+                    '&::-webkit-scrollbar-track': {
+                        boxShadow: 'inset 0 0 6px rgba(0,0,0,0.00)',
+                        webkitBoxShadow: 'inset 0 0 6px rgba(0,0,0,0.00)'
+                    },
+                    '&::-webkit-scrollbar-thumb': {
+                        backgroundColor: theme.palette.color3.main,
+                        borderRadius: '5px'
+                    },
+                }}
+            />
         )),
         Table: (props) => (
           <Table {...props} sx={{ borderCollapse: 'separate', tableLayout: 'fixed'}} />

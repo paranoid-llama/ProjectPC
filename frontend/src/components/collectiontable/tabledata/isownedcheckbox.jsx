@@ -81,7 +81,7 @@ export default function IsOwnedCheckbox({ballInfo, id, handleEditBallInfo, pokeN
         
         <TableCell 
             padding='none' 
-            sx={enableSelecting ? {...styles.tableCell, ...tradeHoverStyles} : (isTradePage && (ballInfo[ball].isOwned === false || !enableSelecting)) ? {...styles.tableCell, opacity: 0.5} : styles.tableCell}
+            sx={enableSelecting ? {...styles.tableCell, ...tradeHoverStyles, position: 'relative'} : (isTradePage && (ballInfo[ball].isOwned === false || !enableSelecting)) ? {...styles.tableCell, opacity: 0.5, position: 'relative'} : {...styles.tableCell, position: 'relative'}}
             {...localHandleChangeFunc}
         >
             {isOwned && 
@@ -101,10 +101,10 @@ export default function IsOwnedCheckbox({ballInfo, id, handleEditBallInfo, pokeN
                 }
             </Box>
             }
-            <Box sx={{...styles.alignment.checkboxAlignment, ...styles.bodyColor, ...tradeSelectedStyles}}>
+            <Box sx={{...styles.alignment.checkboxAlignment, ...styles.bodyColor, ...tradeSelectedStyles, height: '42px'}}>
                 <Checkbox 
                     checked={ballInfo[ball].isOwned} 
-                    sx={{color: 'white', '&.Mui-disabled': {color: 'white', '&.Mui-checked': {color: '#1976d2'}}}} 
+                    sx={{color: 'white', '&.Mui-disabled': {color: 'white', '&.Mui-checked': {color: '#1976d2'}}, position: 'absolute', width: '100%', right: '0px'}} 
                     disabled={disabled}
                     onClick={isEditMode ? ((e) => handleEditBallInfo(e, 'isOwned', pokeName, ball, collectionId, ownerId)) : undefined}
                 />

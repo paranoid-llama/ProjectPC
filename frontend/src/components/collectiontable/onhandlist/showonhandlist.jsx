@@ -54,7 +54,7 @@ export default function ShowOnHandList({onhandList, collectionID, styles, eggMov
     function setHeaders() {
         return (
             <>
-            <TableRow sx={{backgroundColor: '#283f57'}}>
+            <TableRow sx={{backgroundColor: '#283f57', zIndex: 10}}>
                 {columns.map(c => (
                     <TableCell
                         key={`${c.label}-header`} 
@@ -66,9 +66,9 @@ export default function ShowOnHandList({onhandList, collectionID, styles, eggMov
                                 c.label === 'img' ? 
                                 {...styles.textHeader, paddingTop: '28px', paddingBottom: '28px'} : 
                                 c.label === '#' ?
-                                {...styles.textHeader, ...styles.alignment.dexNumHeaderAlignment} :
+                                {...styles.textHeader, ...styles.alignment.dexNumHeaderAlignment, px: 0} :
                                 (c.smallHeader === true) ? 
-                                {...styles.textHeader, ...styles.alignment.textAlignment} :
+                                {...styles.textHeader, ...styles.alignment.textAlignment, px: 0} :
                                 styles.textHeader
                             }
                         >
@@ -111,7 +111,25 @@ export default function ShowOnHandList({onhandList, collectionID, styles, eggMov
 
     const VirtuosoTableComponents = {
         Scroller: React.forwardRef((props, ref) => (
-          <TableContainer component={Paper} {...props} ref={ref} />
+          <TableContainer 
+            component={Paper} 
+            {...props} 
+            ref={ref} 
+            sx={{
+                ...props.sx,
+                '&::-webkit-scrollbar': {
+                    width: '0.3rem'
+                },
+                '&::-webkit-scrollbar-track': {
+                    boxShadow: 'inset 0 0 6px rgba(0,0,0,0.00)',
+                    webkitBoxShadow: 'inset 0 0 6px rgba(0,0,0,0.00)'
+                },
+                '&::-webkit-scrollbar-thumb': {
+                    backgroundColor: theme.palette.color3.main,
+                    borderRadius: '5px'
+                },
+            }}
+        />
         )),
         Table: (props) => (
           <Table {...props} sx={{ borderCollapse: 'separate', tableLayout: 'fixed'}} />

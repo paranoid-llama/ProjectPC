@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {useRef, useEffect, useState} from 'react'
 import {Fragment} from 'react'
-import {Paper, Table, TableHead, TableRow, TableBody, TableContainer, TableCell, Box, Button} from '@mui/material'
+import {Paper, Table, TableHead, TableRow, TableBody, TableContainer, TableCell, Box, Button, useTheme} from '@mui/material'
 import {TableVirtuoso} from 'react-virtuoso'
 import { TableRowGroupingNoRedux as ConnectlessTableRow } from './tablerowgrouping';
 import TableRowGrouping from './tablerowgrouping'
@@ -14,6 +14,7 @@ import {setCollectionInitialState} from '../../../app/slices/collection'
 import {setSelected} from '../../../app/slices/editmode'
 
 export default function ShowCollectionList({collection, styles, isEditMode, localDisplayState=undefined, height=800, noStates=false, isTradePage=false, tradeSide=null, wantedByOtherListData=[], userData}) {
+    const theme = useTheme()
     const ballScopeState = !noStates && useSelector((state) => state.options.collectingBalls)
     const listState = !noStates && useSelector((state) => state.listDisplay.collection)
     const link = useLocation().pathname
@@ -48,7 +49,8 @@ export default function ShowCollectionList({collection, styles, isEditMode, loca
 
     const setBallCols = () => {
         const cols = []
-        ballScopeDisplay.forEach(ball => {
+        const ballOrder = userData.loggedIn ? userData.user.settings.display.ballOrder.filter(b => ballScopeDisplay.includes(b)) : ballScopeDisplay
+        ballOrder.forEach(ball => {
             cols.push({
                 label: capitalizeFirstLetter(ball),
                 dataKey: ball,
@@ -69,17 +71,17 @@ export default function ShowCollectionList({collection, styles, isEditMode, loca
     function setHeaders() {
         return (
             <>
-            <TableRow sx={{backgroundColor: '#283f57'}}>
+            <TableRow sx={{backgroundColor: '#283f57', zIndex: 20}}>
                 {columns.map(c => (
                     c.ball ? 
                     <TableCell 
                         key={`${c.label}-header`}
-                        sx={{...styles.tableCell, width: c.width}} 
+                        sx={{...styles.tableCell, width: c.width, zIndex: 15}} 
                         variant='head'>
                         <Box
-                            sx={styles.ballHeaderDiv.divStyles}
+                            sx={{...styles.ballHeaderDiv.divStyles, zIndex: 15}}
                         >
-                            <Box sx={styles.ballHeaderDiv.label}>{c.label}</Box>
+                            <Box sx={{...styles.ballHeaderDiv.label, zIndex: 15}}>{c.label}</Box>
                             <div>
                                 <img height='25px' width='25px' src={`https://res.cloudinary.com/duaf1qylo/image/upload/balls/${c.dataKey}.png`}/>
                             </div>
@@ -95,7 +97,7 @@ export default function ShowCollectionList({collection, styles, isEditMode, loca
                                 c.label === 'img' ? 
                                 {...styles.textHeader, paddingTop: '28px', paddingBottom: '28px'} : 
                                 c.label === '#' ?
-                                {...styles.textHeader, ...styles.alignment.dexNumHeaderAlignment} :
+                                {...styles.textHeader, ...styles.alignment.dexNumHeaderAlignment, px: 0} :
                                 styles.textHeader
                             }
                         >
@@ -144,7 +146,25 @@ export default function ShowCollectionList({collection, styles, isEditMode, loca
     
     const VirtuosoTableComponents = {
         Scroller: React.forwardRef((props, ref) => (
-          <TableContainer component={Paper} {...props} ref={ref} />
+            <TableContainer 
+                component={Paper} 
+                {...props} 
+                ref={ref} 
+                sx={{
+                    ...props.sx,
+                    '&::-webkit-scrollbar': {
+                        width: '0.3rem'
+                    },
+                    '&::-webkit-scrollbar-track': {
+                        boxShadow: 'inset 0 0 6px rgba(0,0,0,0.00)',
+                        webkitBoxShadow: 'inset 0 0 6px rgba(0,0,0,0.00)'
+                    },
+                    '&::-webkit-scrollbar-thumb': {
+                        backgroundColor: theme.palette.color3.main,
+                        borderRadius: '5px'
+                    },
+                }}
+            />
         )),
         Table: (props) => (
           <Table {...props} sx={{ borderCollapse: 'separate', tableLayout: 'fixed'}} />

@@ -9,7 +9,7 @@ import { setPokemon } from '../../../app/slices/tradeoffer'
 import { selectIfPokemonIsSelected } from '../../../app/selectors/tradeselectors'
 import { getGameColor, homeDisplayGames } from '../../../../../common/infoconstants/miscconstants.mjs'
 
-export default function DataCell({label, styles, alignment='none', isEditMode, imgParams={isImg: false}, leftMostCell=false, isSelected=false, onClickFunc, onhandCells=false, specialStyles={}, blackSquare=false, availableGames=undefined, localHandleChange=null, isTradePage=false, tradeSide, tradeDispData, reserved=0}) {
+export default function DataCell({label, styles, alignment='none', isEditMode, imgParams={isImg: false}, leftMostCell=false, isSelected=false, onClickFunc, onhandCells=false, specialStyles={}, blackSquare=false, availableGames=undefined, localHandleChange=null, isTradePage=false, tradeSide, tradeDispData, imgAlignment={}, bodyColorOverride={}, fontSizeOverride, reserved=0, isEmDisplay=false}) {
     const {isImg, imgLinkKey, imgSize='32px', imgType='poke'} = imgParams
     const theme = useTheme()
     const blackSquareStyles = blackSquare ? {backgroundColor: 'black'} : {}
@@ -17,7 +17,9 @@ export default function DataCell({label, styles, alignment='none', isEditMode, i
     const otherTextStyles = noInfo ? {opacity: 0.5} : {}
     const dispatch = useDispatch()
     const deselectFunc = () => dispatch(deselect())
-    
+    const bodyColorSx = isImg ? {backgroundColor: '#1d1c1b', borderRadius: '10px', paddingY: '16px', paddingX: 'calc(50% - 16px)', margin: 0, zIndex: -1} : styles.bodyColor
+    const extraBodyColorSx = !isImg ? {height: '20px', px: 0} : {}
+
     const displayAvailableGames = availableGames !== undefined
     const includeBottomText = displayAvailableGames || reserved !== 0
     const relativeStyle = includeBottomText ? {position: 'relative'} : {}
@@ -33,6 +35,8 @@ export default function DataCell({label, styles, alignment='none', isEditMode, i
     const isSelectedForTrade = isOnHandAndTradePage ? useSelector((state) => selectIfPokemonIsSelected(state, tradeSide, {name: tradeDispData.pData.name, ball: tradeDispData.ballData.ball, onhandId: tradeDispData.ballData.onhandId})) : false
     const dispatchTradeChange = isOnHandAndTradePage ? () => dispatch(setPokemon({pData: tradeDispData.pData, ballData: tradeDispData.ballData, tradeSide})) : false
     return (
+        <>
+        
         <TableCell 
             padding='none' 
             sx={!(blackSquare) ? {...styles.tableCell} : blackSquareStyles}
@@ -65,10 +69,10 @@ export default function DataCell({label, styles, alignment='none', isEditMode, i
                     </Box>
                 </Box>
             }
-            <Box sx={!(blackSquare) ? {...alignment, ...styles.bodyColor, ...relativeStyle} : {}}>
+            <Box sx={!(blackSquare) ? {...alignment, ...bodyColorSx, ...relativeStyle, ...extraBodyColorSx, ...bodyColorOverride} : {}}>
                 {isImg ? 
-                <ImgData type={imgType} size={imgSize} linkKey={imgLinkKey}/> :+
-                !(blackSquare) && <Typography sx={{...otherTextStyles, ...specialStyles}} variant={'body2'}>{label}</Typography>
+                <><Box sx={{position: 'absolute', ...imgAlignment}}><ImgData type={imgType} size={imgSize} linkKey={imgLinkKey}/></Box></> :
+                !(blackSquare) && <Typography sx={{...otherTextStyles, ...specialStyles, width: '100%', height: '100%', textAlign: 'center', position: 'absolute', left: '0px', top: '0px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: fontSizeOverride ? fontSizeOverride : isEmDisplay ? '12px' : '14px'}} variant={'body2'}>{label}</Typography>
                 }
                 {includeBottomText && 
                 <Box sx={{position: 'absolute', fontSize: '10px', width: '80%', right: '10%', bottom: '-3px', display: 'flex', justifyContent: 'center'}}>
@@ -97,6 +101,7 @@ export default function DataCell({label, styles, alignment='none', isEditMode, i
                 </Box>
                 }
             </Box>
-        </TableCell> 
+        </TableCell>
+        </> 
     )
 }

@@ -1,5 +1,5 @@
-import {Box, Typography, Grid, ToggleButton, Button, Tooltip} from '@mui/material'
-import { useState } from 'react'
+import {Box, Typography, Grid, ToggleButton, Button, Tooltip, useTheme} from '@mui/material'
+import { useState, forwardRef } from 'react'
 import { useRouteLoaderData } from 'react-router'
 import getNameDisplay from '../../../../../../utils/functions/display/getnamedisplay'
 import { useDebouncedCallback } from 'use-debounce'
@@ -11,8 +11,10 @@ import ImgData from '../../../../collectiontable/tabledata/imgdata'
 import Selection from '../../../../collectiontable/selection'
 import { apriballLiterals } from '../../../../../../../common/infoconstants/miscconstants.mjs'
 import { capitalizeFirstLetter } from '../../../../../../utils/functions/misc'
+import ScrollBar from '../../../../functionalcomponents/scrollbar'
 
 export default function PokemonBallCombosModalContents({elementBg, selectedMon, totalList, ballComboData, pokemonScopeData, ballScope, changePokemonSelection, allPossibleBalls, handleChange, changingScope=false, changeScopeSave, saveErrorNoticeShow}) {
+    const theme = useTheme()
     const [filteredList, setFilteredList] = useState(totalList)
     const nameDisplaySettings = useRouteLoaderData('root').user.settings.display.pokemonNames
 
@@ -180,7 +182,16 @@ export default function PokemonBallCombosModalContents({elementBg, selectedMon, 
             totalCount={filteredList.length}
             height={changingScope ? '30%' : '35%'}
             onlyList={true}
+            // virtuosoProps={{
+            //     components: {
+            //         Scroller: forwardRef((props, ref) => {
+            //             const otherProps = {...props, ref: undefined, children: undefined, style: undefined}
+            //             return <ScrollBar style={props.style} forwardedRef={ref} color={theme.palette.color3.dark} children={props.children} otherProps={otherProps}/>
+            //         })
+            //     }
+            // }}
             otherStyles={{width: '95%', mt: 1}}
+            customScroller={false}
         />
         <Box sx={{...elementBg, width: '95%', height: '40%', mt: 1}}>
             {!noSelection ?
@@ -260,6 +271,7 @@ export default function PokemonBallCombosModalContents({elementBg, selectedMon, 
                     onlyList={true}
                     otherStyles={{width: '100%', mt: 1}}
                     virtuosoStyles={{border: '1px solid white'}}
+                    updateCheck='neverUpdate'
                 />
             </Box>
             }

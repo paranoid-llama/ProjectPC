@@ -167,7 +167,7 @@ export default function ShowCollectionTitle({collectionID, options, isEditMode, 
                 </Box>
             </Box>
             <Box sx={{display: 'flex', flexDirection: 'column', alignItems: 'center', width: '55%'}}>
-                {displayScreen === 'ballProgress' && <CollectionProgress ballScopeInit={options.collectingBalls} isEditMode={isEditMode} collectionList={collectionInfo.ownedPokemon}/>}
+                {displayScreen === 'ballProgress' && <CollectionProgress ballScopeInit={options.collectingBalls} isEditMode={isEditMode} collectionList={collectionInfo.ownedPokemon} userData={userData}/>}
                 {displayScreen === 'rates' && <RateDisplay rates={tradePreferences.rates} owner={collectionInfo.owner.username} collectionGen={collectionInfo.gen}/>}
                 {displayScreen === 'items' && <ItemDisplay collectionGen={collectionInfo.gen} itemTradeStatus={tradePreferences.items} lfItems={tradePreferences.lfItems} ftItems={tradePreferences.ftItems}/>}
             </Box>

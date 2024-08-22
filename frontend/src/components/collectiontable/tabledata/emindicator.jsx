@@ -25,6 +25,7 @@ export default function EMIndicator({sx, textOnly, isEditMode, emCount, handleCh
             <ToggleButton
                 sx={{
                     position: 'absolute',
+                    zIndex: 1,
                     color: 'white',
                     bottom: '-2px',
                     backgroundColor: 'none',

@@ -1,6 +1,6 @@
 import {Box} from '@mui/material'
 
-export default function ScrollBar({forwardedRef, color, children, style, otherProps}) {
+export default function ScrollBar({forwardedRef, color, children, style, otherProps, scrollerWidth='0.3rem', scrollerBr='5px'}) {
     return (
         <Box 
             {...otherProps}
@@ -8,7 +8,7 @@ export default function ScrollBar({forwardedRef, color, children, style, otherPr
             sx={{
                 ...style,
                 '&::-webkit-scrollbar': {
-                    width: '0.3em'
+                    width: scrollerWidth
                 },
                 '&::-webkit-scrollbar-track': {
                     boxShadow: 'inset 0 0 6px rgba(0,0,0,0.00)',
@@ -16,7 +16,7 @@ export default function ScrollBar({forwardedRef, color, children, style, otherPr
                 },
                 '&::-webkit-scrollbar-thumb': {
                     backgroundColor: color,
-                    borderRadius: '5px'   
+                    borderRadius: scrollerBr
                 },
             }}
         >

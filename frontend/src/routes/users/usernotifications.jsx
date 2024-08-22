@@ -1,17 +1,31 @@
-import {Box, Typography, useTheme, ToggleButtonGroup, ToggleButton} from '@mui/material'
-import {useState, useEffect} from 'react'
-import { useRouteLoaderData, useLoaderData, useNavigate } from 'react-router'
+import {Box, Typography, useTheme, ToggleButtonGroup, ToggleButton, Button} from '@mui/material'
+import { ErrorContext } from '../../app/contexts/errorcontext'
+import {useState, useEffect, useContext} from 'react'
+import { useRouteLoaderData, useLoaderData, useNavigate, useRevalidator } from 'react-router'
 import BodyWrapper from '../../components/partials/routepartials/bodywrapper'
 import UserNotificationItem from './usernotificationitem'
+import readNotification from '../../../utils/functions/backendrequests/users/readnotification'
+import hexToRgba from 'hex-to-rgba'
 
 export default function UserNotifications({}) {
     const theme = useTheme()
     const navigate = useNavigate()
-    const [routeState, setRouteState] = useState({pagination: 1, notificationType: null, unreadOnly: true})
-    const notifications = useLoaderData().notifications.toReversed().filter(noti => !routeState.notificationType ? true : noti.type.includes(routeState.notificationType)).filter(noti => routeState.unreadOnly ? noti.unread : true)
+    const {handleError} = useContext(ErrorContext)
+    const [routeState, setRouteState] = useState({pagination: 1, notificationType: null, unreadOnly: true, viewNotification: ''})
+    const userData = useLoaderData()
+    const revalidator = useRevalidator()
+    const notifications = userData.notifications.toReversed().filter(noti => !routeState.notificationType ? true : noti.type.includes(routeState.notificationType)).filter(noti => routeState.unreadOnly ? noti.unread : true)
     const usePagination = notifications.length > 10
     const shownNotifications = usePagination ? notifications.slice((routeState.pagination-1)*10, routeState.pagination*10) : notifications
     // console.log(notifications)
+
+    const viewNotificationDetails = routeState.viewNotification && notifications.filter(noti => noti._id === routeState.viewNotification)[0]
+    useEffect(() => {
+        if (routeState.viewNotification && viewNotificationDetails.unread) {
+            const backendFunc = async() => readNotification(userData.username, viewNotificationDetails._id, false)
+            handleError(backendFunc, false, () => {}, () => {}, false, true)
+        }
+    }, [routeState.viewNotification])
 
     return (
         <BodyWrapper  sx={{...theme.components.box.fullCenterCol, margin: 2}}>
@@ -29,17 +43,19 @@ export default function UserNotifications({}) {
                             <ToggleButtonGroup value={routeState.notificationType} exclusive onChange={(e, newVal) => setRouteState({...routeState, notificationType: newVal, pagination: 1})}>
                                 <ToggleButton value='trade' sx={{paddingY: 0}}>Trade</ToggleButton>
                                 <ToggleButton value='site' sx={{paddingY: 0}}>System Message</ToggleButton>
-                                <ToggleButton value='update' sx={{paddingY: 0}}>Server Update</ToggleButton>
+                                <ToggleButton value='update' sx={{paddingY: 0}}>Site Update</ToggleButton>
                             </ToggleButtonGroup>
                         </Box>
                         <Box sx={{...theme.components.box.fullCenterCol, width: '40%', height: '100%'}}>
                             <ToggleButton onChange={() => setRouteState({...routeState, unreadOnly: routeState.unreadOnly ? false : true, pagination: 1})} selected={routeState.unreadOnly} value='' sx={{paddingY: 0}}>Show Unread Only</ToggleButton>
                         </Box>
                     </Box>
-                    <Box sx={{...theme.components.box.fullCenterCol, width: '100%', height: '80%'}}>
+                    <Box sx={{...theme.components.box.fullCenterCol, width: '100%', height: '80%', position: 'relative'}}>
+                        {!routeState.viewNotification ? 
+                        <>
                         <Box sx={{height: '580px', width: '100%', ...theme.components.box.fullCenterCol, justifyContent: 'start', flexDirection: 'column', mt: 1}}>
                             {shownNotifications.map((note, idx) => {
-                                const onClickFunc = (note.type.includes('trade-offer')) ? () => navigate(`/trades/${note.tradeData.tradeId}`) : null
+                                const onClickFunc = (note.type.includes('trade-offer')) ? () => navigate(`/trades/${note.tradeData.tradeId}`) : () => setRouteState({...routeState, viewNotification: note._id})
                                 return (
                                     <UserNotificationItem 
                                         key={`notification-${idx+1}`}
@@ -81,7 +97,24 @@ export default function UserNotifications({}) {
                             </Box>
                             }
                         </Box>
-                        
+                        </> : 
+                        <>
+                        <Box sx={{height: '580px', width: '80%', ...theme.components.box.fullCenterCol, justifyContent: 'start', flexDirection: 'column', mt: 1}}>
+                            <Box sx={{...theme.components.box.fullCenterCol, height: '85%', justifyContent: 'start', padding: 1, paddingX: 2, backgroundColor: hexToRgba(theme.palette.color1.main, 0.9), color: 'white', borderRadius: '15px', border: `2px solid ${theme.palette.color1.main}`}}>
+                                <Box sx={{...theme.components.box.fullCenterRow, justifyContent: 'start', height: '10%', width: '100%', position: 'relative', borderBottom: `4px solid ${theme.palette.color1.main}`}}>
+                                    <Typography sx={{fontWeight: 700, fontSize: '24px'}}>{viewNotificationDetails.title}</Typography>
+                                    <Typography sx={{fontSize: '14px', position: 'absolute', right: '0px', top: '0px'}}>{viewNotificationDetails.type === 'system' ? '[SYSTEM]' : '[UPDATE]'}</Typography>
+                                </Box>
+                                <Box sx={{...theme.components.box.fullCenterCol, justifyContent: 'start', height: '90%', width: '80%', position: 'relative', mt: 1}}>
+                                    <Typography sx={{fontSize: '14px'}}>{viewNotificationDetails.message}</Typography>
+                                </Box>
+                            </Box>
+                            <Box sx={{...theme.components.box.fullCenterCol, height: '10%', width: '20%', position: 'absolute', left: '0px', bottom: '0px'}}>
+                                <Button sx={{fontSize: '12px'}} onClick={() => {setRouteState({...routeState, viewNotification: ''})}}>See all notifications</Button>
+                            </Box>
+                        </Box>
+                        </>
+                        }
                     </Box>
                 </Box>
             </Box>

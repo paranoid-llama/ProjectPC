@@ -85,7 +85,7 @@ export default function ImportSelection({handleChange, cssClass, goBackStep, col
             
                     <Box sx={{width: '100%', height: '90%', mt: 1, position: 'absolute', visibility: 'hidden'}} className={fadeClass.screen2}>
                         {/* change this to show different import forms depending on type (once more collection types are added)*/}
-                        <AprimonImportForm handleSubmit={handleSubmitImportFormData}/>
+                        <AprimonImportForm handleSubmit={handleSubmitImportFormData} isHomeCollection={collectionSubTypeValue === 'home'}/>
                     </Box>
                     <Box sx={{width: '100%', height: '100%', position: 'absolute', right: '-100%', visibility: 'hidden', display: 'flex', alignItems: 'center', flexDirection: 'column'}} className={fadeClass.screen3}>
                         {/* change this to show different display screens depending on type (once more collection types are added)*/}

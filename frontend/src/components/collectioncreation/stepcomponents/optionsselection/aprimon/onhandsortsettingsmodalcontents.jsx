@@ -171,6 +171,7 @@ export default function OnHandSortSettingsModalContents({elementBg, onhandSortSe
                 height='80%'
                 onlyList={true}
                 otherStyles={{width: '95%', mt: 1, ...disabledSelections}}
+                customScroller={false}
             />
         </Box>
         {changingOptions &&

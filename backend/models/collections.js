@@ -4,6 +4,8 @@ import {getImgLink, getPossibleEggMoves, getPossibleGender, getCollectionProgres
 import Trade from './trades.js'
 import User from './users.js'
 import { setPendingTrade } from '../controllers/tradecontrollers/colmanagementfuncs.js';
+import { getCollectionProgressPercent, checkBadgeMilestone } from './postpremiddleware.js';
+import { collectionProgressAggField } from '../controllers/searchcontroller.js';
 import { postDeleteColEditTradeCol } from './postpremiddleware.js';
 
 const opts = {toJSON: {virtuals: true}, minimize: false}
@@ -278,6 +280,10 @@ collectionSchema.virtual('availableGamesInfo').get(function() {
     }
 })
 
+collectionSchema.virtual('progress').get(function() {
+    return getCollectionProgressPercent(this)
+})
+
 collectionSchema.virtual('eggMoveInfo').get(function() {
     if (this.gen === 'home') {
         null
@@ -288,19 +294,39 @@ collectionSchema.virtual('eggMoveInfo').get(function() {
 
 collectionSchema.post('findOneAndUpdate', async function(doc) {
     //logic for badges here. doc is the collection.
+    if (doc) {
+        const colProg = getCollectionProgressPercent(doc) + getCollectionProgressPercent(doc, false)
+        const user = await User.findById(doc.owner).populate({path: 'collections', select: 'ownedPokemon'})
+        const otherColProgs = user.collections.map(col => {return {_id: col._id, progress: getCollectionProgressPercent(col)}}).filter(col => col._id.toString() !== doc._id.toString()).map(col => col.progress)
+        const badgeChange = checkBadgeMilestone(colProg, user.settings.profile.badges, otherColProgs)
+        if (badgeChange === 'no-change') {return}
+        else {
+            user.settings.profile.badges = badgeChange
+            user.save()
+        }
+    }
 })
 
 collectionSchema.post('findOneAndDelete', async function(doc) {
     if (doc) {
         const tradesThisUserMade = await Trade.find({users: {$in: doc.owner}})
+        const userInfo = await User.findById(doc.owner.toString())
         const tradesWithThisCollection = tradesThisUserMade.filter(async trade => {
-            const userPos = trade.users.indexOf(doc.owner)
+            const userPos = trade.users.map(user => user.toString()).indexOf(doc.owner.toString())
             const gen = trade.gen.includes('-') ? (userPos === 0 ? trade.gen.slice(0, trade.gen.indexOf('-')) : trade.gen.slice(trade.gen.indexOf('-')+1, trade.gen.length)) : trade.gen
-            const editThisDoc = doc.gen === gen
+            const editThisDoc = doc.gen === gen && !trade.deletedCollection[userPos]
             if (editThisDoc) {
-                const editOtherCollection = (trade.status !== 'rejected' && trade.status !== 'completed')
-                if (editOtherCollection) {
-                    postDeleteColEditTradeCol(trade, userPos)
+                const editTradeStatus = (trade.status !== 'rejected' && trade.status !== 'completed')
+                if (editTradeStatus) {
+                    const latestOffer = trade.history[trade.history.length-1]
+                    const editOtherCollection = trade.status === 'pending' || 
+                        ((trade.status === 'initialoffer' || trade.status === 'counteroffer') && 
+                            latestOffer.offerer !== userInfo.username && 
+                            latestOffer.trade.offer.pokemon.map(p => p.balls.filter(ballData => ballData.onhandId !== undefined).includes(true)).includes(true)
+                        )
+                    if (editOtherCollection) {
+                        postDeleteColEditTradeCol(trade, userPos)
+                    }
                     trade.status = 'cancelled'
                     trade.closeDate = Date.now()
                 }

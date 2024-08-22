@@ -58,7 +58,7 @@ export function TableRowGroupingNoRedux({columns, row, id, collectionId, ownerId
                             key={`${row.imgLink}-${c.label}`}
                             label={c.dataKey === 'name' && nameLabel}
                             styles={styles}
-                            alignment={c.label === 'img' && styles.alignment.imgAlignment}
+                            alignment={c.label === 'img' ? styles.alignment.imgAlignment : c.dataKey === 'name' && {position: 'relative'}}
                             imgParams={{isImg: isImg, imgLinkKey: row.imgLink}}
                             specialStyles={textSizeAdjustor}
                             isEditMode={false}
@@ -188,7 +188,7 @@ function TableRowGrouping({columns, row, id, collectionId, ownerId, styles, isSe
                             key={`${row.imgLink}-${c.label}`}
                             label={c.dataKey === 'name' && nameLabel}
                             styles={styles}
-                            alignment={c.label === 'img' && styles.alignment.imgAlignment}
+                            alignment={c.label === 'img' ? styles.alignment.imgAlignment : c.dataKey === 'name' && {position: 'relative'}}
                             imgParams={{isImg: isImg, imgLinkKey: row.imgLink}}
                             specialStyles={textSizeAdjustor}
                             isEditMode={isEditMode}

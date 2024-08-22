@@ -298,7 +298,7 @@ export default function OnHandPokemonSelectionForm({speciesEditOnly=false, open,
                     {!(speciesEditOnly) ? 
                     <>
                         <Header label={'Add New Pokémon'} height='7%'/>
-                        <SpeciesSelect searchOnChange={searchOnChange} pokemonData={pokemonData} listItemContent={listItemContent} totalCount={selectionList.length} height='60%' nameDisplaySettings={userNameDisplaySettings}/>
+                        <SpeciesSelect searchOnChange={searchOnChange} pokemonData={pokemonData} listItemContent={listItemContent} totalCount={selectionList.length} height='60%' nameDisplaySettings={userNameDisplaySettings} customScroller={false}/>
                         <Box sx={{height: '25%', display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: '3px', ...modalStyles.onhand.modalElementBg}}>
                             <Box sx={{height: '96%', width: '50%', display: 'flex', flexDirection: 'column'}}>
                                 <Box sx={{height: '60%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
@@ -377,7 +377,7 @@ export default function OnHandPokemonSelectionForm({speciesEditOnly=false, open,
                     </> :
                     <>
                         <Header label={'Change Pokémon'} height='10%'/>
-                        <SpeciesSelect searchOnChange={searchOnChange} pokemonData={pokemonData} listItemContent={listItemContent} totalCount={selectionList.length} height='60%' nameDisplaySettings={userNameDisplaySettings}/>
+                        <SpeciesSelect searchOnChange={searchOnChange} pokemonData={pokemonData} listItemContent={listItemContent} totalCount={selectionList.length} height='60%' nameDisplaySettings={userNameDisplaySettings} customScroller={false}/>
                         <Box sx={{height: '20%', display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '3px', ...modalStyles.onhand.modalElementBg}}>
                             <BallSelectionForm allowedBalls={allowedBalls} handleChange={handleBallChange} value={pokemonData.ball} onhandBallSelect={true} width='50%'/>
                         </Box>

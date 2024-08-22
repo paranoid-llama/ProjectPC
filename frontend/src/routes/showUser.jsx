@@ -19,6 +19,21 @@ import userSettingsBackendRequest from '../../utils/functions/backendrequests/us
 import 'simplebar-react/dist/simplebar.min.css'
 import "./showUser.css"
 
+const badgeData = {
+    'apri-novice' : {display: 'Aprimon Novice', tooltip: 'Start an aprimon collection'},
+    'apri-amateur' : {display: 'Aprimon Amateur', tooltip: 'Complete 25% or more of an aprimon collection'},
+    'apri-enthusiast' : {display: 'Aprimon Enthusiast', tooltip: 'Complete 50% or more of an aprimon collection'},
+    'apri-expert' : {display: 'Aprimon Expert', tooltip: 'Complete 75% or more of an aprimon collection'},
+    'apri-master' : {display: 'Aprimon Master', tooltip: 'Complete an aprimon collection'},
+    'apri-multigen' : {display: 'Multi-Generational Master', tooltip: 'Complete multiple aprimon collections'},
+    'trader-new' : {display: 'New Trader', tooltip: 'Complete a trade'},
+    'trader-aspiring' : {display: 'Aspiring Trader', tooltip: 'Complete 5 trades'},
+    'trader-avid' : {display: 'Avid Trader', tooltip: 'Complete 10 trades'},
+    'trader-experienced' : {display: 'Experienced Trader', tooltip: 'Complete 25 trades'},
+    'trader-veteran' : {display: 'Veteran Trader', tooltip: 'Complete 50 trades'},
+    'trader-breeder' : {display: 'Pokémon Breeder', tooltip: 'Complete 100 or more trades'},
+}
+
 //user profile page
 export default function ShowUser({}) {
     const navigate = useNavigate()
@@ -46,7 +61,7 @@ export default function ShowUser({}) {
         textColor: theme.palette.color3.contrastText,
         labelBgColor: theme.palette.color3.dark
     }
-    const userBadges = []
+    const userBadges = userData.settings.profile.badges.map(b => badgeData[b])
     const userGames = userData.settings.profile.games
 
     const tagTextStyles = {
@@ -56,7 +71,7 @@ export default function ShowUser({}) {
         '@media only screen and (min-width: 1044px) and (max-width: 1150px)': {
             marginRight: '40px'
         },
-        fontSize: userBadges.length >= 3 ? '10.5px' : '12px',
+        fontSize: '14px',
         // fontStyle: userBadges.length === 0 ? 'italic' : 'normal',
         // color: userBadges.length === 0 ? 'grey' : 'inherit',
         // width: '100%', 
@@ -155,6 +170,7 @@ export default function ShowUser({}) {
                         otherTextStyles={userBadges.length === 0 ? noBadgeTextStyle : tagTextStyles}
                         tagAreaStyles={tagAreaStyles}
                         multipleTexts={userBadges}
+                        multipleTextTooltips={true}
                         text={userBadges.length === 0 ? 'No Badges' : undefined}
                         displayingTags={userBadges.length !== 0}
                         width='100%'

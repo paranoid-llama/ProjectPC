@@ -1,8 +1,9 @@
 import {Box, Typography, useTheme, Modal, Fade, Backdrop, Button, Tabs, Tab, Tooltip} from '@mui/material'
 import modalStyles from '../../../../utils/styles/componentstyles/modalstyles'
 import { capitalizeFirstLetter } from '../../../../utils/functions/misc'
-import { useEffect } from 'react'
+import { useEffect, forwardRef } from 'react'
 import { Virtuoso } from 'react-virtuoso'
+import ScrollBar from '../../../components/functionalcomponents/scrollbar'
 import { items } from '../../../../../common/infoconstants/miscconstants.mjs'
 import ImgData from '../../../components/collectiontable/tabledata/imgdata'
 import { reFormatToIndividual } from '../../../../utils/functions/comparecollections/comparison'
@@ -83,6 +84,12 @@ export default function TradeDetailsModal({offerData, receivingData, currentScre
                             totalCount={shownList.length}
                             style={{height: '480px', width: '90%', border: '1px solid white', borderRadius: '5px'}}
                             itemContent={(idx) => itemContentFunc(shownList[idx], theme, currentScreen, false, false, nameDisplaySettings)}
+                            components={{
+                                Scroller: forwardRef((props, ref) => {
+                                    const otherProps = {...props, ref: undefined, children: undefined, style: undefined}
+                                    return <ScrollBar style={props.style} forwardedRef={ref} color={theme.palette.color3.main} children={props.children} otherProps={otherProps}/>
+                                })
+                            }}
                         />
                     </Box>
                 </Box>

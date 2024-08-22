@@ -65,7 +65,7 @@ function OnHandRowContent({columns, row, pokemonId, collectionId, styles, isSele
                         key={`${row._id}-${c.label}`}
                         label={label}
                         styles={styles}
-                        alignment={alignment}
+                        alignment={c.dataKey === 'name' || c.dataKey === 'emCount' ? {position: 'relative'} : alignment}
                         imgParams={{isImg: genderlessLabel ? false : c.isImg, imgLinkKey: imgKey, imgType: imgType}}
                         isEditMode={isEditMode}
                         leftMostCell={c.label === '#' ? true : false}
@@ -83,6 +83,7 @@ function OnHandRowContent({columns, row, pokemonId, collectionId, styles, isSele
                                 fullData: row
                             } : {}
                         }
+                        isEmDisplay={c.dataKey === 'EMs'}
                         {...reservedQty}
                     />
                 )

@@ -11,6 +11,11 @@ const getComponentBreakpoints = (screenWidth, component) => {
                             screenWidth >= 768 && screenWidth < 1000 ? 'md' : 
                             (screenWidth >= 1000) && 'lg'
         return breakpoint
+    } else if (component === 'filtersort') {
+        const breakpoint = screenWidth < 768 ? 'sm' : 
+                            screenWidth >= 768 && screenWidth < 1100 ? 'md' : 
+                            (screenWidth >= 1100) && 'lg'
+        return breakpoint
     }
 }
 

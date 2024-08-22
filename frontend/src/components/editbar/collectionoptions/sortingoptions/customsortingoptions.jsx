@@ -42,6 +42,7 @@ export default function CustomSortingOptions({elementBg, collectionGen, collecti
 
     const handleChange = (result) => {
         const draggedPokemonData = result.source.droppableId === 'customSort' ? sortData.customSort.filter(p => p.id === result.draggableId)[0] : sortData.holdPokemon.filter(p => p.id === result.draggableId)[0]
+        if (result.destination === null) {return}
         if (result.destination.droppableId === "holdList") {
             const newCustomSortState = result.source.droppableId === 'customSort' ? sortData.customSort.filter(p => p.id !== result.draggableId) : sortData.customSort
             const newHoldListState = result.source.droppableId === 'customSort' ? [...sortData.holdPokemon, draggedPokemonData] : [...sortData.holdPokemon]

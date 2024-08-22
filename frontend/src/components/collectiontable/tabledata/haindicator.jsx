@@ -31,6 +31,7 @@ export default function HAIndicator({sx, textOnly, topPosition=false, isEditMode
             <ToggleButton
                 sx={{
                     position: 'absolute',
+                    zIndex: 1,
                     border: 'none',
                     color: 'white',
                     backgroundColor: 'none',

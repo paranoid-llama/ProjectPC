@@ -376,7 +376,10 @@ const setCollection = (identifier, names, ballData, gapRows, ballOrder, collecti
                 pokemon.name.includes('Basculin') ? pokemon.name.slice(pokemon.name.indexOf('(') + 1, pokemon.name.indexOf('-')) :
                 nonBreedableAltFormMons.includes(pokemon.name) ? nonBreedableAltRegIdentifiers[pokemon.name] : 
                 pokemon.name.slice(pokemon.name.indexOf('(') + 1, pokemon.name.indexOf(')'))
-            const otherIdentifiers = pokemon.name.includes('♀') ? ['♀', '-♀', '♀-'] : pokemon.name.includes('♂') ? ['♂', '-♂', '♂-'] : []
+            const otherIdentifiers = pokemon.name.includes('Shellos') ? 
+                (pokemon.name.includes('East') ? ['blue', '-b', 'b-'] : pokemon.name.includes('West') && ['pink', '-p', 'p-']) : 
+                pokemon.name.includes('♀') ? ['♀', '-♀', '♀-'] : pokemon.name.includes('♂') ? ['♂', '-♂', '♂-'] : 
+                []
             const isNidoran = pokemon.name.includes('Nidoran')
             const originalPokemon = isNidoran ? 'Nidoran' : nonBreedableAltFormMons.includes(pokemon.name) ? pokemon.name : pokemon.originalPokemon
             // console.log(formIdentifier)

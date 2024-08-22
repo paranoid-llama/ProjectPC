@@ -165,7 +165,7 @@ export default function NavBar() {
                         sx={{flexGrow: 1, display: {sm: 'flex'}, mx: 5}}
                         className="NavTypography"
                     >
-                        <Link href="/" sx={{color: '#FFF'}} underline="none">Pokollections</Link>
+                        <Link href="/" sx={{color: '#FFF'}} underline="none">Pokellections</Link>
                     </Typography>
                     
                     {loginArea.open && 

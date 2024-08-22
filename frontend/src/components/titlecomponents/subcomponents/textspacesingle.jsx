@@ -1,6 +1,6 @@
-import {Box, Typography} from '@mui/material'
+import {Box, Typography, Tooltip} from '@mui/material'
 
-export default function TextSpaceSingle({colorStyles, text, multipleTexts, label, width, otherStyles, otherLabelStyles, otherTextStyles, textBgColor, displayingTags, tagAreaStyles, largeTextArea, largeTextAreaStyles, largeTextStyles, buttonAdornmentFunc}) {
+export default function TextSpaceSingle({colorStyles, text, multipleTexts, multipleTextTooltips, label, width, otherStyles, otherLabelStyles, otherTextStyles, textBgColor, displayingTags, tagAreaStyles, largeTextArea, largeTextAreaStyles, largeTextStyles, buttonAdornmentFunc}) {
     //displayingTags is for when there's no uniform text for the area, but rather they display text blurbs of user preferences. Refer to show collection under trade status
     const hasLabel = label !== undefined
     const {bgColor, textColor, labelBgColor, isGradient} = colorStyles
@@ -45,7 +45,26 @@ export default function TextSpaceSingle({colorStyles, text, multipleTexts, label
             }}
         >
             <Box sx={{margin: 0, display: 'flex', flexDirection: 'row', alignItems: 'center', ...tagAreaStyles}}>
-                {multipleTexts.map((text) => {
+                {multipleTextTooltips ? 
+                multipleTexts.map(textData => {
+                    return (
+                        <Tooltip title={textData.tooltip} arrow key={`${textData.display}-Badge`}>
+                            <Typography 
+                                sx={{
+                                    color: textColor, 
+                                    fontWeight: 700, 
+                                    padding: '4px', 
+                                    borderRadius: '15px', 
+                                    backgroundColor: labelBgColor,
+                                    ':hover': {cursor: 'pointer'},
+                                    ...otherTextStyles
+                                }}>
+                                    {textData.display}
+                            </Typography>
+                        </Tooltip>
+                    )
+                }) :
+                multipleTexts.map((text) => {
                     return <Typography 
                                 key={`${text}-Tag`}
                                 sx={{

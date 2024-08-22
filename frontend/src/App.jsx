@@ -54,6 +54,9 @@ import AlertsProvider from './alerts/alerts-context'
 import ErrorProvider from './app/contexts/errorcontext'
 import { ThemeProvider } from '@mui/material'
 import theme from '../utils/styles/globalstyles/theme'
+import WhatAreAprimon from './routes/infopages/whatareaprimon'
+import AboutUs from './routes/infopages/aboutus'
+import ContactUs from './routes/infopages/contactus'
 
 
 //can add a bit of debounce by adding number parameter in case the event causes performance issues
@@ -138,8 +141,22 @@ function Router() {
           element: <LoginPage />
         },
         {
-          path: "/collections",
-          element: <Collections />
+          path: '/info',
+          element: <Outlet />,
+          children: [
+            {
+              path: 'what-are-aprimon',
+              element: <WhatAreAprimon />
+            },
+            {
+              path: 'about-us',
+              element: <AboutUs />
+            },
+            {
+              path: 'contact-us',
+              element: <ContactUs />
+            }
+          ]
         },
         {
           path: "/collections/new",

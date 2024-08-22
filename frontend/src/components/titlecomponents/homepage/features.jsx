@@ -22,7 +22,7 @@ export default function Features({}) {
                     <Box sx={{width: '50%', height: '100%', ...theme.components.box.fullCenterCol, justifyContent: 'start', maxWidth: '400px', ml: 3}}>
                         <Typography sx={{fontSize: '24px', mb: 0.5, textAlign: 'center'}}><b>Accessibility</b></Typography>
                         <Typography sx={{fontSize: '14px', textAlign: 'center'}}>
-                            Pokollections makes collection tracking very easy by providing you all the tools you need to track any pokemon information.
+                            Pokellections makes collection tracking very easy by providing you all the tools you need to track any pokemon information.
                             We will also update your collections for you based on new generation/legality information. You can just focus on the fun part of collecting.
                         </Typography>
                     </Box>

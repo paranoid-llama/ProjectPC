@@ -1,11 +1,13 @@
-import {Box} from '@mui/material'
+import {Box, useTheme} from '@mui/material'
 import { useRouteLoaderData } from 'react-router'
 import { useRef, forwardRef, useMemo } from 'react'
 import { Virtuoso } from 'react-virtuoso'
 import DraggableSortItem from './draggablesortitem'
 import { Draggable } from 'react-beautiful-dnd'
+import ScrollBar from '../../../../../functionalcomponents/scrollbar'
 
 export default function DroppableList({totalCount, listContent, isHoldList, onHoverStyles, virtuosoStyles, otherContainerStyles, virtuosoProps, droppableProps, innerRef, snapshot, nameDisplaySettings}) {
+    const theme = useTheme()
     const HeightPreservingItem = ({children, ...props}) => {
         return (
             <Box sx={{height: '36px', py: 0.25}} {...props}>

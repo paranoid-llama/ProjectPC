@@ -34,12 +34,23 @@ const offerSchema = new Schema({
                     _id: false,
                     name: {type: String},
                     natDexNum: {type: Number},
-                    ball: {type: String, enum: {values: ['fast', 'friend', 'heavy', 'level', 'love', 'lure', 'moon', 'beast', 'dream', 'safari', 'sport']}},
-                    isHA: {type: Boolean},
-                    emCount: {type: Number, validate: v => v <= 4},
-                    EMs: {type: Array, validate: v => v.length <= 4},
-                    wanted: {type: Boolean},
-                    for: {type: String}
+                    balls: {
+                        type: [{
+                            ball: {
+                                type: String,
+                                enum: {
+                                    values: ['fast', 'friend', 'heavy', 'level', 'love', 'lure', 'moon', 'beast', 'dream', 'safari', 'sport']
+                                }
+                            },
+                            isHA: {type: Boolean},
+                            emCount: {type: Number, validate: v => v <= 4},
+                            EMs: {type: Array, validate: v => v.length <= 4},
+                            isMaxEMs: {type: Boolean},
+                            onhandId: {type: String},
+                            wanted: {type: Boolean},
+                            for: {type: String}
+                        }], 
+                    }
                 }]
             },
             items: {

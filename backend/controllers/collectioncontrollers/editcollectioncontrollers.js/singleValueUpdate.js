@@ -36,7 +36,7 @@ export default async function updateCollectionSingleValue(req, res) {
             await Collection.findOneAndUpdate({
                 _id: id, 
                 "ownedPokemon.name": pokename
-                }, setModifier
+                }, setModifier, 
             )
         } else {
             const setOtherEmField = otherFieldsData !== undefined && (changedField === 'emCount' || changedField === 'EMs')
@@ -49,7 +49,7 @@ export default async function updateCollectionSingleValue(req, res) {
                 [`ownedPokemon.$.balls.${ballname}.${changedField}`]: newValueOfChangedField,
                 ...otherSetModifier
             }}
-
+            
             await Collection.updateOne({
                 _id: id, 
                 "ownedPokemon.name": pokename

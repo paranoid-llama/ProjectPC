@@ -31,7 +31,15 @@ const userSchema = new Schema ({
             bio: {type: String, max: 300},
             badges: {
                 type: [
-                    {type: String}
+                    {
+                        type: String,
+                        enum: {
+                            values: [
+                                'apri-novice', 'apri-amateur', 'apri-enthusiast', 'apri-expert', 'apri-master', 'apri-multigen',
+                                'trader-new', 'trader-aspiring', 'trader-avid', 'trader-experienced', 'trader-veteran', 'trader-breeder'
+                            ]
+                        }
+                    }
                 ]
             },
             games: {type: Array}
@@ -82,6 +90,15 @@ const userSchema = new Schema ({
                     _id: false,
                     type: Object
                 }
+            },
+            ballOrder: {
+                type: [{
+                    type: String,
+                    enum: {
+                        values: ['fast', 'friend', 'heavy', 'level', 'love', 'lure', 'moon', 'beast', 'dream', 'safari', 'sport']
+                    }
+                }],
+                validate: v => v.length === 11 && !v.map((vV, idx) => v.indexOf(vV) === idx).includes(false)
             }
         }
     }, 

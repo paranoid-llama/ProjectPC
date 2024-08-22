@@ -4,12 +4,12 @@ const listStyles = {
             margin: 0,
             padding: '16px',
             backgroundColor: '#1d1c1b',
-            borderRadius: '10px'
+            borderRadius: '10px',
         },
         tableCell: {
             textAlign: 'center', 
             color: 'white', 
-            padding: '1px',
+            padding: '1px'
         },
         ballHeaderDiv: {
             divStyles: {
@@ -37,22 +37,25 @@ const listStyles = {
         },
         alignment: {
             dexNumHeaderAlignment: {
-                '@media only screen and (max-width: 875px)': {
-                    paddingLeft: '12px'
-                }
+                // '@media only screen and (max-width: 875px)': {
+                //     paddingLeft: '12px'
+                // }
+                position: 'relative', width: '100%'
             },
             numAlignment: {
-                '@media only screen and (max-width: 875px)': {
-                    paddingLeft: '5px'
-                }
+                // '@media only screen and (max-width: 875px)': {
+                //     paddingLeft: '5px'
+                // }
+                position: 'relative', width: '100%'
             },
             imgAlignment: {
-                '@media only screen and (max-width: 875px)': {
-                    paddingLeft: '0px'
-                },
-                '@media only screen and (min-width: 876px) and (max-width: 1100px)': {
-                    paddingLeft: '5px'
-                }
+                // '@media only screen and (max-width: 875px)': {
+                //     paddingLeft: '0px'
+                // },
+                // '@media only screen and (min-width: 876px) and (max-width: 1100px)': {
+                //     paddingLeft: '5px'
+                // }
+                position: 'relative', width: '32px', height: '32px'
             },
             checkboxAlignment: {
                 display: 'flex',
@@ -156,7 +159,8 @@ const listStyles = {
         tableCell: {
             textAlign: 'center', 
             color: 'white', 
-            padding: '1px'
+            padding: '1px',
+            height: '72px'
         },
         textHeader: {
             margin: 0,
@@ -166,64 +170,73 @@ const listStyles = {
         },
         alignment: {
             dexNumAlignment: {
-                '@media only screen and (min-width: 876px) and (max-width: 1100px)': {
-                    paddingLeft: '8px'
-                },
-                '@media only screen and (max-width: 875px)': {
-                    paddingLeft: '5px'
-                }
+                // '@media only screen and (min-width: 876px) and (max-width: 1100px)': {
+                //     paddingLeft: '8px'
+                // },
+                // '@media only screen and (max-width: 875px)': {
+                //     paddingLeft: '5px'
+                // }
+                position: 'relative', width: '100%'
             },
             dexNumHeaderAlignment: {
-                '@media only screen and (max-width: 875px)': {
-                    paddingLeft: '12px'
-                }
+                // '@media only screen and (max-width: 875px)': {
+                //     paddingLeft: '12px'
+                // }
+                position: 'relative', width: '100%'
             },
             genderImgAlignment: {
-                '@media only screen and (max-width: 875px)': {
-                    paddingLeft: '10px'
-                }
+                // '@media only screen and (max-width: 875px)': {
+                //     paddingLeft: '10px'
+                // }
+                position: 'relative', width: '32px', height: '32px'
             },
             genderlessAlignment: {
-                '@media only screen and (max-width: 800px)': {
-                    paddingLeft: '13px'
-                }
+                // '@media only screen and (max-width: 800px)': {
+                //     paddingLeft: '13px'
+                // }
+                position: 'relative', width: '100%'
             },
             imgNumAlignment: {
-                '@media only screen and (max-width: 875px)': {
-                    paddingLeft: '0px'
-                },
-                '@media only screen and (min-width: 876px) and (max-width: 1100px)': {
-                    paddingLeft: '5px'
-                }
+                // '@media only screen and (max-width: 875px)': {
+                //     paddingLeft: '0px'
+                // },
+                // '@media only screen and (min-width: 876px) and (max-width: 1100px)': {
+                //     paddingLeft: '5px'
+                // }
+                position: 'relative', width: '32px', height: '32px'
             },
             textAlignment: {
-                '@media only screen and (max-width: 875px)': {
-                    paddingLeft: '5px'
-                },
-                '@media only screen and (min-width: 876px) and (max-width: 1000px)': {
-                    paddingLeft: '10px'
-                }
+                // '@media only screen and (max-width: 875px)': {
+                //     paddingLeft: '5px'
+                // },
+                // '@media only screen and (min-width: 876px) and (max-width: 1000px)': {
+                //     paddingLeft: '10px'
+                // }
+                position: 'relative', width: '100%'
             },
             textAlignmentSpaces: {
-                '@media only screen and (max-width: 875px)': {
-                    paddingLeft: '12px'
-                },
-                '@media only screen and (min-width: 876px) and (max-width: 1000px)': {
-                    paddingLeft: '12px'
-                }
+                // '@media only screen and (max-width: 875px)': {
+                //     paddingLeft: '12px'
+                // },
+                // '@media only screen and (min-width: 876px) and (max-width: 1000px)': {
+                //     paddingLeft: '12px'
+                // }
+                position: 'relative', width: '100%'
             },
             textAlignment2ndWordLonger: {
-                '@media only screen and (max-width: 875px)': {
-                    paddingLeft: '8px'
-                },
-                '@media only screen and (min-width: 876px) and (max-width: 1000px)': {
-                    paddingLeft: '12px'
-                }
+                // '@media only screen and (max-width: 875px)': {
+                //     paddingLeft: '8px'
+                // },
+                // '@media only screen and (min-width: 876px) and (max-width: 1000px)': {
+                //     paddingLeft: '12px'
+                // }
+                position: 'relative', width: '100%'
             },
             qtyValueAlignment: {
-                '@media only screen and (max-width: 875px)': {
-                    paddingLeft: '12px'
-                }
+                // '@media only screen and (max-width: 875px)': {
+                //     paddingLeft: '12px'
+                // }
+                position: 'relative', width: '100%'
             }
         },
     }
