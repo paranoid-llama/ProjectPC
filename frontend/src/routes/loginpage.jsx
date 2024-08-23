@@ -134,7 +134,7 @@ export default function LoginPage({}) {
                     <Box sx={{...theme.components.box.fullCenterRow}}>
                         <Typography sx={{textTransform: 'none'}}>Don't have an account? <Link to='/register'> Register here</Link></Typography>
                     </Box>
-                    <Button sx={{fontSize: '14px', mt: 1}}>I forgot my password</Button>
+                    <Button sx={{fontSize: '14px', mt: 1}} onClick={() => navigate('/forgot-password')}>I forgot my password</Button>
                 </Box>
             </Box>
         </BodyWrapper>

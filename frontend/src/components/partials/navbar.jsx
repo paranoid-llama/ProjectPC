@@ -112,6 +112,10 @@ export default function NavBar() {
                 setAlertIds((prev) => [...prev, id]);
                 setLoginArea({open: false})
                 revalidator.revalidate()
+
+                if (location.includes('forgot-password')) {
+                    navigate('/')
+                }
             }
         }
         handleError(backendFunc, false, successFunc, () => {})
@@ -195,7 +199,7 @@ export default function NavBar() {
                             </Box>
                             <Button variant='contained' size='small' sx={{mt: 1.5, py: 0.5}} onClick={finalizeLogin}>Login</Button>
                             <Box sx={{...theme.components.box.fullCenterCol, width: '100%'}}>
-                                <Button sx={{fontSize: '8px', padding: 0.25}}>I forgot my password</Button>
+                                <Button sx={{fontSize: '8px', padding: 0.25}} onClick={() => navigate('/forgot-password')}>I forgot my password</Button>
                                 <Button sx={{fontSize: '8px', padding: 0.25}} onClick={dontHaveAccount}>I don't have an account</Button>
                             </Box>
                         </Box>

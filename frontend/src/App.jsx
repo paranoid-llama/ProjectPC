@@ -57,6 +57,9 @@ import theme from '../utils/styles/globalstyles/theme'
 import WhatAreAprimon from './routes/infopages/whatareaprimon'
 import AboutUs from './routes/infopages/aboutus'
 import ContactUs from './routes/infopages/contactus'
+import PreRouteLogic from './components/partials/auth/preroutelogic'
+import ForgotPassword from './routes/forgotpassword'
+import ResetPassword from './routes/resetpassword'
 
 
 //can add a bit of debounce by adding number parameter in case the event causes performance issues
@@ -131,6 +134,14 @@ function Router() {
         {
           path: '/verify-account',
           element: <VerifyAccount />
+        },
+        {
+          path: '/forgot-password',
+          element: <PreRouteLogic logicType='no-logged-in-user' Component={ForgotPassword}/>
+        },
+        {
+          path: '/reset-password',
+          element: <PreRouteLogic logicType='forgot-password-verify-token' Component={ResetPassword}/>
         },
         {
           path: '/auth',
