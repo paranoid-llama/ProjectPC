@@ -1,4 +1,4 @@
-import { getImgLink } from "../../backend/utils/schemavirtuals/collectionvirtuals.js"
+import { getImgLink } from "../../utils/schemavirtuals/collectionvirtuals.js"
 import { sortByName } from "./sortbyname.mjs"
 import { sortByDexNum } from "./sortbydexnum.mjs"
 
