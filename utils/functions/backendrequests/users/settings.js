@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import handleApiResponse from "../handleapiresponse"
 const backendurl = import.meta.env.VITE_BACKEND_URL
 
@@ -11,18 +10,4 @@ export default async function userSettingsBackendRequest(settingType, newSetting
         },
         body: JSON.stringify({newSettings, miscData})
     }).then(async(data) => {return await handleApiResponse(data)})
-=======
-import handleApiResponse from "../handleapiresponse"
-const backendurl = import.meta.env.VITE_BACKEND_URL
-
-export default async function userSettingsBackendRequest(settingType, newSettings, username, miscData={}) {
-    return await fetch(`${backendurl}/users/${username}/settings/${settingType}`, {
-        method: 'PUT',
-        credentials: 'include',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({newSettings, miscData})
-    }).then(async(data) => {return await handleApiResponse(data)})
->>>>>>> f33309733d8d71e2016f1a91eacbe582e6f51448
 }

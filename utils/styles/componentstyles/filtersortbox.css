@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 @keyframes filter-slide-in {
     from {
         transform: translateZ(0px) translateY(0%);
@@ -51,58 +50,4 @@
 
 .shrink-height {
     animation: 0.5s ease-in 0s 1 shrink-height;
-=======
-@keyframes filter-slide-in {
-    from {
-        transform: translateZ(0px) translateY(0%);
-    }
-    to {
-        transform: translateZ(0px) translateY(-20%);
-    }
-}
-
-@keyframes filter-slide-out {
-    from {
-        transform: translateZ(0px) translateY(-20%);
-    }
-    to {
-        transform: translateZ(0px) translateY(0%);
-    }
-}
-
-@keyframes grow-height {
-    from {
-        height: 0px
-    }
-    to {
-        height: 150px
-    }
-}
-
-@keyframes shrink-height {
-    from {
-        height: 150px
-    }
-    to {
-        height: 0px
-    }
-}
-
-.filter-slide-in {
-    animation: 0.5s ease-out 0s 1 filter-slide-in;
-}
-
-.filter-slide-out {
-    animation: 0.5s ease-in 0s 1 filter-slide-out;
-    animation-fill-mode: forwards
-}
-
-.add-height {
-    animation: 0.5s ease-out 0s 1 grow-height;
-    z-index: -1000
-}
-
-.shrink-height {
-    animation: 0.5s ease-in 0s 1 shrink-height;
->>>>>>> f33309733d8d71e2016f1a91eacbe582e6f51448
 }
