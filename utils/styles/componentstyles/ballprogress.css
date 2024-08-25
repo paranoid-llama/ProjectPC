@@ -1,0 +1,97 @@
+/* clockwise degree direction. 12 o' clock = deg-0, 1 o' clock = deg-30, etc*/
+
+.deg-0 {
+    transform: translateY(-100px)
+}
+
+.deg-22-5{
+    transform: rotate(23.5deg) translateY(-100px) rotate(-23.5deg)
+}
+
+.deg-30 {
+    transform: rotate(31deg) translateY(-100px) rotate(-31deg)
+}
+
+.deg-45 {
+    transform: rotate(46deg) translateY(-100px) rotate(-46deg);
+}
+
+.deg-60 {
+    transform: rotate(61deg) translateY(-100px) rotate(-61deg);
+}
+
+.deg-67-5{
+    transform: rotate(68.5deg) translateY(-100px) rotate(-68.5deg)
+}
+
+.deg-90 {
+    transform: rotate(91deg) translateY(-100px) rotate(-91deg);
+}
+
+.deg-112-5{
+    transform: rotate(113.5deg) translateY(-100px) rotate(-113.5deg)
+}
+
+.deg-120 {
+    transform: rotate(121deg) translateY(-100px) rotate(-121deg);
+}
+
+.deg-135 {
+    transform: rotate(136deg) translateY(-100px) rotate(-136deg);
+}
+
+.deg-150 {
+    transform: rotate(151deg) translateY(-100px) rotate(-151deg);
+}
+
+.deg-157-5{
+    transform: rotate(158.5deg) translateY(-100px) rotate(-158.5deg)
+}
+
+.deg-180 {
+    transform: rotate(181deg) translateY(-100px) rotate(-181deg);
+}
+
+.deg-202-5{
+    transform: rotate(203.5deg) translateY(-100px) rotate(-203.5deg)
+}
+
+.deg-210 {
+    transform: rotate(211deg) translateY(-100px) rotate(-211deg);
+}
+
+.deg-225 {
+    transform :rotate(226deg) translateY(-100px) rotate(-226deg);
+}
+
+.deg-240 {
+    transform: rotate(241deg) translateY(-100px) rotate(-241deg);
+}
+
+.deg-247-5{
+    transform: rotate(248.5deg) translateY(-100px) rotate(-248.5deg)
+}
+
+.deg-270 {
+    transform: rotate(271deg) translateY(-100px) rotate(-271deg);
+}
+
+.deg-292-5{
+    transform: rotate(293.5deg) translateY(-100px) rotate(-293.5deg)
+}
+
+.deg-300 {
+    transform: rotate(301deg) translateY(-100px) rotate(-301deg);
+}
+
+.deg-315 {
+    transform: rotate(316deg) translateY(-100px) rotate(-316deg);
+}
+
+.deg-330 {
+    transform: rotate(331deg) translateY(-100px) rotate(-331deg);
+}
+
+.deg-337-5{
+    transform: rotate(338.5deg) translateY(-100px) rotate(-338.5deg)
+}

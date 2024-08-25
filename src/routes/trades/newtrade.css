@@ -1,0 +1,89 @@
+@keyframes grow-trade-step-1 {
+    0% {
+        min-height: 0px
+    }
+    100% {
+        min-height: 150px
+    }
+}
+
+@keyframes grow-trade-step-2 {
+    0% {
+        min-height: 0px
+    }
+    100% {
+        min-height: 1100px
+    }
+}
+
+@keyframes grow-trade-step-3 {
+    0% {
+        min-height: 0px
+    }
+    100% {
+        min-height: 400px
+    }
+}
+
+@keyframes shrink-trade-step-1 {
+    0% {
+        min-height: 150px
+    }
+    100% {
+        min-height: 0px
+    }
+}
+
+@keyframes shrink-trade-step-2 {
+    0% {
+        min-height: 1100px
+    }
+    100% {
+        min-height: 0px
+    }
+}
+
+@keyframes shrink-trade-step-3 {
+    0% {
+        min-height: 400px
+    }
+    100% {
+        min-height: 0px
+    }
+}
+
+.grow-trade-step-1 {
+    animation-name: grow-trade-step-1;
+    animation-duration: 0.5s;
+    animation-fill-mode: forwards;
+}
+
+.grow-trade-step-2 {
+    animation-name: grow-trade-step-2;
+    animation-duration: 0.5s;
+    animation-fill-mode: forwards;
+}
+
+.grow-trade-step-3 {
+    animation-name: grow-trade-step-3;
+    animation-duration: 0.5s;
+    animation-fill-mode: forwards;
+}
+
+.shrink-trade-step-1 {
+    animation-name: shrink-trade-step-1;
+    animation-duration: 0.5s;
+    animation-fill-mode: forwards;
+}
+
+.shrink-trade-step-2 {
+    animation-name: shrink-trade-step-2;
+    animation-duration: 0.5s;
+    animation-fill-mode: forwards;
+}
+
+.shrink-trade-step-3 {
+    animation-name: shrink-trade-step-3;
+    animation-duration: 0.5s;
+    animation-fill-mode: forwards;
+}
