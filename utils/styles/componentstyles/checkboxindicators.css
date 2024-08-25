@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 .css-3x8ruy-MuiButtonBase-root-MuiToggleButton-root.Mui-selected {
     color: white;
     background-color: none;
@@ -16,4 +17,24 @@
 .Mui-selected {
     color: white;
     background-color: none;
+=======
+.css-3x8ruy-MuiButtonBase-root-MuiToggleButton-root.Mui-selected {
+    color: white;
+    background-color: none;
+}
+
+.css-3lfpkh-MuiButtonBase-root-MuiToggleButton-root.Mui-selected {
+    color: white;
+    background-color: none;
+}
+
+.css-8pdijt-MuiButtonBase-root-MuiToggleButton-root.Mui-selected {
+    color: white;
+    background-color: none;
+}
+
+.Mui-selected {
+    color: white;
+    background-color: none;
+>>>>>>> f33309733d8d71e2016f1a91eacbe582e6f51448
 }
