@@ -1,7 +1,8 @@
 import handleApiResponse from "../../handleapiresponse";
+const backendurl = import.meta.env.VITE_BACKEND_URL
 
 export default async function generateForgotPwTokenForBackend(email) {
-    return await fetch(`http://localhost:3000/api/forgot-password`, {
+    return await fetch(`${backendurl}/api/forgot-password`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

@@ -3,9 +3,10 @@ const intServerError = {
     message: "Our server has encountered an unexpected error!",
     status: 500
 }
+const backendurl = import.meta.env.VITE_BACKEND_URL
 
 export default async function getSession() {
-    const userData = await fetch('http://localhost:3000/api/session', {
+    const userData = await fetch(`${backendurl}/api/session`, {
         method: 'GET',
         credentials: 'include'
     }).then(async(res) => {

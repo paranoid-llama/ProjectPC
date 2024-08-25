@@ -80,21 +80,21 @@ export default function Search({}) {
             debounceSearchFunction(searchData.query, newPage)
         })
     }
-    const seedDB = () => {
-        fetch(`http://localhost:3000/collections/new/seeddb`, {
-            method: 'POST',
-            credentials: 'same-origin',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-        })
-    }
+    // const seedDB = () => {
+    //     fetch(`http://localhost:3000/collections/new/seeddb`, {
+    //         method: 'POST',
+    //         credentials: 'same-origin',
+    //         headers: {
+    //             'Content-Type': 'application/json'
+    //         },
+    //     })
+    // }
 
     // console.log(searchData)
 
     return (
         <BodyWithBanner bodySx={{height: '100%', mt: 2, mb: 0, ...theme.components.box.fullCenterCol, justifyContent: 'start', position: 'relative'}} bannerSx={{backgroundColor: theme.palette.color1.light, color: theme.palette.color1.contrastTextLight}} text='Search'>
-            <Button onClick={seedDB} sx={{position: 'absolute', right: '10px'}} size='large'>Seed Database</Button>
+            {/* <Button onClick={seedDB} sx={{position: 'absolute', right: '10px'}} size='large'>Seed Database</Button> */}
             <ToggleButtonGroup exclusive sx={{mt: 0.5, mb: 0.5, width: '50%', ...groupTheme}} size='small' value={searchData.type} onChange={(e, newVal) => changeSearchType(newVal)}>
                 <ToggleButton value='all' sx={{width: '30%', fontSize: '12px', padding: 0, ...buttonTheme}}>All</ToggleButton>
                 <ToggleButton value='users' sx={{width: '35%', fontSize: '12px', ...buttonTheme}}>Users</ToggleButton>

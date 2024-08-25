@@ -1,8 +1,9 @@
 import handleApiResponse from "./handleapiresponse"
+const backendurl = import.meta.env.VITE_BACKEND_URL
 
 const searchDB = async(searchType, query, pageNum=undefined) => {
     const skipModifier = pageNum === undefined ? '' : `&skip=${(pageNum-1)*10}`
-    const searchResult = await fetch(`http://localhost:3000/search/${searchType}?query=${query}${skipModifier}`, {
+    const searchResult = await fetch(`${backendurl}/search/${searchType}?query=${query}${skipModifier}`, {
         method: "GET",
         credentials: "include",
         headers: {

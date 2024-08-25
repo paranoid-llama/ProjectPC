@@ -1,7 +1,8 @@
 import handleApiResponse from "../handleapiresponse"
+const backendurl = import.meta.env.VITE_BACKEND_URL
 
 export const getOfferData = async(tradeId, offerIdx) => {
-    return await fetch(`http://localhost:3000/trades/${tradeId}/offer/${offerIdx}`, {
+    return await fetch(`${backendurl}/trades/${tradeId}/offer/${offerIdx}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json'

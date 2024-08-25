@@ -1,5 +1,7 @@
+const backendurl = import.meta.env.VITE_BACKEND_URL
+
 export default async function tradeLoader({params}, getFullCollectionData=false) {
-    const tradeData = await fetch(`http://localhost:3000/trades/${params.id}?getFullCollectionData=${getFullCollectionData}`, {
+    const tradeData = await fetch(`${backendurl}/trades/${params.id}?getFullCollectionData=${getFullCollectionData}`, {
         method: 'GET',
         headers: {
             "Content-Type": "application/json",

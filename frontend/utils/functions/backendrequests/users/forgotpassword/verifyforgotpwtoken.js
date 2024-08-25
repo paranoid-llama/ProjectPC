@@ -1,7 +1,8 @@
 import handleApiResponse from "../../handleapiresponse";
+const backendurl = import.meta.env.VITE_BACKEND_URL
 
 export default async function verifyForgotPwTokenForBackend(tokenQuery) {
-    return await fetch(`http://localhost:3000/api/reset-password${tokenQuery}`, {
+    return await fetch(`${backendurl}/api/reset-password${tokenQuery}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json'

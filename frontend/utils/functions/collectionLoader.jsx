@@ -1,5 +1,7 @@
+const backendurl = import.meta.env.VITE_BACKEND_URL
+
 export default async function collectionLoader({params}, dispatch, editPage, initializeState, initList, initCol, initOnhand, initOptions) {
-    const collection = await fetch(`http://localhost:3000/collections/${params.id}`)
+    const collection = await fetch(`${backendurl}/collections/${params.id}`)
                             .then(async(res) => {
                                 const data = await res.json()
                                 if (res.ok) {return data} 

@@ -90,7 +90,7 @@ export default function Filter({listType, collection, isEditMode}) {
                             size='small' 
                             value={genNum}
                             selected={genFilters.includes(genNum)}
-                            sx={{borderRadius: '5px', borderWidth: '2px', paddingX: '15px', paddingY: '3px', ...genFilterButtonPadding}}
+                            sx={{borderRadius: '5px', borderWidth: '2px', paddingX: '15px', paddingY: '3px', ':hover': {cursor: 'pointer', opacity: '0.5', backgroundColor: theme.palette.color3.main}, '&.Mui-selected': {':hover': {cursor: 'pointer', opacity: '0.5', backgroundColor: theme.palette.color3.main}}, ...genFilterButtonPadding}}
                             onClick={(e) => handleFilterChange(e, genFilters)}
                         >
                             {gen}
@@ -111,7 +111,7 @@ export default function Filter({listType, collection, isEditMode}) {
                             size='small' 
                             value={ball}
                             selected={ballFilters.includes(ball)}
-                            sx={{borderRadius: '25px', borderWidth: '1px', padding: 0, marginLeft: '1px', zIndex: 200, ...ballFilterButtonPadding}}
+                            sx={{borderRadius: '25px', borderWidth: '1px', padding: 0, marginLeft: '1px', zIndex: 200, ':hover': {cursor: 'pointer', opacity: '0.5', backgroundColor: theme.palette.color3.main}, '&.Mui-selected': {':hover': {cursor: 'pointer', opacity: '0.5', backgroundColor: theme.palette.color3.main}}, ...ballFilterButtonPadding}}
                             onClick={(e) => handleFilterChange(e, ballFilters)}
                         >
                             <ImgData type='ball' linkKey={ball} customValue={ball}/>
@@ -197,7 +197,7 @@ export default function Filter({listType, collection, isEditMode}) {
                                 size='small' 
                                 value='highlyWanted' 
                                 selected={miscFilters.includes('highlyWanted')}
-                                sx={{borderRadius: '5px', borderWidth: '1px', fontSize: '13px', ...hwButPad}}
+                                sx={{borderRadius: '5px', borderWidth: '1px', fontSize: '13px', ':hover': {cursor: 'pointer', opacity: '0.5', backgroundColor: theme.palette.color3.main}, '&.Mui-selected': {':hover': {cursor: 'pointer', opacity: '0.5', backgroundColor: theme.palette.color3.main}}, ...hwButPad}}
                                 onClick={(e) => handleFilterChange(e, miscFilters)}
                             >
                                 Highly Wanted
@@ -208,7 +208,7 @@ export default function Filter({listType, collection, isEditMode}) {
                                 size='small'
                                 value='pending' 
                                 selected={miscFilters.includes('pending')}
-                                sx={{borderRadius: '5px', borderWidth: '1px', ...pendButPad}}
+                                sx={{borderRadius: '5px', borderWidth: '1px', ':hover': {cursor: 'pointer', opacity: '0.5', backgroundColor: theme.palette.color3.main}, '&.Mui-selected': {':hover': {cursor: 'pointer', opacity: '0.5', backgroundColor: theme.palette.color3.main}}, ...pendButPad}}
                                 onClick={(e) => handleFilterChange(e, miscFilters)}
                             >
                                 Pending

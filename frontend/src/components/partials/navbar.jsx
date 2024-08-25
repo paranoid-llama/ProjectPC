@@ -4,6 +4,7 @@ import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
+import {Tooltip} from "@mui/material";
 import ArrowBack from "@mui/icons-material/ArrowBack";
 import { useTheme, Button } from "@mui/material";
 import ControlledTextInput from "../functionalcomponents/controlledtextinput";
@@ -300,9 +301,12 @@ export default function NavBar() {
                     {icons.map((i, idx) => {
                         const isLogin = i === 'login'
                         const isUserProfile = i === 'user'
+                        const doubleWord = i === 'homeicon' || i === 'createcollection'
+                        const display = !doubleWord ? i[0].toUpperCase() + i.slice(1, i.length) : i === 'homeicon' ? 'Home' : 'New Collection'
                         return (
                             <Fragment key={i}>
                                 {(!isLogin && !isUserProfile) ?
+                                <Tooltip title={display} arrow>
                                 <Link 
                                     href={iconLinks[idx]} 
                                     sx={{mr: 2, display: {sm:'flex'}, justifyContent: {xs: 'center'}, width: '50px'}}
@@ -315,7 +319,7 @@ export default function NavBar() {
                                     >
                                         <img src={`https://res.cloudinary.com/duaf1qylo/image/upload/icons/${i}white.png`} height='20px' width='20px'/>
                                     </IconButton>
-                                </Link> : 
+                                </Link></Tooltip> : 
                                 isUserProfile ? 
                                 <IconButton
                                     size="small"
@@ -331,6 +335,7 @@ export default function NavBar() {
                                         <Typography sx={{fontSize: '11px', fontWeight: 700, color: 'white'}}>{unreadNotificationsAmount}</Typography>
                                     </Box>}
                                 </IconButton> : 
+                                <Tooltip title={display} arrow>
                                 <IconButton
                                     size="small"
                                     sx={{mr: 2, display: {sm:'flex'}, justifyContent: {xs: 'center'}, width: '50px',}}
@@ -340,7 +345,7 @@ export default function NavBar() {
                                     onClick={toggleLoginArea}
                                 >
                                     <img src={`https://res.cloudinary.com/duaf1qylo/image/upload/icons/${i}white.png`} height='20px' width= '20px'/>
-                                </IconButton>
+                                </IconButton></Tooltip>
                                 }
                             </Fragment>
                         )

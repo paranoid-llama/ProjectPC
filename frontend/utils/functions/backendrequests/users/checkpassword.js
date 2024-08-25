@@ -1,5 +1,7 @@
+const backendurl = import.meta.env.VITE_BACKEND_URL
+
 export default async function checkPasswordRequest(username, inputPassword) {
-    return await fetch(`http://localhost:3000/users/${username}/check-password`, {
+    return await fetch(`${backendurl}/users/${username}/check-password`, {
         method: 'POST',
         credentials: "include",
         headers: {

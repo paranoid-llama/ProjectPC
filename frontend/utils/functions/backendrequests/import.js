@@ -1,8 +1,9 @@
 import handleApiResponse from "./handleapiresponse"
+const backendurl = import.meta.env.VITE_BACKEND_URL
 
 //frontend needs data back to display the data
 const importCollection = async(spreadsheetId, apiRequestQueries, collectionTypeValue) => {
-    const collectionData = await fetch(`http://localhost:3000/collections/new/import`, {
+    const collectionData = await fetch(`${backendurl}/collections/new/import`, {
         method: 'POST',
         credentials: 'include',
         headers: {

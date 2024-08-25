@@ -1,7 +1,8 @@
 import handleApiResponse from "../handleapiresponse";
+const backendurl = import.meta.env.VITE_BACKEND_URL
 
 export default async function changePassword(username, currPasswordInput, newPassword) {
-    return await fetch(`http://localhost:3000/users/${username}`, {
+    return await fetch(`${backendurl}/users/${username}`, {
         method: 'PUT',
         credentials: 'include',
         headers: {

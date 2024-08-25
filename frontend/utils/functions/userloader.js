@@ -1,5 +1,7 @@
+const backendurl = import.meta.env.VITE_BACKEND_URL
+
 export default async function userLoader({params}) {
-    const user = fetch(`http://localhost:3000/users/${params.username}`)
+    const user = fetch(`${backendurl}/users/${params.username}`)
                             .then(async(res) => {
                                 const data = await res.json()
                                 if (res.ok) {return data}

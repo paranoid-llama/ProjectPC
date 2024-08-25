@@ -128,6 +128,7 @@ export default function ShowOnHandList({onhandList, collectionID, styles, eggMov
                     backgroundColor: theme.palette.color3.main,
                     borderRadius: '5px'
                 },
+                overflowX: 'hidden'
             }}
         />
         )),

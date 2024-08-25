@@ -2,8 +2,7 @@ import { regionalFormRegions, regionalFormMons, altFormNames, threeLetterShorten
 import { findRegionByDexNum } from "../../../../common/infoconstants/miscconstants.mjs"
 
 const specificNameCases = ['Nidoran♀', 'Nidoran♂', 'Shellos (East)', 'Shellos (West)', 'Indeedee (Male)', 'Indeedee (Female)', 'Rockruff (Dusk)']
-const Male = '♂'
-const Female = '♀'
+
 
 export default function getNameDisplay(nameDisplaySettings, pokemonName, dexNum) {
     if (nameDisplaySettings === undefined) {
@@ -153,9 +152,12 @@ const getAlcremieNameFormat = (format, pokemonName) => {
 }
 
 const getGenderedFormat = (format, species, gender) => {
-    if (format === 'dash-symbol-out') {return `${species}-${eval(gender)}`}
-    if (format === 'dash-symbol-in') {return `${eval(gender)}-${species}`}
-    if (format === 'brackets-symbol-out') {return `${species} (${eval(gender)})`}
-    if (format === 'brackets-symbol-in') {return `(${eval(gender)}) ${species}`}
-    if (format === 'default-symbol') {return `${species}${eval(gender)}`}
+    const Male = '♂'
+    const Female = '♀'
+    const symbolVar = gender === 'Male' ? Male : Female
+    if (format === 'dash-symbol-out') {return `${species}-${symbolVar}`}
+    if (format === 'dash-symbol-in') {return `${symbolVar}-${species}`}
+    if (format === 'brackets-symbol-out') {return `${species} (${symbolVar})`}
+    if (format === 'brackets-symbol-in') {return `(${symbolVar}) ${species}`}
+    if (format === 'default-symbol') {return `${species}${symbolVar}`}
 }

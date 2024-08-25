@@ -1,7 +1,8 @@
 import handleApiResponse from "./handleapiresponse"
+const backendurl = import.meta.env.VITE_BACKEND_URL
 
 export default async function deleteCollectionRequest(collectionID) {
-    const res = await fetch(`http://localhost:3000/collections/${collectionID}`, {
+    const res = await fetch(`${backendurl}/collections/${collectionID}`, {
         method: 'DELETE',
         credentials: 'include',
         headers: {

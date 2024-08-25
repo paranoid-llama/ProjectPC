@@ -1,4 +1,5 @@
 import handleApiResponse from "../handleapiresponse"
+const backendurl = import.meta.env.VITE_BACKEND_URL
 
 export const newTradeBackendFormatting = (pokemonOffer, itemOffer, pokemonReceiving, itemReceiving, offerValue, receivingValue, traderGen, ownerGen) => {
     const formattedGen = traderGen === ownerGen ? ownerGen : `${traderGen}-${ownerGen}`
@@ -48,7 +49,7 @@ export const newTradeBackendFormatting = (pokemonOffer, itemOffer, pokemonReceiv
 }
 
 export const newTradeBackend = async(offer, receiving, offerMessage, traderId, ownerId, traderUsername, ownerUsername, gen, traderColId) => {
-    return await fetch(`http://localhost:3000/trades/new`, {
+    return await fetch(`${backendurl}/trades/new`, {
         method: 'POST',
         credentials: 'include',
         headers: {

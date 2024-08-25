@@ -60,6 +60,7 @@ import ContactUs from './routes/infopages/contactus'
 import PreRouteLogic from './components/partials/auth/preroutelogic'
 import ForgotPassword from './routes/forgotpassword'
 import ResetPassword from './routes/resetpassword'
+import Announcements from './routes/announcements'
 
 
 //can add a bit of debounce by adding number parameter in case the event causes performance issues
@@ -142,6 +143,10 @@ function Router() {
         {
           path: '/reset-password',
           element: <PreRouteLogic logicType='forgot-password-verify-token' Component={ResetPassword}/>
+        },
+        {
+          path: '/announcements',
+          element: <Announcements />
         },
         {
           path: '/auth',

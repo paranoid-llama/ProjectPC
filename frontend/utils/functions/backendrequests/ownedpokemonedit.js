@@ -1,8 +1,9 @@
 import handleApiResponse from "./handleapiresponse"
+const backendurl = import.meta.env.VITE_BACKEND_URL
 
 const ownedPokemonEdit = async(gen, newOwnedCollectionList, collectionId, getPokemonInfo=false, newPokemon=[], ballScope=[], newCollectingBalls=[]) => {
     if (getPokemonInfo) {
-        const addedPokemonReq = await fetch(`http://localhost:3000/collections/${collectionId}`, {
+        const addedPokemonReq = await fetch(`${backendurl}/collections/${collectionId}`, {
             method: 'PUT',
             credentials: 'include',
             headers: {
@@ -13,7 +14,7 @@ const ownedPokemonEdit = async(gen, newOwnedCollectionList, collectionId, getPok
         return addedPokemonReq
     } else {
         if (newCollectingBalls.length !== 0) { 
-            const res = await fetch(`http://localhost:3000/collections/${collectionId}`, {
+            const res = await fetch(`${backendurl}/collections/${collectionId}`, {
                 method: 'PUT',
                 credentials: 'include',
                 headers: {
@@ -24,7 +25,7 @@ const ownedPokemonEdit = async(gen, newOwnedCollectionList, collectionId, getPok
 
             return res
         } else {
-            const res = await fetch(`http://localhost:3000/collections/${collectionId}`, {
+            const res = await fetch(`${backendurl}/collections/${collectionId}`, {
                 method: 'PUT',
                 credentials: 'include',
                 headers: {

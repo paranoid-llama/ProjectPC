@@ -12,16 +12,16 @@ import { nameSettingRowContent, nameSettingTableHeader, nameSettingVirtuosoTable
 import getNameDisplay from '../../../../../utils/functions/display/getnamedisplay'
 
 const originRegionalFormPokemon = alolanFormMons.concat(galarianFormMons, hisuianFormMons, paldeanFormMons)
-const regionalFormPokemon = originRegionalFormPokemon.map((poke, idx) => {
-    const isMultipleRegionalFormMon = multipleRegionalFormMons.includes(poke) //currently only applies to Meowth
-    if (isMultipleRegionalFormMon && (originRegionalFormPokemon.indexOf(poke) !== idx)) {
-        const latestRegionStep = regionIdentifiers.map((regionSuffix, idx) => eval(`${regionSuffix.toLowerCase()}FormMons`).includes(poke))
-        const latestRegion = regionIdentifiers.filter((region, idx) => latestRegionStep[idx] && latestRegionStep.indexOf(true) !== idx)[0]
-        return `${latestRegion} ${poke}`
-    }
-    const region = regionIdentifiers.filter(region => eval(`${region.toLowerCase()}FormMons`).includes(poke))[0]
-    return `${region} ${poke}`
-})
+// const regionalFormPokemon = originRegionalFormPokemon.map((poke, idx) => {
+//     const isMultipleRegionalFormMon = multipleRegionalFormMons.includes(poke) //currently only applies to Meowth
+//     if (isMultipleRegionalFormMon && (originRegionalFormPokemon.indexOf(poke) !== idx)) {
+//         const latestRegionStep = regionIdentifiers.map((regionSuffix, idx) => eval(`${regionSuffix.toLowerCase()}FormMons`).includes(poke))
+//         const latestRegion = regionIdentifiers.filter((region, idx) => latestRegionStep[idx] && latestRegionStep.indexOf(true) !== idx)[0]
+//         return `${latestRegion} ${poke}`
+//     }
+//     const region = regionIdentifiers.filter(region => eval(`${region.toLowerCase()}FormMons`).includes(poke))[0]
+//     return `${region} ${poke}`
+// })
 
 const genderAltFormOpts = [
     {value: 'default-symbol', display: 'Gender Symbol after Name'},

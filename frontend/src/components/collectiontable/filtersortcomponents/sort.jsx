@@ -1,10 +1,11 @@
-import { Box, Typography, styled, ToggleButton, ToggleButtonGroup} from "@mui/material"
+import { Box, Typography, styled, ToggleButton, ToggleButtonGroup, useTheme} from "@mui/material"
 import { useSelector, useDispatch } from 'react-redux'
 import { setSortKey } from "../../../app/slices/listdisplay"
 import MuiToggleButton from '@mui/material/ToggleButton'
 
 export default function Sort({listType}) {
     const dispatch = useDispatch()
+    const theme = useTheme()
     const ToggleButton = styled(MuiToggleButton)({
         '&.MuiToggleButton-sizeSmall': {
             color: 'white',
@@ -33,13 +34,13 @@ export default function Sort({listType}) {
                 <Box sx={{width: '65%', display: 'flex', flexDirection: 'column', marginLeft: '15px'}}>
                     <ToggleButtonGroup size='small' orientation='vertical' value={sortKey} onChange={(e) => handleChange(e)} exclusive={true}>
                         <ToggleButton 
-                            sx={{padding: '0px', width: '100%'}}
+                            sx={{padding: '0px', width: '100%', ':hover': {cursor: 'pointer', opacity: '0.5', backgroundColor: theme.palette.color3.main}, '&.Mui-selected': {':hover': {cursor: 'pointer', opacity: '0.5', backgroundColor: theme.palette.color3.main}}}}
                             value='NatDexNumL2H'
                         >
                             Lowest to Highest
                         </ToggleButton>
                         <ToggleButton 
-                            sx={{padding: '0px', width: '100%'}}
+                            sx={{padding: '0px', width: '100%', ':hover': {cursor: 'pointer', opacity: '0.5', backgroundColor: theme.palette.color3.main}, '&.Mui-selected': {':hover': {cursor: 'pointer', opacity: '0.5', backgroundColor: theme.palette.color3.main}}}}
                             value='NatDexNumH2L'
                         >
                             Highest to Lowest
@@ -52,13 +53,13 @@ export default function Sort({listType}) {
                 <Box sx={{width: '65%', display: 'flex', flexDirection: 'column', alignItems: 'start', marginLeft: '25px'}}>
                     <ToggleButtonGroup size='small' orientation='vertical' value={sortKey} sx={{width: '40%'}} onChange={(e) => handleChange(e)} exclusive={true}>
                         <ToggleButton 
-                            sx={{padding: '0px', width: '100%'}}
+                            sx={{padding: '0px', width: '100%', ':hover': {cursor: 'pointer', opacity: '0.5', backgroundColor: theme.palette.color3.main}, '&.Mui-selected': {':hover': {cursor: 'pointer', opacity: '0.5', backgroundColor: theme.palette.color3.main}}}}
                             value='A2Z'
                         >
                             A-Z
                         </ToggleButton>
                         <ToggleButton 
-                            sx={{padding: '0px', width: '100%'}}
+                            sx={{padding: '0px', width: '100%', ':hover': {cursor: 'pointer', opacity: '0.5', backgroundColor: theme.palette.color3.main}, '&.Mui-selected': {':hover': {cursor: 'pointer', opacity: '0.5', backgroundColor: theme.palette.color3.main}}}}
                             value='Z2A'
                         >
                             Z-A

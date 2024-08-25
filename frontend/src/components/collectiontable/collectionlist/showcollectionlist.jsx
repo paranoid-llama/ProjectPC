@@ -163,6 +163,7 @@ export default function ShowCollectionList({collection, styles, isEditMode, loca
                         backgroundColor: theme.palette.color3.main,
                         borderRadius: '5px'
                     },
+                    overflowX: 'hidden'
                 }}
             />
         )),

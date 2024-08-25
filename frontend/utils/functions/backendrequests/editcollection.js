@@ -1,4 +1,5 @@
 import handleApiResponse from "./handleapiresponse"
+const backendurl = import.meta.env.VITE_BACKEND_URL
 
 const getCollectionEditData = (key, value, pokename, ballname, otherFieldsData) => {
     return {pokename, ballname, [key]: value, otherFieldsData, editType: 'singleValue'}
@@ -10,7 +11,7 @@ const getOnHandEditData = (key, value, id, otherFieldsData) => {
 
 const usePutRequest = async(key, value, identifiers, listType, collectionID, userID, otherFieldsData=undefined) => {
     const dataParser = listType === 'collection' ? getCollectionEditData : getOnHandEditData
-    const res = await fetch(`http://localhost:3000/collections/${collectionID}`, {
+    const res = await fetch(`${backendurl}/collections/${collectionID}`, {
         method: 'PUT',
         credentials: 'include',
         headers: {
@@ -23,7 +24,7 @@ const usePutRequest = async(key, value, identifiers, listType, collectionID, use
 }
 
 const useTagRequest = async(tag, activeTag, identifiers, collectionID, userID) => {
-    const res = await fetch(`http://localhost:3000/collections/${collectionID}`, {
+    const res = await fetch(`${backendurl}/collections/${collectionID}`, {
         method: 'PUT',
         credentials: 'include',
         headers: {
@@ -36,7 +37,7 @@ const useTagRequest = async(tag, activeTag, identifiers, collectionID, userID) =
 }
 
 const bulkEditOnHandInfo = async(onHandEdit, pokemonID, collectionID, userID) => {
-    const res = await fetch(`http://localhost:3000/collections/${collectionID}`, {
+    const res = await fetch(`${backendurl}/collections/${collectionID}`, {
         method: 'PUT',
         credentials: 'include',
         headers: {

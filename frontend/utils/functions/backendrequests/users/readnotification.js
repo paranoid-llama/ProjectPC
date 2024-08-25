@@ -1,8 +1,9 @@
 import handleApiResponse from "../handleapiresponse"
+const backendurl = import.meta.env.VITE_BACKEND_URL
 
 export default async function readNotification(username, id, isTradeId=false) {   
     const idBackend = isTradeId ? {tradeId: id} : {noteId: id}
-    return await fetch(`http://localhost:3000/users/${username}/read-notification`, {
+    return await fetch(`${backendurl}/users/${username}/read-notification`, {
         method: 'PUT',
         credentials: 'include',
         headers: {

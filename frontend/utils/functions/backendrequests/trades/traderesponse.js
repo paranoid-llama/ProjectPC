@@ -1,7 +1,8 @@
 import handleApiResponse from "../handleapiresponse"
+const backendurl = import.meta.env.VITE_BACKEND_URL
 
 export const acceptTradeOffer = async(tradeId, otherUserId, offerColId, receivingColId, username) => {
-    return await fetch(`http://localhost:3000/trades/${tradeId}`, {
+    return await fetch(`${backendurl}/trades/${tradeId}`, {
         method: 'PUT',
         credentials: 'include',
         headers: {
@@ -12,7 +13,7 @@ export const acceptTradeOffer = async(tradeId, otherUserId, offerColId, receivin
 }
 
 export const rejectTradeOffer = async(tradeId, otherUserId, offerColId, username) => {
-    return await fetch(`http://localhost:3000/trades/${tradeId}`, {
+    return await fetch(`${backendurl}/trades/${tradeId}`, {
         method: 'PUT',
         credentials: 'include',
         headers: {
@@ -23,7 +24,7 @@ export const rejectTradeOffer = async(tradeId, otherUserId, offerColId, username
 }
 
 export const counterTradeOffer = async(tradeId, otherUserId, offerColId, receivingColId, counterOfferData, username) => {
-    return await fetch(`http://localhost:3000/trades/${tradeId}`, {
+    return await fetch(`${backendurl}/trades/${tradeId}`, {
         method: 'PUT',
         credentials: 'include',
         headers: {
@@ -34,7 +35,7 @@ export const counterTradeOffer = async(tradeId, otherUserId, offerColId, receivi
 }
 
 export const cancelTrade = async(tradeId, otherUserId, offerColId, receivingColId, username) => {
-    return await fetch(`http://localhost:3000/trades/${tradeId}`, {
+    return await fetch(`${backendurl}/trades/${tradeId}`, {
         method: 'PUT',
         credentials: 'include',
         headers: {
@@ -45,7 +46,7 @@ export const cancelTrade = async(tradeId, otherUserId, offerColId, receivingColI
 }
 
 export const toggleMarkedAsComplete = async(tradeId, otherUserId, offerColId, receivingColId, username) => {
-    return await fetch(`http://localhost:3000/trades/${tradeId}`, {
+    return await fetch(`${backendurl}/trades/${tradeId}`, {
         method: 'PUT',
         credentials: 'include',
         headers: {

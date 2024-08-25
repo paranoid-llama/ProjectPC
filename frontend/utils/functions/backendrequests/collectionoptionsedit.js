@@ -1,4 +1,5 @@
 import handleApiResponse from "./handleapiresponse"
+const backendurl = import.meta.env.VITE_BACKEND_URL
 
 const backendChangeOptions = async(optionType, accompanyingData, collectionId) => {
     const changingSortingOption = optionType === 'sort'
@@ -9,7 +10,7 @@ const backendChangeOptions = async(optionType, accompanyingData, collectionId) =
     const changingGlobalDefault = optionType === 'globalDefault'
     if (changingSortingOption) {
         const {listType, data, sortedList} = accompanyingData
-        const res = await fetch(`http://localhost:3000/collections/${collectionId}`, {
+        const res = await fetch(`${backendurl}/collections/${collectionId}`, {
             method: 'PUT',
             credentials: 'include',
             headers: {
@@ -21,7 +22,7 @@ const backendChangeOptions = async(optionType, accompanyingData, collectionId) =
         return res
     } else if (changingRate) {
         const {newRates} = accompanyingData
-        const res = await fetch(`http://localhost:3000/collections/${collectionId}`, {
+        const res = await fetch(`${backendurl}/collections/${collectionId}`, {
             method: 'PUT',
             credentials: 'include',
             headers: {
@@ -33,7 +34,7 @@ const backendChangeOptions = async(optionType, accompanyingData, collectionId) =
         return res
     } else if (changingPreference) {
         const {newPreferences} = accompanyingData
-        const res = await fetch(`http://localhost:3000/collections/${collectionId}`, {
+        const res = await fetch(`${backendurl}/collections/${collectionId}`, {
             method: 'PUT',
             credentials: 'include',
             headers: {
@@ -45,7 +46,7 @@ const backendChangeOptions = async(optionType, accompanyingData, collectionId) =
         return res
     } else if (changingItems) {
         const {lfItems, ftItems} = accompanyingData
-        const res = await fetch(`http://localhost:3000/collections/${collectionId}`, {
+        const res = await fetch(`${backendurl}/collections/${collectionId}`, {
             method: 'PUT',
             credentials: 'include',
             headers: {
@@ -57,7 +58,7 @@ const backendChangeOptions = async(optionType, accompanyingData, collectionId) =
         return res
     } else if (changingCollectionName) {
         const {name, globalDefault} = accompanyingData
-        const res = await fetch(`http://localhost:3000/collections/${collectionId}`, {
+        const res = await fetch(`${backendurl}/collections/${collectionId}`, {
             method: 'PUT',
             credentials: 'include',
             headers: {
@@ -69,7 +70,7 @@ const backendChangeOptions = async(optionType, accompanyingData, collectionId) =
         return res
     } else if (changingGlobalDefault) {
         const {globalDefault} = accompanyingData
-        const res = await fetch(`http://localhost:3000/collections/${collectionId}`, {
+        const res = await fetch(`${backendurl}/collections/${collectionId}`, {
             method: 'PUT',
             credentials: 'include',
             headers: {
