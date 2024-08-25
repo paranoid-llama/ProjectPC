@@ -1,5 +1,5 @@
 import Collection from '../../../models/collections.js'
-import { sortOnHandList } from '../../../../common/sortingfunctions/onhandsorting.mjs'
+import { sortOnHandList } from '../../../common/sortingfunctions/onhandsorting.mjs'
 
 export default async function bulkEdit(req, res) {
     const {bulkEdit, idOfPokemon, onhandPokemon} = req.body

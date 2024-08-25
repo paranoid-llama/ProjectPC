@@ -1,5 +1,5 @@
-import { regionalFormRegions, regionalFormMons, altFormNames, threeLetterShorten, genderAltFormMons } from "../../../../common/infoconstants/pokemonconstants.mjs"
-import { findRegionByDexNum } from "../../../../common/infoconstants/miscconstants.mjs"
+import { regionalFormRegions, regionalFormMons, altFormNames, threeLetterShorten, genderAltFormMons } from "../../../common/infoconstants/pokemonconstants.mjs"
+import { findRegionByDexNum } from "../../../common/infoconstants/miscconstants.mjs"
 
 const specificNameCases = ['Nidoran♀', 'Nidoran♂', 'Shellos (East)', 'Shellos (West)', 'Indeedee (Male)', 'Indeedee (Female)', 'Rockruff (Dusk)']
 

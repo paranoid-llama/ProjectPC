@@ -9,7 +9,7 @@ import RateSelection from '../aprimon/rateselection';
 import SortingSelection from '../aprimon/sortingselection';
 import MiscSelection from '../aprimon/miscselection';
 import Header from '../../../../titlecomponents/subcomponents/header';
-import { getPossibleItems, apriballLiterals, getBallsInGen } from '../../../../../../../common/infoconstants/miscconstants.mjs';
+import { getPossibleItems, apriballLiterals, getBallsInGen } from '../../../../../../common/infoconstants/miscconstants.mjs';
 
 export default function OptionSelection({collectionType, formOptionsData, collectionGen, goBackStep, cssClass, customSort, userData, handleChange}) {
     const optionTabs = ['preferences', 'rates', 'sorting', 'misc']

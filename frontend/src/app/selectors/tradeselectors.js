@@ -1,7 +1,7 @@
 import { createSelector } from "@reduxjs/toolkit";
-import { valueDefaults } from "../../../../common/infoconstants/miscconstants.mjs";
+import { valueDefaults } from "../../../common/infoconstants/miscconstants.mjs";
 import { getValueOfSingleItem } from "../../../utils/functions/comparecollections/getvalue";
-import { apriballLiterals, items } from "../../../../common/infoconstants/miscconstants.mjs";
+import { apriballLiterals, items } from "../../../common/infoconstants/miscconstants.mjs";
 
 const selectTradeOfferState = (state) => state.tradeOffer
 

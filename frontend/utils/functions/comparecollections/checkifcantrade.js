@@ -1,4 +1,4 @@
-import { homeCompatibleGames } from "../../../../common/infoconstants/miscconstants.mjs"
+import { homeCompatibleGames } from "../../../common/infoconstants/miscconstants.mjs"
 
 export function checkIfCanTrade(collection, loggedInCollection) {
     const typeMatches = collection.type === loggedInCollection.type

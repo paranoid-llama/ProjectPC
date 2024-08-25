@@ -9,7 +9,7 @@ import Header from '../../../../titlecomponents/subcomponents/header'
 import SpeciesSelect from '../../../../editbar/editsectioncomponents/onhandeditonly/modalcomponents/speciesselect'
 import ImgData from '../../../../collectiontable/tabledata/imgdata'
 import Selection from '../../../../collectiontable/selection'
-import { apriballLiterals } from '../../../../../../../common/infoconstants/miscconstants.mjs'
+import { apriballLiterals } from '../../../../../../common/infoconstants/miscconstants.mjs'
 import { capitalizeFirstLetter } from '../../../../../../utils/functions/misc'
 import ScrollBar from '../../../../functionalcomponents/scrollbar'
 

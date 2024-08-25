@@ -1,6 +1,6 @@
 import {Box, Typography, Select, MenuItem, ToggleButton, Button} from '@mui/material'
 import ArrowForward from '@mui/icons-material/ArrowForward'
-import { sortOnHandList } from '../../../../../../../common/sortingfunctions/onhandsorting.mjs'
+import { sortOnHandList } from '../../../../../../common/sortingfunctions/onhandsorting.mjs'
 import Header from '../../../../titlecomponents/subcomponents/header'
 import SpeciesSelect from '../../../../editbar/editsectioncomponents/onhandeditonly/modalcomponents/speciesselect'
 import ImgData from '../../../../collectiontable/tabledata/imgdata'

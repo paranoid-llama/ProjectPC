@@ -2,7 +2,7 @@ import {Box} from '@mui/material'
 import { useState } from 'react'
 import Header from '../../../titlecomponents/subcomponents/header'
 import CollectionTypeCard from './collectiontypecard'
-import { collectionTypes, collectionSubTypes } from '../../../../../../common/infoconstants/miscconstants.mjs'
+import { collectionTypes, collectionSubTypes } from '../../../../../common/infoconstants/miscconstants.mjs'
 import './collectiontypeselection.css'
 
 export default function CollectionTypeSelection({handleChange, cssClass, userData}) {

@@ -9,7 +9,7 @@ import passport from 'passport';
 import session from 'express-session';
 import MongoDBStore from 'connect-mongo'
 import jwt from 'jsonwebtoken'
-import { apriballs } from '../common/infoconstants/miscconstants.mjs';
+import { apriballs } from './common/infoconstants/miscconstants.mjs';
 import bcrypt from 'bcrypt'
 // import './services/getGmailService.js'
 dotenv.config()

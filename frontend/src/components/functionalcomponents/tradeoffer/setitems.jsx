@@ -4,7 +4,7 @@ import { NumericFormat } from 'react-number-format'
 import { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { setItems } from '../../../app/slices/tradeoffer'
-import { items } from '../../../../../common/infoconstants/miscconstants.mjs'
+import { items } from '../../../../common/infoconstants/miscconstants.mjs'
 import NumericTextField from '../numerictextfield'
 
 const Item = styled(Paper)(() => ({

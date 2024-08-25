@@ -1,5 +1,5 @@
-import { sortByDexNum } from "../../../../common/sortingfunctions/sortbydexnum.mjs"
-import { legendaryPokemon, effectiveNonBreedable, evolvedRegionals, pokeAdults, pokeBabies, pokeIncenseAdults, pokeIncenseBabies, interchangeableAltFormMons } from "../../../../common/infoconstants/pokemonconstants.mjs"
+import { sortByDexNum } from "../../../common/sortingfunctions/sortbydexnum.mjs"
+import { legendaryPokemon, effectiveNonBreedable, evolvedRegionals, pokeAdults, pokeBabies, pokeIncenseAdults, pokeIncenseBabies, interchangeableAltFormMons } from "../../../common/infoconstants/pokemonconstants.mjs"
 
 const comparisonPokemonFormat = (ball, isOnhand, ballData, pokemon, eggMoveData, highlyWanted) => {
     const peripheryInfoLocation = isOnhand ? pokemon : ballData

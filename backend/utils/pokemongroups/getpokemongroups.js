@@ -1,10 +1,10 @@
 import allPokemon from "../aprimonAPI/allpokemoninfo.js"
 import { capitalizeFirstLetter } from "../../../frontend/utils/functions/misc.js"
 import { getImgLink } from "../schemavirtuals/collectionvirtuals.js"
-import { interchangeableAltFormMons } from "../../../common/infoconstants/pokemonconstants.mjs"
+import { interchangeableAltFormMons } from "../../common/infoconstants/pokemonconstants.mjs"
 import { handleAlternateForms, handleRegionalForms, handleIncenseAndBabyMons, setOwnedBallList, getBallPath } from "../CreateCollection/functions.js"
-import { getGenNum } from "../../../common/infoconstants/miscconstants.mjs"
-import { genGames } from "../../../common/infoconstants/miscconstants.mjs"
+import { getGenNum } from "../../common/infoconstants/miscconstants.mjs"
+import { genGames } from "../../common/infoconstants/miscconstants.mjs"
 
 function getPokemonTypes (gen) {
     const genNum = getGenNum(gen)

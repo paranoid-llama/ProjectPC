@@ -14,7 +14,7 @@ import {seeIfPokemonIsSelected, selectCollectionPokemon, selectIdxOfMon} from '.
 import {setSelected, deselect, setSelectedAfterChangingOwned} from './../../../app/slices/editmode'
 import {usePutRequest} from './../../../../utils/functions/backendrequests/editcollection'
 import getDefaultData from '../../../../utils/functions/defaultdata';
-import { apriballs } from '../../../../../common/infoconstants/miscconstants.mjs';
+import { apriballs } from '../../../../common/infoconstants/miscconstants.mjs';
 import getNameDisplay from '../../../../utils/functions/display/getnamedisplay';
 import {createSelector} from '@reduxjs/toolkit'
 import {setCollectionInitialState} from '../../../app/slices/collection'

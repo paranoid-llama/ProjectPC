@@ -1,6 +1,6 @@
 import {Box, Typography, useTheme, Tabs, Tab, Button} from '@mui/material'
 import { useState, useEffect, useRef, memo } from 'react'
-import { tradePreferenceDisplay } from '../../../../../common/infoconstants/miscconstants.mjs'
+import { tradePreferenceDisplay } from '../../../../common/infoconstants/miscconstants.mjs'
 import hexToRgba from 'hex-to-rgba'
 import RateDisplay from '../../../components/titlecomponents/ratedisplay'
 import RelativeValueDisplay from '../partialcomponents/relativevaluedisplay'

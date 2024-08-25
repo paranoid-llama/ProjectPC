@@ -1,4 +1,4 @@
-import { interchangeableAltFormMons, interchangeableAltFormForms } from "../../../common/infoconstants/pokemonconstants.mjs"
+import { interchangeableAltFormMons, interchangeableAltFormForms } from "../../common/infoconstants/pokemonconstants.mjs"
 
 function capitalizeFirstLetter(word) {
     return `${word.charAt(0).toUpperCase()}${word.slice(1)}`

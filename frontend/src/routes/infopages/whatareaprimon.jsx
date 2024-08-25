@@ -1,5 +1,5 @@
 import {Box, Typography, useTheme, Button} from '@mui/material'
-import { apriballLiterals, specialBalls } from '../../../../common/infoconstants/miscconstants.mjs'
+import { apriballLiterals, specialBalls } from '../../../common/infoconstants/miscconstants.mjs'
 import { useRouteLoaderData } from 'react-router'
 import ImgData from '../../components/collectiontable/tabledata/imgdata'
 import InfoWrapper from './infowrapper'

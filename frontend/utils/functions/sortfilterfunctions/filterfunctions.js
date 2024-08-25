@@ -1,5 +1,5 @@
-import { apriballs, generations, findGenByDexNum } from "../../../../common/infoconstants/miscconstants.mjs"
-import { sortList } from "../../../../common/sortingfunctions/customsorting.mjs"
+import { apriballs, generations, findGenByDexNum } from "../../../common/infoconstants/miscconstants.mjs"
+import { sortList } from "../../../common/sortingfunctions/customsorting.mjs"
 
 //checks if the current filter list has any of a specified type of filter. useful for accounting for refiltering when we're adding a second of a particular type of filter
 const checkForTypeOfFilter = (activeFilters, filterType) => {

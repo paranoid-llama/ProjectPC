@@ -1,7 +1,7 @@
 import Collection from '../../../models/collections.js'
 import { getIndividualPokemonInfo } from '../../../utils/createCollection.js'
 import { getImgLink, getPossibleGender, getPossibleEggMoves, getAvailableHomeGames } from '../../../utils/schemavirtuals/collectionvirtuals.js'
-import { sortList } from '../../../../common/sortingfunctions/customsorting.mjs'
+import { sortList } from '../../../common/sortingfunctions/customsorting.mjs'
 
 export default async function ownedPokemonEdit(req, res) {
     //this route handles all scope changes (including ball scope changes) and custom sorting

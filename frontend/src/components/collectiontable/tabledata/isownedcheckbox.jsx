@@ -9,7 +9,7 @@ import Checkbox from '@mui/material/Checkbox'
 import ImgData from './imgdata'
 import HAIndicator from './haindicator'
 import EMIndicator from './emindicator'
-import { noCompareWithoutOnhand } from '../../../../../common/infoconstants/pokemonconstants.mjs'
+import { noCompareWithoutOnhand } from '../../../../common/infoconstants/pokemonconstants.mjs'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import './../../../../utils/styles/componentstyles/checkboxindicators.css'
 

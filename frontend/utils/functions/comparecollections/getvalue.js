@@ -1,4 +1,4 @@
-import { valueDefaults } from "../../../../common/infoconstants/miscconstants.mjs";
+import { valueDefaults } from "../../../common/infoconstants/miscconstants.mjs";
 
 //this function takes the rates and finds the tradee's proposed value of different items in units of HA Aprimon.
 //if the tradee doesn't have a specified value, it takes the trader's rate. if they dont have one, it takes the default.

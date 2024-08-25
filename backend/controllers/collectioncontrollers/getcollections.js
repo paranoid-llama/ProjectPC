@@ -1,6 +1,6 @@
 import Collection from "../../models/collections.js";
 import { getPokemonGroups } from "../../utils/pokemongroups/getpokemongroups.js";
-import { collectionSubTypes } from "../../../common/infoconstants/miscconstants.mjs";
+import { collectionSubTypes } from "../../common/infoconstants/miscconstants.mjs";
 
 export async function getCollectionController(req, res) {
     const collection = await Collection.findById(req.params.id).populate({path: 'owner'})

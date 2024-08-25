@@ -1,8 +1,8 @@
 import {Box, Typography} from '@mui/material'
 import { useRouteLoaderData } from 'react-router'
 import getNameDisplay from '../../../../../../utils/functions/display/getnamedisplay'
-import { apriballs } from '../../../../../../../common/infoconstants/miscconstants.mjs'
-import { sortByDexNum } from '../../../../../../../common/sortingfunctions/sortbydexnum.mjs'
+import { apriballs } from '../../../../../../common/infoconstants/miscconstants.mjs'
+import { sortByDexNum } from '../../../../../../common/sortingfunctions/sortbydexnum.mjs'
 import SpeciesSelect from '../../../editsectioncomponents/onhandeditonly/modalcomponents/speciesselect'
 import ImgData from '../../../../collectiontable/tabledata/imgdata'
 

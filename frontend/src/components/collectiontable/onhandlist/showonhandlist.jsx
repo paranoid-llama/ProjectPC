@@ -7,7 +7,7 @@ import { useLocation } from 'react-router';
 import { useSelector } from 'react-redux';
 import OnHandRowContent from './onhandrowcontent'
 import './../../../routes/showCollection.css'
-import { interchangeableAltFormMons } from '../../../../../common/infoconstants/pokemonconstants.mjs';
+import { interchangeableAltFormMons } from '../../../../common/infoconstants/pokemonconstants.mjs';
 import {connect} from 'react-redux'
 
 export default function ShowOnHandList({onhandList, collectionID, styles, eggMoveInfo, isEditMode, isHomeCollection, localDisplayState=undefined, height=800, isTradePage, tradeSide, wantedByOtherListData=[], userData}) {

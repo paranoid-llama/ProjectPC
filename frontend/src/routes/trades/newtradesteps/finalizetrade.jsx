@@ -12,7 +12,7 @@ import { selectSpecificRelativeValue } from '../../../app/selectors/tradeselecto
 import { reFormatToIndividual } from '../../../../utils/functions/comparecollections/comparison'
 import { Virtuoso } from 'react-virtuoso'
 import { capitalizeFirstLetter } from '../../../../utils/functions/misc'
-import { items } from '../../../../../common/infoconstants/miscconstants.mjs'
+import { items } from '../../../../common/infoconstants/miscconstants.mjs'
 import CountDownButton from '../partialcomponents/countdownbutton'
 import TradeDetailsModal from '../partialcomponents/tradedetailsmodal'
 import { newTradeBackendFormatting, newTradeBackend } from '../../../../utils/functions/backendrequests/trades/newtrade'

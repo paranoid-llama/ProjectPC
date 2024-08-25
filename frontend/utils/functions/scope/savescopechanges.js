@@ -1,7 +1,7 @@
 import collection from "../../../src/app/slices/collection"
 import { ownedPokemonEdit } from "../backendrequests/ownedpokemonedit"
-import { apriballLiterals } from "../../../../common/infoconstants/miscconstants.mjs"
-import { sortList } from "../../../../common/sortingfunctions/customsorting.mjs"
+import { apriballLiterals } from "../../../common/infoconstants/miscconstants.mjs"
+import { sortList } from "../../../common/sortingfunctions/customsorting.mjs"
 
 const saveScopeChangesAndGetNewList = async(addedPokemon, removedPokemon, collectionState, collectionGen, collectionId, collectionAutoSort, collectionAutoSortKey, ballScope, ballLegalityInfo) => {
     const newListDisplayState = JSON.parse(JSON.stringify(collectionState))

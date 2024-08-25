@@ -9,7 +9,7 @@ import { AlertsContext } from '../../../../alerts/alerts-context'
 import { ErrorContext } from '../../../../app/contexts/errorcontext';
 import IndividualRateSelection from '../../../collectioncreation/stepcomponents/optionsselection/aprimon/individualrateselection'
 import { backendChangeOptions } from '../../../../../utils/functions/backendrequests/collectionoptionsedit';
-import { getPossibleItems, apriballLiterals } from '../../../../../../common/infoconstants/miscconstants';
+import { getPossibleItems, apriballLiterals } from '../../../../../common/infoconstants/miscconstants';
 import SaveChangesConfirmModal from '../savechangesconfirmmodal'
 
 export default function RateOptions({elementBg, collectionGen, collectionId}) {

@@ -1,4 +1,4 @@
-import { pokemonGroups, pokemonSubGroups } from "../../../../common/infoconstants/pokemonconstants.mjs"
+import { pokemonGroups, pokemonSubGroups } from "../../../common/infoconstants/pokemonconstants.mjs"
 
 //this function gets the info required for scope selection components (collection options and scope selection)
 const getScopePeripheralInfo = (modalState, groupKeys, formData, typeTotalMons) => { 

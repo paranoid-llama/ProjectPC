@@ -1,4 +1,4 @@
-import { collectionSubTypes, apriballs, tradePreferenceDisplay, items as totalItems, apriballLiterals } from "../../../common/infoconstants/miscconstants.mjs";
+import { collectionSubTypes, apriballs, tradePreferenceDisplay, items as totalItems, apriballLiterals } from "../../common/infoconstants/miscconstants.mjs";
 import allPokemon from "../../utils/aprimonAPI/allpokemoninfo.js";
 import mongoose from "mongoose";
 import User from '../../models/users.js'

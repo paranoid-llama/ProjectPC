@@ -2,7 +2,7 @@ import { forwardRef } from 'react';
 import {Box, Typography, Grid, Paper, styled, Tooltip, useTheme} from '@mui/material'
 import { useRouteLoaderData } from 'react-router';
 import getNameDisplay from '../../../../../../utils/functions/display/getnamedisplay';
-import { apriballLiterals } from '../../../../../../../common/infoconstants/miscconstants.mjs';
+import { apriballLiterals } from '../../../../../../common/infoconstants/miscconstants.mjs';
 import MuiToggleButton from '@mui/material/ToggleButton'
 import ImgData from '../../../../collectiontable/tabledata/imgdata';
 import { Virtuoso, VirtuosoGrid } from 'react-virtuoso';

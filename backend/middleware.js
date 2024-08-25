@@ -5,7 +5,7 @@ import bcrypt from 'bcrypt'
 import User from "./models/users.js";
 import Collection from './models/collections.js'
 import Trade from './models/trades.js'
-import { collectionSubTypes } from "../common/infoconstants/miscconstants.mjs";
+import { collectionSubTypes } from "./common/infoconstants/miscconstants.mjs";
 
 const initializePassportStrategy = () => passport.use(new LocalStrategy(
     async function (username, password, done) {

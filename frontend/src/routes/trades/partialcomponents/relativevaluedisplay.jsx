@@ -3,7 +3,7 @@ import { useRouteLoaderData } from 'react-router';
 import { useSelector } from 'react-redux'
 import { useEffect, useRef, useState } from 'react'
 import HelpIcon from '@mui/icons-material/Help';
-import { valueDefaults } from '../../../../../common/infoconstants/miscconstants.mjs'
+import { valueDefaults } from '../../../../common/infoconstants/miscconstants.mjs'
 import { getValue } from '../../../../utils/functions/comparecollections/getvalue'
 import { selectRelativeValue } from '../../../app/selectors/tradeselectors'
 

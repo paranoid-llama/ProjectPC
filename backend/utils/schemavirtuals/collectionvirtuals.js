@@ -1,6 +1,6 @@
 import {handleGen8EMs, handleDifferentFormEMs, selectPokemonInfo} from './infoandotherfuncs.js'
-import { incenseBabiesWithExclusiveEMs, incenseAdultsWithExclusiveEMs, altFormMonsWithExclusiveEMs, pokemonNamesWithSpaces, regionalFormRegions, interchangeableAltFormMons } from '../../../common/infoconstants/pokemonconstants.mjs'
-import { genGames, noRegionalFormGens } from '../../../common/infoconstants/miscconstants.mjs'
+import { incenseBabiesWithExclusiveEMs, incenseAdultsWithExclusiveEMs, altFormMonsWithExclusiveEMs, pokemonNamesWithSpaces, regionalFormRegions, interchangeableAltFormMons } from '../../common/infoconstants/pokemonconstants.mjs'
+import { genGames, noRegionalFormGens } from '../../common/infoconstants/miscconstants.mjs'
 import allPokemon from '../aprimonAPI/allpokemoninfo.js'
 
 function getImgLink(p) {

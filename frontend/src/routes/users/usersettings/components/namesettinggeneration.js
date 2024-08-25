@@ -1,6 +1,6 @@
-import { threeLetterShorten } from "../../../../../../common/infoconstants/pokemonconstants.mjs";
-import { regionalNameDisplayOpts, originRegionalNameDisplayOpts, altFormNameDisplayOpts, genderAltFormMons } from "../../../../../../common/infoconstants/pokemonconstants.mjs";
-import { altFormNames } from "../../../../../../common/infoconstants/pokemonconstants.mjs";
+import { threeLetterShorten } from "../../../../../common/infoconstants/pokemonconstants.mjs";
+import { regionalNameDisplayOpts, originRegionalNameDisplayOpts, altFormNameDisplayOpts, genderAltFormMons } from "../../../../../common/infoconstants/pokemonconstants.mjs";
+import { altFormNames } from "../../../../../common/infoconstants/pokemonconstants.mjs";
 import getNameDisplay from "../../../../../utils/functions/display/getnamedisplay";
 
 function getButtonOptDisplay(group, formats, pokemonName) {

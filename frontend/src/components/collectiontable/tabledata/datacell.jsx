@@ -7,7 +7,7 @@ import Selection from './../selection'
 import listStyles from '../../../../utils/styles/componentstyles/liststyles'
 import { setPokemon } from '../../../app/slices/tradeoffer'
 import { selectIfPokemonIsSelected } from '../../../app/selectors/tradeselectors'
-import { getGameColor, homeDisplayGames } from '../../../../../common/infoconstants/miscconstants.mjs'
+import { getGameColor, homeDisplayGames } from '../../../../common/infoconstants/miscconstants.mjs'
 
 export default function DataCell({label, styles, alignment='none', isEditMode, imgParams={isImg: false}, leftMostCell=false, isSelected=false, onClickFunc, onhandCells=false, specialStyles={}, blackSquare=false, availableGames=undefined, localHandleChange=null, isTradePage=false, tradeSide, tradeDispData, imgAlignment={}, bodyColorOverride={}, fontSizeOverride, reserved=0, isEmDisplay=false}) {
     const {isImg, imgLinkKey, imgSize='32px', imgType='poke'} = imgParams

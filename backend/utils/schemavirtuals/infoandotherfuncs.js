@@ -7,8 +7,8 @@ import gen6Info from '../aprimonAPI/gen6info.js'
 import gen7Info from '../aprimonAPI/gen7info.js'
 import gen8Info from '../aprimonAPI/gen8info.js'
 import gen9Info from '../aprimonAPI/gen9info.js'
-import { incenseBabiesWithExclusiveEMs, incenseAdultsWithExclusiveEMs, regionalFormMons, altFormMonsWithExclusiveEMs, babiesOfGen1Pokemon, babiesOfGen2Pokemon, babiesOfGen3Pokemon } from '../../../common/infoconstants/pokemonconstants.mjs'
-import { findGenByDexNum } from '../../../common/infoconstants/miscconstants.mjs'
+import { incenseBabiesWithExclusiveEMs, incenseAdultsWithExclusiveEMs, regionalFormMons, altFormMonsWithExclusiveEMs, babiesOfGen1Pokemon, babiesOfGen2Pokemon, babiesOfGen3Pokemon } from '../../common/infoconstants/pokemonconstants.mjs'
+import { findGenByDexNum } from '../../common/infoconstants/miscconstants.mjs'
 
 
 function selectPokemonInfo(name, pokeGen, natDexNum) {

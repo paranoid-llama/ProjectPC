@@ -1,7 +1,7 @@
 import {Box, Typography, Button, Card, CardMedia, CardContent, CardActionArea} from '@mui/material'
 import ImgData from '../../../collectiontable/tabledata/imgdata'
 import { capitalizeFirstLetter } from '../../../../../utils/functions/misc'
-import { collectionDescription } from '../../../../../../common/infoconstants/miscconstants.mjs'
+import { collectionDescription } from '../../../../../common/infoconstants/miscconstants.mjs'
 import { useState } from 'react'
 import './collectiontypeselection.css'
 

@@ -2,7 +2,7 @@ import {Typography, Box, Tabs, Tab, Button} from '@mui/material'
 import PokemonGroupDisplay from './pokemongroupdisplay'
 import ArrowForward from '@mui/icons-material/ArrowForward'
 import { getScopePeripheralInfo } from '../../../../../../utils/functions/scope/getperipheralinfo'
-import { pokemonGroups } from '../../../../../../../common/infoconstants/pokemonconstants.mjs'
+import { pokemonGroups } from '../../../../../../common/infoconstants/pokemonconstants.mjs'
 
 export default function PokemonGroupModalContents({elementBg, modalState, groupKeys, ballScope, changeGroup, changeSubGroup, handleChange, handleMassChange, scopePeripheryInfo, tyroguePresent, changingScope=false, changeScopeSave={}, saveErrorNoticeShow=false}) {
 

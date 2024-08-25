@@ -1,6 +1,6 @@
 import {Grid, styled, Paper, Typography, Modal, Backdrop, Fade, Box, Tabs, Tab, Button} from '@mui/material'
 import { useState } from 'react'
-import { pokemonGroups, pokemonSubGroups } from '../../../../../../../common/infoconstants/pokemonconstants.mjs'
+import { pokemonGroups, pokemonSubGroups } from '../../../../../../common/infoconstants/pokemonconstants.mjs'
 // import PokemonGroupDisplay from './pokemongroupdisplay'
 import PokemonGroupModalContents from './pokemongroupmodalcontents'
 import modalStyles from '../../../../../../utils/styles/componentstyles/modalstyles'

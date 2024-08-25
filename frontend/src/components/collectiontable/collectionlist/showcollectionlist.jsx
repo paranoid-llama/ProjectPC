@@ -9,7 +9,7 @@ import './../../../routes/showCollection.css'
 import { capitalizeFirstLetter } from '../../../../utils/functions/misc';
 import {useSelector, useDispatch, connect} from 'react-redux'
 import { useLocation } from 'react-router';
-import { interchangeableAltFormMons } from '../../../../../common/infoconstants/pokemonconstants.mjs';
+import { interchangeableAltFormMons } from '../../../../common/infoconstants/pokemonconstants.mjs';
 import {setCollectionInitialState} from '../../../app/slices/collection'
 import {setSelected} from '../../../app/slices/editmode'
 

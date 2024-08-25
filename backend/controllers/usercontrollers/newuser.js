@@ -1,6 +1,6 @@
 import User from '../../models/users.js'
 import bcrypt from 'bcrypt'
-import { apriballs } from '../../../common/infoconstants/miscconstants.mjs'
+import { apriballs } from '../../common/infoconstants/miscconstants.mjs'
 
 export async function createNewUser(req, res) {
     const {username, password, email, secQuestion1, secQuestion2, secQuestion3, secAnswer1, secAnswer2, secAnswer3} = req.body

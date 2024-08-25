@@ -1,6 +1,6 @@
 import {Box, Typography, Tooltip} from '@mui/material'
 import ImgData from '../../../components/collectiontable/tabledata/imgdata'
-import { items } from '../../../../../common/infoconstants/miscconstants.mjs'
+import { items } from '../../../../common/infoconstants/miscconstants.mjs'
 import { capitalizeFirstLetter } from '../../../../utils/functions/misc'
 import getNameDisplay from '../../../../utils/functions/display/getnamedisplay'
 

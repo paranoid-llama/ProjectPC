@@ -5,7 +5,7 @@ import { setCollectionInitialState } from "../../../../app/slices/collection";
 import { setListInitialState } from "../../../../app/slices/listdisplay";
 import { selectScopeFormData, selectExcludedBallCombos } from "../../../../app/selectors/selectors";
 import { getOneArrData } from "../../../../../utils/functions/scope/getonearrdata";
-import { getBallsInGen } from "../../../../../../common/infoconstants/miscconstants.mjs";
+import { getBallsInGen } from "../../../../../common/infoconstants/miscconstants.mjs";
 import { excludedCombosChange, getExcludedCombosChange } from "../../../../../utils/functions/scope/statechanges";
 import { saveExcludedCombos } from "../../../../../utils/functions/scope/savescopechanges";
 import { AlertsContext } from "../../../../alerts/alerts-context";

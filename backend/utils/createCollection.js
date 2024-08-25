@@ -1,8 +1,8 @@
 import allPokemon from './aprimonAPI/allpokemoninfo.js'
 import {handleAlternateForms, handleRegionalForms, handleIncenseAndBabyMons, setBallInfo, setOwnedBallList, removeBallsOutsideScope, getBallPath} from './CreateCollection/functions.js'
-import { interchangeableAltFormMons } from '../../common/infoconstants/pokemonconstants.mjs'
-import { customSortCollectionListLogic } from '../../common/sortingfunctions/customsorting.mjs'
-import { getGenNum } from '../../common/infoconstants/miscconstants.mjs'
+import { interchangeableAltFormMons } from '../common/infoconstants/pokemonconstants.mjs'
+import { customSortCollectionListLogic } from '../common/sortingfunctions/customsorting.mjs'
+import { getGenNum } from '../common/infoconstants/miscconstants.mjs'
 import { getImgLink, getPossibleGender } from './schemavirtuals/collectionvirtuals.js'
 
 //Note for pokemon groups/scope
