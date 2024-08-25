@@ -1,0 +1,26 @@
+@keyframes slide-in {
+    from {
+        transform: translateZ(-50px) translateY(-200%);
+    }
+    to {
+        transform: translateZ(-50px) translateY(0%);
+    }
+}
+
+@keyframes slide-out {
+    from {
+        transform: translateZ(-50px) translateY(0%);
+    }
+    to {
+        transform: translateZ(-50px) translateY(-200%);
+    }
+}
+
+.egg-moves-slide-in {
+    animation: 1s ease-out 0s 1 slide-in;
+}
+
+.egg-moves-slide-out {
+    animation: 0.5s ease-in 0s 1 slide-out;
+    animation-fill-mode: forwards;
+}
