@@ -3,6 +3,7 @@ import ImgData from '../../collectiontable/tabledata/imgdata'
 import SearchItemWrapper from './searchitemwrapper'
 import Highlighter from 'react-highlight-words'
 import { useNavigate } from 'react-router-dom'
+import { capitalizeFirstLetter } from '../../../../utils/functions/misc'
 
 const badgeData = {
     'apri-novice' : {display: 'Aprimon Novice', tooltip: 'Start an aprimon collection'},
@@ -19,7 +20,7 @@ const badgeData = {
     'trader-breeder' : {display: 'Pokémon Breeder', tooltip: 'Complete 100 or more trades'},
 }
 
-export default function SearchUserItem({query, username, collectionsInfo, userId, badges}) {
+export default function SearchUserItem({query, username, collectionsInfo, userId, badges, userAccountType}) {
     const theme = useTheme()
     const aprimonCollectionCount = collectionsInfo.filter(cType => cType === 'aprimon').length
     const navigate = useNavigate()
@@ -33,7 +34,10 @@ export default function SearchUserItem({query, username, collectionsInfo, userId
             <Box sx={{width: '80%', height: '100%', display: 'flex', alignItems: 'center', gap: 2}}>
                 <Box sx={{ml: 1.5, display: 'flex', justifyContent: 'center', alignItems: 'center'}}><ImgData type='icons' linkKey='user' size={'45px'}/></Box>
                 <Box sx={{width: '80%', minWidth: '100px', display: 'flex', flexDirection: 'column'}}>
-                    <Typography sx={{fontWeight: 700, fontSize: '16px', textAlign: 'start', my: -0.25}}><Highlighter textToHighlight={username} searchWords={[query]}/></Typography>
+                    <Box sx={{...theme.components.box.fullCenterRow, justifyContent: 'start'}}>
+                        <Typography sx={{fontWeight: 700, fontSize: '16px', textAlign: 'start', my: -0.25}}><Highlighter textToHighlight={username} searchWords={[query]}/></Typography>
+                        {userAccountType !== 'regular' && <Typography sx={{paddingX: 1, fontWeight: 700, ml: 1, borderRadius: '20px', fontSize: '10px', color: 'white', backgroundColor: 'black'}}>{capitalizeFirstLetter(userAccountType)}</Typography>}
+                    </Box>
                     <Box sx={{...theme.components.box.fullCenterRow, justifyContent: 'start'}}>
                         {badges.map((b, idx) => {
                             const display = badgeData[b].display

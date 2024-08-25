@@ -83,7 +83,7 @@ export default async function searchDatabases(req, res) {
 
     const searchResult = {
         collections: searchCollections ? await Collection.aggregate(collectionAggregate).exec() : [],
-        users: searchUsers ? await User.find(searchQueries.users, '_id username settings.profile.badges').skip(skip === undefined ? 0 : skip).limit(maxDocs).lean().populate({path: 'collections', select: 'type -_id -owner'}).exec() : [],
+        users: searchUsers ? await User.find(searchQueries.users, '_id username settings.profile.badges accountType').skip(skip === undefined ? 0 : skip).limit(maxDocs).lean().populate({path: 'collections', select: 'type -_id -owner'}).exec() : [],
         collectionCount: (collectionCountStep1[0] === undefined || collectionCountStep1 === 0) ? 0 : collectionCountStep1[0].totalCollections,
         userCount: searchUsers ? await User.countDocuments(searchQueries.users, {maxTimeMS: 750}) : 0,
     }

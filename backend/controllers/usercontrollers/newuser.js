@@ -19,6 +19,7 @@ export async function createNewUser(req, res) {
         const newUser = new User({
             username, 
             password: hash, 
+            accountType: 'regular',
             email, 
             settings, 
             notifications: [

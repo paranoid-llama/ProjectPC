@@ -163,6 +163,8 @@ export default function ShowUser({}) {
                         label={'Username'}
                         width='100%'
                         buttonAdornmentFunc={isUser ? generateSettingsButton : loggedInUserData.loggedIn ? generateBlockButton : undefined}
+                        textTag={userData.accountType !== 'regular' ? `${userData.accountType[0].toUpperCase()}${userData.accountType.slice(1, userData.accountType.length)}` : undefined}
+                        textTagStyle={{backgroundColor: theme.palette.color3.main}}
                     />
                     <TextSpaceSingle 
                         colorStyles={textColor2}

@@ -19,6 +19,7 @@ const userSchema = new Schema ({
         type: String,
         required: true
     },
+    accountType: {type: String, enum: {values: ['regular', 'admin', 'owner']}},
     email: {
         type: String,
         required: true,

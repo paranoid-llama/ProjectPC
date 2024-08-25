@@ -48,6 +48,7 @@ export default function SearchAreaRoute({query, searchType, result, page, change
                         collectionsInfo={collectionsInfo}
                         userId={user._id}
                         badges={user.settings.profile.badges}
+                        userAccountType={user.accountType}
                     />
                 )
             })
