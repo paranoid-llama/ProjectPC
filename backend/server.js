@@ -18,6 +18,7 @@ dotenv.config()
 
 const SECRET = process.env.SECRET
 const dbUrl = process.env.DB_URL || "mongodb://127.0.0.1:27017/ProjectPC"
+const frontendUrl = process.env.FRONTEND_URL
 
 //utils and classes
 import catchAsync from './utils/catchAsync.js'
@@ -76,7 +77,7 @@ const app = express();
 
 //middleware
 app.use(session(sessionConfig))
-app.use(cors({ credentials: true, origin: '*' }))
+app.use(cors({ credentials: true, origin: frontendUrl }))
 // app.use(nocache())
 app.use(express.json({ limit: '500kb' }))
 app.use(bodyParser.json({ limit: '500kb' }))
