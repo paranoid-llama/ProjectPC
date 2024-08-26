@@ -4,8 +4,6 @@ const intServerError = {
     status: 500
 }
 const backendurl = import.meta.env.VITE_BACKEND_URL
-console.log(import.meta.env)
-console.log(backendurl)
 
 export default async function getSession() {
     const userData = await fetch(`${backendurl}/api/session`, {
