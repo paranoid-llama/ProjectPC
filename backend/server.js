@@ -76,7 +76,7 @@ const app = express();
 
 //middleware
 app.use(session(sessionConfig))
-app.use(cors({ credentials: true, origin: true }))
+app.use(cors({ credentials: true, origin: '*' }))
 // app.use(nocache())
 app.use(express.json({ limit: '500kb' }))
 app.use(bodyParser.json({ limit: '500kb' }))

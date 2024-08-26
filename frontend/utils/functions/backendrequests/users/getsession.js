@@ -8,7 +8,10 @@ const backendurl = import.meta.env.VITE_BACKEND_URL
 export default async function getSession() {
     const userData = await fetch(`${backendurl}/api/session`, {
         method: 'GET',
-        credentials: 'include'
+        credentials: 'include',
+        headers: {
+           'Access-Control-Allow-Origin': 'http://localhost:5173' 
+        }
     }).then(async(res) => {
         if (res.status === 500) {throw intServerError}
         const data = await res.json()
