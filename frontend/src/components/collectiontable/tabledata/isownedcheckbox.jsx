@@ -2,6 +2,7 @@ import {useLocation} from 'react-router-dom'
 import {Box, TableCell, ToggleButton, ToggleButtonGroup, styled, Typography, useTheme} from '@mui/material'
 import { useSelector, useDispatch } from 'react-redux'
 import { selectIfPokemonIsSelected } from '../../../app/selectors/tradeselectors'
+import { setSelected } from '../../../app/slices/editmode'
 import { setPokemon } from '../../../app/slices/tradeoffer'
 import hexToRgba from 'hex-to-rgba'
 import MuiToggleButton from '@mui/material/ToggleButton'
@@ -13,7 +14,7 @@ import { noCompareWithoutOnhand } from '../../../../common/infoconstants/pokemon
 import FormControlLabel from '@mui/material/FormControlLabel'
 import './../../../../utils/styles/componentstyles/checkboxindicators.css'
 
-export default function IsOwnedCheckbox({ballInfo, id, handleEditBallInfo, pokeName, ball, collectionId, ownerId, styles, isEditMode, isHomeCollection, isTradePage=false, tradeSide=null, tradeDispData}) {
+export default function IsOwnedCheckbox({ballInfo, id, handleEditBallInfo, pokeName, ball, collectionId, ownerId, styles, isEditMode, isSelectedEditPage, isHomeCollection, isTradePage=false, tradeSide=null, tradeDispData}) {
     const theme = useTheme()
     const dispatch = useDispatch()
     const disabled = !isEditMode
@@ -37,6 +38,11 @@ export default function IsOwnedCheckbox({ballInfo, id, handleEditBallInfo, pokeN
     const localHandleChangeFunc = (enableSelecting) ? {
         onClick: () => dispatch(setPokemon({pData: tradeDispData.pData, ballData: tradeDispData.ballData, tradeSide}))
     } : {}
+    const onClickFunc = isEditMode && !enableSelecting ? {
+        onClick: () => dispatch(setSelected({selected: id, selectedBall: ball}))
+    } : {}
+    
+    const hoverStyle = (enableSelecting || (isEditMode && !enableSelecting)) ? {':hover': {cursor: 'pointer'}} : {}
 
     const ToggleButton = styled(MuiToggleButton)({
         '&.Mui-selected, &.Mui-selected:hover': {
@@ -81,8 +87,9 @@ export default function IsOwnedCheckbox({ballInfo, id, handleEditBallInfo, pokeN
         
         <TableCell 
             padding='none' 
-            sx={enableSelecting ? {...styles.tableCell, ...tradeHoverStyles, position: 'relative'} : (isTradePage && (ballInfo[ball].isOwned === false || !enableSelecting)) ? {...styles.tableCell, opacity: 0.5, position: 'relative'} : {...styles.tableCell, position: 'relative'}}
+            sx={enableSelecting ? {...styles.tableCell, ...tradeHoverStyles, position: 'relative'} : (isTradePage && (ballInfo[ball].isOwned === false || !enableSelecting)) ? {...styles.tableCell, opacity: 0.5, position: 'relative'} : {...styles.tableCell, position: 'relative', zIndex: isSelectedEditPage ? 1 : '', ...hoverStyle}}
             {...localHandleChangeFunc}
+            {...onClickFunc}
         >
             {isOwned && 
             <Box sx={styles.indicators.indicatorRowTop}>
@@ -104,7 +111,7 @@ export default function IsOwnedCheckbox({ballInfo, id, handleEditBallInfo, pokeN
             <Box sx={{...styles.alignment.checkboxAlignment, ...styles.bodyColor, ...tradeSelectedStyles, height: '42px'}}>
                 <Checkbox 
                     checked={ballInfo[ball].isOwned} 
-                    sx={{color: 'white', '&.Mui-disabled': {color: 'white', '&.Mui-checked': {color: '#1976d2'}}, position: 'absolute', width: '100%', right: '0px'}} 
+                    sx={{color: 'white', '&.Mui-disabled': {color: 'white', '&.Mui-checked': {color: '#1976d2'}}, position: 'absolute', right: 'calc(50% - 21px)'}} 
                     disabled={disabled}
                     onClick={isEditMode ? ((e) => handleEditBallInfo(e, 'isOwned', pokeName, ball, collectionId, ownerId)) : undefined}
                 />
@@ -143,6 +150,7 @@ export default function IsOwnedCheckbox({ballInfo, id, handleEditBallInfo, pokeN
                                 textOnly={isTradePage}
                                 isEditMode={isEditMode}
                                 emCount={ballInfo[ball].emCount}
+                                EMs={ballInfo[ball].EMs}
                                 handleChange={handleEMCountChangeFunc}
                             />
                         </Box>

@@ -71,14 +71,26 @@ const isValidId = (req, res, next) => {
 
 const isValidOnHandId = (req, res, next) => {
     const {editType, pokemonId, idOfPokemon} = req.body //single value update uses "idOfPokemon" while delete on hand uses "pokemonId". probably should have it uniform.
-    const actualId = (editType !== undefined && editType === 'singleValue' && idOfPokemon !== undefined) ? idOfPokemon : pokemonId
-    if (actualId !== undefined && !mongoose.Types.ObjectId.isValid(actualId)) { 
-        const exception = new Error()
-        exception.name = 'Bad Request'
-        exception.message = "Invalid On-Hand ID!"
-        exception.status = 400
-        return res.status(400).send(exception)
+    const actualId = (editType !== undefined && editType === 'singleValue' && idOfPokemon !== undefined) ? idOfPokemon : pokemonId 
+    if (Array.isArray(actualId)) {//batch deletes
+        const validId = actualId.map(id => mongoose.Types.ObjectId.isValid(id))
+        if (validId.includes(false)) {
+            const exception = new Error()
+            exception.name = 'Bad Request'
+            exception.message = "One of the On-Hands have an invalid On-Hand ID!"
+            exception.status = 400
+            return res.status(400).send(exception)
+        }
+    } else {
+       if (actualId !== undefined && !mongoose.Types.ObjectId.isValid(actualId)) { 
+            const exception = new Error()
+            exception.name = 'Bad Request'
+            exception.message = "Invalid On-Hand ID!"
+            exception.status = 400
+            return res.status(400).send(exception)
+        } 
     }
+    
     next()
 }
 

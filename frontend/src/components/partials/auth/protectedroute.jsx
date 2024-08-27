@@ -26,7 +26,7 @@ export default function ProtectedRoute({Component, extraAuthType}) {
                 addAlert({severity: 'error', timeout: 5, message: errorMessage})
                 navigate(redirect)
             } else {
-                navigate('login', {state: {error: true, message: 'You must be logged in to go to that page!', redirectTo: pathname}})
+                navigate('/login', {state: {error: true, message: 'You must be logged in to go to that page!', redirectTo: pathname}})
             }
         }
     }, [])

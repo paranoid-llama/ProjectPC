@@ -43,7 +43,11 @@ const listDisplay = createSlice({
         addOnHandPokemonToList: (state, action) => {
             const {newOnhand, sortingOptions, speciesEditOnly=false} = action.payload
             if (!speciesEditOnly) {
-                state.onhand[state.onhand.length] = newOnhand
+                if (Array.isArray(newOnhand)) {
+                    state.onhand = [...state.onhand, ...newOnhand]
+                } else {
+                    state.onhand[state.onhand.length] = newOnhand
+                }
             }
             if (sortingOptions.reorder === true) {
                 state.onhand = sortOnHandList(sortingOptions.sortFirstBy, sortingOptions.default, sortingOptions.ballOrder, state.onhand)
@@ -65,6 +69,11 @@ const listDisplay = createSlice({
                 const newState = {...state, collection: state.collection.filter((p, idx) => idx !== pokemonid)}
                 return newState
             } else if (listType === 'onhand') {
+                const multipleRemoves = Array.isArray(pokemonid)
+                if (multipleRemoves) {
+                    const newState = {...state, onhand: state.onhand.filter(p => !pokemonid.includes(p._id))}
+                    return newState
+                }
                 const newState = {...state, onhand: state.onhand.filter(p => p._id !== pokemonid)}
                 return newState
             }

@@ -30,7 +30,7 @@ import RenderOnHandEdit from './onhandlist/renderonhandedit'
             additionalStyles={{color: 'black', justifyContent: 'center', display: 'flex', height: '100%', zIndex: 999}}
         >
             {/* {onHandNoSelection ? <Box sx={{width: '81.5136%', display: 'flex', justifyContent: 'end'}}><NothingSelected listType={listType}/></Box> : */}
-            {noSelection ? <NothingSelected listType={listType} isHomeCollection={collection.gen === 'home'}/> :
+            {noSelection ? <NothingSelected listType={listType} isHomeCollection={collection.gen === 'home'} collectionID={collectionID}/> :
             showEditScreen === false ? <ShowSelectionConfirm listType={listType} pokemon={pokemon}/> :
             listType === 'collection' ? <RenderCollectionEdit collectionId={collection._id} ownerId={ownerID} pokemon={pokemon} ballInfo={pokemonBallInfo} allEggMoves={allEggMoves} isHomeCollection={collection.gen === 'home'}/> :
             listType === 'onHand' && <RenderOnHandEdit collectionId={collection._id} ownerId={ownerID} pokemon={pokemon} idxOfPokemon={idxOfPokemon} allEggMoves={allEggMoves} isHomeCollection={collection.gen === 'home'}/>

@@ -6,13 +6,18 @@ export default async function addOnHand(req, res) {
     const {id} = req.params
 
     const collection = await Collection.findById(id)
-    collection.onHand.push(newOnHand)
+    const addingMultipleOnhands = Array.isArray(newOnHand)
+    if (addingMultipleOnhands) {
+        collection.onHand = [...collection.onHand, ...newOnHand]
+    } else {
+        collection.onHand[collection.onHand.length] = newOnHand
+    }
     const onhandSortingOptions = collection.options.sorting.onhand
     if (onhandSortingOptions.reorder === true) {
         collection.onHand = sortOnHandList(onhandSortingOptions.sortFirstBy, onhandSortingOptions.default, onhandSortingOptions.ballOrder, collection.onHand)
     }
     
-    collection.save()
+    await collection.save()
 
     res.end()
 }

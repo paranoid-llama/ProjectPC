@@ -1,6 +1,7 @@
 import * as React from 'react';
 import {useState, useEffect, useRef, useContext} from 'react'
 import { ErrorContext } from '../../../app/contexts/errorcontext';
+import { AlertsContext } from '../../../alerts/alerts-context';
 import Box from '@mui/material/Box'
 import './../../../routes/showCollection.css'
 import TableCell from '@mui/material/TableCell'
@@ -18,6 +19,7 @@ import { apriballs } from '../../../../common/infoconstants/miscconstants.mjs';
 import getNameDisplay from '../../../../utils/functions/display/getnamedisplay';
 import {createSelector} from '@reduxjs/toolkit'
 import {setCollectionInitialState} from '../../../app/slices/collection'
+import { setUnsavedChanges } from './../../../app/slices/editmode';
 import store from '../../../app/store'
 
 const blackTableCellStyles = { //for illegal ball combos
@@ -105,12 +107,14 @@ function TableRowGrouping({columns, row, id, collectionId, ownerId, styles, isSe
     const dispatch = useDispatch()
     // console.log(`rendered ${row.name}`)
     const {handleError} = useContext(ErrorContext)
+    const {addAlert} = useContext(AlertsContext)
 
     //following data is used for editing values in the list
     const possibleEggMoves = (isEditMode && !isHomeCollection) ? useSelector((state) => state.listDisplay.eggMoveInfo[row.name]) : null
     const maxEMs = (isEditMode && !isHomeCollection) ? possibleEggMoves.length > 4 ? 4 : possibleEggMoves.length : null
     const emCountSelectionList = (isEditMode && !isHomeCollection) ? setMaxEmArr(maxEMs) : null
     const idx = isEditMode ? useSelector(state => state.collection.indexOf(row)) : null
+    const unsavedChanges = isEditMode ? useSelector((state) => state.editmode.unsavedChanges) : null
 
     //available games
     const availableGames = (isHomeCollection) ? useSelector((state) => state.listDisplay.availableGamesInfo[row.name]) : null
@@ -131,7 +135,7 @@ function TableRowGrouping({columns, row, id, collectionId, ownerId, styles, isSe
         const deleteEMs = key === 'emCount' && row.balls[ballname].EMs.length > newValue
         const hasAllPossibleEMs = key === 'emCount' && newValue === possibleEggMoves.length
         const defaultData = key === 'emCount' ? (deleteEMs ? {EMs: []} : hasAllPossibleEMs ? {EMs: possibleEggMoves} : undefined) : getDefaultData(globalDefaults, currentDefault, row.balls, maxEMs, possibleEggMoves, ballname)
-        const successFunc = () => {
+        // const successFunc = () => {
         if (key === 'isOwned') {
             if (newValue === true) {
                 dispatch(setSelectedAfterChangingOwned({idx: id, ball: ballname}))
@@ -149,9 +153,12 @@ function TableRowGrouping({columns, row, id, collectionId, ownerId, styles, isSe
                     dispatch(setCollectionEms({idx, ball: ballname, listType: 'collection', emName: eggmove}))
                 }
             }
-        }}
-        const backendFunc = async() => await usePutRequest(key, newValue, {pokename, ballname}, 'collection', collectionID, ownerID, defaultData)
-        handleError(backendFunc, false, successFunc, () => {})
+        }
+        // if (unsavedChanges === false) {addAlert({severity: 'error', timeout: 4, message: 'You have unsaved changes. Make sure to save before leaving!'})}
+        dispatch(setUnsavedChanges())
+        // }}
+        // const backendFunc = async() => await usePutRequest(key, newValue, {pokename, ballname}, 'collection', collectionID, ownerID, defaultData)
+        // handleError(backendFunc, false, successFunc, () => {})
     }
 
     const blackTableCellStyles = { //for illegal ball combos
@@ -181,7 +188,7 @@ function TableRowGrouping({columns, row, id, collectionId, ownerId, styles, isSe
                             isEditMode={isEditMode}
                             leftMostCell={true}
                             isSelected={isSelected}
-                            onClickFunc={setSelected}
+                            onClickFunc={isSelected ? null : setSelected}
                         /> :
                     row[c.dataKey] !== undefined ? 
                         <DataCell 
@@ -193,7 +200,7 @@ function TableRowGrouping({columns, row, id, collectionId, ownerId, styles, isSe
                             specialStyles={textSizeAdjustor}
                             isEditMode={isEditMode}
                             isSelected={isSelected}
-                            onClickFunc={setSelected}
+                            onClickFunc={isSelected ? null : setSelected}
                             availableGames={(availableGames === null) ? undefined : c.dataKey === 'name' ? availableGames : undefined}
                         />:
                     row.balls[c.dataKey] === undefined ? 
@@ -204,7 +211,9 @@ function TableRowGrouping({columns, row, id, collectionId, ownerId, styles, isSe
                         </TableCell> :
                     <IsOwnedCheckbox
                         key={`${row.imgLink}-${c.label}`} 
+                        id={row.imgLink}
                         ballInfo={row.balls}
+                        isSelectedEditPage={isSelected}
                         handleEditBallInfo={handleEditBallInfo}
                         pokeName={row.name}
                         ball={c.dataKey}

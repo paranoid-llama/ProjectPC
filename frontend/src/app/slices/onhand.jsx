@@ -33,11 +33,20 @@ const onhand = createSlice({
         },
         setNewOnHand: (state, action) => {
             const newOnHand = action.payload
+            const multipleOnhands = Array.isArray(newOnHand)
+            if (multipleOnhands) {
+                return [...state, ...newOnHand]
+            }
             state[state.length] = newOnHand
             return state
         },
         deleteOnHand: (state, action) => {
             const id = action.payload
+            const multipleDeletes = Array.isArray(id)
+            if (multipleDeletes) {
+                const newState = state.filter(p => !id.includes(p._id))
+                return newState
+            }
             const newState = state.filter(p => p._id !== id)
             return newState
         }

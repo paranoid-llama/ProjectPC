@@ -22,16 +22,17 @@ export async function createNewCollection(req, res) {
     if (!user.settings.profile.badges.map(b => b.includes('apri')).includes(true)) {
         user.settings.profile.badges = ['apri-novice', ...user.settings.profile.badges]
         user.save()
-        res.json(collection._id)
-    }
-    const colProg = getCollectionProgressPercent(collection)
-    const badgeChange = checkBadgeMilestone(colProg, user.settings.profile.badges, user.collections.map(col => {return {_id: col._id, progress: getCollectionProgressPercent(col)}}).filter(col => col._id.toString() !== collection._id.toString()).map(col => col.progress))
-    if (badgeChange === 'no-change') {
-        res.json(collection._id)
+        return res.json(collection._id)
     } else {
-        user.settings.profile.badges = badgeChange
-        user.save()
-        res.json(collection._id)
+        const colProg = getCollectionProgressPercent(collection)
+        const badgeChange = checkBadgeMilestone(colProg, user.settings.profile.badges, user.collections.map(col => {return {_id: col._id, progress: getCollectionProgressPercent(col)}}).filter(col => col._id.toString() !== collection._id.toString()).map(col => col.progress))
+        if (badgeChange === 'no-change') {
+            res.json(collection._id)
+        } else {
+            user.settings.profile.badges = badgeChange
+            user.save()
+            res.json(collection._id)
+        }
     }
 }
 

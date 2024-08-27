@@ -2,6 +2,7 @@ import {Box, TableCell, Typography, useTheme, Tooltip} from '@mui/material'
 import ImgData from './imgdata'
 import {useSelector, useDispatch} from 'react-redux'
 import {setSelected, deselect} from './../../../app/slices/editmode'
+import { toggleOnHandIdToDelete } from './../../../app/slices/editmode'
 import store from './../../../app/store'
 import Selection from './../selection'
 import listStyles from '../../../../utils/styles/componentstyles/liststyles'
@@ -9,14 +10,15 @@ import { setPokemon } from '../../../app/slices/tradeoffer'
 import { selectIfPokemonIsSelected } from '../../../app/selectors/tradeselectors'
 import { getGameColor, homeDisplayGames } from '../../../../common/infoconstants/miscconstants.mjs'
 
-export default function DataCell({label, styles, alignment='none', isEditMode, imgParams={isImg: false}, leftMostCell=false, isSelected=false, onClickFunc, onhandCells=false, specialStyles={}, blackSquare=false, availableGames=undefined, localHandleChange=null, isTradePage=false, tradeSide, tradeDispData, imgAlignment={}, bodyColorOverride={}, fontSizeOverride, reserved=0, isEmDisplay=false}) {
+export default function DataCell({label, styles, alignment='none', isEditMode, imgParams={isImg: false}, leftMostCell=false, isSelected=false, onClickFunc, onhandCells=false, specialStyles={}, blackSquare=false, availableGames=undefined, localHandleChange=null, isTradePage=false, tradeSide, tradeDispData, imgAlignment={}, bodyColorOverride={}, fontSizeOverride, reserved=0, isEmDisplay=false, flaggedForDeletion=null, ohDeleteMode=false, specificDeselectFunc=null}) {
     const {isImg, imgLinkKey, imgSize='32px', imgType='poke'} = imgParams
     const theme = useTheme()
     const blackSquareStyles = blackSquare ? {backgroundColor: 'black'} : {}
     const noInfo = label === '(No Info)'
     const otherTextStyles = noInfo ? {opacity: 0.5} : {}
     const dispatch = useDispatch()
-    const deselectFunc = () => dispatch(deselect())
+    const deselectFunc = () => {dispatch(deselect())}
+    const hoverSx = isEditMode ? {':hover': {cursor: 'pointer'}} : {}
     const bodyColorSx = isImg ? {backgroundColor: '#1d1c1b', borderRadius: '10px', paddingY: '16px', paddingX: 'calc(50% - 16px)', margin: 0, zIndex: -1} : styles.bodyColor
     const extraBodyColorSx = !isImg ? {height: '20px', px: 0} : {}
 
@@ -39,10 +41,10 @@ export default function DataCell({label, styles, alignment='none', isEditMode, i
         
         <TableCell 
             padding='none' 
-            sx={!(blackSquare) ? {...styles.tableCell} : blackSquareStyles}
-            onClick={(isOnHandAndTradePage && !isSelectedForTrade) ? dispatchTradeChange : (isEditMode) ? onClickFunc : null}
+            sx={!(blackSquare) ? {...styles.tableCell, ...hoverSx} : {...blackSquareStyles, ...hoverSx}}
+            onClick={(isOnHandAndTradePage && !isSelectedForTrade) ? dispatchTradeChange : (isEditMode && !flaggedForDeletion) ? onClickFunc : null}
         >
-            {(leftMostCell === true && isSelected === true) && <Selection height={onhandCells ? '71.016px' : '76px'} onhandSelection={onhandCells} deselectFunc={localHandleChange !== null ? localHandleChange : deselectFunc}/>}
+            {(leftMostCell === true && (isSelected === true || flaggedForDeletion)) && <Selection height={onhandCells ? '71.016px' : '76px'} onhandSelection={onhandCells} otherStyles={ohDeleteMode ? {backgroundColor: 'rgba(225, 30, 30, 0.2)', borderColor: 'rgba(150, 30, 30, 1)'} : {}} deselectFunc={ohDeleteMode ? onClickFunc : localHandleChange !== null ? localHandleChange : deselectFunc}/>}
             {/* localSelected below only happens for onhand */}
             {(leftMostCell === true && isSelectedForTrade) &&
                 <Box sx={{position: 'absolute', width: '99.7%', zIndex: 100}}>

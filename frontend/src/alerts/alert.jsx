@@ -26,7 +26,7 @@ const CustomAlert = ({
     }, []);
 
     const fadeoutDelay = timeout - fadeoutTime
-    const otherStyles = isErrorLiteral ? {display: 'flex', flexDirection: 'row', justifyContent: 'start', alignItems: 'center'} : {}
+    const otherStyles = isErrorLiteral ? {display: 'flex', flexDirection: 'row', justifyContent: 'start', alignItems: 'center'} : messageImgs.length !== 0 ? {display: 'flex', flexDirection: 'row', justifyContent: 'start', alignItems: 'center', gap: 2} : {}
 
     // could not get images to work in-line with the alert due to mui alert formatting issues
     // const generateImages = () => {
@@ -61,9 +61,17 @@ const CustomAlert = ({
                                 {message2 !== '' && <Typography sx={{fontSize: '12px'}}>{message2}</Typography>}
                             </Box>
                         </Box> :
-                        <>
+                        <Box sx={otherStyles}>
                         {message}
-                        </>
+                        {messageImgs !== 0 &&
+                        <Box sx={{display: 'flex', flexDirection: 'row', height: '100%', alignItems: 'center'}}>
+                        {messageImgs.map((mImg, idx) => {
+                            return (
+                                <ImgData key={`img-${idx}-${mImg.linkKey}`} type={mImg.type} linkKey={mImg.linkKey} size='32px'/>
+                            )
+                        })}
+                        </Box>}
+                        </Box>
                     }
                 </Alert>
             </Fade>

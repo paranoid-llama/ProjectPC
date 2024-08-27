@@ -1,8 +1,10 @@
 import {useState, useEffect, useTransition, useContext} from 'react'
 import { ErrorContext } from '../../../../app/contexts/errorcontext'
+import { AlertsContext } from '../../../../alerts/alerts-context'
 import {useDispatch, connect, useSelector} from 'react-redux'
 import store from './../../../../app/store'
 import {setIsOwned, setCollectionIsHA, setCollectionEmCount, setCollectionEms, deleteCollectionEms, setDefault} from './../../../../app/slices/collection'
+import { setUnsavedChanges } from './../../../../app/slices/editmode'
 import {setSelectedBall} from './../../../../app/slices/editmode'
 import {Box, Typography, FormGroup, FormControl, FormControlLabel, FormLabel, ToggleButton} from '@mui/material'
 import ImgData from '../../../collectiontable/tabledata/imgdata'
@@ -21,7 +23,9 @@ function RenderCollectionEdit({collectionId, ownerId, pokemon, ballInfo, selecte
     const [editEggMoves, setEditEggMoves] = useState({open: 'firstRenderFalse', idx: ''})
     const dispatch = useDispatch()
     const {handleError} = useContext(ErrorContext)
+    const {addAlert} = useContext(AlertsContext)
     const allowedBalls = Object.keys(ballInfo).filter(ball => ballInfo[ball].disabled === undefined)
+    const unsavedChanges = useSelector((state) => state.editmode.unsavedChanges)
     // const initState = allowedBalls.length === 3 || allowedBalls.length === 4 ? allowedBalls[1] : allowedBalls[0] 
 
     //useEffect(() => {
@@ -67,18 +71,25 @@ function RenderCollectionEdit({collectionId, ownerId, pokemon, ballInfo, selecte
     const handleIsOwnedChange = (event) => {
         const newValue = event.target.checked
         const defaultData = getDefaultData(globalDefault, currentDefault, pokemon.balls, maxEMs, possibleEggMoves, renderedBall)
-        const backendFunc = async() => await usePutRequest('isOwned', newValue, {pokename: pokemon.name, ballname: renderedBall}, 'collection', collectionId, ownerId, defaultData)
-        const successFunc = () => dispatch(setIsOwned({idx: selectedIdx, ball: renderedBall, ballDefault: defaultData}))
-        handleError(backendFunc, false, successFunc, () => {})
+        dispatch(setIsOwned({idx: selectedIdx, ball: renderedBall, ballDefault: defaultData}))
+        // if (unsavedChanges === false) {addAlert({severity: 'error', timeout: 4, message: 'You have unsaved changes. Make sure to save before leaving!'})}
+        dispatch(setUnsavedChanges())
+        // const backendFunc = async() => await usePutRequest('isOwned', newValue, {pokename: pokemon.name, ballname: renderedBall}, 'collection', collectionId, ownerId, defaultData)
+        // const successFunc = () => dispatch(setIsOwned({idx: selectedIdx, ball: renderedBall, ballDefault: defaultData}))
+        // handleError(backendFunc, false, successFunc, () => {})
     }
     const handleIsHAChange = (event) => {
         const newValue = event.target.value === 'true' // event.target.value comes out as a string instead of boolean
-        const successFunc = () => dispatch(setCollectionIsHA({idx: selectedIdx, ball: renderedBall, listType}))
-        const backendFunc = async() => await usePutRequest('isHA', newValue, {pokename: pokemon.name, ballname: renderedBall}, 'collection', collectionId, ownerId)
-        handleError(backendFunc, false, successFunc, () => {})
+        dispatch(setCollectionIsHA({idx: selectedIdx, ball: renderedBall, listType}))
+        // if (unsavedChanges === false) {addAlert({severity: 'error', timeout: 4, message: 'You have unsaved changes. Make sure to save before leaving!'})}
+        dispatch(setUnsavedChanges())
+        // const successFunc = () => dispatch(setCollectionIsHA({idx: selectedIdx, ball: renderedBall, listType}))
+        // const backendFunc = async() => await usePutRequest('isHA', newValue, {pokename: pokemon.name, ballname: renderedBall}, 'collection', collectionId, ownerId)
+        // handleError(backendFunc, false, successFunc, () => {})
     }
     const handleEmCountChange = (event) => {
         const newValue = selectNextEmCount(emCountSelectionList, parseInt(event.target.value))
+        
         // if (newValue < EMs.length) {
         //     const noEmSuccessFunc = () => dispatch(deleteCollectionEms({idx: selectedIdx, ball: renderedBall, listType}))
         //     const noEmBackendReq = async() => await usePutRequest('EMs', [], {pokename: pokemon.name, ballname: renderedBall}, 'collection', collectionId, ownerId)
@@ -87,17 +98,28 @@ function RenderCollectionEdit({collectionId, ownerId, pokemon, ballInfo, selecte
         
         setEditEggMoves({...editEggMoves, idx: ''})
         const hasAllPossibleEggMoves = (possibleEggMoves.length === maxEMs) && (newValue === maxEMs)
-        const successFunc = () => {
-            if (newValue < EMs.length) {
-                dispatch(deleteCollectionEms({idx: selectedIdx, ball: renderedBall, listType}))
-            }
-            if (hasAllPossibleEggMoves) {
-                for (let eggmove of possibleEggMoves) {
-                    dispatch(setCollectionEms({idx: selectedIdx, ball: renderedBall, listType, emName: eggmove}))
-                }
-            }
-            dispatch(setCollectionEmCount({idx: selectedIdx, ball: renderedBall, listType, numEMs: newValue}))
+        if (newValue < EMs.length) {
+            dispatch(deleteCollectionEms({idx: selectedIdx, ball: renderedBall, listType}))
         }
+        if (hasAllPossibleEggMoves) {
+            for (let eggmove of possibleEggMoves) {
+                dispatch(setCollectionEms({idx: selectedIdx, ball: renderedBall, listType, emName: eggmove}))
+            }
+        }
+        dispatch(setCollectionEmCount({idx: selectedIdx, ball: renderedBall, listType, numEMs: newValue}))
+        // if (unsavedChanges === false) {addAlert({severity: 'error', timeout: 4, message: 'You have unsaved changes. Make sure to save before leaving!'})}
+        dispatch(setUnsavedChanges())
+        // const successFunc = () => {
+        //     if (newValue < EMs.length) {
+        //         dispatch(deleteCollectionEms({idx: selectedIdx, ball: renderedBall, listType}))
+        //     }
+        //     if (hasAllPossibleEggMoves) {
+        //         for (let eggmove of possibleEggMoves) {
+        //             dispatch(setCollectionEms({idx: selectedIdx, ball: renderedBall, listType, emName: eggmove}))
+        //         }
+        //     }
+        //     dispatch(setCollectionEmCount({idx: selectedIdx, ball: renderedBall, listType, numEMs: newValue}))
+        // }
         // if (hasAllPossibleEggMoves) {
         //     const allEmSuccessFunc = () => {
         //         for (let eggmove of possibleEggMoves) {
@@ -107,18 +129,21 @@ function RenderCollectionEdit({collectionId, ownerId, pokemon, ballInfo, selecte
         //     const allEmBackendReq = async() => await usePutRequest('EMs', possibleEggMoves, {pokename: pokemon.name, ballname: renderedBall}, 'collection', collectionId, ownerId)
         //     handleError(allEmBackendReq, false, allEmSuccessFunc, () => {})
         // }
-        const backendReq = async() => await usePutRequest('emCount', newValue, {pokename: pokemon.name, ballname: renderedBall}, 'collection', collectionId, ownerId, newValue < EMs.length ? {EMs: []} : hasAllPossibleEggMoves ? {EMs: possibleEggMoves} : undefined)
-        handleError(backendReq, false, successFunc, () => {})
+        // const backendReq = async() => await usePutRequest('emCount', newValue, {pokename: pokemon.name, ballname: renderedBall}, 'collection', collectionId, ownerId, newValue < EMs.length ? {EMs: []} : hasAllPossibleEggMoves ? {EMs: possibleEggMoves} : undefined)
+        // handleError(backendReq, false, successFunc, () => {})
     }
 
     const handleEMChange = (event) => {
         if (event === 'onlyOnePossibleEM') {
-            const onlyOneEmSuccess = () => {
-                dispatch(setCollectionEms({idx: selectedIdx, ball: renderedBall, listType, emName: possibleEggMoves[0]}))
-                dispatch(setCollectionEmCount({idx: selectedIdx, ball: renderedBall, listType, numEMs: 1} ))
-            }
-            const onlyOneEmReq = async() => await usePutRequest('EMs', possibleEggMoves, {pokename: pokemon.name, ballname: renderedBall}, 'collection', collectionId, ownerId)
-            handleError(onlyOneEmReq, false, onlyOneEmSuccess, () => {})
+            dispatch(setCollectionEms({idx: selectedIdx, ball: renderedBall, listType, emName: possibleEggMoves[0]}))
+            dispatch(setCollectionEmCount({idx: selectedIdx, ball: renderedBall, listType, numEMs: 1} ))
+            dispatch(setUnsavedChanges())
+            // const onlyOneEmSuccess = () => {
+            //     dispatch(setCollectionEms({idx: selectedIdx, ball: renderedBall, listType, emName: possibleEggMoves[0]}))
+            //     dispatch(setCollectionEmCount({idx: selectedIdx, ball: renderedBall, listType, numEMs: 1} ))
+            // }
+            // const onlyOneEmReq = async() => await usePutRequest('EMs', possibleEggMoves, {pokename: pokemon.name, ballname: renderedBall}, 'collection', collectionId, ownerId)
+            // handleError(onlyOneEmReq, false, onlyOneEmSuccess, () => {})
         } else {
             const selectedEM = event.target.innerText
             
@@ -131,21 +156,34 @@ function RenderCollectionEdit({collectionId, ownerId, pokemon, ballInfo, selecte
             const decreaseEMCount = maxEMs === possibleEggMoves.length && EMs.length > newEMArr.length
             // if the max possible ems is 4 or less AND we are taking out an egg move, decrease the em count
             const changeEMCount = increaseEMCount || decreaseEMCount
-            const successFunc = () => {
-                dispatch(setCollectionEms({idx: selectedIdx, ball: renderedBall, listType, emName: selectedEM}))
-                if (changeEMCount) {
-                    dispatch(setCollectionEmCount({idx: selectedIdx, ball: renderedBall, listType, numEMs: newEMArr.length}))
-                }
-                // next two if statements determine how the selected EM (selection box) moves depending on whether an egg move is being added (1st) or removed (2nd)
-                if (!(EMs.includes(selectedEM))) {
-                    const newSelectedEMIdx = (editEggMoves.idx === 3 && newEMArr === 4) ? '' : editEggMoves.idx+1 // if all egg moves slots are selected, remove selection borders. if not, select next empty slot
-                    setEditEggMoves({...editEggMoves, idx: newSelectedEMIdx})
-                } else if (EMs.includes(selectedEM)) {
-                    setEditEggMoves({...editEggMoves, idx: ''})
-                }
+            dispatch(setCollectionEms({idx: selectedIdx, ball: renderedBall, listType, emName: selectedEM}))
+            if (changeEMCount) {
+                dispatch(setCollectionEmCount({idx: selectedIdx, ball: renderedBall, listType, numEMs: newEMArr.length}))
             }
-            const backendReq = async() => await usePutRequest('EMs', newEMArr, {pokename: pokemon.name, ballname: renderedBall}, 'collection', collectionId, ownerId, changeEMCount ? {emCount: newEMArr.length} : undefined)   
-            handleError(backendReq, false, successFunc, () => {})
+            // next two if statements determine how the selected EM (selection box) moves depending on whether an egg move is being added (1st) or removed (2nd)
+            if (!(EMs.includes(selectedEM))) {
+                const newSelectedEMIdx = (editEggMoves.idx === 3 && newEMArr === 4) ? '' : editEggMoves.idx+1 // if all egg moves slots are selected, remove selection borders. if not, select next empty slot
+                setEditEggMoves({...editEggMoves, idx: newSelectedEMIdx})
+            } else if (EMs.includes(selectedEM)) {
+                setEditEggMoves({...editEggMoves, idx: ''})
+            }
+            // if (unsavedChanges === false) {addAlert({severity: 'error', timeout: 4, message: 'You have unsaved changes. Make sure to save before leaving!'})}
+            dispatch(setUnsavedChanges())
+            // const successFunc = () => {
+            //     dispatch(setCollectionEms({idx: selectedIdx, ball: renderedBall, listType, emName: selectedEM}))
+            //     if (changeEMCount) {
+            //         dispatch(setCollectionEmCount({idx: selectedIdx, ball: renderedBall, listType, numEMs: newEMArr.length}))
+            //     }
+            //     // next two if statements determine how the selected EM (selection box) moves depending on whether an egg move is being added (1st) or removed (2nd)
+            //     if (!(EMs.includes(selectedEM))) {
+            //         const newSelectedEMIdx = (editEggMoves.idx === 3 && newEMArr === 4) ? '' : editEggMoves.idx+1 // if all egg moves slots are selected, remove selection borders. if not, select next empty slot
+            //         setEditEggMoves({...editEggMoves, idx: newSelectedEMIdx})
+            //     } else if (EMs.includes(selectedEM)) {
+            //         setEditEggMoves({...editEggMoves, idx: ''})
+            //     }
+            // }
+            // const backendReq = async() => await usePutRequest('EMs', newEMArr, {pokename: pokemon.name, ballname: renderedBall}, 'collection', collectionId, ownerId, changeEMCount ? {emCount: newEMArr.length} : undefined)   
+            // handleError(backendReq, false, successFunc, () => {})
             // if (changeEMCount) {
             //     const changeEmCountSuccess = () => dispatch(setCollectionEmCount({idx: selectedIdx, ball: renderedBall, listType, numEMs: newEMArr.length}))
             //     const changeEmCountReq = async() => await usePutRequest('emCount', newEMArr.length, {pokename: pokemon.name, ballname: renderedBall}, 'collection', collectionId, ownerId)
@@ -155,9 +193,12 @@ function RenderCollectionEdit({collectionId, ownerId, pokemon, ballInfo, selecte
     }
 
     const handleDefaultChange = () => {
-        const successFunc = () => dispatch(setDefault({idx: selectedIdx, ball: renderedBall, prevDefault: currentDefault}))
-        const backendReq = async() => await useTagRequest(renderedBall, currentDefault, {pokename: pokemon.name, ballname: renderedBall, default: true}, collectionId)
-        handleError(backendReq, false, successFunc, () => {})
+        dispatch(setDefault({idx: selectedIdx, ball: renderedBall, prevDefault: currentDefault}))
+        // if (unsavedChanges === false) {addAlert({severity: 'error', timeout: 4, message: 'You have unsaved changes. Make sure to save before leaving!'})}
+        dispatch(setUnsavedChanges())
+        // const successFunc = () => dispatch(setDefault({idx: selectedIdx, ball: renderedBall, prevDefault: currentDefault}))
+        // const backendReq = async() => await useTagRequest(renderedBall, currentDefault, {pokename: pokemon.name, ballname: renderedBall, default: true}, collectionId)
+        // handleError(backendReq, false, successFunc, () => {})
     }
 
     const toggleEditEggMoveScreen = (idx) => {

@@ -3,27 +3,47 @@ import allPokemon from "../../utils/aprimonAPI/allpokemoninfo.js";
 import mongoose from "mongoose";
 import User from '../../models/users.js'
 
-const allPokemonNames = allPokemon.map(p => p.name.toLowerCase())
-const allPokemonDexNums = allPokemon.map(p => p.info.natDexNum)
+const allPokemonNames = allPokemon.map(p => p.info.special !== undefined ? [p.name.toLowerCase(), p.info.special.child.name.toLowerCase()] : p.name.toLowerCase()).flat()
+const allPokemonDexNums = allPokemon.map(p => p.info.special !== undefined ? [p.info.natDexNum, p.info.special.child.natDexNum] : p.info.natDexNum).flat()
 
 export function validateNewOnHand(req, res, next) {
     const {newOnHand, editType} = req.body
 
     if (editType === 'addOnHand') {
-        const pokemonIdx = allPokemonNames.map(pName => newOnHand.name.toLowerCase().includes(pName)).indexOf(true)
-        const validatedPokemon = pokemonIdx !== -1
-        const validQty = newOnHand.qty > 0 && newOnHand.qty <= 999
-        const rightNatDexNum = pokemonIdx !== -1 && allPokemonDexNums[pokemonIdx] === newOnHand.natDexNum
-        const validApriball = apriballs.includes(newOnHand.ball)
-        const validPoke = validatedPokemon && validQty && rightNatDexNum && validApriball
-    
-        if (!validPoke) {
-            const exception = new Error()
-            exception.name = 'Bad Request'
-            exception.message = "The on-hand pokemon information is invalid."
-            exception.status = 400
-            return res.status(400).send(exception)
-        }
+        if (Array.isArray(newOnHand)) {
+            const validatedOh = []
+            newOnHand.forEach(p => {
+                const pokemonIdx = allPokemonNames.map(pName => p.name.toLowerCase().includes(pName)).indexOf(true)
+                const validatedPokemon = pokemonIdx !== -1
+                const validQty = p.qty > 0 && p.qty <= 999
+                const rightNatDexNum = pokemonIdx !== -1 && allPokemonDexNums[pokemonIdx] === p.natDexNum
+                const validApriball = apriballs.includes(p.ball)
+                const validPoke = validatedPokemon && validQty && rightNatDexNum && validApriball
+                validatedOh.push(validPoke ? true : false)
+            })
+            if (validatedOh.includes(false)) {
+                const exception = new Error()
+                exception.name = 'Bad Request'
+                exception.message = "One of the on-hand pokemon information is invalid."
+                exception.status = 400
+                return res.status(400).send(exception)
+            } 
+        } else {
+            const pokemonIdx = allPokemonNames.map(pName => newOnHand.name.toLowerCase().includes(pName)).indexOf(true)
+            const validatedPokemon = pokemonIdx !== -1
+            const validQty = newOnHand.qty > 0 && newOnHand.qty <= 999
+            const rightNatDexNum = pokemonIdx !== -1 && allPokemonDexNums[pokemonIdx] === newOnHand.natDexNum
+            const validApriball = apriballs.includes(newOnHand.ball)
+            const validPoke = validatedPokemon && validQty && rightNatDexNum && validApriball
+        
+            if (!validPoke) {
+                const exception = new Error()
+                exception.name = 'Bad Request'
+                exception.message = "The on-hand pokemon information is invalid."
+                exception.status = 400
+                return res.status(400).send(exception)
+            } 
+        } 
     } 
     
     next()

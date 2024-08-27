@@ -1,4 +1,5 @@
 import {Box, Typography, Grid, Tooltip, Paper, styled, ToggleButton, useTheme} from '@mui/material'
+import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setPokemon } from '../../../app/slices/tradeoffer';
 import { selectIfPokemonIsSelected } from '../../../app/selectors/tradeselectors';
@@ -7,6 +8,37 @@ import ImgData from '../../collectiontable/tabledata/imgdata'
 import hexToRgba from 'hex-to-rgba';
 import { capitalizeFirstLetter } from '../../../../utils/functions/misc'
 import getNameDisplay from '../../../../utils/functions/display/getnamedisplay';
+import EmTooltipWrapper from '../../collectiontable/tabledata/emtooltipwrapper';
+
+function ListEmAndEmcount({emCount, EMs, isMaxEMs, fontSize, hoverTooltip, otherStyles}) {
+    const [open, setOpen] = useState(false)
+    const hoverAdjust = hoverTooltip ? {zIndex: 5} : {}
+
+    return (
+        <EmTooltipWrapper
+            EMs={EMs}
+            emCount={emCount}
+            open={open}
+            closeTooltip={() => setOpen(false)}
+            hoverTooltipInstead={hoverTooltip}
+        >
+            <Typography 
+                sx={{
+                    fontSize, 
+                    opacity: emCount !== 0? 1 : 0.5, 
+                    fontWeight: isMaxEMs ? 700 : 400, 
+                    mx: 0.5,
+                    ':hover': {cursor: 'pointer'},
+                    ...hoverAdjust,
+                    ...otherStyles
+                }}
+                onClick={() => setOpen(true)}
+            >
+                {emCount}EM
+            </Typography>
+        </EmTooltipWrapper>
+    )
+}
 
 const Item = styled(Paper)(() => ({
     backgroundColor: 'transparent',
@@ -58,7 +90,7 @@ export const compareDisplayGridComponents = {
     ))
 }
 
-const listCompareDisplayPokemonBallComp = (p, theme, oneHomeCollection, ballData, showHAEMArea, displayHA, displayEM, showIsOnhandArea) => {
+const listCompareDisplayPokemonBallComp = (p, theme, oneHomeCollection, ballData, showHAEMArea, displayHA, displayEM, showIsOnhandArea, hoverEMTooltip=false) => {
     return (
         <>
         <Typography sx={{fontSize: '12px'}}>{capitalizeFirstLetter(ballData.ball)}</Typography>
@@ -69,7 +101,7 @@ const listCompareDisplayPokemonBallComp = (p, theme, oneHomeCollection, ballData
             {(displayHA && displayEM) &&
                 <Box sx={{width: '10%'}}></Box>
             }
-            {(!oneHomeCollection && ballData.emCount !== undefined) && <Typography sx={{fontSize: '10px', opacity: ballData.emCount === 0 ? 0.5 : 1, fontWeight: ballData.isMaxEMs ? 700 : 400}}>{ballData.emCount}EM</Typography>}
+            {(!oneHomeCollection && ballData.emCount !== undefined) && <ListEmAndEmcount emCount={ballData.emCount} EMs={ballData.EMs} isMaxEMs={ballData.isMaxEMs} fontSize='10px' hoverTooltip={hoverEMTooltip}/>}
         </Box>}
         {showIsOnhandArea && 
             <Box sx={{...theme.components.box.fullCenterRow, borderTop: '1px solid rgba(255,255,255, 0.3)'}}>
@@ -80,7 +112,7 @@ const listCompareDisplayPokemonBallComp = (p, theme, oneHomeCollection, ballData
     )
 }
 
-const listCompareDisplayIndividualComp = (p, theme, oneHomeCollection, showHAEMArea, displayHA, displayEM, displayName, nameSize, imgAreaMargin, selected=false, list) => {
+const listCompareDisplayIndividualComp = (p, theme, oneHomeCollection, showHAEMArea, displayHA, displayEM, displayName, nameSize, imgAreaMargin, selected=false, list, hoverEMTooltip=false) => {
     return (
         <>
             <Box sx={{...theme.components.box.fullCenterCol, height: '70%', width: '100%', justifyContent: 'start'}}>
@@ -100,12 +132,12 @@ const listCompareDisplayIndividualComp = (p, theme, oneHomeCollection, showHAEMA
                     {(displayHA && displayEM) &&
                         <Box sx={{width: '20%'}}></Box>
                     }
-                    {(!oneHomeCollection && p.emCount !== undefined) && <Typography sx={{fontSize: '12px', opacity: p.emCount === 0 ? 0.5 : 1, fontWeight: p.isMaxEMs ? 700 : 400}}>{p.emCount}EM</Typography>}
+                    {(!oneHomeCollection && p.emCount !== undefined) && <ListEmAndEmcount emCount={p.emCount} EMs={p.EMs} isMaxEMs={p.isMaxEMs} fontSize='12px' hoverTooltip={hoverEMTooltip}/>}
                 </Box>}
             </Box>}
             {p.onhandId && 
-                <Box sx={{position: 'relative', width: '100%', height: 0}}>
-                    <Box sx={{position: 'absolute', width: '100%', ...theme.components.box.fullCenterRow, top: '-2px'}}>
+                <Box sx={{position: 'relative', width: '100%', height: 0, borderTop: !showHAEMArea ? '1px solid rgba(255,255,255, 0.3)' : 'none'}}>
+                    <Box sx={{position: 'absolute', width: '100%', ...theme.components.box.fullCenterRow, top: showHAEMArea ? '-2px' : '2px'}}>
                         <Typography sx={{fontSize: '9px'}}>On-Hand</Typography>
                     </Box>
                 </Box>
@@ -131,6 +163,8 @@ const listCompareDisplayIndividualComp = (p, theme, oneHomeCollection, showHAEMA
 
 
 export function listCompareDisplayPokemon(p, oneHomeCollection, theme, list, toggle=false, randPar1, randPar2, userNameDisplaySettings) {
+    //please dont delete list, randPar1, and randPar2. matches listcomparedisplayindividual params. see comaprisondisplay for details
+    //toggle is an old parameter that isnt used now that i have PokemonCompareDisplayComponent
     const amountOfBalls = p.balls.length
     return (
         <>
@@ -156,7 +190,7 @@ export function listCompareDisplayPokemon(p, oneHomeCollection, theme, list, tog
         <Box 
             sx={{display: 'flex', alignItems: 'center', backgroundColor: '#283f57', borderRadius: '10px', my: 0.5, height: '100px', width: '100%', ...theme.components.box.fullCenterRow}}
         >
-            <Grid container sx={{height: '80%', width: '100%', pointerEvents: 'none', mt: 1, ...theme.components.box.fullCenterRow}} gap={0.6}>
+            <Grid container sx={{height: '80%', width: '100%', mt: 1, ...theme.components.box.fullCenterRow}} gap={0.6}>
                 {p.balls.map((ballData) => {
                     const showHAEMArea = (oneHomeCollection && ballData.isHA !== undefined) || (!oneHomeCollection && (ballData.isHA !== undefined || ballData.emCount !== undefined))
                     const displayHA = ballData.isHA !== undefined
@@ -167,24 +201,9 @@ export function listCompareDisplayPokemon(p, oneHomeCollection, theme, list, tog
                         <Grid 
                             item 
                             key={`pokemon-${p.id}-${ballData.ball}${ballData.onhandId === undefined ? '' : `-onhand-${ballData.onhandId}`}`} 
-                            sx={{height: '100%', width: `${100/amountOfBalls}%`, maxWidth: '8%', pointerEvents: toggle ? 'auto' : 'none', position: 'relative', ...theme.components.box.fullCenterCol, justifyContent: 'start'}}
+                            sx={{height: '100%', width: `${100/amountOfBalls}%`, maxWidth: '8%', position: 'relative', ...theme.components.box.fullCenterCol, justifyContent: 'start'}}
                         >
-                            {toggle ? 
-                            <ToggleButton 
-                                sx={{...theme.components.box.fullCenterCol, ...togglePokemonStyles, ...togglePokemonThemeDepStyles(theme)}}
-                                selected={pokemonBallIsSelected}
-                                value={ballData.onhandId !== undefined ? ballData.onhandId : `${p.id} ${ballData.ball}`}
-                                onChange={() => toggleFunc(ballData)}
-                            >
-                                {listCompareDisplayPokemonBallComp(p, theme, oneHomeCollection, ballData, showHAEMArea, displayHA, displayEM, showIsOnhandArea)}
-                                {pokemonBallIsSelected && 
-                                    <Box sx={{position: 'absolute', top: '-5px', right: '1px'}}>
-                                        <ImgData type='icons' linkKey='greencheckmark' size='10px'/>
-                                    </Box>
-                                }
-                            </ToggleButton> : 
-                            listCompareDisplayPokemonBallComp(p, theme, oneHomeCollection, ballData, showHAEMArea, displayHA, displayEM, showIsOnhandArea)
-                            }
+                            {listCompareDisplayPokemonBallComp(p, theme, oneHomeCollection, ballData, showHAEMArea, displayHA, displayEM, showIsOnhandArea)}
                         </Grid> 
                     )
                 })}
@@ -215,7 +234,7 @@ export function listCompareDisplayIndividual(p, oneHomeCollection, theme, list, 
                 value={p.onhandId !== undefined ? p.onhandId : `${p.id} ${p.ball}`}
                 onChange={toggleFunc}
             >
-                {listCompareDisplayIndividualComp(p, theme, oneHomeCollection, showHAEMArea, displayHA, displayEM, displayName, nameSizeAdjust, nameBallAreaMarge, isSelected, list)}
+                {listCompareDisplayIndividualComp(p, theme, oneHomeCollection, showHAEMArea, displayHA, displayEM, displayName, nameSizeAdjust, nameBallAreaMarge, isSelected, list, true)}
                 {isSelected && 
                     <Box sx={{position: 'absolute', top: '3px', right: '3px'}}>
                         <ImgData type='icons' linkKey='greencheckmark' size='16px'/>
@@ -302,7 +321,7 @@ export function PokemonCompareDisplayComponent({p, oneHomeCollection, list, user
                                 value={ballData.onhandId !== undefined ? ballData.onhandId : `${p.id} ${ballData.ball}`}
                                 onChange={() => onClickFunc(ballData)}
                             >
-                                {listCompareDisplayPokemonBallComp(p, theme, oneHomeCollection, ballData, showHAEMArea, displayHA, displayEM, showIsOnhandArea)}
+                                {listCompareDisplayPokemonBallComp(p, theme, oneHomeCollection, ballData, showHAEMArea, displayHA, displayEM, showIsOnhandArea, true)}
                                 {pokemonBallIsSelected && 
                                     <Box sx={{position: 'absolute', top: '-5px', right: '1px'}}>
                                         <ImgData type='icons' linkKey='greencheckmark' size='10px'/>

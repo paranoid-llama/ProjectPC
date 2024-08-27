@@ -3,6 +3,7 @@ import Box from '@mui/material/Box'
 import {useState, useRef, useEffect} from 'react'
 import {useLocation} from 'react-router'
 import {useSelector} from 'react-redux'
+import { toggleOnHandIdToDelete } from './../../../app/slices/editmode';
 import './../../../routes/showCollection.css'
 import TableCell from '@mui/material/TableCell'
 import DataCell from '../tabledata/datacell'
@@ -10,13 +11,14 @@ import {seeIfPokemonIsSelected, selectOnHandPokemon} from './../../../app/select
 import getNameDisplay from '../../../../utils/functions/display/getnamedisplay';
 import {setSelected} from './../../../app/slices/editmode'
 import {connect, useDispatch} from 'react-redux'
+import EggMoveColumnDisplay from './eggmovecolumndisplay';
 
 function OnHandRowContent({columns, row, pokemonId, collectionId, styles, isSelected, setSelected, allEggMoveInfo, isEditMode, isHomeCollection, isTradePage, tradeSide, wantedByOtherList, userData}) {
     const dispatch = useDispatch()
-
+    const deleteOnHandMode = isEditMode ? useSelector((state) => state.editmode.deleteOnHandMode) : null
+    const ohIdsFlagged = isEditMode ? useSelector((state) => state.editmode.deletedOnHandIds) : null
     const possibleEMs = !isHomeCollection && (allEggMoveInfo[row.name])
     const maxEMs = !isHomeCollection && (possibleEMs === undefined ? 0 : possibleEMs.length > 4 ? 4 : possibleEMs.length)
-
     // const reRenderCount = useRef(0)
     // useEffect(() => {
     //     reRenderCount.current += 1
@@ -61,6 +63,27 @@ function OnHandRowContent({columns, row, pokemonId, collectionId, styles, isSele
                 const wantedData = isBallColumn && (wantedByOtherList[0] === undefined ? {} : wantedByOtherList[0].balls.includes(row[c.dataKey]) ? {wanted: true} : {})
                 const reservedQty = (c.dataKey === 'qty' && row.reserved !== undefined) ? {reserved: row.reserved} : {}
                 return (
+                    c.dataKey === 'EMs' ?
+                    <EggMoveColumnDisplay
+                        key={`${row._id}-${c.label}`}
+                        EMs={row.EMs}
+                        emCount={row.emCount}
+                        emKeyLiteral={(emNum) => `${row._id}-${row.ball}-egg-move-${emNum}`}
+                        baseStyles={styles}
+                        isEditMode={isEditMode}
+                        flaggedForDeletion={deleteOnHandMode && ohIdsFlagged.includes(row._id)}
+                        onClickFunc={deleteOnHandMode ? () => dispatch(toggleOnHandIdToDelete(row._id)) : isSelected ? null : setSelected}
+                        blackSquare={isBlackSquare}
+                        isTradePage={isTradePage}
+                        tradeSide={tradeSide}
+                        tradeDispData={isTradePage ? 
+                            {
+                                pData: {name: row.name, id: row.imgLink, natDexNum: row.natDexNum},
+                                ballData: {ball: row.ball, onhandId: row._id, ...wantedData},
+                                fullData: row
+                            } : {}
+                        }
+                    /> : 
                     <DataCell
                         key={`${row._id}-${c.label}`}
                         label={label}
@@ -70,7 +93,9 @@ function OnHandRowContent({columns, row, pokemonId, collectionId, styles, isSele
                         isEditMode={isEditMode}
                         leftMostCell={c.label === '#' ? true : false}
                         isSelected={isSelected}
-                        onClickFunc={setSelected}
+                        flaggedForDeletion={deleteOnHandMode && ohIdsFlagged.includes(row._id)}
+                        ohDeleteMode={deleteOnHandMode}
+                        onClickFunc={deleteOnHandMode ? () => dispatch(toggleOnHandIdToDelete(row._id)) : isSelected ? null : setSelected}
                         onhandCells={true}
                         specialStyles={textSizeAdjustor}
                         blackSquare={isBlackSquare}

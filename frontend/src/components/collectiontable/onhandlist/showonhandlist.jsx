@@ -34,10 +34,11 @@ export default function ShowOnHandList({onhandList, collectionID, styles, eggMov
 
     const emColumns = isHomeCollection ? [] : [
         {label: 'EM Count', dataKey: 'emCount', width: '10%'},
-        {label: 'EM 1', dataKey: 'EMs', width: '10%', idx: 0},
-        {label: 'EM 2', dataKey: 'EMs', width: '10%', idx: 1},
-        {label: 'EM 3', dataKey: 'EMs', width: '10%', idx: 2},
-        {label: 'EM 4', dataKey: 'EMs', width: '10%', idx: 3},
+        {label: 'Egg Moves', dataKey: 'EMs', width: '30%'},
+        // {label: 'EM 1', dataKey: 'EMs', width: '10%', idx: 0},
+        // {label: 'EM 2', dataKey: 'EMs', width: '10%', idx: 1},
+        // {label: 'EM 3', dataKey: 'EMs', width: '10%', idx: 2},
+        // {label: 'EM 4', dataKey: 'EMs', width: '10%', idx: 3},
     ]
 
     const columns = [

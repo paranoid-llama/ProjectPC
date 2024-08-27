@@ -72,7 +72,7 @@ export default function SelectAndCompare({selectedCol, userCollections, ownerCol
                                         <Typography sx={{fontSize: '12px'}}>
                                             {aprimonCounts.canOfferAprimon.length} Aprimon: {aprimonCounts.canOfferAprimon.filter(count => count.isHA === true).length} with HA, {aprimonCounts.canOfferAprimon.filter(count => count.isHA === undefined).length} 
                                         </Typography>
-                                        <Tooltip title="Non-HA refers to pokemon who do not have hidden abilites."><Typography sx={{cursor: 'pointer', color: 'turquoise', textAlign: 'center', mx: 0.5, fontSize: '12px'}}> Non-HA.</Typography></Tooltip>
+                                        <Tooltip title="Non-HA refers to pokemon who do not have hidden abilites, or cannot have them in that ball combination."><Typography sx={{cursor: 'pointer', color: 'turquoise', textAlign: 'center', mx: 0.5, fontSize: '12px'}}> Non-HA.</Typography></Tooltip>
                                     </Box>
                                     <Typography sx={{fontSize: '12px'}}>
                                         {aprimonCounts.canOfferAprimonOnhand.length} On-Hand Aprimon: {aprimonCounts.canOfferAprimonOnhand.filter(count => count.isHA === true).length} with HA, {aprimonCounts.canOfferAprimonOnhand.filter(count => count.isHA === undefined).length} Non-HA.

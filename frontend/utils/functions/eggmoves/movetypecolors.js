@@ -356,7 +356,7 @@ const moveTypes = {
     'Roost': 'Flying',
     'Gravity': 'Psychic',
     'Miracle Eye': 'Psychic',
-    'Wake-Up Slap': 'Flying',
+    'Wake-Up Slap': 'Fighting',
     'Hammer Arm': 'Fighting',
     'Gyro Ball': 'Steel',
     'Healing Wish': 'Psychic',
