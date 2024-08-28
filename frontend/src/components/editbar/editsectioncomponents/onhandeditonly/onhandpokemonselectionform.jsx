@@ -28,6 +28,7 @@ import EditEggMovesModal from './modalcomponents/editeggmovesmodal'
 import Header from './modalcomponents/header'
 import SpeciesSelect from './modalcomponents/speciesselect'
 import { sortOnHandList } from '../../../../../common/sortingfunctions/onhandsorting.mjs'
+import DotWaitingText from '../../../functionalcomponents/dotwaitingtext'
 
 const scrollerStyles = {
     '&::-webkit-scrollbar': {
@@ -47,7 +48,6 @@ export default function OnHandPokemonSelectionForm({speciesEditOnly=false, open,
     //usage in regular functions
     const dispatch = useDispatch()
     const theme = useTheme()
-    const [pending, startTransition] = useTransition()
     const userNameDisplaySettings = useRouteLoaderData('root').user.settings.display.pokemonNames
     const {handleError} = useContext(ErrorContext)
 
@@ -56,11 +56,12 @@ export default function OnHandPokemonSelectionForm({speciesEditOnly=false, open,
     const onhandState = useSelector((state) => state.onhand)
     const collectionID = useLoaderData()._id
     const initialSelection = initialPokemonData.imgLink === undefined ? {} : selectCollectionPokemon(store.getState(), initialPokemonData.imgLink)
-    const [pokemonData, setPokemonData] = useState({selection: {...initialSelection}, searchData: '', ball: initialPokemonData.ball, newOnHandData: {}, otherNewOnHands: [], selectedNewOnHand: 0})
+    const [pokemonData, setPokemonData] = useState({selection: {...initialSelection}, searchData: '', ball: initialPokemonData.ball, newOnHandData: {}, otherNewOnHands: [], selectedNewOnHand: 0, saving: false})
     const [confirmDecisionModal, setConfirmDecisionModal] = useState(false)
     const [selectedEMIdx, setSelectedEMIdx] = useState('')
     const [editEggMoveScreen, setEditEggMoveScreen] = useState(false)
 
+    const savePending = pokemonData.saving
     const addingMultipleOnhands = pokemonData.otherNewOnHands.length !== 0
     const specificPokemonDataPath = addingMultipleOnhands ? pokemonData.otherNewOnHands[pokemonData.selectedNewOnHand] : pokemonData
     // console.log(pokemonData)
@@ -143,7 +144,7 @@ export default function OnHandPokemonSelectionForm({speciesEditOnly=false, open,
 
     const handleCloseModal = () => {
         handleClose()
-        setTimeout(() => setPokemonData({selection: {...initialSelection}, searchData: '', ball: initialPokemonData.ball, newOnHandData: {}, otherNewOnHands: [], selectedNewOnHand: 0}), 500)
+        setTimeout(() => setPokemonData({selection: {...initialSelection}, searchData: '', ball: initialPokemonData.ball, newOnHandData: {}, otherNewOnHands: [], selectedNewOnHand: 0, saving: false}), 500)
     }
 
     const handleSaveAndCloseSpeciesEditOnly = () => {
@@ -161,6 +162,7 @@ export default function OnHandPokemonSelectionForm({speciesEditOnly=false, open,
             qty: 1
         }
         const saveToDataBase = {...sharedData, _id: initialPokemonData._id}
+        setPokemonData({...pokemonData, saving: true})
         const successFunc = () => {
             dispatch(setPokemon({
                 idx: idxOfInitialPokemon,
@@ -169,15 +171,20 @@ export default function OnHandPokemonSelectionForm({speciesEditOnly=false, open,
                 sortingOptions
             }))
             dispatch(changeOnHandPokemon({onhandId: initialPokemonData._id, newPokeData: sharedData, sortingOptions}))
+            setPokemonData({...pokemonData, saving: false})
             //spawning alert
             const alertMessage = `Changed the On-Hand to ${capitalizeFirstLetter(pokemonData.ball)} ${pokemonData.selection.name}!`
             const alertInfo = {severity: 'success', message: alertMessage, timeout: 3, messageImgs: [{type: 'ball', linkKey: pokemonData.ball}, {type: 'poke', linkKey: pokemonData.selection.imgLink}]}
             const id = addAlert(alertInfo);
             setAlertIds((prev) => [...prev, id]);
+            handleCloseModal()
         }
         const backendFunc = async() => await bulkEditOnHandInfo(saveToDataBase, initialPokemonData._id, collectionID)
-        handleError(backendFunc, false, successFunc, () => {})
-        handleClose()
+        const errorFunc = () => {
+            setPokemonData({...pokemonData, saving: false})
+            handleClose()
+        }
+        handleError(backendFunc, false, successFunc, errorFunc)
     }
 
     const initNewSelection = (name, getFirstMon=false) => {
@@ -351,6 +358,11 @@ export default function OnHandPokemonSelectionForm({speciesEditOnly=false, open,
     }
 
     const handleAddNewOnHand = () => {
+        setPokemonData({...pokemonData, saving: true})
+        const errorFunc = () => {
+            handleClose()
+            setPokemonData({...pokemonData, saving: false})
+        }
         if (addingMultipleOnhands) {
             const newOnHandsFormattedForBackend = pokemonData.otherNewOnHands.map(pData => {return getStateBackendOnhandData(pData).saveToDataBase}) 
             const newOnHandsFormattedForState = pokemonData.otherNewOnHands.map(pData => {return getStateBackendOnhandData(pData).stateInfo}) 
@@ -358,20 +370,21 @@ export default function OnHandPokemonSelectionForm({speciesEditOnly=false, open,
             const successFunc = () => {
                 dispatch(setNewOnHand(newOnHandsFormattedForState)) //updates row content state
                 dispatch(addOnHandPokemonToList({newOnhand: newOnHandsFormattedForState, sortingOptions})) //updates show list state, which allows the new on hand to appear
+                setPokemonData({...pokemonData, saving: false})
                 //spawning alert
                 const alertMessage = `Added Multiple On-hand Pokemon!`
                 const alertInfo = {severity: 'success', message: alertMessage, timeout: 5}
                 addAlert(alertInfo);
                 handleCloseModal()
             }
-            startTransition(() => {
-                handleError(backendFunc, false, successFunc, () => {handleClose()})
-            })
+            setPokemonData({...pokemonData, saving: false})
+            handleError(backendFunc, false, successFunc, errorFunc)
         } else {
-           const {saveToDataBase, stateInfo} = getStateBackendOnhandData(pokemonData)
+            const {saveToDataBase, stateInfo} = getStateBackendOnhandData(pokemonData)
             const successFunc = () => {
                 dispatch(setNewOnHand(stateInfo)) //updates row content state
                 dispatch(addOnHandPokemonToList({newOnhand: stateInfo, sortingOptions})) //updates show list state, which allows the new on hand to appear
+                setPokemonData({...pokemonData, saving: false})
                 //spawning alert
                 const alertMessage = `Added ${capitalizeFirstLetter(pokemonData.ball)} ${pokemonData.selection.name}`
                 const alertInfo = {severity: 'success', message: alertMessage, timeout: 5, messageImgs: [{type: 'ball', linkKey: pokemonData.ball}, {type: 'poke', linkKey: stateInfo.imgLink}]}
@@ -379,9 +392,7 @@ export default function OnHandPokemonSelectionForm({speciesEditOnly=false, open,
                 handleCloseModal()
             }
             const backendFunc = async() => await newOnHandPutReq(saveToDataBase, collectionID)
-            startTransition(() => {
-                handleError(backendFunc, false, successFunc, () => {handleClose()})
-            }) 
+            handleError(backendFunc, false, successFunc, errorFunc)
         }  
     }
 
@@ -526,10 +537,10 @@ export default function OnHandPokemonSelectionForm({speciesEditOnly=false, open,
                         </Box>
                         <Box sx={{height: '8%', display: 'flex', justifyContent: 'center'}}>
                             <Box sx={{width: '33%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                                <Button size='small' variant='contained' onClick={addingMultipleOnhands ? () => setConfirmDecisionModal(true) : handleCloseModal} disabled={pending}>Back</Button>
+                                <Button size='small' variant='contained' onClick={addingMultipleOnhands ? () => setConfirmDecisionModal(true) : handleCloseModal} disabled={savePending}>Back</Button>
                             </Box>
                             <Box sx={{width: '33%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                                <Button size='large' variant='contained' onClick={handleAddNewOnHand} disabled={pending}>{pending ? 'Saving...' : 'Save'}</Button>
+                                <Button size='large' variant='contained' onClick={handleAddNewOnHand} disabled={savePending}>{savePending ? <>Saving<DotWaitingText/></> : 'Save'}</Button>
                             </Box>
                             <Box sx={{width: '33%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                             <Button size='small' variant='contained' onClick={handleAddAnotherOnhand} sx={{fontSize: '12px', padding: 0.5}} disabled={(pokemonData.otherNewOnHands.length === 0 && Object.keys(pokemonData.selection).length === 0)}>Add another on-hand</Button>
@@ -553,10 +564,10 @@ export default function OnHandPokemonSelectionForm({speciesEditOnly=false, open,
                         </Box>
                         <Box sx={{height: '10%', display: 'flex', justifyContent: 'center'}}>
                             <Box sx={{width: '33%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                                <Button size='small' variant='contained' onClick={handleCloseModal} disabled={pending}>Back</Button>
+                                <Button size='small' variant='contained' onClick={handleCloseModal} disabled={savePending}>Back</Button>
                             </Box>
                             <Box sx={{width: '33%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                                <Button size='large' variant='contained' onClick={handleSaveAndCloseSpeciesEditOnly} disabled={pending}>{pending ? 'Saving...' : 'Save'}</Button>
+                                <Button size='large' variant='contained' onClick={handleSaveAndCloseSpeciesEditOnly} disabled={savePending}>{savePending ? <>Saving<DotWaitingText/></>  : 'Save'}</Button>
                             </Box>
                             <Box sx={{width: '33%'}}></Box>
                         </Box>

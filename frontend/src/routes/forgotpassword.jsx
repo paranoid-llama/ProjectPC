@@ -8,6 +8,7 @@ import BodyWrapper from '../components/partials/routepartials/bodywrapper'
 import TimeoutButton from '../components/functionalcomponents/timeoutbutton'
 import hexToRgba from 'hex-to-rgba'
 import generateForgotPwTokenForBackend from '../../utils/functions/backendrequests/users/forgotpassword/generateforgotpwtoken'
+import DotWaitingText from '../components/functionalcomponents/dotwaitingtext'
 
 export default function ForgotPassword({}) {
     const theme = useTheme()
@@ -16,6 +17,7 @@ export default function ForgotPassword({}) {
     const {handleError} = useContext(ErrorContext)
     const {addAlert} = useContext(AlertsContext)
     const [emailError, setEmailError] = useState(false)
+    const [sendingEmail, setSendingEmail] = useState(false)
     
     const stateData = location.state
     const [tokenError, setTokenError] = useState(stateData !== null)
@@ -35,15 +37,17 @@ export default function ForgotPassword({}) {
     }
 
     const generateToken = () => {
-        const backendFunc = async() => generateForgotPwTokenForBackend(emailRef.current.value)
+        setSendingEmail(true)
+        const backendFunc = async() => await generateForgotPwTokenForBackend(emailRef.current.value)
         const successFunc = (status) => {
+            setSendingEmail(false)
             if (status && status.error) {
                 setEmailError(true)
             } else {
                 addAlert({severity: 'success', timeout: 4, message: 'Sent the e-mail!'})
             } 
         }
-        const errorFunc = () => {}
+        const errorFunc = () => {setSendingEmail(false)}
         handleError(backendFunc, false, successFunc, errorFunc, false, true)
     }
 
@@ -87,6 +91,7 @@ export default function ForgotPassword({}) {
                 >
                     Send E-mail
                 </TimeoutButton>
+                {sendingEmail && <Typography sx={{fontSize: '11px'}}>Sending E-mail<DotWaitingText/></Typography>}
                 <Typography sx={{width: '100%', textAlign: 'center', mt: 1, fontSize: '12px'}}>
                     If the e-mail address exists, it'll receive an e-mail detailing instructions on how to reset your password. Please check your junk box if you appear to have not received it.
                 </Typography>

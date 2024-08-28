@@ -10,6 +10,7 @@ import { listTradeItem, listTradePokemon } from '../partialcomponents/listtrades
 import ScrollBar from '../../../components/functionalcomponents/scrollbar'
 import { acceptTradeOffer, rejectTradeOffer, counterTradeOffer, cancelTrade, toggleMarkedAsComplete } from '../../../../utils/functions/backendrequests/trades/traderesponse'
 import ConfirmDecisionModal from '../../../components/functionalcomponents/confirmdecisionmodal'
+import DotWaitingText from '../../../components/functionalcomponents/dotwaitingtext'
 
 export default function ShowOffer({numOfOffers, tradeParticipants, offersBasicData, selectedOfferIdx, selectedOfferData, handleSelectedOfferChange, tradeId, tradeUsers, isPending, markedCompleteData, tradeStatus, errorSelection}) {
     const theme = useTheme()
@@ -19,6 +20,7 @@ export default function ShowOffer({numOfOffers, tradeParticipants, offersBasicDa
     const loggedInUserData = useRouteLoaderData('root')
     const [statuses, setStatuses] = useState({tradeStatus, offerStatus: selectedOfferData.status})
     const [confirmDecisionModal, setConfirmDecisionModal] = useState({open: false, error: false, type: ''})
+    const [markingComplete, setMarkingComplete] = useState(false)
     const isLatestOffer = numOfOffers === selectedOfferIdx+1
     const isTradeParticipant = loggedInUserData.loggedIn && tradeParticipants.includes(loggedInUserData.user.username)
     const otherParticipant = isTradeParticipant && tradeParticipants.filter(tradePart => tradePart !== loggedInUserData.user.username)[0]
@@ -171,6 +173,7 @@ export default function ShowOffer({numOfOffers, tradeParticipants, offersBasicDa
     }
     const markTradeAsComplete = () => {
         const tradeIsNowComplete = markedCompleteData === otherParticipant
+        setMarkingComplete(true)
         if (tradeIsNowComplete) {
             const offererColId = tradeUsers.filter(userD => userD.username === selectedOfferData.offerer)[0].tradeCollection._id
             const recipientColId = tradeUsers.filter(userD => userD.username === selectedOfferData.recipient)[0].tradeCollection._id
@@ -180,21 +183,23 @@ export default function ShowOffer({numOfOffers, tradeParticipants, offersBasicDa
                     revalidator.revalidate()
                 }, 250)
                 setStatuses({...statuses, tradeStatus: 'completed'})
+                setMarkingComplete(false)
                 //spawning alert
                 const alertMessage = `Trade is now complete! Collection updated!`
                 const alertInfo = {severity: 'success', message: alertMessage, timeout: 5}
                 const id = addAlert(alertInfo);
                 setAlertIds((prev) => [...prev, id]);
             }
-            handleError(backendFunc, false, successFunc, () => {})
+            handleError(backendFunc, false, successFunc, () => {setMarkingComplete(false)})
         } else {
             const backendFunc = async() => await toggleMarkedAsComplete(tradeId, tradeUsers.filter(userD => userD.username === otherParticipant)[0]._id, '', '', loggedInUserData.user.username)
             const successFunc = () => {
                 setTimeout(() => {
                     revalidator.revalidate()
                 }, 250)
+                setMarkingComplete(false)
             }
-            handleError(backendFunc, false, successFunc, () => {})
+            handleError(backendFunc, false, successFunc, () => {setMarkingComplete(false)})
         }
     }
 
@@ -299,7 +304,12 @@ export default function ShowOffer({numOfOffers, tradeParticipants, offersBasicDa
                 {canMarkComplete ?
                 <>
                 <Box sx={{width: '100%', height: '100%', ...theme.components.box.fullCenterCol, gap: 2}}>
-                    <ToggleButton value='' onChange={markTradeAsComplete} selected={markedCompleteData === loggedInUserData.user.userData} variant='contained' sx={{backgroundColor: 'rgb(40, 167, 69)', color: 'white', py: 1, ':hover': {backgroundColor: 'rgba(40, 167, 69, 0.5)'}}}>{markedCompleteAlready ? 'Mark Incomplete' : 'Mark as Complete'}</ToggleButton>
+                    <ToggleButton value='' onChange={markTradeAsComplete} selected={markedCompleteData === loggedInUserData.user.userData} variant='contained' sx={{backgroundColor: 'rgb(40, 167, 69)', color: 'white', py: 1, ':hover': {backgroundColor: 'rgba(40, 167, 69, 0.5)'}}} disabled={markingComplete}>
+                        {
+                            markingComplete ? (markedCompleteAlready ? <>Marking Incomplete<DotWaitingText/></>  : <>Marking Complete<DotWaitingText/></> ) : 
+                            markedCompleteAlready ? 'Mark Incomplete' : 'Mark as Complete'
+                        }
+                    </ToggleButton>
                     <Typography sx={{fontSize: '12px', color: 'white', mt: -1.5}}>
                         {markedCompleteAlready ? 'You have marked this trade as complete!' : 
                             !otherUserHasntMarkedComplete ? `${otherParticipant} has marked this trade as complete!` : 

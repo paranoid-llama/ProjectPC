@@ -22,17 +22,17 @@ export default function UserNotifications({}) {
     const viewNotificationDetails = routeState.viewNotification && notifications.filter(noti => noti._id === routeState.viewNotification)[0]
     useEffect(() => {
         if (routeState.viewNotification && viewNotificationDetails.unread) {
-            const backendFunc = async() => readNotification(userData.username, viewNotificationDetails._id, false)
+            const backendFunc = async() => await readNotification(userData.username, viewNotificationDetails._id, false)
             handleError(backendFunc, false, () => {}, () => {}, false, true)
         }
     }, [routeState.viewNotification])
 
     return (
-        <BodyWrapper  sx={{...theme.components.box.fullCenterCol, margin: 2}}>
+        <BodyWrapper  sx={{...theme.components.box.fullCenterCol, justifyContent: 'start'}}>
             <Box sx={{...theme.components.box.fullCenterCol, maxWidth: '1200px', width: '100%'}}>
                 <Box sx={{maxHeight: '150px', height: '10%', width: '100%', ...theme.components.box.fullCenterRow, justifyContent: 'start', mt: -2, pb: 0.5, borderBottom: '1px solid rgba(100,100,100, 0.5)'}}>
                     <Box sx={{...theme.components.box.fullCenterCol, alignItems: 'start', ml: 5}}>
-                        <Typography sx={{fontSize: '28px', fontWeight: 700}}>Your Notifications</Typography>
+                        <Typography sx={{fontSize: '32px', fontWeight: 700}}>Your Notifications</Typography>
                         
                     </Box>
                 </Box>
@@ -40,14 +40,14 @@ export default function UserNotifications({}) {
                     <Box sx={{...theme.components.box.fullCenterRow, width: '100%', height: '20%', mt: 1}}>
                         <Box sx={{...theme.components.box.fullCenterCol, width: '60%', height: '100%'}}>
                             <Typography>Filter by Notification Type</Typography>
-                            <ToggleButtonGroup value={routeState.notificationType} exclusive onChange={(e, newVal) => setRouteState({...routeState, notificationType: newVal, pagination: 1})}>
+                            <ToggleButtonGroup value={routeState.notificationType} exclusive onChange={(e, newVal) => setRouteState({...routeState, notificationType: newVal, pagination: 1, viewNotification: ''})}>
                                 <ToggleButton value='trade' sx={{paddingY: 0}}>Trade</ToggleButton>
                                 <ToggleButton value='site' sx={{paddingY: 0}}>System Message</ToggleButton>
                                 <ToggleButton value='update' sx={{paddingY: 0}}>Site Update</ToggleButton>
                             </ToggleButtonGroup>
                         </Box>
                         <Box sx={{...theme.components.box.fullCenterCol, width: '40%', height: '100%'}}>
-                            <ToggleButton onChange={() => setRouteState({...routeState, unreadOnly: routeState.unreadOnly ? false : true, pagination: 1})} selected={routeState.unreadOnly} value='' sx={{paddingY: 0}}>Show Unread Only</ToggleButton>
+                            <ToggleButton onChange={() => setRouteState({...routeState, unreadOnly: routeState.unreadOnly ? false : true, pagination: 1, viewNotification: ''})} selected={routeState.unreadOnly} value='' sx={{paddingY: 0}}>Show Unread Only</ToggleButton>
                         </Box>
                     </Box>
                     <Box sx={{...theme.components.box.fullCenterCol, width: '100%', height: '80%', position: 'relative'}}>

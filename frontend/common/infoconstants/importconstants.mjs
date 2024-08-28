@@ -60,6 +60,7 @@ const aprimonAsideInfo = {
     ['Alternate Forms']: {id: "The part of the alternate form name that differentiates it from its other alternate forms. E.g. Minior's Core Color", canFirstLetter: 'Deerling, Pumpkaboo/Gourgeist, Rockruff-Dusk, and Oricorio. See detailed list for more info'},
     ['Nidoran']: {id: 'Can do gender symbol instead'},
     ['Paldean Tauros']: {id: 'You do not need an identifier for Combat Breed. Also, you can name the breeds "Fire" and "Water" if wanted.'},
+    ['Shellos']: {id: 'You can name the forms "Blue" and "Pink" if wanted.'},
     ['Deerling']: {canFirstLetter: 'Multiple form names have the same first letter'},
     ['Vivillon']: {canFirstLetter: 'Too many forms'},
     ['Pumpkaboo']: {canFirstLetter: 'Multiple form names have the same first letter'},

@@ -11,12 +11,9 @@ import ImgData from '../../../components/collectiontable/tabledata/imgdata'
 import userSettingsBackendRequest from '../../../../utils/functions/backendrequests/users/settings'
 import { Virtuoso } from 'react-virtuoso'
 
-export default function Profile({}) {
+export default function Profile({user, revalidate}) {
     const theme = useTheme()
-    const user = useRouteLoaderData("userSettings")
     const {handleError} = useContext(ErrorContext)
-    const revalidator = useRevalidator()
-    const revalidate = useOutletContext()
     const [formData, setFormData] = useState({bioValue: user.settings.profile.bio, bioLength: user.settings.profile.bio.length, games: user.settings.profile.games})
     const changesRef = useRef({bio: user.settings.profile.bio, games: user.settings.profile.games})
 

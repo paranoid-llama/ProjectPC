@@ -79,7 +79,7 @@ export default function UserTrades({}) {
 
                     </Box> */}
                     <Box sx={{height: '100%', width: '95%', ...theme.components.box.fullCenterCol, justifyContent: 'start', mt: 1, gap: 1}}>
-                        <Box sx={{...theme.components.box.fullCenterRow, height: '30%', width: '100%', mt: 1}}>
+                        <Box sx={{...theme.components.box.fullCenterRow, height: '30%', width: '100%'}}>
                             <Box sx={{...theme.components.box.fullCenterCol, width: '60%', height: '100%'}}>
                                 <Typography>Filter by Trade Status</Typography>
                                 <ToggleButtonGroup value={routeState.tradeStatus} onChange={(e, newVal) => setRouteState({...routeState, tradeStatus: newVal, pagination: 1})}>

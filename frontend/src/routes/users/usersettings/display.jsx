@@ -11,11 +11,8 @@ import NameSettingsModal from './components/namesettingsmodal'
 import ImgData from '../../../components/collectiontable/tabledata/imgdata'
 import hexToRgba from 'hex-to-rgba'
 
-export default function Display({}) {
+export default function Display({user, revalidate}) {
     const theme = useTheme()
-    const user = useRouteLoaderData("userSettings")
-    
-    const revalidate = useOutletContext()
     const pokemonNameDisplays = user.settings.display.pokemonNames
     const [displayTentativeChanges, setDisplayTentativeChanges] = useState({
         general: {regionalForms: pokemonNameDisplays.general.regionalForms, originRegionalForms: pokemonNameDisplays.general.originRegionalForms, alternateForms: pokemonNameDisplays.general.alternateForms},

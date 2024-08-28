@@ -6,6 +6,7 @@ import BodyWrapper from '../components/partials/routepartials/bodywrapper'
 import ControlledTextInput from '../components/functionalcomponents/controlledtextinput'
 import verifyForgotPwTokenForBackend from '../../utils/functions/backendrequests/users/forgotpassword/verifyforgotpwtoken'
 import resetPasswordRequest from '../../utils/functions/backendrequests/users/forgotpassword/resetpassword'
+import DotWaitingText from '../components/functionalcomponents/dotwaitingtext'
 
 export default function ResetPassword({}) {
     const search = useLocation().search
@@ -15,6 +16,7 @@ export default function ResetPassword({}) {
     const passwordRef = useRef(null)
     const confirmPasswordFieldRef = useRef(null)
     const [password, setPassword] = useState({value: '', error: false, passwordFocused: false, confirmPassword: false, passwordsMatch: 'none', eightChars: false, oneUpper: false, oneLower: false, oneNumber: false})
+    const [submitting, setSubmitting] = useState(false)
 
     const passwordSpecificationsTextColor = (state) => {
         return {color: (password.passwordFocused || state) ? state ? 'green' : 'red' : 'grey'}
@@ -53,6 +55,7 @@ export default function ResetPassword({}) {
         const passwordFitsRequirements = password.eightChars && password.oneLower && password.oneUpper && password.oneNumber
         const passwordsMatch = password.value === confirmPasswordFieldRef.current.value
         const errorInRegister =  !passwordFitsRequirements || !passwordsMatch 
+        setSubmitting(true)
         if (errorInRegister) {
             const errorKeys = {
                 error: !passwordFitsRequirements,
@@ -61,11 +64,13 @@ export default function ResetPassword({}) {
             setPassword({...password, ...errorKeys})
             return
         } else {
-            const backendFunc = async() => resetPasswordRequest(search, password.value)
+            const backendFunc = async() => await resetPasswordRequest(search, password.value)
             const successFunc = () => {
+                setSubmitting(false)
                 navigate('/login', {state: {success: true, message: 'Password Reset!'}})
             }
             const errorFunc = () => {
+                setSubmitting(false)
                 navigate('/forgot-password', {state: {error: true, type: 'expired'}})
             }
             handleError(backendFunc, false, successFunc, errorFunc, false, true)
@@ -123,7 +128,7 @@ export default function ResetPassword({}) {
                         <Typography sx={{color: 'red', fontSize: '12px', ml: 2}}>Field does not match password!</Typography> 
                     </Box>}
                 </Box>
-                <Button variant='contained' sx={{mt: 5}} onClick={finalizeReset}>Submit</Button>
+                <Button variant='contained' sx={{mt: 5}} onClick={finalizeReset} disabled={submitting}>{submitting ? <>Submitting<DotWaitingText/></>  : 'Submit'}</Button>
             </Box>
         </BodyWrapper>
     )

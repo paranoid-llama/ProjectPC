@@ -22,7 +22,7 @@ import CollectionOptionsModal from '../components/editbar/collectionoptions/coll
 export default function EditCollection() {
     const dispatch = useDispatch()
     const theme = useTheme()
-    const [pending, startTransition] = useTransition()
+    const [saving, setSaving] = useState(false)
     const [saveConfirm, setSaveConfirm] = useState(false)
     const {handleError} = useContext(ErrorContext)
     const {addAlert} = useContext(AlertsContext)
@@ -37,8 +37,9 @@ export default function EditCollection() {
 
     const leaveEditMode = () => {
         dispatch(setUnsavedChanges('reset')) 
-        navigate(linkBack)
         revalidator.revalidate()
+        navigate(linkBack)
+        
         //do not switch the order of these or it ends up revalidating the edit route before it changes which means every other unnecessary state 
         //(col onhand options) gets revalidated too. at least, i THINK thats what happens since it re-renders a LOT when leaving edit mode
     }
@@ -57,10 +58,11 @@ export default function EditCollection() {
             delete p.imgLink
             return p
         }) : undefined
-        const backendFunc = async() => usePutRequest(newOwnedPokemonArr, newOnhandList, collection._id)
+        setSaving(true)
+        const backendFunc = async() => await usePutRequest(newOwnedPokemonArr, newOnhandList, collection._id)
         const successFunc = () => {
             addAlert({severity: 'success', timeout: 5, message: 'Successfully saved the changes to your collection!'})
-            
+            setSaving(false)
             if (exitAfter) {leaveEditMode()}
             else {dispatch(setUnsavedChanges('reset'))}
         }
@@ -68,10 +70,9 @@ export default function EditCollection() {
             if (exitAfter) {
                 toggleSaveConfirmModal()
             }
+            setSaving(false)
         }
-        startTransition(() => {
-            handleError(backendFunc, false, successFunc, errorFunc)
-        })
+        handleError(backendFunc, false, successFunc, errorFunc)
     }
 
     return (
@@ -97,9 +98,9 @@ export default function EditCollection() {
                         <Button
                             sx={{height: '100%', width: '100%', fontSize: '13px'}}
                             onClick={() => saveCollectionEdits(false)}
-                            disabled={pending}
+                            disabled={saving}
                         >
-                            {pending ? 'Saving...' : 'Save Changes'}
+                            {saving ? 'Saving...' : 'Save Changes'}
                         </Button>
                     </Box>
                     }
@@ -127,16 +128,16 @@ export default function EditCollection() {
                                 Are you sure you want to exit?
                             </Typography>
                             <Box sx={{...theme.components.box.fullCenterRow, gap: 5, mt: 5}}>
-                                <Button variant='contained' size='large' onClick={leaveEditMode} sx={{'&.Mui-disabled': {color: 'rgba(255, 255, 255, 0.5)'}}} disabled={pending}>Yes</Button>
-                                <Button variant='contained' size='large' onClick={toggleSaveConfirmModal} sx={{'&.Mui-disabled': {color: 'rgba(255, 255, 255, 0.5)'}}} disabled={pending}>No (Cancel)</Button>
+                                <Button variant='contained' size='large' onClick={leaveEditMode} sx={{'&.Mui-disabled': {color: 'rgba(255, 255, 255, 0.5)'}}} disabled={saving}>Yes</Button>
+                                <Button variant='contained' size='large' onClick={toggleSaveConfirmModal} sx={{'&.Mui-disabled': {color: 'rgba(255, 255, 255, 0.5)'}}} disabled={saving}>No (Cancel)</Button>
                                 <Button 
                                     variant='contained' 
                                     size='large' 
                                     onClick={() => saveCollectionEdits(true)} 
                                     sx={{'&.Mui-disabled': {color: 'rgba(255, 255, 255, 0.5)'}}} 
-                                    disabled={pending}
+                                    disabled={saving}
                                 >
-                                    {pending ? 
+                                    {saving ? 
                                         <CircularProgress
                                             size='26.25px'
                                             sx={{color: 'white'}}

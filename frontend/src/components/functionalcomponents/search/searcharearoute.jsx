@@ -1,10 +1,11 @@
-import {Box, Typography, useTheme, Button, ToggleButton, Select, MenuItem} from '@mui/material'
+import {Box, Typography, useTheme, Button, ToggleButton, Select, MenuItem, CircularProgress} from '@mui/material'
 import { useState, useTransition } from 'react'
 import SearchCollectionItem from './searchcollectionitem'
 import SearchUserItem from './searchuseritem'
+import DotWaitingText from '../dotwaitingtext'
 import { getBallProgress } from '../../../../utils/functions/ballprogresscircle/ballprogressstate'
 
-export default function SearchAreaRoute({query, searchType, result, page, changePage, changeSearchType, changingPage}) {
+export default function SearchAreaRoute({query, searchType, result, page, changePage, changeSearchType, changingPage, searching}) {
     //currently not using the changingPage variable as queries are fast. consider changing this later on. 
     const theme = useTheme()
     // const [page, setPage] = useState(1)
@@ -85,14 +86,24 @@ export default function SearchAreaRoute({query, searchType, result, page, change
         <Box sx={{width: '80%', minHeight: '600px', mt: 2}}>
             
             <Box sx={{maxWidth: '800px', display: 'flex', alignItems: 'center', mb: 3, position: 'relative'}}>
-                {(!searchingAll && !noResults) && 
+            {searching &&
+                <>
+                    <Typography sx={{fontSize: '12px', color: 'grey', position: 'absolute'}}>
+                    <i>
+                        Searching<DotWaitingText/>
+                    </i>
+                    </Typography>
+                    <CircularProgress/>
+                </>
+            }
+            {(!searchingAll && !noResults && !searching) && 
                 <Typography sx={{fontSize: '12px', color: 'grey', position: 'absolute'}}>
                     <i>
                         {query === '' ?  `Showing all ${searchType}` : `${resultCount} result${resultCount === 1 ? '' : 's'} found` }
                     </i>
                 </Typography>}
             </Box>
-            {(searchingCollections && !noCollections) &&
+            {(searchingCollections && !noCollections && !searching) &&
             <>
                 {searchingAll && 
                 <Box sx={{width: '100%', height: '50px', ...theme.components.box.fullCenterRow}}>
@@ -107,7 +118,7 @@ export default function SearchAreaRoute({query, searchType, result, page, change
                 </Box>}
             </>
             }
-            {(searchingUsers && !noUsers) && 
+            {(searchingUsers && !noUsers && !searching) && 
             <>
                 {searchingAll && 
                 <Box sx={{width: '100%', height: '50px', ...theme.components.box.fullCenterRow, mt: (searchingCollections && result.collectionCount !== 0) ? 4 : 0}}>
@@ -122,7 +133,7 @@ export default function SearchAreaRoute({query, searchType, result, page, change
                 </Box>}
             </>
             }
-            {noResults && 
+            {(noResults && !searching) &&
                 <Box sx={{width: '100%', height: '50px', ...theme.components.box.fullCenterRow, mt: 10}}>
                     <Typography sx={{color: 'grey'}}><i>No results found</i></Typography>
                 </Box>

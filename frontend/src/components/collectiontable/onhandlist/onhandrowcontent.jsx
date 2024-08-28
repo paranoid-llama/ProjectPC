@@ -15,6 +15,26 @@ import EggMoveColumnDisplay from './eggmovecolumndisplay';
 
 function OnHandRowContent({columns, row, pokemonId, collectionId, styles, isSelected, setSelected, allEggMoveInfo, isEditMode, isHomeCollection, isTradePage, tradeSide, wantedByOtherList, userData}) {
     const dispatch = useDispatch()
+
+    const skeletonRow = row === undefined
+    if (skeletonRow) { 
+        //skeletonRow happens when adding multiple on-hands and leaving edit mode. they come out undefined at first. I gave up trying to debug it, this is a work-around
+        return <>
+            {columns.map(c => {
+
+                return (
+                    c.dataKey === 'EMs' ? 
+                    <EggMoveColumnDisplay baseStyles={styles} skeleton={true} /> : 
+                    <TableCell padding='none' sx={{...styles.tableCell}}>
+                        <Box sx={{...styles.bodyColor, backgroundColor: 'rgb(100, 100, 100)'}}>
+
+                        </Box>
+                    </TableCell>
+                )
+            })}
+        </>
+    }
+
     const deleteOnHandMode = isEditMode ? useSelector((state) => state.editmode.deleteOnHandMode) : null
     const ohIdsFlagged = isEditMode ? useSelector((state) => state.editmode.deletedOnHandIds) : null
     const possibleEMs = !isHomeCollection && (allEggMoveInfo[row.name])
@@ -26,8 +46,6 @@ function OnHandRowContent({columns, row, pokemonId, collectionId, styles, isSele
     // }) 
     // to check how often its re-rendering
 
-    const pokeImgLink = `https://res.cloudinary.com/duaf1qylo/image/upload/sprites/${row.imgLink}.png`
-    const imgLinkModifiers = {gender: 'icons', ball: 'balls'}
 
     return (
         <React.Fragment>

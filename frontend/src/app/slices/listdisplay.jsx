@@ -5,6 +5,7 @@ import { filterList } from '../../../utils/functions/sortfilterfunctions/filterf
 import { apriballs } from '../../../common/infoconstants/miscconstants.mjs'
 import { setSortingOptionsState } from './options'
 import getNameDisplay from '../../../utils/functions/display/getnamedisplay'
+import { setOnHandInitialState } from './onhand'
 import { selectivelyReturnIsHAAndEMs } from '../../../utils/functions/misc'
 
 //this slice controls the display for the show list components (showonhandlist, showcollectionlist). 
@@ -145,6 +146,9 @@ const listDisplay = createSlice({
                     state.collection = sortList(data.default, state.collection)
                     return state
                 }
+            })
+            .addCase(setOnHandInitialState, (state, action) => {
+                
             })
     }
 })

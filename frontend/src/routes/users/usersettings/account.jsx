@@ -10,13 +10,11 @@ import changePassword from '../../../../utils/functions/backendrequests/users/ch
 import deleteUserAccount from '../../../../utils/functions/backendrequests/users/deleteaccount'
 import checkPasswordRequest from '../../../../utils/functions/backendrequests/users/checkpassword'
 
-export default function Account({}) {
+export default function Account({user, revalidate}) {
     const theme = useTheme()
     const {handleError} = useContext(ErrorContext)
     const {addAlert} = useContext(AlertsContext)
     const navigate = useNavigate()
-    const user = useRouteLoaderData('userSettings')
-    const revalidate = useOutletContext()
     const deleteConfirmPasswordRef = useRef(null)
     const [newPasswordError, setNewPasswordError] = useState({password: '', currPassword: '', confirmPassword: '', passwordFocused: false, isError: false, confirmPasswordError: false, currentPasswordError: false, eightChars: false, oneUpper: false, oneLower: false, oneNumber: false, passwordsMatch: 'none', savePending: false})
     const [confirmDeleteAcc, setConfirmDeleteAcc] = useState({open: false, confirmedPassword: false, passwordError: false, password: '', error: false})
@@ -88,7 +86,7 @@ export default function Account({}) {
 
     const toggleConfirmDeleteModal = () => {setConfirmDeleteAcc({...confirmDeleteAcc, open: !confirmDeleteAcc.open})}
     const confirmPasswordBeforeDelete = () => {
-        const backendFunc = async() => checkPasswordRequest(user.username, deleteConfirmPasswordRef.current.value)
+        const backendFunc = async() => await checkPasswordRequest(user.username, deleteConfirmPasswordRef.current.value)
         const successFunc = () => {
             setConfirmDeleteAcc({...confirmDeleteAcc, confirmedPassword: true, password: deleteConfirmPasswordRef.current.value})
         }
@@ -103,7 +101,7 @@ export default function Account({}) {
     }
 
     const deleteAccount = () => {
-        const backendFunc = async() => deleteUserAccount(user.username, confirmDeleteAcc.password)
+        const backendFunc = async() => await deleteUserAccount(user.username, confirmDeleteAcc.password)
         const successFunc = () => {
             navigate('/')
             addAlert({severity: 'error', timeout: 8, message: 'Successfully deleted your account!'})

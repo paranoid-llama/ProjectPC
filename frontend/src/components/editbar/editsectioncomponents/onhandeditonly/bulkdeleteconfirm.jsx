@@ -49,7 +49,7 @@ function ListDeletedOnHandPokemon({pData, theme, firstItem}) {
 }
 
 export default function BulkDeleteConfirm({open, toggleModal, collectionID}) {
-    const [pending, startTransition] = useTransition()
+    const [savePending, setSavePending] = useState(false)
     const theme = useTheme()
     const dispatch = useDispatch()
     const {addAlert} = useContext(AlertsContext)
@@ -67,6 +67,7 @@ export default function BulkDeleteConfirm({open, toggleModal, collectionID}) {
     }
 
     const deleteAndSave = () => {
+        setSavePending(true)
         const backendFunc = async() => await deleteOnHandPutRequest(flaggedOnhands, collectionID)
         const successFunc = () => {
             dispatch(deselect())
@@ -75,15 +76,16 @@ export default function BulkDeleteConfirm({open, toggleModal, collectionID}) {
                 dispatch(deleteOnHand(flaggedOnhands))
             }, 500)
             dispatch(setDeleteOnHandMode(false))
-
+            setSavePending(false)
             const alertInfo = {severity: 'success', timeout: 5, message: 'Deleted multiple On-Hand pokemon!'}
             addAlert(alertInfo)
             toggleModal()
         }
-        const errorFunc = () => {toggleModal()}
-        startTransition(() => {
-            handleError(backendFunc, false, successFunc, errorFunc)
-        })
+        const errorFunc = () => {
+            setSavePending(false)
+            toggleModal()
+        }
+        handleError(backendFunc, false, successFunc, errorFunc)
     }
 
     return (
@@ -91,7 +93,7 @@ export default function BulkDeleteConfirm({open, toggleModal, collectionID}) {
         aria-labelledby='bulk-delete-onhand-confirm'
         aria-describedby='confirm-the-deletion-of-all-flagged-onhand-pokmeon'
         open={open}
-        onClose={pending ? null : toggleModal}
+        onClose={savePending ? null : toggleModal}
         closeAfterTransition
         slots={{backdrop: Backdrop}}
         slotProps={{
@@ -122,11 +124,11 @@ export default function BulkDeleteConfirm({open, toggleModal, collectionID}) {
                     <Box sx={{...modalStyles.onhand.modalElementBg, width: '95%', height: '8%', mt: 1}}>
                         <Typography variant='body1' align='center' sx={{padding: '10px', fontWeight: 700}}>{setToBeDeletedOhData.length === 0 ? 'Please flag some pokemon for deletion and try again!' : 'Are you sure you want to proceed?'}</Typography>
                     </Box>
-                    {setToBeDeletedOhData.length === 0 && <Button size='large' sx={{mt: 1}} variant='contained' disabled={pending} onClick={toggleModal}>Back</Button>}
+                    {setToBeDeletedOhData.length === 0 && <Button size='large' sx={{mt: 1}} variant='contained' disabled={savePending} onClick={toggleModal}>Back</Button>}
                     {setToBeDeletedOhData.length !== 0 &&
                     <Box sx={{...theme.components.box.fullCenterRow, gap: 20, mt: 1}}>
-                        <Button size='large' variant='contained' disabled={pending} onClick={toggleModal}>No</Button>
-                        <Button size='large' variant='contained' disabled={pending} onClick={deleteAndSave}>{pending ? <CircularProgress size='29px'/> : 'Yes'}</Button>
+                        <Button size='large' variant='contained' disabled={savePending} onClick={toggleModal}>No</Button>
+                        <Button size='large' variant='contained' disabled={savePending} onClick={deleteAndSave}>{savePending ? <CircularProgress size='29px'/> : 'Yes'}</Button>
                     </Box>
                     }
                 </Box>

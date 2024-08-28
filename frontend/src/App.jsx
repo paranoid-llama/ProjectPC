@@ -61,6 +61,7 @@ import PreRouteLogic from './components/partials/auth/preroutelogic'
 import ForgotPassword from './routes/forgotpassword'
 import ResetPassword from './routes/resetpassword'
 import Announcements from './routes/announcements'
+import { ShowCollectionSkeleton, ShowUserSkeleton, ShowTradeSkeleton, UserNotificationsTradesSkeleton, UserSettingsSkeleton, NewTradeOfferSkeleton } from './components/partials/skeletons/routeskeletons'
 
 
 //can add a bit of debounce by adding number parameter in case the event causes performance issues
@@ -188,6 +189,7 @@ function Router() {
               path: "",
               element: <ShowCollection/>,
               loader: (params) => collectionLoader(params, dispatch, false, true, setListInitialState),
+              HydrateFallback: ShowCollectionSkeleton
             },
             {
               path: 'edit',
@@ -204,69 +206,48 @@ function Router() {
                   // extraAuthErrorMessage='You were blocked by this user and cannot trade with them!'
                   // extraAuthRedirectOffset={-5}
                 />,
-              loader: (params) => collectionLoader(params, undefined, false, false)
+              loader: (params) => collectionLoader(params, undefined, false, false),
+              HydrateFallback: NewTradeOfferSkeleton
             }
           ]
         },
         {
           path: "/trades/:id",
           element: <ShowTrade />,
-          loader: tradeLoader
+          loader: tradeLoader,
+          HydrateFallback: ShowTradeSkeleton
         },
         {
           path: '/trades/:id/counter-offer',
           element: <PrivateRoute Component={NewTrade} routeType='tradeCounteroffer'/>,
-          loader: (params) => tradeLoader(params, true)
+          loader: (params) => tradeLoader(params, true),
+          HydrateFallback: NewTradeOfferSkeleton
         },
         {
           path: "/users/:username",
           element: <ShowUser/>,
-          loader: userLoader
+          loader: userLoader,
+          HydrateFallback: ShowUserSkeleton
         },
         {
           path: "/users/:username/trades",
           element: <PrivateRoute Component={UserTrades} routeType='userTrades'/>,
-          loader: userTradesLoader
+          loader: userTradesLoader,
+          HydrateFallback: UserNotificationsTradesSkeleton
         },
         {
           path: '/users/:username/notifications',
           element: <PrivateRoute Component={UserNotifications} routeType='userNotifications'/>,
           loader: userLoader,
           id: 'user', 
-          children: [
-            {
-              path: ':noteId',
-
-            }
-          ]
+          HydrateFallback: UserNotificationsTradesSkeleton
         },
         {
           path: "/users/:username/settings",
           element: <PrivateRoute Component={SettingsPage} PlaceholderComponent={ShowUser} routeType='userSettings'/>,
           loader: userLoader,
           id: 'userSettings',
-          children: [
-            {
-              path: 'profile',
-              element: <Profile />
-            },
-            {
-              path: 'account',
-              element: <Account />
-            },
-            {
-              path: 'display',
-              element: <Display />
-            },
-            {
-              path: 'privacy',
-              element: <Privacy />
-            },
-            {
-              path: 'other',
-              element: <Other />
-            },
-          ]
+          HydrateFallback: UserSettingsSkeleton
         },
         {
           path: "*",
