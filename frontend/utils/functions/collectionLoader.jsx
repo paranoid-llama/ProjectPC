@@ -38,9 +38,11 @@ export async function collectionLoaderEditPage({params}, dispatch, initList, ini
                                 if (res.ok) {return data} 
                                 else {throw data}
                             }) 
+
+    dispatch(initCol(collection.ownedPokemon))
+    dispatch(initOnhand(collection.onHand))
+    dispatch(initOptions({...collection.options, collectionName: collection.name}))
     dispatch(initList({collection: collection.ownedPokemon, onhand: collection.onHand, updatedEggMoveInfo: collection.eggMoveInfo, updatedHomeGames: collection.availableGamesInfo, resetCollectionFilters: true, resetOnHandFilters: true}))
-        dispatch(initCol(collection.ownedPokemon))
-        dispatch(initOnhand(collection.onHand))
-        dispatch(initOptions({...collection.options, collectionName: collection.name}))
+        
     return collection
 }

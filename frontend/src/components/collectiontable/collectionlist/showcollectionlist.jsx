@@ -1,6 +1,7 @@
 import * as React from 'react';
 import {useRef, useEffect, useState} from 'react'
 import {Fragment} from 'react'
+import { apriballs } from '../../../../common/infoconstants/miscconstants.mjs';
 import {Paper, Table, TableHead, TableRow, TableBody, TableContainer, TableCell, Box, Button, useTheme} from '@mui/material'
 import {TableVirtuoso} from 'react-virtuoso'
 import { TableRowGroupingNoRedux as ConnectlessTableRow } from './tablerowgrouping';
@@ -15,7 +16,8 @@ import {setSelected} from '../../../app/slices/editmode'
 
 export default function ShowCollectionList({collection, styles, isEditMode, localDisplayState=undefined, height=800, noStates=false, isTradePage=false, tradeSide=null, wantedByOtherListData=[], userData}) {
     const theme = useTheme()
-    const ballScopeState = !noStates && useSelector((state) => state.options.collectingBalls)
+    // const ballScopeState = !noStates && useSelector((state) => state.options.collectingBalls)
+    const ballScopeState = apriballs
     const listState = !noStates && useSelector((state) => state.listDisplay.collection)
     const link = useLocation().pathname
     const linkRef = useRef(link)
@@ -42,7 +44,10 @@ export default function ShowCollectionList({collection, styles, isEditMode, loca
         const id = collection._id
         const sameIDBetweenRefs = linkRef.current.includes(id) && link.includes(id)
         if (scrollPosition.current !== undefined && (sameIDBetweenRefs)) { 
-            setTimeout(() => scrollRef.current.scrollTo({top: scrollPosition.current}), 1000)
+            setTimeout(() => {
+                scrollRef.current.scrollTo({top: scrollPosition.current})
+                
+            }, 2500)
         }
         linkRef.current = link
     }, [link])

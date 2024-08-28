@@ -16,6 +16,7 @@ import newObjectId from '../../../../utils/functions/newobjectid';
 
 function OnHandRowContent({columns, row, pokemonId, collectionId, styles, isSelected, setSelected, allEggMoveInfo, isEditMode, isHomeCollection, isTradePage, tradeSide, wantedByOtherList, userData}) {
     const dispatch = useDispatch()
+    console.log(row)
 
     const skeletonRow = row === undefined
     if (skeletonRow) { 
@@ -52,10 +53,8 @@ function OnHandRowContent({columns, row, pokemonId, collectionId, styles, isSele
         <React.Fragment>
             {columns.map(c => {
                 const genderlessLabel = (c.dataKey === 'gender' && row[c.dataKey] === 'none')
-                const noInfoLabel = (c.dataKey === 'EMs' && row.emCount >= parseInt(c.label[3]) && row.EMs.length < parseInt(c.label[3]))
                 const label = c.dataKey === 'isHA' ? 
-                    (row[c.dataKey] === undefined ? 'N/A' : row[c.dataKey] === true ? 'Yes' : 'No') :
-                    noInfoLabel ? '(No Info)' : 
+                    (row[c.dataKey] === undefined ? 'N/A' : row[c.dataKey] === true ? 'Yes' : 'No') : 
                     (c.dataKey === 'EMs' && row[c.dataKey] !== undefined) ? row[c.dataKey][c.idx] :
                     genderlessLabel ? 'N/A' :
                     (c.dataKey === 'emCount' && row[c.dataKey] === undefined) ? 'N/A' :

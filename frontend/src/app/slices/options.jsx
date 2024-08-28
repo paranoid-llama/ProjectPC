@@ -1,4 +1,5 @@
 import {createSlice} from '@reduxjs/toolkit'
+import { fetchCollectionData } from './listdisplay'
 
 const options = createSlice({
     name: 'options',
@@ -55,6 +56,13 @@ const options = createSlice({
             state.globalDefaults = action.payload
             return state
         }
+    },
+    extraReducers: (builder) => {
+        builder
+            .addCase(fetchCollectionData.fulfilled, (state, action) => {
+                state = {...action.payload.options, collectionName: action.payload.name}
+                return state
+            })
     }
 })
 

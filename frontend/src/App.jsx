@@ -64,6 +64,7 @@ import PreRouteLogic from './components/partials/auth/preroutelogic'
 import ForgotPassword from './routes/forgotpassword'
 import ResetPassword from './routes/resetpassword'
 import Announcements from './routes/announcements'
+import { fetchCollectionData } from './app/slices/listdisplay'
 import { ShowCollectionSkeleton, ShowUserSkeleton, ShowTradeSkeleton, UserNotificationsTradesSkeleton, UserSettingsSkeleton, NewTradeOfferSkeleton } from './components/partials/skeletons/routeskeletons'
 
 
@@ -268,7 +269,8 @@ function Router() {
               //   />,
               // loader: (params) => collectionLoader(params) 
               element: <PrivateRoute Component={EditCollectionComponent} routeType='editCollection'/>,
-              loader: (params) => collectionLoaderEditPage(params, dispatch, setListInitialState, setCollectionInitialState, setOnHandInitialState, setOptionsInitialState)
+              // loader: (params) => collectionLoaderEditPage(params, dispatch, setListInitialState, setCollectionInitialState, setOnHandInitialState, setOptionsInitialState)
+              loader: (params) => dispatch(fetchCollectionData(params.params.id)).then(data => data.payload)
             },
             {
               path: 'trade',

@@ -6,6 +6,20 @@ import getMoveStyles from '../../../../utils/functions/eggmoves/getmovestyles'
 
 export default function EggMoveColumnDisplay({emKeyLiteral, EMs, emCount, baseStyles, isEditMode, onClickFunc, blackSquare, flaggedForDeletion, isTradePage, tradeSide, tradeDispData, skeleton=false}) {
     const theme = useTheme()
+    const blackSquareStyles = blackSquare ? {backgroundColor: 'black'} : {}
+    const hoverSx = isEditMode ? {':hover': {cursor: 'pointer'}} : {}
+    const isSelectedForTrade = isTradePage ? useSelector((state) => selectIfPokemonIsSelected(state, tradeSide, {name: tradeDispData.pData.name, ball: tradeDispData.ballData.ball, onhandId: tradeDispData.ballData.onhandId})) : false
+    const dispatchTradeChange = isTradePage ? () => dispatch(setPokemon({pData: tradeDispData.pData, ballData: tradeDispData.ballData, tradeSide})) : false
+
+    if (EMs === undefined) {
+        return (
+            <TableCell 
+                padding='none' 
+                sx={{...blackSquareStyles, ...hoverSx}}
+                onClick={(isTradePage && !isSelectedForTrade) ? dispatchTradeChange : (isEditMode && !flaggedForDeletion) ? onClickFunc : null}
+            ></TableCell>
+        )
+    }
 
     if (skeleton) { //see onhandrowcontent
         return (
@@ -24,9 +38,7 @@ export default function EggMoveColumnDisplay({emKeyLiteral, EMs, emCount, baseSt
             </TableCell>
         )
     }
-
-    const hoverSx = isEditMode ? {':hover': {cursor: 'pointer'}} : {}
-    const blackSquareStyles = blackSquare ? {backgroundColor: 'black'} : {}
+    
     const noInfoStyles = {opacity: 0.5} 
     const dispatch = useDispatch()
     const deselectFunc = () => dispatch(deselect())
@@ -65,8 +77,6 @@ export default function EggMoveColumnDisplay({emKeyLiteral, EMs, emCount, baseSt
         )
     }
 
-    const isSelectedForTrade = isTradePage ? useSelector((state) => selectIfPokemonIsSelected(state, tradeSide, {name: tradeDispData.pData.name, ball: tradeDispData.ballData.ball, onhandId: tradeDispData.ballData.onhandId})) : false
-    const dispatchTradeChange = isTradePage ? () => dispatch(setPokemon({pData: tradeDispData.pData, ballData: tradeDispData.ballData, tradeSide})) : false
     return (
         <TableCell 
             padding='none' 

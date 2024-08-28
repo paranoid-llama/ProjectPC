@@ -1,4 +1,4 @@
-import {createSlice} from '@reduxjs/toolkit'
+import {createSlice, createAsyncThunk} from '@reduxjs/toolkit'
 import { sortOnHandList } from '../../../common/sortingfunctions/onhandsorting.mjs'
 import { sortList } from '../../../common/sortingfunctions/customsorting.mjs'
 import { filterList } from '../../../utils/functions/sortfilterfunctions/filterfunctions'
@@ -7,6 +7,13 @@ import { setSortingOptionsState } from './options'
 import getNameDisplay from '../../../utils/functions/display/getnamedisplay'
 import { setOnHandInitialState } from './onhand'
 import { selectivelyReturnIsHAAndEMs } from '../../../utils/functions/misc'
+
+const backendurl = import.meta.env.VITE_BACKEND_URL
+
+export const fetchCollectionData = createAsyncThunk('collection/fetchCollectionStatus', async(colId) => {
+    const response = await fetch(`${backendurl}/collections/${colId}`).then(res => res.json())
+    return response
+})
 
 //this slice controls the display for the show list components (showonhandlist, showcollectionlist). 
 //separated from the other slices as it controls the state of the list displays ONLY (not the row content) and allows it to update when the length of the lists change 
@@ -147,8 +154,12 @@ const listDisplay = createSlice({
                     return state
                 }
             })
-            .addCase(setOnHandInitialState, (state, action) => {
-                
+            .addCase(fetchCollectionData.fulfilled, (state, action) => {
+                state.collection = action.payload.ownedPokemon.filter(p => !p.disabled)
+                state.onhand = action.payload.onHand
+                state.eggMoveInfo = action.payload.eggMoveInfo
+                state.availableGamesInfo = action.payload.availableGamesInfo
+                return state
             })
     }
 })

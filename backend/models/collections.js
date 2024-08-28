@@ -109,7 +109,7 @@ const collectionSchema = new Schema ({
                 }
             },
             lfItems: {type: Array}, //arr of items they're looking for if they are looking for any
-            ftItems: {_id: false, type: Object} 
+            ftItems: {_id: false, type: Object, minimize: false} 
             //obj of items they're offering with keys being item names. validated thru frontend. could be validated here
             //for more security but more work than is needed as of april 17 2024
         }
@@ -254,7 +254,7 @@ const collectionSchema = new Schema ({
         gender: String,
         isHA: Boolean,
         emCount: Number,
-        EMs: Array,
+        EMs: {type: Array},
         reserved: Number,
         qty: Number
     }]

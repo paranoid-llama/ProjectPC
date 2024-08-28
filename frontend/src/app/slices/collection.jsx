@@ -1,5 +1,6 @@
 import {createSlice} from '@reduxjs/toolkit'
 import {setInitialState, setIsHA, setEmCount, setEms, deleteEms} from './commonreducers/sharedReducers.js'
+import { fetchCollectionData } from './listdisplay.jsx'
 
 const collection = createSlice({
     name: 'collection',
@@ -58,6 +59,13 @@ const collection = createSlice({
             }
             return state
         }
+    },
+    extraReducers: (builder) => {
+        builder
+            .addCase(fetchCollectionData.fulfilled, (state, action) => {
+                state = action.payload.ownedPokemon
+                return state
+            })
     }
 })
 

@@ -37,9 +37,8 @@ export default function EditCollection({}) {
 
     const leaveEditMode = () => {
         dispatch(setUnsavedChanges('reset')) 
-        revalidator.revalidate()
         navigate(linkBack)
-        
+        revalidator.revalidate()
         //do not switch the order of these or it ends up revalidating the edit route before it changes which means every other unnecessary state 
         //(col onhand options) gets revalidated too. at least, i THINK thats what happens since it re-renders a LOT when leaving edit mode
     }
