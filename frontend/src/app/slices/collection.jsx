@@ -11,10 +11,6 @@ const collection = createSlice({
         setCollectionEmCount: setEmCount,
         setCollectionEms: setEms,
         deleteCollectionEms: deleteEms,
-        selectMon: (state, action) => {
-            state[action.payload.idx].selected = true
-            return state
-        },
         setIsOwned: (state, action) => {
             const {idx, ball, ballDefault} = action.payload
             const isOwned = state[idx].balls[ball].isOwned
@@ -69,6 +65,6 @@ const collection = createSlice({
     }
 })
 
-export const {setCollectionInitialState, setCollectionIsHA, setCollectionEmCount, setCollectionEms, deleteCollectionEms, setIsOwned, selectMon, setTags, setDefault} = collection.actions
+export const {setCollectionInitialState, setCollectionIsHA, setCollectionEmCount, setCollectionEms, deleteCollectionEms, setIsOwned, setTags, setDefault} = collection.actions
 
 export default collection

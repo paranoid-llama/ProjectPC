@@ -209,11 +209,7 @@ export default function NavBar() {
                                     }}
                                 />
                             </Box>
-<<<<<<< HEAD
-                            <Button variant='contained' size='small' sx={{mt: 1.5, py: 0.5, '& .Mui-disabled': {color: 'white'}}} onClick={finalizeLogin} disabled={loggingInOrOut}>{loggingInOrOut ? <>Logging in<DotWaitingText/></> : 'Login'}</Button>
-=======
                             <Button variant='contained' size='small' sx={{mt: 1.5, py: 0.5}} onClick={finalizeLogin} disabled={loggingInOrOut}>{loggingInOrOut ? <>Logging in<DotWaitingText/></> : 'Login'}</Button>
->>>>>>> da117561453ada333ccb4dac2d33ced7e28f4916
                             <Box sx={{...theme.components.box.fullCenterCol, width: '100%'}}>
                                 <Button sx={{fontSize: '8px', padding: 0.25}} onClick={forgotPassword}>I forgot my password</Button>
                                 <Button sx={{fontSize: '8px', padding: 0.25}} onClick={dontHaveAccount}>I don't have an account</Button>

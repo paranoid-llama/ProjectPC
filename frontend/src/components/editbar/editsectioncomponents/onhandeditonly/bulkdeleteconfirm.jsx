@@ -127,11 +127,7 @@ export default function BulkDeleteConfirm({open, toggleModal, collectionID}) {
                     {setToBeDeletedOhData.length === 0 && <Button size='large' sx={{mt: 1}} variant='contained' disabled={savePending} onClick={toggleModal}>Back</Button>}
                     {setToBeDeletedOhData.length !== 0 &&
                     <Box sx={{...theme.components.box.fullCenterRow, gap: 20, mt: 1}}>
-<<<<<<< HEAD
                         <Button  sx={{'& .Mui-disabled': {color: 'white'}}} size='large' variant='contained' disabled={savePending} onClick={toggleModal}>No</Button>
-=======
-                        <Button size='large' variant='contained' disabled={savePending} onClick={toggleModal}>No</Button>
->>>>>>> da117561453ada333ccb4dac2d33ced7e28f4916
                         <Button size='large' variant='contained' disabled={savePending} onClick={deleteAndSave}>{savePending ? <CircularProgress size='29px'/> : 'Yes'}</Button>
                     </Box>
                     }

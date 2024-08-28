@@ -8,11 +8,7 @@ export default function DotWaitingText({}) {
         setTimeout(() => {
             const nextText = text === '...' ? '' : text === '' ? '.' : text === '.' ? '..' : text === '..' && '...'
             setText(nextText)
-<<<<<<< HEAD
         }, 250)
-=======
-        }, 1000)
->>>>>>> da117561453ada333ccb4dac2d33ced7e28f4916
     }, [text])
 
     return text

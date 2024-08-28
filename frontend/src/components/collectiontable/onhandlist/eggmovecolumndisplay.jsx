@@ -6,29 +6,6 @@ import getMoveStyles from '../../../../utils/functions/eggmoves/getmovestyles'
 
 export default function EggMoveColumnDisplay({emKeyLiteral, EMs, emCount, baseStyles, isEditMode, onClickFunc, blackSquare, flaggedForDeletion, isTradePage, tradeSide, tradeDispData, skeleton=false}) {
     const theme = useTheme()
-<<<<<<< HEAD
-=======
-
-    if (skeleton) { //see onhandrowcontent
-        return (
-            <TableCell 
-                padding='none' 
-                sx={{...baseStyles.tableCell}}
-            >
-                <Box sx={{...baseStyles.bodyColor, position: 'relative', padding: 4.5, ...theme.components.box.fullCenterCol}}>
-                    <Grid container sx={{...theme.components.box.fullCenterRow, justifyContent: 'start', alignItems: 'start', width: '100%', height: '100%', position: 'absolute'}}>
-                        <Grid item xs={6} sx={{width: '50%', height: '50%'}}><Box sx={{...theme.components.box.fullCenterCol, backgroundColor: 'rgb(100, 100, 100)', width: '95%', height: '95%', borderRadius: '10px'}}></Box></Grid>
-                        <Grid item xs={6} sx={{width: '50%', height: '50%'}}><Box sx={{...theme.components.box.fullCenterCol, backgroundColor: 'rgb(100, 100, 100)', width: '95%', height: '95%', borderRadius: '10px'}}></Box></Grid>
-                        <Grid item xs={6} sx={{width: '50%', height: '50%'}}><Box sx={{...theme.components.box.fullCenterCol, backgroundColor: 'rgb(100, 100, 100)', width: '95%', height: '95%', borderRadius: '10px'}}></Box></Grid>
-                        <Grid item xs={6} sx={{width: '50%', height: '50%'}}><Box sx={{...theme.components.box.fullCenterCol, backgroundColor: 'rgb(100, 100, 100)', width: '95%', height: '95%', borderRadius: '10px'}}></Box></Grid>
-                    </Grid>
-                </Box>
-            </TableCell>
-        )
-    }
-
-    const hoverSx = isEditMode ? {':hover': {cursor: 'pointer'}} : {}
->>>>>>> da117561453ada333ccb4dac2d33ced7e28f4916
     const blackSquareStyles = blackSquare ? {backgroundColor: 'black'} : {}
     const hoverSx = isEditMode ? {':hover': {cursor: 'pointer'}} : {}
     const isSelectedForTrade = isTradePage ? useSelector((state) => selectIfPokemonIsSelected(state, tradeSide, {name: tradeDispData.pData.name, ball: tradeDispData.ballData.ball, onhandId: tradeDispData.ballData.onhandId})) : false

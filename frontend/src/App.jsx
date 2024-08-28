@@ -64,10 +64,7 @@ import PreRouteLogic from './components/partials/auth/preroutelogic'
 import ForgotPassword from './routes/forgotpassword'
 import ResetPassword from './routes/resetpassword'
 import Announcements from './routes/announcements'
-<<<<<<< HEAD
 import { fetchCollectionData } from './app/slices/listdisplay'
-=======
->>>>>>> da117561453ada333ccb4dac2d33ced7e28f4916
 import { ShowCollectionSkeleton, ShowUserSkeleton, ShowTradeSkeleton, UserNotificationsTradesSkeleton, UserSettingsSkeleton, NewTradeOfferSkeleton } from './components/partials/skeletons/routeskeletons'
 
 
@@ -247,7 +244,6 @@ function Router() {
           children: [
             {
               path: "",
-<<<<<<< HEAD
               element: 
                 <DeferLoaderComponent 
                   Component={ShowCollection} 
@@ -259,11 +255,6 @@ function Router() {
               loader: (params) => collectionLoader(params) 
               // element: <ShowCollection/>,
               // loader: (params) => collectionLoader(params, dispatch, false, true, setListInitialState),
-=======
-              element: <ShowCollection/>,
-              loader: (params) => collectionLoader(params, dispatch, false, true, setListInitialState),
-              HydrateFallback: ShowCollectionSkeleton
->>>>>>> da117561453ada333ccb4dac2d33ced7e28f4916
             },
             {
               path: 'edit',
@@ -298,20 +289,13 @@ function Router() {
                   // extraAuthFunc={(col, user) => user.loggedIn && !col.owner.settings.privacy.blockedUsers.includes(user.user.username)}
                   // extraAuthErrorMessage='You were blocked by this user and cannot trade with them!'
                   // extraAuthRedirectOffset={-5}
-<<<<<<< HEAD
                 // />,
               // loader: (params) => collectionLoader(params, undefined, false, false),
-=======
-                />,
-              loader: (params) => collectionLoader(params, undefined, false, false),
-              HydrateFallback: NewTradeOfferSkeleton
->>>>>>> da117561453ada333ccb4dac2d33ced7e28f4916
             }
           ]
         },
         {
           path: "/trades/:id",
-<<<<<<< HEAD
           // element: <ShowTrade />,
           element: 
             <DeferLoaderComponent 
@@ -359,29 +343,6 @@ function Router() {
               privateProtectedRouteProps={{routeType: 'userTrades'}}
             />,
           loader: userTradesLoader,
-=======
-          element: <ShowTrade />,
-          loader: tradeLoader,
-          HydrateFallback: ShowTradeSkeleton
-        },
-        {
-          path: '/trades/:id/counter-offer',
-          element: <PrivateRoute Component={NewTrade} routeType='tradeCounteroffer'/>,
-          loader: (params) => tradeLoader(params, true),
-          HydrateFallback: NewTradeOfferSkeleton
-        },
-        {
-          path: "/users/:username",
-          element: <ShowUser/>,
-          loader: userLoader,
-          HydrateFallback: ShowUserSkeleton
-        },
-        {
-          path: "/users/:username/trades",
-          element: <PrivateRoute Component={UserTrades} routeType='userTrades'/>,
-          loader: userTradesLoader,
-          HydrateFallback: UserNotificationsTradesSkeleton
->>>>>>> da117561453ada333ccb4dac2d33ced7e28f4916
         },
         {
           path: '/users/:username/notifications',
@@ -396,10 +357,6 @@ function Router() {
             />,
           loader: userLoader,
           id: 'user', 
-<<<<<<< HEAD
-=======
-          HydrateFallback: UserNotificationsTradesSkeleton
->>>>>>> da117561453ada333ccb4dac2d33ced7e28f4916
         },
         {
           path: "/users/:username/settings",
@@ -414,10 +371,6 @@ function Router() {
             />,
           loader: userLoader,
           id: 'userSettings',
-<<<<<<< HEAD
-=======
-          HydrateFallback: UserSettingsSkeleton
->>>>>>> da117561453ada333ccb4dac2d33ced7e28f4916
         },
         {
           path: "*",

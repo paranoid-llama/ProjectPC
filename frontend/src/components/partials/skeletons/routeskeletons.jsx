@@ -1,21 +1,14 @@
 import {Box} from '@mui/material'
 import BodyWithBanner from '../routepartials/bodywithbanner'
 import BodyWrapper from '../routepartials/bodywrapper'
-<<<<<<< HEAD
 import theme from '../../../../utils/styles/globalstyles/theme'
-=======
->>>>>>> da117561453ada333ccb4dac2d33ced7e28f4916
 
 const skeletonBg = {backgroundColor: 'rgb(200, 200, 200)', borderRadius: '10px'}
 
 export function ShowCollectionSkeleton ({}) {
 
     return (
-<<<<<<< HEAD
         <BodyWithBanner text='' bannerSx={{backgroundColor: '#26BCC9', height: '28px'}}>
-=======
-        <BodyWithBanner text=''>
->>>>>>> da117561453ada333ccb4dac2d33ced7e28f4916
             <Box sx={{display: 'flex', height: '200px', width: '100%'}}>
                 <Box sx={{display: 'flex', flexDirection: 'column', width: '45%'}}>
                     <Box sx={{...skeletonBg, width: '100%', height: '30px', marginBottom: '2px'}}></Box>
@@ -33,32 +26,19 @@ export function ShowCollectionSkeleton ({}) {
 export function ShowUserSkeleton({}) {
 
     return (
-<<<<<<< HEAD
         <BodyWithBanner text='' bodySx={{marginBottom: 0, display: 'flex', justifyContent: 'start', flexDirection: 'column', alignItems: 'center'}} bannerSx={{backgroundColor: '#26BCC9', height: '28px'}}>
             <Box sx={{width: '100%', height: '250px', display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
                 <Box sx={{width: '200px', height: '100%'}}>
                     <Box sx={{width: '200px', height: '200px', ...skeletonBg, borderRadius: '50%'}}></Box>
                 </Box>
                 <Box sx={{width: '70%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', ml: '24px'}}>
-=======
-        <BodyWithBanner text='' bodySx={{marginBottom: 0}}>
-            <Box sx={{width: '100%', height: '250px', display: 'flex', flexDirection: 'row'}}>
-                <Box sx={{width: '200px', height: '100%'}}>
-                    <Box sx={{width: '200px', height: '200px', ...skeletonBg, borderRadius: '50%'}}></Box>
-                </Box>
-                <Box sx={{width: '70%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
->>>>>>> da117561453ada333ccb4dac2d33ced7e28f4916
                     <Box sx={{...skeletonBg, width: '100%', height: '30px', marginBottom: '2px'}}></Box>
                     <Box sx={{...skeletonBg, width: '100%', height: '30px', marginBottom: '2px'}}></Box>
                     <Box sx={{...skeletonBg, width: '100%', height: '78px'}}></Box>
                 </Box>
             </Box>
             <Box sx={{width: '100%', height: '80px', marginTop: '-24px'}}></Box>
-<<<<<<< HEAD
             <Box sx={{width: '100%', maxWidth: '1200px', height: '150px', marginTop: 3, ...skeletonBg}}></Box>
-=======
-            <Box sx={{width: '100%', height: '150px', marginTop: 3, ...skeletonBg}}></Box>
->>>>>>> da117561453ada333ccb4dac2d33ced7e28f4916
         </BodyWithBanner>
     )
 }
@@ -66,20 +46,12 @@ export function ShowUserSkeleton({}) {
 export function UserSettingsSkeleton({}) {
 
     return (
-<<<<<<< HEAD
         <BodyWrapper sx={{ml: 0, mr: 0, mb: 0, display: 'flex', flexDirection: 'column', justifyContent: 'start', alignItems: 'center'}}>
-=======
-        <BodyWrapper sx={{ml: 0, mr: 0, mb: 0}}>
->>>>>>> da117561453ada333ccb4dac2d33ced7e28f4916
             <Box sx={{height: '150px', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                 <Box sx={{width: '150px', height: '150px', ...skeletonBg, borderRadius: '50%'}}></Box>
                 <Box sx={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'start', ml: 5}}>
                     <Box sx={{width: '210px', height: '48px', ...skeletonBg}}></Box>
-<<<<<<< HEAD
                     <Box sx={{width: '210px', height: '30px', mt: '2px', ...skeletonBg}}></Box>
-=======
-                    <Box sx={{width: '210px', height: '30px', ...skeletonBg}}></Box>
->>>>>>> da117561453ada333ccb4dac2d33ced7e28f4916
                 </Box>
             </Box>
             <Box sx={{minHeight: '600px', width: '100%', maxWidth: '1200px', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'start'}}>
@@ -102,17 +74,11 @@ export function NewTradeOfferSkeleton({}) {
 
     return (
         <BodyWrapper sx={{mt: 3, mx: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'start'}}>
-<<<<<<< HEAD
             <Box sx={{display: 'flex', flexDirection: 'column', justifyContent: 'start', alignItems: 'center', maxWidth: '1200px', width: '100%'}}>  
                 <Box sx={{height: '42px', width: '400px', ...skeletonBg, mb: '8px'}}></Box>
                 <Box sx={{height: '50px', width: '75%', ...skeletonBg, mb: '24px'}}></Box>
                 <Box sx={{height: '150px', width: '100%', ...skeletonBg}}></Box>
             </Box>
-=======
-            <Box sx={{height: '42px', width: '300px', ...skeletonBg, mb: '8px'}}></Box>
-            <Box sx={{height: '50px', width: '602px', ...skeletonBg, mb: '24px'}}></Box>
-            <Box sx={{height: '150px', width: '100%', ...skeletonBg}}></Box>
->>>>>>> da117561453ada333ccb4dac2d33ced7e28f4916
         </BodyWrapper>
     )
 }
@@ -129,17 +95,10 @@ export function UserNotificationsTradesSkeleton({}) {
                     <Box sx={{height: '100%', width: '95%', display: 'flex', flexDirection: 'column', justifyContent: 'start', alignItems: 'center', mt: 1, gap: 1}}>
                         <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', height: '30%', width: '100%'}}>
                             <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '60%', height: '100%'}}>
-<<<<<<< HEAD
                                 <Box sx={{width: '90%', height: '50.5px', ...skeletonBg}}></Box>
                             </Box>
                             <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '40%', height: '100%'}}>
                                 <Box sx={{width: '90%', height: '50.5px', ...skeletonBg}}></Box>
-=======
-                                <Box sx={{width: '90%', height: '90%', ...skeletonBg}}></Box>
-                            </Box>
-                            <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '40%', height: '100%'}}>
-                                <Box sx={{width: '90%', height: '90%', ...skeletonBg}}></Box>
->>>>>>> da117561453ada333ccb4dac2d33ced7e28f4916
                             </Box>
                         </Box>
                         <Box sx={{height: '70%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', width: '100%', ...skeletonBg}}></Box>
@@ -153,19 +112,12 @@ export function UserNotificationsTradesSkeleton({}) {
 export function ShowTradeSkeleton({}) {
 
     return (
-<<<<<<< HEAD
         <BodyWrapper sx={{display: 'flex', flexDirection: 'column', justifyContent: 'start', alignItems: 'center'}}>
             <Box sx={{display: 'flex', flexDirection: 'column', justifyContent: 'start', alignItems: 'center', maxWidth: '1200px', width: '100%', gap: 1}}>  
                 <Box sx={{height: '50px', width: '90%'}}></Box>
                 <Box sx={{height: '285px', width: '90%', ...skeletonBg}}></Box>
                 <Box sx={{height: '750px', width: '90%', ...skeletonBg, mt: '8px'}}></Box>
             </Box>
-=======
-        <BodyWrapper>
-            <Box sx={{height: '50px', width: '90%'}}></Box>
-            <Box sx={{height: '285px', width: '90%', ...skeletonBg}}></Box>
-            <Box sx={{height: '750px', width: '90%', ...skeletonBg, mt: '8px'}}></Box>
->>>>>>> da117561453ada333ccb4dac2d33ced7e28f4916
         </BodyWrapper>
     )
 }
