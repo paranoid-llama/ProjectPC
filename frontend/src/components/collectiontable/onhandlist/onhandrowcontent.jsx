@@ -12,9 +12,30 @@ import getNameDisplay from '../../../../utils/functions/display/getnamedisplay';
 import {setSelected} from './../../../app/slices/editmode'
 import {connect, useDispatch} from 'react-redux'
 import EggMoveColumnDisplay from './eggmovecolumndisplay';
+import newObjectId from '../../../../utils/functions/newobjectid';
 
 function OnHandRowContent({columns, row, pokemonId, collectionId, styles, isSelected, setSelected, allEggMoveInfo, isEditMode, isHomeCollection, isTradePage, tradeSide, wantedByOtherList, userData}) {
     const dispatch = useDispatch()
+
+    const skeletonRow = row === undefined
+    if (skeletonRow) { 
+        //skeletonRow happens when adding multiple on-hands and leaving edit mode. they come out undefined at first. I gave up trying to debug it, this is a work-around
+        return <>
+            {columns.map(c => {
+
+                return (
+                    c.dataKey === 'EMs' ? 
+                    <EggMoveColumnDisplay key={`error-onhand-em-display-${newObjectId()}`} baseStyles={styles} skeleton={true} /> : 
+                    <TableCell  key={`error-onhand-${c.dataKey}-display-${newObjectId()}`} padding='none' sx={{...styles.tableCell}}>
+                        <Box sx={{...styles.bodyColor, backgroundColor: 'rgb(100, 100, 100)'}}>
+
+                        </Box>
+                    </TableCell>
+                )
+            })}
+        </>
+    }
+
     const deleteOnHandMode = isEditMode ? useSelector((state) => state.editmode.deleteOnHandMode) : null
     const ohIdsFlagged = isEditMode ? useSelector((state) => state.editmode.deletedOnHandIds) : null
     const possibleEMs = !isHomeCollection && (allEggMoveInfo[row.name])
@@ -26,8 +47,6 @@ function OnHandRowContent({columns, row, pokemonId, collectionId, styles, isSele
     // }) 
     // to check how often its re-rendering
 
-    const pokeImgLink = `https://res.cloudinary.com/duaf1qylo/image/upload/sprites/${row.imgLink}.png`
-    const imgLinkModifiers = {gender: 'icons', ball: 'balls'}
 
     return (
         <React.Fragment>
@@ -50,7 +69,7 @@ function OnHandRowContent({columns, row, pokemonId, collectionId, styles, isSele
                     row[c.dataKey] :
                     undefined
                 const imgType = (c.dataKey === 'ball' || c.dataKey === 'gender') ? c.dataKey : 'poke'
-                const isBlackSquare = (c.dataKey === 'EMs' && row[c.dataKey] === undefined) || (c.dataKey === 'EMs' && parseInt(c.label[3]) > maxEMs)
+                const isBlackSquare = (c.dataKey === 'EMs' && row[c.dataKey] === undefined)
                 const alignment = c.label === '#' ? styles.alignment.dexNumAlignment :
                     (c.dataKey === 'ball' || c.label === 'img') ? styles.alignment.imgNumAlignment : 
                     (c.dataKey === 'gender' && genderlessLabel) ? styles.alignment.genderlessAlignment :

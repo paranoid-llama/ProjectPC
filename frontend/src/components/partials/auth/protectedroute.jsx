@@ -5,11 +5,10 @@ import { AlertsContext } from "../../../alerts/alerts-context";
 
 //protected routes are routes that logged in users can access, but it can be any logged in user.
 
-export default function ProtectedRoute({Component, extraAuthType}) {
+export default function ProtectedRoute({Component, PlaceholderComponent, loaderData, extraAuthType, loaderDataProp}) {
     const user = useRouteLoaderData("root")
     const {addAlert} = useContext(AlertsContext)
     
-    const loaderData = useLoaderData()
     const pathname = useLocation().pathname
     const navigate = useNavigate()
     const notLoggedIn = user.loggedIn === false
@@ -32,7 +31,7 @@ export default function ProtectedRoute({Component, extraAuthType}) {
     }, [])
     return (
         (errorOccurred) ? 
-            <BodyWrapper></BodyWrapper> : 
-            <Component />
+            PlaceholderComponent ? <PlaceholderComponent/> : <BodyWrapper></BodyWrapper> : 
+            <Component {...loaderDataProp}/>
     )
 }

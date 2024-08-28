@@ -39,7 +39,7 @@ export const sendForgotPasswordEmail = async(recipient, token, handleResponse) =
   const emailOptions = createMail(recipient, 'Reset Password Request', 
     `You are receiving this e-mail because you requested the account associated with this e-mail to have their password reset. 
     <br>If that sounds right, click this link to reset your password:</br>
-    <br><a href="${frontendURL}reset-password?token=${token}">${frontendURL}reset-password?token=${token}</a></br>
+    <br><a href="${frontendURL}/reset-password?token=${token}">${frontendURL}/reset-password?token=${token}</a></br>
     <br>If you did not request a password reset, please disregard this message.</br>
     <br>Please do not reply to this message.</br>`
   )

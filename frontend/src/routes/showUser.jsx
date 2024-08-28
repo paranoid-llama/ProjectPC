@@ -35,9 +35,9 @@ const badgeData = {
 }
 
 //user profile page
-export default function ShowUser({}) {
+export default function ShowUser({userData}) {
     const navigate = useNavigate()
-    const userData = useLoaderData()
+    // const userData = useLoaderData()
     const revalidator = useRevalidator()
     const {handleError} = useContext(ErrorContext)
     const {addAlert} = useContext(AlertsContext)
@@ -126,7 +126,7 @@ export default function ShowUser({}) {
     
     const generateEditBioButton = () => {
         return (
-            <Button sx={{borderRadius: '50%'}} onClick={() => navigate(`/users/${userData.username}/settings/profile`, {state: {catInit: 'profile'}})}>
+            <Button sx={{borderRadius: '50%'}} onClick={() => navigate(`/users/${userData.username}/settings`, {state: {catInit: 'profile'}})}>
                 <EditIcon/>
             </Button>
         )

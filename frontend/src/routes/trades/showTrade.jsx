@@ -9,12 +9,12 @@ import BodyWrapper from '../../components/partials/routepartials/bodywrapper'
 import { getOfferData } from '../../../utils/functions/backendrequests/trades/getofferdata'
 import readNotification from '../../../utils/functions/backendrequests/users/readnotification'
 
-export default function ShowTrade({}) {
+export default function ShowTrade({tradeAndLOfferData}) {
     const theme = useTheme()
     const navigate = useNavigate()
     const {handleError} = useContext(ErrorContext)
     const loggedInUserData = useRouteLoaderData('root').user
-    const tradeAndLOfferData = useLoaderData()
+    // const tradeAndLOfferData = useLoaderData()
     const tradeData = tradeAndLOfferData.tradeData 
     const [selectedOffer, setSelectedOffer] = useState({selected: tradeData.history.length-1, data: tradeAndLOfferData.latestOfferData})
     const [isPending, startTransition] = useTransition()

@@ -30,16 +30,14 @@ const wrapperStyles = {
     borderRadius: '5px'
 }
 
-export default function Privacy({}) {
+export default function Privacy({user, revalidate}) {
     const theme = useTheme()
     const {handleError} = useContext(ErrorContext)
     const {addAlert} = useContext(AlertsContext)
-    const revalidate = useOutletContext()
-    const userData = useRouteLoaderData('userSettings')
-    const currentBlockedUsers = userData.settings.privacy.blockedUsers
+    const currentBlockedUsers = user.settings.privacy.blockedUsers
 
-    const [tentativeChanges, setTentativeChanges] = useState({removedBlockedUsers: [], disabledTrades: userData.settings.privacy.disabledTrades})
-    const changesRef = useRef({disabledTrades: userData.settings.privacy.disabledTrades}) //dont need one for blocked users
+    const [tentativeChanges, setTentativeChanges] = useState({removedBlockedUsers: [], disabledTrades: user.settings.privacy.disabledTrades})
+    const changesRef = useRef({disabledTrades: user.settings.privacy.disabledTrades}) //dont need one for blocked users
     const noChangesMade = tentativeChanges.removedBlockedUsers.length === 0 && tentativeChanges.disabledTrades === changesRef.current.disabledTrades
 
     const removeBlockedUser = (username) => {
@@ -55,7 +53,7 @@ export default function Privacy({}) {
                 blockedUsers: currentBlockedUsers.filter(userN => !tentativeChanges.removedBlockedUsers.includes(userN)),
                 disabledTrades: tentativeChanges.disabledTrades
             }
-            const backendFunc = async() => await userSettingsBackendRequest('privacy', newPrivacySettings, userData.username)
+            const backendFunc = async() => await userSettingsBackendRequest('privacy', newPrivacySettings, user.username)
             const successFunc = () => {
                 changesRef.current.disabledTrades = newPrivacySettings.disabledTrades
                 setTentativeChanges({...tentativeChanges, removedBlockedUsers: []})

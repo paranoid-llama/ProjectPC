@@ -10,7 +10,7 @@ import { useDebouncedCallback } from "use-debounce";
 
 export default function Search({}) {
     const {handleError} = useContext(ErrorContext)
-    const [searchData, setSearchData] = useState({type: 'all', query: '', queryFunction: '', page: 1, result: {collections: [], users: [], collectionCount: 0, userCount: 0}})
+    const [searchData, setSearchData] = useState({type: 'all', query: '', queryFunction: '', page: 1, result: {collections: [], users: [], collectionCount: 0, userCount: 0}, searching: false})
     //query controls what is shown in the input while query function controls the query that operators take. since the function operators are debounced,
     //we want the child components to update when the debounce update, necessitating a new variable which only updates when the debounce occurs
     const [isPending, startTransition] = useTransition()
@@ -36,16 +36,17 @@ export default function Search({}) {
     }
 
     const debounceSearchFunction = async(query, pageNum=1, changeSearchType=false, newSearchType) => {
+        setSearchData({...searchData, searching: true})
         const backendFunc = async() => {return await searchDB(changeSearchType ? newSearchType : searchData.type, query, pageNum)}
         const successFunc = (searchResult) => {
             if (changeSearchType) { 
-                setSearchData({...searchData, queryFunction: query, result: searchResult, page: 1, type: newSearchType, error: false})
+                setSearchData({...searchData, queryFunction: query, result: searchResult, page: 1, type: newSearchType, error: false, searching: false})
                 return
             }
-            setSearchData({...searchData, queryFunction: query, result: searchResult, page: pageNum, error: false})
+            setSearchData({...searchData, queryFunction: query, result: searchResult, page: pageNum, error: false, searching: false})
         }
         const errorFunc = (errorData) => {
-            setSearchData({...searchData, error: true, errorData})
+            setSearchData({...searchData, error: true, errorData, searching: false})
         }
         handleError(backendFunc, false, successFunc, errorFunc)
         // if (changeSearchType) {
@@ -138,6 +139,7 @@ export default function Search({}) {
                 changePage={changePage} 
                 changeSearchType={changeSearchType} 
                 changingPage={isPending}
+                searching={searchData.searching}
             />}
         </BodyWithBanner>
     )

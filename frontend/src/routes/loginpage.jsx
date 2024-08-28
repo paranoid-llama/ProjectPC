@@ -6,6 +6,7 @@ import ControlledTextInput from '../components/functionalcomponents/controlledte
 import BodyWrapper from '../components/partials/routepartials/bodywrapper'
 import { Link, useLocation, useNavigate, useRevalidator } from 'react-router-dom'
 import userLoginRequest from '../../utils/functions/backendrequests/users/login'
+import DotWaitingText from '../components/functionalcomponents/dotwaitingtext'
 
 export default function LoginPage({}) {
     const theme = useTheme()
@@ -20,7 +21,7 @@ export default function LoginPage({}) {
 
     const usernameFieldRef = useRef(null)
     const passwordFieldRef = useRef(null)
-    const [error, setError] = useState({username: false, password: false, error: errorInit, errorMessage: errorMessageInit}) 
+    const [error, setError] = useState({username: false, password: false, error: errorInit, errorMessage: errorMessageInit, loggingIn: false}) 
 
     //alerts
     const [alertIds, setAlertIds] = useState([])
@@ -64,6 +65,7 @@ export default function LoginPage({}) {
 
     const finalizeLogin = async() => {
         const userData = {username: usernameFieldRef.current.value, password: passwordFieldRef.current.value}
+        setError({...error, loggingIn: true})
         if (userData.username.length === 0 || userData.password.length === 0) {
             setError({...error, username: userData.username.length === 0, password: userData.password.length === 0})
             return 
@@ -73,8 +75,9 @@ export default function LoginPage({}) {
             //this works a bit different from other error handlers. status 401 (unauthorized) is counted as "ok" so we dont have to write login specific
             //logic in the context. see useLoginRequest for how it's done.
             if (loginStatus.successful === false) {
-                setError({username: false, password: false, error: true, errorMessage: 'One or more fields are incorrect!'})
+                setError({username: false, password: false, error: true, errorMessage: 'One or more fields are incorrect!', loggingIn: false})
             } else {
+                setError({...error, loggingIn: false})
                 //spawning alert
                 const alertMessage = `Logged in as ${userData.username}!`
                 const alertInfo = {severity: 'success', message: alertMessage, timeout: 3}
@@ -88,7 +91,7 @@ export default function LoginPage({}) {
                 }
             }
         }
-        handleError(backendFunc, false, successFunc, () => {})
+        handleError(backendFunc, false, successFunc, () => {setError({...error, loggingIn: false})})
     }
 
     return (
@@ -129,12 +132,12 @@ export default function LoginPage({}) {
                         }}
                     />
                 </Box>
-                <Button variant='contained' size='large' sx={{mt: 3.5, mb: 2}} onClick={finalizeLogin}>Login</Button>
+                <Button variant='contained' size='large' sx={{mt: 3.5, mb: 2}} onClick={finalizeLogin} disabled={error.loggingIn}>{error.loggingIn ? <>Logging in<DotWaitingText/></> : 'Login'}</Button>
                 <Box sx={{...theme.components.box.fullCenterCol, width: '100%'}}>
                     <Box sx={{...theme.components.box.fullCenterRow}}>
-                        <Typography sx={{textTransform: 'none'}}>Don't have an account? <Link to='/register'> Register here</Link></Typography>
+                        <Typography sx={{textTransform: 'none'}}>Don't have an account? {error.loggingIn ? 'Register here' : <Link to='/register' > Register here</Link>}</Typography>
                     </Box>
-                    <Button sx={{fontSize: '14px', mt: 1}} onClick={() => navigate('/forgot-password')}>I forgot my password</Button>
+                    <Button sx={{fontSize: '14px', mt: 1}} onClick={() => navigate('/forgot-password')} disabled={error.loggingIn}>I forgot my password</Button>
                 </Box>
             </Box>
         </BodyWrapper>

@@ -99,9 +99,9 @@ export default function CustomSortingOptions({elementBg, collectionGen, collecti
                     const alertInfo = {severity: 'success', message: alertMessage, timeout: 3}
                     const id = addAlert(alertInfo);
                     setAlertIds((prev) => [...prev, id]);
+                    dispatch(changeModalState({open: false}))
                 }
-                handleError(backendReq, false, successFunc, () => {})
-                dispatch(changeModalState({open: false}))
+                handleError(backendReq, false, successFunc, () => {dispatch(changeModalState({open: false}))})
             }, 1000)
         } else if (nextScreen === 'goBack') {
             setSortData({...sortData, saveChangesConfirmOpen: false})

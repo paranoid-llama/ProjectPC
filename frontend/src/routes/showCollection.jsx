@@ -20,20 +20,20 @@ import { setNameState, setOptionsInitialState } from '../app/slices/options';
 import {deselect, changeList} from './../app/slices/editmode'
 import listStyles from '../../utils/styles/componentstyles/liststyles';
 
-export default function ShowCollection({colorStyles}) {
+export default function ShowCollection({collection, colorStyles}) {
     const list = useSelector(state => state.editmode.listType)
     const pathData = useLocation()
     const currentLink = pathData.pathname
-    const collection = useLoaderData()
+    const collectionData = collection ? collection : useLoaderData()
     const currentlyLoggedInUser = useRouteLoaderData("root")
-    const userIsLoggedIn = currentlyLoggedInUser.loggedIn && currentlyLoggedInUser.user._id !== collection.owner._id
-    const isOwner = (currentlyLoggedInUser.loggedIn && currentlyLoggedInUser.user._id === collection.owner._id)
+    const userIsLoggedIn = currentlyLoggedInUser.loggedIn && currentlyLoggedInUser.user._id !== collectionData.owner._id
+    const isOwner = (currentlyLoggedInUser.loggedIn && currentlyLoggedInUser.user._id === collectionData.owner._id)
     const isEditMode = currentLink.includes('edit') && isOwner
 
-    const collectionId = collection._id
+    const collectionId = collectionData._id
 
-    const gen8Collection = isNaN(parseInt(collection.gen))
-    const collectionName = collection.name
+    const gen8Collection = isNaN(parseInt(collectionData.gen))
+    const collectionName = collectionData.name
     const dispatch = useDispatch()
     // useEffect(() => {dispatch(setListInitialState({collection: collection.ownedPokemon, onhand: collection.onHand, updatedEggMoveInfo: collection.eggMoveInfo, resetCollectionFilters: true, resetOnHandFilters: true}))}, [currentLink])
     useEffect(() => {dispatch(deselect())})
@@ -84,8 +84,8 @@ export default function ShowCollection({colorStyles}) {
                 <Header additionalStyles={{backgroundColor: '#26BCC9', color: 'black'}}>{!isEditMode ? collectionName : collectionNameState}</Header>
             </Box>
             <BodyWrapper>
-                <ShowCollectionTitle collectionID={collectionId} options={collection.options} isEditMode={isEditMode} isOwner={isOwner} userIsLoggedIn={userIsLoggedIn} userData={currentlyLoggedInUser.user}/>
-                <FilterSortArea collection={collection} isEditMode={isEditMode}/>
+                <ShowCollectionTitle collectionInfo={collectionData} collectionID={collectionId} options={collectionData.options} isEditMode={isEditMode} isOwner={isOwner} userIsLoggedIn={userIsLoggedIn} userData={currentlyLoggedInUser.user}/>
+                <FilterSortArea collection={collectionData} isEditMode={isEditMode}/>
                 <Box sx={{flexGrow: 1, margin: 0, width: '100%', display: 'flex'}}>
                     <Tabs 
                         textcolor='inherit'
@@ -115,18 +115,18 @@ export default function ShowCollection({colorStyles}) {
                 </Box>
                 {list === 'collection' ? 
                 <ShowCollectionList
-                    collection={collection}
+                    collection={collectionData}
                     styles={listStyles.collection}
                     isEditMode={isEditMode}
                     userData={currentlyLoggedInUser}
                 /> :
                 <ShowOnHandList
-                    onhandList={collection.onHand}
-                    collectionID={collection._id}
-                    eggMoveInfo={collection.eggMoveInfo}
+                    onhandList={collectionData.onHand}
+                    collectionID={collectionData._id}
+                    eggMoveInfo={collectionData.eggMoveInfo}
                     styles={listStyles.onhand}
                     isEditMode={isEditMode}
-                    isHomeCollection={collection.gen === 'home'}
+                    isHomeCollection={collectionData.gen === 'home'}
                     userData={currentlyLoggedInUser}
                 />
                 }

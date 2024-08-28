@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react'
+import { Suspense } from 'react'
 import {
   createBrowserRouter,
   RouterProvider,
   Outlet,
   useLoaderData,
-  useLocation
+  useLocation, defer, Await
 } from "react-router-dom"
 import Root from './routes/root'
 import Collections from './routes/collections'
@@ -43,6 +44,8 @@ import { setOnHandInitialState } from './app/slices/onhand'
 import { setOptionsInitialState } from './app/slices/options'
 import listStyles from '../utils/styles/componentstyles/liststyles'
 import collectionLoader from '../utils/functions/collectionLoader'
+import { collectionLoaderEditPage } from '../utils/functions/collectionLoader'
+import { initializeCollectionPageState } from '../utils/functions/collectionLoader'
 import userLoader from '../utils/functions/userloader'
 import tradeLoader from '../utils/functions/tradeloader'
 import userTradesLoader from '../utils/functions/usertradesLoader'
@@ -52,7 +55,7 @@ import ProtectedRoute from './components/partials/auth/protectedroute'
 import PrivateRoute from './components/partials/auth/privateroute'
 import AlertsProvider from './alerts/alerts-context'
 import ErrorProvider from './app/contexts/errorcontext'
-import { ThemeProvider } from '@mui/material'
+import { Skeleton, ThemeProvider } from '@mui/material'
 import theme from '../utils/styles/globalstyles/theme'
 import WhatAreAprimon from './routes/infopages/whatareaprimon'
 import AboutUs from './routes/infopages/aboutus'
@@ -61,6 +64,7 @@ import PreRouteLogic from './components/partials/auth/preroutelogic'
 import ForgotPassword from './routes/forgotpassword'
 import ResetPassword from './routes/resetpassword'
 import Announcements from './routes/announcements'
+import { ShowCollectionSkeleton, ShowUserSkeleton, ShowTradeSkeleton, UserNotificationsTradesSkeleton, UserSettingsSkeleton, NewTradeOfferSkeleton } from './components/partials/skeletons/routeskeletons'
 
 
 //can add a bit of debounce by adding number parameter in case the event causes performance issues
@@ -80,31 +84,84 @@ function NavFooterError() {
   return (
     <>
     <NavBar />
-      <ErrorPage />
+      <ErrorPage/>
     <Footer />
     </>
   )
 }
 
-function EditCollectionComponent() {
+function EditCollectionComponent({}) {
   return(
     <>
-    <EditCollection/>
-    <ShowCollection/>
+    <EditCollection />
+    <ShowCollection />
     </>
   )
 }
 
-function LoaderErrorHandlerWrapper({Component}) {
-  const loaderData = useLoaderData()
-
+function InitializeStateFunc({children, postLoaderFunc, postCompleteTools, resolvedData}) {
+  if (!postLoaderFunc) {
+    return children
+  }
   useEffect(() => {
-
+    postLoaderFunc(resolvedData, postCompleteTools)
   }, [])
+  return children
+}
+
+function DeferLoaderComponent({Component, SkeletonComponent, postCompleteTools, postLoaderFunc, loaderDataKey, isProtectedRoute=false, isPrivateRoute=false, privateProtectedRouteProps={}}) {
+  const promise = useLoaderData()
+  const fallbackProp = SkeletonComponent ? {fallback: <SkeletonComponent />} : {}
+
   return (
-    <Component />
+    <Suspense {...fallbackProp}>
+      <Await
+        resolve={promise.resolvedData}
+      >
+        {(resolvedData) => {
+          const errorResolved = resolvedData.status === 400 || resolvedData.status === 500 || resolvedData.status === 401 || resolvedData.status === 402 || resolvedData.status === 403 || resolvedData.status === 404
+          if (errorResolved) {
+            return (
+              <ErrorPage errorData={resolvedData}/>
+            )
+          }
+          const loaderProp = {[loaderDataKey]: resolvedData}
+          // if (postLoaderFunc) {
+          //   postLoaderFunc(resolvedData, postCompleteTools)
+          // }
+          return (
+            <InitializeStateFunc
+              postLoaderFunc={postLoaderFunc} postCompleteTools={postCompleteTools} resolvedData={resolvedData}
+            >
+              {isProtectedRoute ? 
+              <ProtectedRoute Component={Component} PlaceholderComponent={SkeletonComponent} {...privateProtectedRouteProps} loaderData={resolvedData} loaderDataProp={loaderProp}/> : 
+              isPrivateRoute ? 
+              <PrivateRoute 
+                Component={Component}
+                PlaceholderComponent={SkeletonComponent}
+                loaderDataProp={loaderProp}
+                loaderData={resolvedData}
+                {...privateProtectedRouteProps}
+              /> : 
+              <Component {...loaderProp}/>}
+            </InitializeStateFunc>
+          )
+        }}
+      </Await>
+    </Suspense>
   )
 }
+
+// function LoaderErrorHandlerWrapper({Component}) {
+//   const loaderData = useLoaderData()
+
+//   useEffect(() => {
+
+//   }, [])
+//   return (
+//     <Component />
+//   )
+// }
 
 function Router() {
   const dispatch = useDispatch()
@@ -186,87 +243,132 @@ function Router() {
           children: [
             {
               path: "",
-              element: <ShowCollection/>,
-              loader: (params) => collectionLoader(params, dispatch, false, true, setListInitialState),
+              element: 
+                <DeferLoaderComponent 
+                  Component={ShowCollection} 
+                  SkeletonComponent={ShowCollectionSkeleton} 
+                  postCompleteTools={{dispatch, initList: setListInitialState}} 
+                  postLoaderFunc={initializeCollectionPageState}
+                  loaderDataKey='collection'
+                />,
+              loader: (params) => collectionLoader(params) 
+              // element: <ShowCollection/>,
+              // loader: (params) => collectionLoader(params, dispatch, false, true, setListInitialState),
             },
             {
               path: 'edit',
+              // element: 
+              //   <DeferLoaderComponent 
+              //     Component={EditCollectionComponent}
+              //     postCompleteTools={{dispatch, initList: setListInitialState, initCol: setCollectionInitialState, initOnhand: setOnHandInitialState, initOptions: setOptionsInitialState, editPage: true}} 
+              //     postLoaderFunc={initializeCollectionPageState}
+              //     loaderDataKey='collection'
+              //     isPrivateRoute={true}
+              //     privateProtectedRouteProps={{routeType: 'editCollection'}}
+              //   />,
+              // loader: (params) => collectionLoader(params) 
               element: <PrivateRoute Component={EditCollectionComponent} routeType='editCollection'/>,
-              loader: (params) => collectionLoader(params, dispatch, true, true, setListInitialState, setCollectionInitialState, setOnHandInitialState, setOptionsInitialState)
+              loader: (params) => collectionLoaderEditPage(params, dispatch, setListInitialState, setCollectionInitialState, setOnHandInitialState, setOptionsInitialState)
             },
             {
               path: 'trade',
               element: 
-                <ProtectedRoute 
+                <DeferLoaderComponent 
                   Component={NewTrade} 
-                  extraAuthType='newTrade'
+                  SkeletonComponent={NewTradeOfferSkeleton} 
+                  loaderDataKey='loaderData'
+                  isProtectedRoute={true}
+                  privateProtectedRouteProps={{extraAuthType: 'newTrade'}}
+                />,
+              loader: (params) => collectionLoader(params) 
+                // <ProtectedRoute 
+                  // Component={NewTrade} 
+                  // extraAuthType='newTrade'
                   // extraAuthFunc={(col, user) => user.loggedIn && !col.owner.settings.privacy.blockedUsers.includes(user.user.username)}
                   // extraAuthErrorMessage='You were blocked by this user and cannot trade with them!'
                   // extraAuthRedirectOffset={-5}
-                />,
-              loader: (params) => collectionLoader(params, undefined, false, false)
+                // />,
+              // loader: (params) => collectionLoader(params, undefined, false, false),
             }
           ]
         },
         {
           path: "/trades/:id",
-          element: <ShowTrade />,
-          loader: tradeLoader
+          // element: <ShowTrade />,
+          element: 
+            <DeferLoaderComponent 
+              Component={ShowTrade}
+              SkeletonComponent={ShowTradeSkeleton}
+              loaderDataKey='tradeAndLOfferData'
+            />,
+          loader: tradeLoader,
+
         },
         {
           path: '/trades/:id/counter-offer',
-          element: <PrivateRoute Component={NewTrade} routeType='tradeCounteroffer'/>,
-          loader: (params) => tradeLoader(params, true)
+          // element: <PrivateRoute Component={NewTrade} routeType='tradeCounteroffer'/>,
+          element: 
+            <DeferLoaderComponent
+              Component={NewTrade}
+              SkeletonComponent={NewTradeOfferSkeleton}
+              loaderDataKey='loaderData'
+              isPrivateRoute={true}
+              privateProtectedRouteProps={{routeType: 'tradeCounteroffer'}}
+            />,
+          loader: (params) => tradeLoader(params, true),
         },
         {
           path: "/users/:username",
-          element: <ShowUser/>,
-          loader: userLoader
+          // element: <ShowUser/>,
+          element: 
+            <DeferLoaderComponent 
+              Component={ShowUser}
+              SkeletonComponent={ShowUserSkeleton}
+              loaderDataKey='userData'
+            />,
+          loader: userLoader,
+          
         },
         {
           path: "/users/:username/trades",
-          element: <PrivateRoute Component={UserTrades} routeType='userTrades'/>,
-          loader: userTradesLoader
+          // element: <PrivateRoute Component={UserTrades} routeType='userTrades'/>,
+          element: 
+            <DeferLoaderComponent 
+              Component={UserTrades}
+              SkeletonComponent={UserNotificationsTradesSkeleton}
+              loaderDataKey='userAndTheirTradesData'
+              isPrivateRoute={true}
+              privateProtectedRouteProps={{routeType: 'userTrades'}}
+            />,
+          loader: userTradesLoader,
         },
         {
           path: '/users/:username/notifications',
-          element: <PrivateRoute Component={UserNotifications} routeType='userNotifications'/>,
+          // element: <PrivateRoute Component={UserNotifications} routeType='userNotifications'/>,
+          element: 
+            <DeferLoaderComponent 
+              Component={UserNotifications}
+              SkeletonComponent={UserNotificationsTradesSkeleton}
+              loaderDataKey='userData'
+              isPrivateRoute={true}
+              privateProtectedRouteProps={{routeType: 'userNotifications'}}
+            />,
           loader: userLoader,
           id: 'user', 
-          children: [
-            {
-              path: ':noteId',
-
-            }
-          ]
         },
         {
           path: "/users/:username/settings",
-          element: <PrivateRoute Component={SettingsPage} PlaceholderComponent={ShowUser} routeType='userSettings'/>,
+          // element: <PrivateRoute Component={SettingsPage} PlaceholderComponent={ShowUser} routeType='userSettings'/>,
+          element: 
+            <DeferLoaderComponent 
+              Component={SettingsPage}
+              SkeletonComponent={UserSettingsSkeleton}
+              loaderDataKey='userData'
+              isPrivateRoute={true}
+              privateProtectedRouteProps={{routeType: 'userSettings'}}
+            />,
           loader: userLoader,
           id: 'userSettings',
-          children: [
-            {
-              path: 'profile',
-              element: <Profile />
-            },
-            {
-              path: 'account',
-              element: <Account />
-            },
-            {
-              path: 'display',
-              element: <Display />
-            },
-            {
-              path: 'privacy',
-              element: <Privacy />
-            },
-            {
-              path: 'other',
-              element: <Other />
-            },
-          ]
         },
         {
           path: "*",

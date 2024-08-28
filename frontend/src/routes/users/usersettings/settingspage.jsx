@@ -5,11 +5,15 @@ import ImgData from '../../../components/collectiontable/tabledata/imgdata'
 import { useLocation, useNavigate, useRouteLoaderData, useLoaderData, Outlet, useRevalidator } from 'react-router'
 import hexToRgba from 'hex-to-rgba'
 import { capitalizeFirstLetter } from '../../../../utils/functions/misc'
+import Account from './account'
+import Profile from './profile'
+import Privacy from './privacy'
+import Display from './display'
+import Other from './other'
 
-export default function SettingsPage({}) {
+export default function SettingsPage({userData}) {
     const theme = useTheme()
-    const userData = useLoaderData()
-    const navigate = useNavigate()
+    // const userData = useLoaderData()
     const locationData = useLocation()
     const revalidator = useRevalidator()
     const catInit = locationData.state !== null ? (locationData.state.catInit !== undefined ? locationData.state.catInit : '') : ''
@@ -17,13 +21,15 @@ export default function SettingsPage({}) {
     const [settingCategory, setSettingCategory] = useState(catInit)
 
     const changeCategory = (newCat) => {
-        navigate(`/users/${userData.username}/settings/${newCat}`)
         setSettingCategory(newCat)
     }
     
     const revalidateFunc = () => {
         revalidator.revalidate()
     }
+
+    const CatComponent = settingCategory === 'profile' ? Profile : settingCategory === 'account' ? Account : settingCategory === 'privacy' ? Privacy : 
+        settingCategory === 'display' ? Display : Other
 
     return (
         <BodyWrapper sx={{mx: 0, mb: 0, ...theme.components.box.fullCenterCol}}>
@@ -65,9 +71,16 @@ export default function SettingsPage({}) {
                     })}
                 </Box>
                 <Box sx={{height: '600px', width: '70%', ...theme.components.box.fullCenterCol, borderTop: '1px solid black', borderBottom: '1px solid black', borderLeft: '1px solid black', backgroundColor: hexToRgba(theme.palette.color1.light, 0.3)}}>
-                    {settingCategory === '' ? 
+                    {/* {settingCategory === '' ? 
                         <Typography sx={{fontSize: '18px', color: 'grey'}}><i>Click on a category to change settings</i></Typography> : 
                         <Outlet context={revalidateFunc}/>
+                    } */}
+                    {settingCategory === '' ?
+                        <Typography sx={{fontSize: '18px', color: 'grey'}}><i>Click on a category to change settings</i></Typography> : 
+                        <CatComponent 
+                            user={userData}
+                            revalidate={revalidateFunc}
+                        />
                     }
                 </Box>
             </Box>

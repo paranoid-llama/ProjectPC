@@ -15,6 +15,7 @@ import { useNavigate, useRouteLoaderData, useLoaderData, useRevalidator, useLoca
 import userLoginRequest from "../../../utils/functions/backendrequests/users/login";
 import userLogoutRequest from "../../../utils/functions/backendrequests/users/logout";
 import hexToRgba from "hex-to-rgba";
+import DotWaitingText from "../functionalcomponents/dotwaitingtext";
 
 export default function NavBar() {
     const theme = useTheme()
@@ -27,6 +28,7 @@ export default function NavBar() {
     const passwordFieldRef = useRef(null)
     const collectionAreaRef = useRef(null)
     const [loginArea, setLoginArea] = useState({open: false, usernameError: false, passwordError: false}) 
+    const [loggingInOrOut, setLoggingInOrOut] = useState(false)
     //we only check for errors if one field is left empty. if it's wrong, we transfer over to the login route
     const [userArea, setUserArea] = useState({open: false})
     const toggleLoginArea = () => {
@@ -78,6 +80,7 @@ export default function NavBar() {
             setUserArea({open: false})
             navigate(link)
         } else {
+            setLoggingInOrOut(true)
             const backendFunc = async() => await userLogoutRequest()
             const successFunc = () => {
                 //spawning alert
@@ -85,11 +88,12 @@ export default function NavBar() {
                 const alertInfo = {severity: 'success', message: alertMessage, timeout: 3}
                 const id = addAlert(alertInfo);
                 setAlertIds((prev) => [...prev, id]);
+                setLoggingInOrOut(false)
                 navigate(link)
                 setUserArea({open: false})
                 revalidator.revalidate()
             }
-            handleError(backendFunc, false, successFunc, () => {})   
+            handleError(backendFunc, false, successFunc, () => {setLoggingInOrOut(false)})   
         }
     }
 
@@ -99,13 +103,16 @@ export default function NavBar() {
             setLoginArea({...loginArea, usernameError: userData.username.length === 0, passwordError: userData.password.length === 0})
             return 
         }
+        setLoggingInOrOut(true)
         const backendFunc = async() => await userLoginRequest(userData)
         const successFunc = (loginStatus) => {
             if (loginStatus.successful === false) {
                 navigate('/login', {state: {error: true, message: 'One or more fields are incorrect!'}})
                 setLoginArea({open: false, usernameError: false, passwordError: false})
+                setLoggingInOrOut(false)
             } else {
                 // navigate(0)
+                setLoggingInOrOut(false)
                 //spawning alert
                 const alertMessage = `Logged in as ${userData.username}!`
                 const alertInfo = {severity: 'success', message: alertMessage, timeout: 3}
@@ -119,7 +126,7 @@ export default function NavBar() {
                 }
             }
         }
-        handleError(backendFunc, false, successFunc, () => {})
+        handleError(backendFunc, false, successFunc, () => {setLoggingInOrOut(false)})
     }
 
     const icons = userData.loggedIn ? ['homeicon', 'search', 'createcollection', 'user'] : ['homeicon', 'search', 'createcollection', 'login']
@@ -156,6 +163,10 @@ export default function NavBar() {
         setLoginArea({...loginArea, open: false})
         navigate('/register')
     }
+    const forgotPassword = () => {
+        setLoginArea({...loginArea, open: false})
+        navigate('/forgot-password')
+    }
 
     return (
         <>
@@ -173,7 +184,7 @@ export default function NavBar() {
                         <Link href="/" sx={{color: '#FFF'}} underline="none">Pokellections</Link>
                     </Typography>
                     
-                    {loginArea.open && 
+                    {(!userData.loggedIn && loginArea.open) && 
                     <Box sx={{position: 'absolute', width: '50%', minWidth: '360px', maxWidth: '500px', height: '175px', top: '100%', right: '0.01%', zIndex: 1, ...theme.components.box.fullCenterCol}}>
                         <Box sx={{...theme.components.box.fullCenterCol, zIndex: 1, backgroundColor: theme.palette.color1.dark, width: '100%', height: '100%', borderBottom: '1px solid black', borderLeft: '1px solid black', borderBottomLeftRadius: '10px'}}>
                             <Typography sx={{fontWeight: 700, mb: 0.75}}>Login</Typography>
@@ -198,14 +209,14 @@ export default function NavBar() {
                                     }}
                                 />
                             </Box>
-                            <Button variant='contained' size='small' sx={{mt: 1.5, py: 0.5}} onClick={finalizeLogin}>Login</Button>
+                            <Button variant='contained' size='small' sx={{mt: 1.5, py: 0.5, '& .Mui-disabled': {color: 'white'}}} onClick={finalizeLogin} disabled={loggingInOrOut}>{loggingInOrOut ? <>Logging in<DotWaitingText/></> : 'Login'}</Button>
                             <Box sx={{...theme.components.box.fullCenterCol, width: '100%'}}>
-                                <Button sx={{fontSize: '8px', padding: 0.25}} onClick={() => navigate('/forgot-password')}>I forgot my password</Button>
+                                <Button sx={{fontSize: '8px', padding: 0.25}} onClick={forgotPassword}>I forgot my password</Button>
                                 <Button sx={{fontSize: '8px', padding: 0.25}} onClick={dontHaveAccount}>I don't have an account</Button>
                             </Box>
                         </Box>
                     </Box>}
-                    {userArea.open &&
+                    {(userData.loggedIn && userArea.open) &&
                     <Box sx={{position: 'absolute', width: '50%', minWidth: '200px', maxWidth: '300px', height: '315px', top: '100%', right: '0.01%', zIndex: 1, ...theme.components.box.fullCenterCol}}>
                         <Box sx={{...theme.components.box.fullCenterCol, zIndex: 1, backgroundColor: theme.palette.color1.dark, width: '100%', height: '100%', borderBottom: '1px solid black', borderLeft: '1px solid black', borderBottomLeftRadius: '10px'}}>
                             <Box sx={{width: '90%', height: '40%', ...theme.components.box.fullCenterCol}}>
@@ -235,13 +246,13 @@ export default function NavBar() {
                                         key={`user-${o}-option`}
                                         onMouseEnter={isCollectionOption ? () => toggleCollectionArea(true) : null}
                                         onMouseLeave={isCollectionOption ? () => toggleCollectionArea(false) : null}
-                                        onClick={isCollectionOption ? null : () => navigateUserOption(o === 'Logout', linkTo)}
+                                        onClick={(isCollectionOption || (o === 'Logout' && loggingInOrOut)) ? null : () => navigateUserOption(o === 'Logout', linkTo)}
                                     >
                                         <Typography sx={{width: '100%', textAlign: 'center', position: 'relative'}}>
                                             {isCollectionOption && 
                                                 <ArrowBack sx={{position: 'absolute', left: '0%', width: '16px'}}/>
                                             }
-                                            {o}
+                                            {(o === 'Logout' && loggingInOrOut) ? <>Logging out<DotWaitingText/></>  : o}
                                             
                                         </Typography>
                                         {(isNotifications && unreadNotificationsAmount > 0) && 

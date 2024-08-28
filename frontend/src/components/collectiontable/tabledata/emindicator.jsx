@@ -37,37 +37,22 @@ export default function EMIndicator({sx, textOnly, isEditMode, emCount, EMs, han
 
     if (textOnly) {
         return (
-            <ClickAwayListener onClickAway={() => setEmsOpen(false)}>
-                <Tooltip
-                     PopperProps={{
-                        disablePortal: true,
-                      }}
-                      sx={{position: 'absolute', zIndex: 100}}
-                      onClose={() => setEmsOpen(false)}
-                      open={emsOpen}
-                      disableFocusListener
-                      disableHoverListener
-                      disableTouchListener
-                      title={EMs}
-                >
-                    <Typography 
-                        sx={{
-                            position: 'absolute', 
-                            ':hover': {cursor: 'pointer'},
-                            bottom: '0px', 
-                            width: '100%',
-                            color: 'white', 
-                            fontSize: '14px', 
-                            opacity: emCount === 0 ? 0.5 : 1, 
-                            fontWeight: emCount === 0 ? 400 : 700,
-                            ...sx
-                        }}
-                        onClick={() => setEmsOpen(true)}
-                    >
-                        {emCount}EM
-                    </Typography>
-                </Tooltip>
-            </ClickAwayListener>
+            <Typography 
+                sx={{
+                    position: 'absolute', 
+                    ':hover': {cursor: 'pointer'},
+                    bottom: '0px', 
+                    width: '100%',
+                    color: 'white', 
+                    fontSize: '14px', 
+                    opacity: emCount === 0 ? 0.5 : 1, 
+                    fontWeight: emCount === 0 ? 400 : 700,
+                    ...sx
+                }}
+                // onClick={() => setEmsOpen(true)}
+            >
+                {emCount}EM
+            </Typography>
         )
     } else {
         if (isEditMode) {

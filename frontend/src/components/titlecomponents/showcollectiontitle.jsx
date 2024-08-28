@@ -18,8 +18,7 @@ import { setCollectionInitialState } from '../../app/slices/collection'
 import { setOnHandInitialState } from '../../app/slices/onhand'
 import { setOptionsInitialState } from '../../app/slices/options'
 
-export default function ShowCollectionTitle({collectionID, options, isEditMode, isOwner, userIsLoggedIn, userData}) {
-    const collectionInfo = useLoaderData()
+export default function ShowCollectionTitle({collectionInfo, collectionID, options, isEditMode, isOwner, userIsLoggedIn, userData}) {
     const theme = useTheme()
     const dispatch = useDispatch()
     const navigate = useNavigate()

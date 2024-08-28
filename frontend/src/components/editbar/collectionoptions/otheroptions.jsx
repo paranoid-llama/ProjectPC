@@ -126,10 +126,10 @@ export default function OtherOptions({elementBg, collectionId, collectionGen, co
                     const alertInfo = {severity: 'success', message: alertMessage, timeout: 3}
                     const id = addAlert(alertInfo);
                     setAlertIds((prev) => [...prev, id]);
+                    dispatch(changeModalState({open: false}))
                 }
 
-                handleError(backendFunc, false, successFunc, () => {})
-                dispatch(changeModalState({open: false}))
+                handleError(backendFunc, false, successFunc, () => {dispatch(changeModalState({open: false}))})
             }, 1000)
         } else if (nextScreen === 'goBack') {
             setOtherOptions({...otherOptions, saveChangesConfirmOpen: false})

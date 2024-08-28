@@ -47,7 +47,7 @@ export default function NothingSelected({listType, isHomeCollection, collectionI
                 </Button>
                 </>}
             </Box>
-            <OnHandPokemonSelectionForm open={openModal} handleClose={handleClose} initialPokemonData={{}} isHomeCollection={isHomeCollection}/>
+            <OnHandPokemonSelectionForm collectionID={collectionID} open={openModal} handleClose={handleClose} initialPokemonData={{}} isHomeCollection={isHomeCollection}/>
             {deleteOnHandMode &&
                 <BulkDeleteConfirm 
                     open={confirmDeleteModal}

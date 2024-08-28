@@ -1,16 +1,20 @@
 const backendurl = import.meta.env.VITE_BACKEND_URL
+import { defer } from "react-router"
 
 export default async function tradeLoader({params}, getFullCollectionData=false) {
-    const tradeData = await fetch(`${backendurl}/trades/${params.id}?getFullCollectionData=${getFullCollectionData}`, {
+    const tradeData = fetch(`${backendurl}/trades/${params.id}?getFullCollectionData=${getFullCollectionData}`, {
         method: 'GET',
         headers: {
             "Content-Type": "application/json",
         }
-    }).then(async(res) => {
-        const data = await res.json()
-        if (res.ok) {return data}
-        else {throw data}
-    })
+    }).then(res => res.json())
+    // .then(async(res) => {
+    //     const data = await res.json()
+    //     if (res.ok) {return data}
+    //     else {throw data}
+    // })
+
+    
     // .then(data => { //bandaid solution to what should be solved through database querying tools
     //     const tradeData = data.tradeData
     //     const crossGenTrade = tradeData.gen.includes('-')
@@ -23,5 +27,5 @@ export default async function tradeLoader({params}, getFullCollectionData=false)
     //     })
     //     return {...data, tradeData: {...tradeData, users: newUsersArr}}
     // })
-    return tradeData
+    return defer({resolvedData: tradeData})
 }

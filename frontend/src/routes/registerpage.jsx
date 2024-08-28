@@ -7,6 +7,7 @@ import ControlledTextInput from '../components/functionalcomponents/controlledte
 // import { useDebounce } from 'use-debounce'
 import { backendCheckUsernameAvailability } from '../../utils/functions/backendrequests/users/checkusernameavailability'
 import { userRegisterRequest } from '../../utils/functions/backendrequests/users/register'
+import DotWaitingText from '../components/functionalcomponents/dotwaitingtext'
 
 const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 const usernameRegex = /^[a-zA-Z0-9\$\(\)\-\_\;\:\'\,\. ]+[a-zA-Z0-9\$\(\)\-\_\;\:\'\,\.]*$/i
@@ -37,6 +38,7 @@ export default function RegisterPage({}) {
     const [error, setError] = useState({username: false, usernameAvailable: 'none', email: false, emailAvailable: 'none', password: false, passwordFocused: false, confirmPassword: false, passwordsMatch: 'none', error: false, errorMessage: ''}) 
     const [password, setPassword] = useState({value: '', eightChars: false, oneUpper: false, oneLower: false, oneNumber: false})
     const [securityQuestion, setSecurityQuestion] = useState({questionOne: 1, questionTwo: 2, questionThree: 3})
+    const [registering, setRegistering] = useState(false)
 
     const usernameFieldRef = useRef(null)
     const emailFieldRef = useRef(null)
@@ -197,12 +199,14 @@ export default function RegisterPage({}) {
             const securityQuestion2 = questionTwoAns.current.value === '' ? {} : {secQuestion2: securityQuestions[securityQuestion.questionTwo], secAnswer2: questionTwoAns.current.value}
             const securityQuestion3 = questionThreeAns.current.value === '' ? {} : {secQuestion3: securityQuestions[securityQuestion.questionThree], secAnswer3: questionThreeAns.current.value}
             const securityQuestionData = {...securityQuestion1, ...securityQuestion2, ...securityQuestion3}
+            setRegistering(true)
             const backendFunc = async() => {return await userRegisterRequest(usernameFieldRef.current.value, emailFieldRef.current.value, password.value, securityQuestionData)}
             const successFunc = (newUserId) => {
                 // navigate('/verify-account', {state: {newUserId, email: emailFieldRef.current.value}})
+                setRegistering(false)
                 navigate('/login', {state: {success: true, message: 'Account created!'}})
             }
-            handleError(backendFunc, false, successFunc, () => {})
+            handleError(backendFunc, false, successFunc, () => {setRegistering(false)})
         }
     }
 
@@ -375,7 +379,7 @@ export default function RegisterPage({}) {
                         </Box>
                     </Box>
                 </Box>
-                <Button variant='contained' size='large' sx={{mt: 3.5, mb: 2}} onClick={finalizeRegister}>Register</Button>
+                <Button variant='contained' size='large' sx={{mt: 3.5, mb: 2}} onClick={finalizeRegister} disabled={registering}>{registering ? <>Registering<DotWaitingText/></>  : 'Register'}</Button>
             </Box>
         </BodyWrapper>
     )

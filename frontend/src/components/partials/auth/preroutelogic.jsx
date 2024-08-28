@@ -30,7 +30,7 @@ export default function PreRouteLogic({logicType, Component}) {
                 navigate(redirect)
             } else {
                 const tokenQuery = locationData.search
-                const backendFunc = async() => verifyForgotPwTokenForBackend(tokenQuery)
+                const backendFunc = async() => await verifyForgotPwTokenForBackend(tokenQuery)
                 const successFunc = (data) => {
                     setValid(true)
                     setValidData(data.data)

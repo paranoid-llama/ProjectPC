@@ -14,7 +14,7 @@ import { selectScreenBreakpoint } from '../../../app/selectors/windowsizeselecto
 export default function Filter({listType, collection, isEditMode}) {
     const dispatch = useDispatch()
     const theme = useTheme()
-    const collectionGen = useLoaderData().gen
+    const collectionGen = collection.gen
     const genNum = collectionGen === 'swsh' ? 8 :
      collectionGen === 'bdsp' ? 4 : collectionGen
     const userData = useRouteLoaderData('root')

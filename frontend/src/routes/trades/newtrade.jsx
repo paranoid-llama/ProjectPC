@@ -14,13 +14,13 @@ import { checkIfCanTrade } from '../../../utils/functions/comparecollections/che
 import { getValue } from '../../../utils/functions/comparecollections/getvalue'
 import getUserCollectionData from '../../../utils/functions/backendrequests/getusercollectiondata'
 
-export default function NewTrade({}) {
+export default function NewTrade({loaderData}) {
     const theme = useTheme()
     const userData = useRouteLoaderData("root")
     const {handleError} = useContext(ErrorContext)
     const dispatch = useDispatch()
     const locationData = useLocation()
-    const loaderData = useLoaderData()
+    // const loaderData = useLoaderData()
     const isCounteroffer = locationData.pathname.includes('counter-offer')
 
     const offererNumber = isCounteroffer && (userData.user._id.toString() === loaderData.tradeData.users[0]._id.toString()) ? 0 : 1
