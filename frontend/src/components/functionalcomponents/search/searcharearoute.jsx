@@ -86,6 +86,19 @@ export default function SearchAreaRoute({query, searchType, result, page, change
         <Box sx={{width: '80%', minHeight: '600px', mt: 2}}>
             
             <Box sx={{maxWidth: '800px', display: 'flex', alignItems: 'center', mb: 3, position: 'relative'}}>
+<<<<<<< HEAD
+=======
+            {searching &&
+                <>
+                    <Typography sx={{fontSize: '12px', color: 'grey', position: 'absolute'}}>
+                    <i>
+                        Searching<DotWaitingText/>
+                    </i>
+                    </Typography>
+                    <CircularProgress/>
+                </>
+            }
+>>>>>>> da117561453ada333ccb4dac2d33ced7e28f4916
             {(!searchingAll && !noResults && !searching) && 
                 <Typography sx={{fontSize: '12px', color: 'grey', position: 'absolute'}}>
                     <i>
@@ -93,6 +106,7 @@ export default function SearchAreaRoute({query, searchType, result, page, change
                     </i>
                 </Typography>}
             </Box>
+<<<<<<< HEAD
             {searching &&
                 <> 
                     <Box sx={{...theme.components.box.fullCenterCol, width: '100%', height: '50px', mt: 10}}>
@@ -105,6 +119,8 @@ export default function SearchAreaRoute({query, searchType, result, page, change
                     </Box>
                 </>
             }
+=======
+>>>>>>> da117561453ada333ccb4dac2d33ced7e28f4916
             {(searchingCollections && !noCollections && !searching) &&
             <>
                 {searchingAll && 

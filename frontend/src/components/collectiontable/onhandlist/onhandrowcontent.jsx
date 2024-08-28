@@ -16,7 +16,10 @@ import newObjectId from '../../../../utils/functions/newobjectid';
 
 function OnHandRowContent({columns, row, pokemonId, collectionId, styles, isSelected, setSelected, allEggMoveInfo, isEditMode, isHomeCollection, isTradePage, tradeSide, wantedByOtherList, userData}) {
     const dispatch = useDispatch()
+<<<<<<< HEAD
     console.log(row)
+=======
+>>>>>>> da117561453ada333ccb4dac2d33ced7e28f4916
 
     const skeletonRow = row === undefined
     if (skeletonRow) { 
@@ -26,8 +29,13 @@ function OnHandRowContent({columns, row, pokemonId, collectionId, styles, isSele
 
                 return (
                     c.dataKey === 'EMs' ? 
+<<<<<<< HEAD
                     <EggMoveColumnDisplay key={`error-onhand-em-display-${newObjectId()}`} baseStyles={styles} skeleton={true} /> : 
                     <TableCell  key={`error-onhand-${c.dataKey}-display-${newObjectId()}`} padding='none' sx={{...styles.tableCell}}>
+=======
+                    <EggMoveColumnDisplay baseStyles={styles} skeleton={true} /> : 
+                    <TableCell padding='none' sx={{...styles.tableCell}}>
+>>>>>>> da117561453ada333ccb4dac2d33ced7e28f4916
                         <Box sx={{...styles.bodyColor, backgroundColor: 'rgb(100, 100, 100)'}}>
 
                         </Box>

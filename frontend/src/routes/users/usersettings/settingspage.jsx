@@ -13,7 +13,11 @@ import Other from './other'
 
 export default function SettingsPage({userData}) {
     const theme = useTheme()
+<<<<<<< HEAD
     // const userData = useLoaderData()
+=======
+    const userData = useLoaderData()
+>>>>>>> da117561453ada333ccb4dac2d33ced7e28f4916
     const locationData = useLocation()
     const revalidator = useRevalidator()
     const catInit = locationData.state !== null ? (locationData.state.catInit !== undefined ? locationData.state.catInit : '') : ''

@@ -154,12 +154,17 @@ const listDisplay = createSlice({
                     return state
                 }
             })
+<<<<<<< HEAD
             .addCase(fetchCollectionData.fulfilled, (state, action) => {
                 state.collection = action.payload.ownedPokemon.filter(p => !p.disabled)
                 state.onhand = action.payload.onHand
                 state.eggMoveInfo = action.payload.eggMoveInfo
                 state.availableGamesInfo = action.payload.availableGamesInfo
                 return state
+=======
+            .addCase(setOnHandInitialState, (state, action) => {
+                
+>>>>>>> da117561453ada333ccb4dac2d33ced7e28f4916
             })
     }
 })

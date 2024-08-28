@@ -536,10 +536,17 @@ export default function OnHandPokemonSelectionForm({collectionID, speciesEditOnl
                         </Box>
                         <Box sx={{height: '8%', display: 'flex', justifyContent: 'center'}}>
                             <Box sx={{width: '33%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+<<<<<<< HEAD
                                 <Button  sx={{'& .Mui-disabled': {color: 'white'}}} size='small' variant='contained' onClick={addingMultipleOnhands ? () => setConfirmDecisionModal(true) : handleCloseModal} disabled={savePending}>Back</Button>
                             </Box>
                             <Box sx={{width: '33%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                                 <Button  sx={{'& .Mui-disabled': {color: 'white'}}} size='large' variant='contained' onClick={handleAddNewOnHand} disabled={savePending}>{savePending ? <>Saving<DotWaitingText/></> : 'Save'}</Button>
+=======
+                                <Button size='small' variant='contained' onClick={addingMultipleOnhands ? () => setConfirmDecisionModal(true) : handleCloseModal} disabled={savePending}>Back</Button>
+                            </Box>
+                            <Box sx={{width: '33%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                                <Button size='large' variant='contained' onClick={handleAddNewOnHand} disabled={savePending}>{savePending ? <>Saving<DotWaitingText/></> : 'Save'}</Button>
+>>>>>>> da117561453ada333ccb4dac2d33ced7e28f4916
                             </Box>
                             <Box sx={{width: '33%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                             <Button  size='small' variant='contained' onClick={handleAddAnotherOnhand} sx={{fontSize: '12px', padding: 0.5, '& .Mui-disabled': {color: 'white'}}} disabled={(pokemonData.otherNewOnHands.length === 0 && Object.keys(pokemonData.selection).length === 0) || (savePending)}>Add another on-hand</Button>
@@ -563,10 +570,17 @@ export default function OnHandPokemonSelectionForm({collectionID, speciesEditOnl
                         </Box>
                         <Box sx={{height: '10%', display: 'flex', justifyContent: 'center'}}>
                             <Box sx={{width: '33%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+<<<<<<< HEAD
                                 <Button sx={{'& .Mui-disabled': {color: 'white'}}} size='small' variant='contained' onClick={handleCloseModal} disabled={savePending}>Back</Button>
                             </Box>
                             <Box sx={{width: '33%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                                 <Button sx={{'& .Mui-disabled': {color: 'white'}}} size='large' variant='contained' onClick={handleSaveAndCloseSpeciesEditOnly} disabled={savePending}>{savePending ? <>Saving<DotWaitingText/></>  : 'Save'}</Button>
+=======
+                                <Button size='small' variant='contained' onClick={handleCloseModal} disabled={savePending}>Back</Button>
+                            </Box>
+                            <Box sx={{width: '33%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                                <Button size='large' variant='contained' onClick={handleSaveAndCloseSpeciesEditOnly} disabled={savePending}>{savePending ? <>Saving<DotWaitingText/></>  : 'Save'}</Button>
+>>>>>>> da117561453ada333ccb4dac2d33ced7e28f4916
                             </Box>
                             <Box sx={{width: '33%'}}></Box>
                         </Box>
