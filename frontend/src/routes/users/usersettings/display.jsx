@@ -1,5 +1,5 @@
-import {Box, useTheme, Typography, TableBody, TableContainer, Table, TableHead, TableRow, TableCell, Select, MenuItem, Button, ToggleButton} from '@mui/material'
-import { useRouteLoaderData, useLoaderData, useOutletContext } from 'react-router'
+import {Box, useTheme, Typography, TableBody, TableContainer, Table, TableHead, TableRow, TableCell, Select, MenuItem, Button, ToggleButton, ToggleButtonGroup} from '@mui/material'
+import { useRouteLoaderData, useLoaderData, useOutletContext, useRevalidator } from 'react-router'
 import { apriballs } from '../../../../common/infoconstants/miscconstants.mjs'
 import {useState, useContext} from 'react'
 import { AlertsContext } from '../../../alerts/alerts-context'
@@ -18,15 +18,17 @@ export default function Display({user, revalidate}) {
         general: {regionalForms: pokemonNameDisplays.general.regionalForms, originRegionalForms: pokemonNameDisplays.general.originRegionalForms, alternateForms: pokemonNameDisplays.general.alternateForms},
         modal: {open: false},
         specific: pokemonNameDisplays.specific,
-        ballOrder: user.settings.display.ballOrder
+        ballOrder: user.settings.display.ballOrder,
+        onhandView: user.settings.display.defaultOnhandView
     })
 
     const trueTentativeBallOrder = [...displayTentativeChanges.ballOrder, ...apriballs.filter(apB => !displayTentativeChanges.ballOrder.includes(apB))]
 
     const noNameDisplayChanges = (pokemonNameDisplays.general.regionalForms === displayTentativeChanges.general.regionalForms && pokemonNameDisplays.general.originRegionalForms === displayTentativeChanges.general.originRegionalForms && pokemonNameDisplays.general.alternateForms === displayTentativeChanges.general.alternateForms) &&
-        !Object.keys(displayTentativeChanges.specific).map(p => pokemonNameDisplays.specific[p] !== undefined && pokemonNameDisplays.specific[p] === displayTentativeChanges.specific[p]).includes(false) && Object.keys(displayTentativeChanges.specific).length === Object.keys(pokemonNameDisplays.specific).length
+        !Object.keys(displayTentativeChanges.specific).map(p => pokemonNameDisplays.specific[p] !== undefined && pokemonNameDisplays.specific[p] === displayTentativeChanges.specific[p]).includes(false) && Object.keys(displayTentativeChanges.specific).length === Object.keys(pokemonNameDisplays.specific).length 
     const noBallOrderChanges = !trueTentativeBallOrder.map((apB, idx) => user.settings.display.ballOrder.indexOf(apB) === idx).includes(false)
-    const noTotalChanges = noNameDisplayChanges && noBallOrderChanges
+    const noOnhandViewChanges = user.settings.display.defaultOnhandView === displayTentativeChanges.onhandView
+    const noTotalChanges = noNameDisplayChanges && noBallOrderChanges && noOnhandViewChanges
 
     const toggleModal = () => {setDisplayTentativeChanges({...displayTentativeChanges, modal: {...displayTentativeChanges.modal, open: !displayTentativeChanges.modal.open}})}
 
@@ -98,10 +100,9 @@ export default function Display({user, revalidate}) {
             addAlert({severity: 'error', message: 'No changes were made!', timeout: 3})
         }
         else {
-            const newDisplaySettings = {pokemonNames: {general: displayTentativeChanges.general, specific: displayTentativeChanges.specific}, ballOrder: trueTentativeBallOrder}
+            const newDisplaySettings = {pokemonNames: {general: displayTentativeChanges.general, specific: displayTentativeChanges.specific}, ballOrder: trueTentativeBallOrder, defaultOnhandView: displayTentativeChanges.onhandView}
             const backendFunc = async() => await userSettingsBackendRequest('display', newDisplaySettings, user.username)
             const successFunc = () => {
-                // revalidator.revalidate()
                 revalidate()
                 setTimeout(() => {
                     addAlert({severity: 'success', message: `Changed display settings!`, timeout: 3});
@@ -145,7 +146,7 @@ export default function Display({user, revalidate}) {
                 </Table>
                 <Button variant='contained' sx={{mt: 1}} onClick={() => setDisplayTentativeChanges({...displayTentativeChanges, modal: {...displayTentativeChanges.modal, open: true}})}>Specific Name Display Settings</Button>
             </Box>
-            <Box sx={{width: '100%', height: '40%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
+            <Box sx={{width: '100%', height: '30%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
                 <Box sx={{width: '100%', position: 'relative'}}>
                     <Typography sx={{fontSize: '18px', fontWeight: 700}}>
                         Select Ball Order
@@ -180,6 +181,21 @@ export default function Display({user, revalidate}) {
                         )
                     })}
                 </Box>
+            </Box>
+            <Box sx={{width: '100%', height: '25%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', mt: -5}}>
+                <Box sx={{width: '100%', position: 'relative'}}>
+                    <Typography sx={{fontSize: '18px', fontWeight: 700}}>
+                        Select Default On-Hand View
+                    </Typography>
+                    <Typography sx={{fontSize: '12px'}}>Select the default view when looking at an On-Hands list.</Typography>
+                </Box>
+                <Box sx={{width: '100%', height: '20%', display: 'flex', flexDirection: 'row', justifyContent: 'center', mt: 2}}>
+                    <ToggleButtonGroup value={displayTentativeChanges.onhandView} sx={{backgroundColor: hexToRgba(theme.palette.color1.main, 0.65), color: 'white'}} exclusive onChange={(e, newVal) => setDisplayTentativeChanges({...displayTentativeChanges, onhandView: newVal})}>
+                        <ToggleButton value='byIndividual' sx={{padding: 0.25, px: 2, color: 'white', '&.Mui-selected': {color: 'white', backgroundColor: hexToRgba(theme.palette.color1.dark, 0.9)}}}>By Individual</ToggleButton>
+                        <ToggleButton value='byPokemon' sx={{padding: 0.25, px: 2, color: 'white', '&.Mui-selected': {color: 'white', backgroundColor: hexToRgba(theme.palette.color1.dark, 0.9)}}}>By Pokemon</ToggleButton>
+                    </ToggleButtonGroup>
+                </Box>
+                
             </Box>
             <Button sx={{mt: 2, position: 'absolute', bottom: 0}} onClick={saveChanges}>Save Changes</Button>
         </Box>

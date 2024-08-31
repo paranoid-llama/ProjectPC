@@ -1,7 +1,6 @@
 import {createSlice} from '@reduxjs/toolkit'
 import {setInitialState, setIsHA, setEmCount, setEms, deleteEms} from './commonreducers/sharedReducers.js'
 import { selectivelyReturnIsHAAndEMs } from '../../../utils/functions/misc.js'
-import { fetchCollectionData } from './listdisplay.jsx'
 
 const onhand = createSlice({
     name: 'onhand',
@@ -51,13 +50,6 @@ const onhand = createSlice({
             const newState = state.filter(p => p._id !== id)
             return newState
         }
-    },
-    extraReducers: (builder) => {
-        builder
-            .addCase(fetchCollectionData.fulfilled, (state, action) => {
-                state = action.payload.onHand
-                return state
-            })
     }
 })
 

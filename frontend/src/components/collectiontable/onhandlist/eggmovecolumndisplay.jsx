@@ -1,5 +1,6 @@
 import {Box, Typography, useTheme, TableCell, Grid} from '@mui/material'
 import { useDispatch, useSelector } from 'react-redux'
+import { setPokemon } from '../../../app/slices/tradeoffer'
 import { selectIfPokemonIsSelected } from '../../../app/selectors/tradeselectors'
 import { deselect } from '../../../app/slices/editmode'
 import getMoveStyles from '../../../../utils/functions/eggmoves/getmovestyles'

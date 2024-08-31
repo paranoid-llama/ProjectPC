@@ -4,9 +4,8 @@ import { useState, useEffect, useContext } from 'react'
 import { AlertsContext } from '../../../../alerts/alerts-context'
 import { ErrorContext } from '../../../../app/contexts/errorcontext'
 import { useDispatch, useSelector } from 'react-redux'
-import { setListInitialState } from '../../../../app/slices/listdisplay'
 import { changeModalState } from '../../../../app/slices/editmode'
-import { setSortingOptionsState } from '../../../../app/slices/options'
+import { setSortingOptionsState } from '../../../../app/slices/collectionstate'
 import { backendChangeOptions } from '../../../../../utils/functions/backendrequests/collectionoptionsedit'
 import { sortList } from '../../../../../common/sortingfunctions/customsorting.mjs'
 import SaveChangesConfirmModal from '../savechangesconfirmmodal'
@@ -14,8 +13,8 @@ import SaveChangesConfirmModal from '../savechangesconfirmmodal'
 export default function CollectionSortingOptions({elementBg, collectionGen, collectionId}) {
     const dispatch = useDispatch()
     const {handleError} = useContext(ErrorContext)
-    const currentOptions = useSelector((state) => state.options.sorting.collection)
-    const collectionListState = useSelector((state) => state.collection)
+    const currentOptions = useSelector((state) => state.collectionState.options.sorting.collection)
+    const collectionListState = useSelector((state) => state.collectionState.collection)
 
     const buttonStyles = {
         opacity: 0.5,
@@ -86,9 +85,7 @@ export default function CollectionSortingOptions({elementBg, collectionGen, coll
                 const backendReq = async() => await backendChangeOptions('sort', backendReqData, collectionId) 
                 const successFunc = () => {
                     dispatch(setSortingOptionsState({listType: 'collection', data: sortingOptions.options}))
-                    if (sortingOptions.reSortWillHappen) {
-                        dispatch(setListInitialState({collection: sortedCollectionList, resetCollectionFilters: true, onlyUpdateCollection: true}))
-                    }
+                    
                     //spawning alert
                     const alertMessage = `Updated Collection Sorting Options${sortingOptions.reSortWillHappen ? ' and re-sorted the list!' : '!'}`
                     const alertInfo = {severity: 'success', message: alertMessage, timeout: 3}

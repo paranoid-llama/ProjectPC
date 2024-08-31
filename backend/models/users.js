@@ -100,7 +100,8 @@ const userSchema = new Schema ({
                     }
                 }],
                 validate: v => v.length === 11 && !v.map((vV, idx) => v.indexOf(vV) === idx).includes(false)
-            }
+            },
+            defaultOnhandView: {type: String, enum: {values: ['byIndividual', 'byPokemon']}}
         }
     }, 
     notifications: {

@@ -1,11 +1,12 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Suspense } from 'react'
 import {
   createBrowserRouter,
   RouterProvider,
   Outlet,
   useLoaderData,
-  useLocation, defer, Await
+  useLocation, defer, Await,
+  useRouteLoaderData
 } from "react-router-dom"
 import Root from './routes/root'
 import Collections from './routes/collections'
@@ -39,11 +40,12 @@ import {Provider} from 'react-redux'
 import { resizeEvent } from 'redux-window'
 import { useDispatch, useSelector } from 'react-redux'
 import { setCollectionInitialState } from './app/slices/collection'
-import { setListInitialState } from './app/slices/listdisplay'
+import { initializeTotalState, setListDisplayInitialState } from './app/slices/collectionstate'
 import { setOnHandInitialState } from './app/slices/onhand'
 import { setOptionsInitialState } from './app/slices/options'
 import listStyles from '../utils/styles/componentstyles/liststyles'
 import collectionLoader from '../utils/functions/collectionLoader'
+import { collectionLoaderNoDefer } from '../utils/functions/collectionLoader'
 import { collectionLoaderEditPage } from '../utils/functions/collectionLoader'
 import { initializeCollectionPageState } from '../utils/functions/collectionLoader'
 import userLoader from '../utils/functions/userloader'
@@ -64,7 +66,7 @@ import PreRouteLogic from './components/partials/auth/preroutelogic'
 import ForgotPassword from './routes/forgotpassword'
 import ResetPassword from './routes/resetpassword'
 import Announcements from './routes/announcements'
-import { fetchCollectionData } from './app/slices/listdisplay'
+import { fetchCollectionData } from './app/slices/collectionstate'
 import { ShowCollectionSkeleton, ShowUserSkeleton, ShowTradeSkeleton, UserNotificationsTradesSkeleton, UserSettingsSkeleton, NewTradeOfferSkeleton } from './components/partials/skeletons/routeskeletons'
 
 
@@ -100,22 +102,36 @@ function EditCollectionComponent({}) {
   )
 }
 
-function InitializeStateFunc({children, postLoaderFunc, postCompleteTools, resolvedData}) {
+function InitializeStateWrapper({children, postLoaderFunc, postCompleteTools, resolvedData, comparator}) {
   if (!postLoaderFunc) {
     return children
   }
-  useEffect(() => {
-    postLoaderFunc(resolvedData, postCompleteTools)
-  }, [])
-  return children
+  return (
+    <InitializeStateFunc postLoaderFunc={postLoaderFunc} postCompleteTools={postCompleteTools} resolvedData={resolvedData} comparator={comparator}>
+      {children}
+    </InitializeStateFunc>
+  )
+}
+function InitializeStateFunc({children, postLoaderFunc, postCompleteTools, resolvedData, comparator}) {
+  // if (!postLoaderFunc) {
+  //   return children
+  // } else {
+    useEffect(() => {
+      postLoaderFunc(resolvedData, postCompleteTools)
+    }, comparator)
+    return children
+  // }
 }
 
-function DeferLoaderComponent({Component, SkeletonComponent, postCompleteTools, postLoaderFunc, loaderDataKey, isProtectedRoute=false, isPrivateRoute=false, privateProtectedRouteProps={}}) {
+function DeferLoaderComponent({Component, SkeletonComponent, postCompleteTools, postLoaderFunc, loaderDataKey, isProtectedRoute=false, isPrivateRoute=false, privateProtectedRouteProps={}, isShowCollection=false}) {
   const promise = useLoaderData()
-  const fallbackProp = SkeletonComponent ? {fallback: <SkeletonComponent />} : {}
+  const dispatch = useDispatch()
+  const userData = useRouteLoaderData('root')
+  const locationData = useLocation()
+  const currColPath = locationData.pathname
 
   return (
-    <Suspense {...fallbackProp}>
+    <Suspense fallback={<SkeletonComponent/>}>
       <Await
         resolve={promise.resolvedData}
       >
@@ -126,13 +142,14 @@ function DeferLoaderComponent({Component, SkeletonComponent, postCompleteTools, 
               <ErrorPage errorData={resolvedData}/>
             )
           }
+          const isCollectionOwner = (isShowCollection) && (userData.loggedIn && userData.user._id === resolvedData.owner._id)
+          const postCompleteAdjust = (isShowCollection && userData.loggedIn) ? {dispatch, initList: (col) => setListDisplayInitialState({col, initOnHandView: userData.user.settings.display.defaultOnhandView, currColUrl: currColPath})} : 
+            isShowCollection ? {dispatch, initList: (col) => setListDisplayInitialState({col})} : postCompleteTools
+          const additionalProp = (isShowCollection) ? {isCollectionOwner} : {}
           const loaderProp = {[loaderDataKey]: resolvedData}
-          // if (postLoaderFunc) {
-          //   postLoaderFunc(resolvedData, postCompleteTools)
-          // }
           return (
-            <InitializeStateFunc
-              postLoaderFunc={postLoaderFunc} postCompleteTools={postCompleteTools} resolvedData={resolvedData}
+            <InitializeStateWrapper
+              postLoaderFunc={postLoaderFunc} postCompleteTools={postCompleteAdjust} resolvedData={resolvedData}
             >
               {isProtectedRoute ? 
               <ProtectedRoute Component={Component} PlaceholderComponent={SkeletonComponent} {...privateProtectedRouteProps} loaderData={resolvedData} loaderDataProp={loaderProp}/> : 
@@ -144,8 +161,8 @@ function DeferLoaderComponent({Component, SkeletonComponent, postCompleteTools, 
                 loaderData={resolvedData}
                 {...privateProtectedRouteProps}
               /> : 
-              <Component {...loaderProp}/>}
-            </InitializeStateFunc>
+              <Component {...loaderProp} {...additionalProp}/>}
+            </InitializeStateWrapper>
           )
         }}
       </Await>
@@ -245,32 +262,26 @@ function Router() {
             {
               path: "",
               element: 
-                <DeferLoaderComponent 
-                  Component={ShowCollection} 
-                  SkeletonComponent={ShowCollectionSkeleton} 
-                  postCompleteTools={{dispatch, initList: setListInitialState}} 
-                  postLoaderFunc={initializeCollectionPageState}
-                  loaderDataKey='collection'
+                <DeferLoaderComponent
+                    Component={ShowCollection}
+                    SkeletonComponent={ShowCollectionSkeleton}
+                    postCompleteTools={{dispatch, initList: setListDisplayInitialState}}
+                    postLoaderFunc={initializeCollectionPageState}
+                    loaderDataKey='collection'
+                    isShowCollection={true}
                 />,
-              loader: (params) => collectionLoader(params) 
-              // element: <ShowCollection/>,
-              // loader: (params) => collectionLoader(params, dispatch, false, true, setListInitialState),
+              id: 'collection',
+              loader: (params) => collectionLoader(params),
+              shouldRevalidate: ({ currentUrl, nextUrl }) => {
+                //  current/next wording is misleading. nextUrl is always show collection page
+                const notSwitchingThroughEditPage = nextUrl.pathname !== currentUrl.pathname.slice(0, -5) && nextUrl.pathname !== `${currentUrl.pathname}/edit`
+                return notSwitchingThroughEditPage
+              }
             },
             {
               path: 'edit',
-              // element: 
-              //   <DeferLoaderComponent 
-              //     Component={EditCollectionComponent}
-              //     postCompleteTools={{dispatch, initList: setListInitialState, initCol: setCollectionInitialState, initOnhand: setOnHandInitialState, initOptions: setOptionsInitialState, editPage: true}} 
-              //     postLoaderFunc={initializeCollectionPageState}
-              //     loaderDataKey='collection'
-              //     isPrivateRoute={true}
-              //     privateProtectedRouteProps={{routeType: 'editCollection'}}
-              //   />,
-              // loader: (params) => collectionLoader(params) 
               element: <PrivateRoute Component={EditCollectionComponent} routeType='editCollection'/>,
-              // loader: (params) => collectionLoaderEditPage(params, dispatch, setListInitialState, setCollectionInitialState, setOnHandInitialState, setOptionsInitialState)
-              loader: (params) => dispatch(fetchCollectionData(params.params.id)).then(data => data.payload)
+              loader: (params) => dispatch(fetchCollectionData(params.params.id)).then(data => data.payload),
             },
             {
               path: 'trade',
@@ -283,14 +294,6 @@ function Router() {
                   privateProtectedRouteProps={{extraAuthType: 'newTrade'}}
                 />,
               loader: (params) => collectionLoader(params) 
-                // <ProtectedRoute 
-                  // Component={NewTrade} 
-                  // extraAuthType='newTrade'
-                  // extraAuthFunc={(col, user) => user.loggedIn && !col.owner.settings.privacy.blockedUsers.includes(user.user.username)}
-                  // extraAuthErrorMessage='You were blocked by this user and cannot trade with them!'
-                  // extraAuthRedirectOffset={-5}
-                // />,
-              // loader: (params) => collectionLoader(params, undefined, false, false),
             }
           ]
         },

@@ -13,7 +13,7 @@ export async function createNewUser(req, res) {
         profile: {bio: '', badges: [], games: []},
         privacy: {disabledTrades: false, blockedUsers: []},
         account: {verified: false, securityQuestions},
-        display: {pokemonNames: {general: {regionalForms: 'default', originRegionalForms: 'default', alternateForms: 'default'}, specific: {}}, ballOrder: apriballs}
+        display: {pokemonNames: {general: {regionalForms: 'default', originRegionalForms: 'default', alternateForms: 'default'}, specific: {}}, ballOrder: apriballs, defaultOnhandView: 'byIndividual'}
     }
     bcrypt.hash(password, 11, async function(err, hash) {
         const newUser = new User({

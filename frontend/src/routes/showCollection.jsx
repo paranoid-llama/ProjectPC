@@ -1,9 +1,9 @@
-import {useState, useEffect, useContext} from 'react';
+import {useState, useRef, useEffect, useContext} from 'react';
 import { AlertsContext } from '../alerts/alerts-context';
 import {useLoaderData, Link, useRouteLoaderData, useLocation} from 'react-router-dom'
 import * as React from 'react';
 import Box from '@mui/material/Box'
-import {Tabs, Tab, Button} from '@mui/material'
+import {Tabs, Tab, Button, useTheme} from '@mui/material'
 import ShowCollectionList from '../components/collectiontable/collectionlist/showcollectionlist'
 import ShowOnHandList from '../components/collectiontable/onhandlist/showonhandlist'
 import ShowCollectionTitle from '../components/titlecomponents/showcollectiontitle';
@@ -17,23 +17,29 @@ import {setCollectionInitialState} from './../app/slices/collection'
 import {setOnHandInitialState} from './../app/slices/onhand'
 import {setListInitialState} from './../app/slices/listdisplay'
 import { setNameState, setOptionsInitialState } from '../app/slices/options';
+import store from '../app/store';
 import {deselect, changeList} from './../app/slices/editmode'
 import listStyles from '../../utils/styles/componentstyles/liststyles';
+import ChangeOnHandView from '../components/collectiontable/changeonhandviewbutton';
 
-export default function ShowCollection({collection, colorStyles}) {
+export default function ShowCollection({collection, isCollectionOwner, colorStyles}) {
+    const theme = useTheme()
     const list = useSelector(state => state.editmode.listType)
     const pathData = useLocation()
-    const currentLink = pathData.pathname
-    const collectionData = collection ? collection : useLoaderData()
+    const currentLink = pathData.pathname 
     const currentlyLoggedInUser = useRouteLoaderData("root")
-    const userIsLoggedIn = currentlyLoggedInUser.loggedIn && currentlyLoggedInUser.user._id !== collectionData.owner._id
-    const isOwner = (currentlyLoggedInUser.loggedIn && currentlyLoggedInUser.user._id === collectionData.owner._id)
+    
+    const collectionLoaderData = collection ? collection : useLoaderData()
+   
+    const userIsLoggedIn = currentlyLoggedInUser.loggedIn && currentlyLoggedInUser.user._id !== collectionLoaderData.owner._id
+    const isOwner = (currentlyLoggedInUser.loggedIn && currentlyLoggedInUser.user._id === collectionLoaderData.owner._id)
     const isEditMode = currentLink.includes('edit') && isOwner
 
-    const collectionId = collectionData._id
+    const collectionId = collectionLoaderData._id
+    // console.log(store.getState().collectionState)
 
-    const gen8Collection = isNaN(parseInt(collectionData.gen))
-    const collectionName = collectionData.name
+    const gen8Collection = isNaN(parseInt(collectionLoaderData.gen))
+    const collectionName = collectionLoaderData.name
     const dispatch = useDispatch()
     // useEffect(() => {dispatch(setListInitialState({collection: collection.ownedPokemon, onhand: collection.onHand, updatedEggMoveInfo: collection.eggMoveInfo, resetCollectionFilters: true, resetOnHandFilters: true}))}, [currentLink])
     useEffect(() => {dispatch(deselect())})
@@ -75,7 +81,8 @@ export default function ShowCollection({collection, colorStyles}) {
         };
     }, []);
     
-    const collectionNameState = useSelector((state) => state.options.collectionName)
+    const collectionNameState = useSelector((state) => state.collectionState.options.collectionName)
+    const changeOnhandViewMQuery = list === 'onHand' ? {'@media only screen and (min-width: 1101px)': {visibility: 'hidden'}} : {}
 
     return (
         <>
@@ -84,8 +91,8 @@ export default function ShowCollection({collection, colorStyles}) {
                 <Header additionalStyles={{backgroundColor: '#26BCC9', color: 'black'}}>{!isEditMode ? collectionName : collectionNameState}</Header>
             </Box>
             <BodyWrapper>
-                <ShowCollectionTitle collectionInfo={collectionData} collectionID={collectionId} options={collectionData.options} isEditMode={isEditMode} isOwner={isOwner} userIsLoggedIn={userIsLoggedIn} userData={currentlyLoggedInUser.user}/>
-                <FilterSortArea collection={collectionData} isEditMode={isEditMode}/>
+                <ShowCollectionTitle collectionInfo={collectionLoaderData} collectionID={collectionId} options={collectionLoaderData.options} isEditMode={isEditMode} isOwner={isOwner} userIsLoggedIn={userIsLoggedIn} userData={currentlyLoggedInUser.user}/>
+                <FilterSortArea collection={collectionLoaderData} isEditMode={isEditMode} isOwner={isOwner}/>
                 <Box sx={{flexGrow: 1, margin: 0, width: '100%', display: 'flex'}}>
                     <Tabs 
                         textcolor='inherit'
@@ -108,25 +115,31 @@ export default function ShowCollection({collection, colorStyles}) {
                         />
                         
                     </Tabs>
-                    <Box sx={{width: '60%', display: 'flex', flexDirection: 'row-reverse', alignItems: 'center'}}>
+                    <Box sx={{width: '60%', display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
+                        {list === 'onHand' && 
+                            <ChangeOnHandView isEditMode={isEditMode} collectionLoaderData={collectionLoaderData}/>
+                        }
                         <Box sx={{width: '50%', height: '100%', display: 'flex', flexDirection: 'column'}}>
                         </Box>
                     </Box>
                 </Box>
                 {list === 'collection' ? 
                 <ShowCollectionList
-                    collection={collectionData}
+                    collection={collectionLoaderData}
+                    isCollectionOwner={isCollectionOwner}
                     styles={listStyles.collection}
                     isEditMode={isEditMode}
                     userData={currentlyLoggedInUser}
                 /> :
                 <ShowOnHandList
-                    onhandList={collectionData.onHand}
-                    collectionID={collectionData._id}
-                    eggMoveInfo={collectionData.eggMoveInfo}
+                    onhandList={collectionLoaderData.onHand}
+                    collectionID={collectionLoaderData._id}
+                    collectingBallsConst={collectionLoaderData.options.collectingBalls}
+                    eggMoveInfo={collectionLoaderData.eggMoveInfo}
                     styles={listStyles.onhand}
+                    collectionListStyles={listStyles.collection}
                     isEditMode={isEditMode}
-                    isHomeCollection={collectionData.gen === 'home'}
+                    isHomeCollection={collectionLoaderData.gen === 'home'}
                     userData={currentlyLoggedInUser}
                 />
                 }

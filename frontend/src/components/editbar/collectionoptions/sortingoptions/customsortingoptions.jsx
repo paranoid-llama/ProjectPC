@@ -8,14 +8,13 @@ import { sortList, customSortChanges } from '../../../../../common/sortingfuncti
 import { ownedPokemonEdit } from '../../../../../utils/functions/backendrequests/ownedpokemonedit'
 import CustomSortModalContents from '../../../collectioncreation/stepcomponents/optionsselection/aprimon/customsortmodalcontents'
 import SaveChangesConfirmModal from '../savechangesconfirmmodal'
-import { setListInitialState } from '../../../../app/slices/listdisplay'
-import { setCollectionInitialState } from '../../../../app/slices/collection'
+import { setListState } from '../../../../app/slices/collectionstate'
 
 export default function CustomSortingOptions({elementBg, collectionGen, collectionId}) {
     const dispatch = useDispatch()
     const {handleError} = useContext(ErrorContext)
     const customSortStateInit = useSelector((state) => selectCustomSortData(state))
-    const collectionState = useSelector((state) => state.collection)
+    const collectionState = useSelector((state) => state.collectionState.collection)
 
     const [sortData, setSortData] = useState({customSort: customSortStateInit, holdPokemon: [], saveChangesConfirmOpen: false})
     
@@ -91,8 +90,7 @@ export default function CustomSortingOptions({elementBg, collectionGen, collecti
             setTimeout(() => {
                 const backendReq = async() => await ownedPokemonEdit(collectionGen, backendListFormat, collectionId)
                 const successFunc = () => {
-                    dispatch(setCollectionInitialState(newCollectionListState))
-                    dispatch(setListInitialState({collection: newCollectionListState, resetCollectionFilters: true, onlyUpdateCollection: true}))
+                    dispatch(setListState({collection: newCollectionListState, resetCollectionFilters: true, onlyUpdateCollection: true}))
 
                     //spawning alert
                     const alertMessage = `Sorted Collection List!`

@@ -1,6 +1,6 @@
 import { Box, Typography, styled, ToggleButton, ToggleButtonGroup, useTheme} from "@mui/material"
 import { useSelector, useDispatch } from 'react-redux'
-import { setSortKey } from "../../../app/slices/listdisplay"
+import { setSortKey } from "../../../app/slices/collectionstate"
 import MuiToggleButton from '@mui/material/ToggleButton'
 
 export default function Sort({listType}) {
@@ -19,8 +19,8 @@ export default function Sort({listType}) {
 
     // const collectionSort = useSelector((state) => state.listDisplay.collectionFilters.sort)
     // const onhandSort = useSelector((state) => state.listDisplay.onhandFilters.sort)
-    const sortKey = listType === 'collection' ? useSelector((state) => state.listDisplay.collectionFilters.sort) : useSelector((state) => state.listDisplay.onhandFilters.sort)
-    const listDisplayState = listType === 'collection' ? useSelector ((state) => state.listDisplay.collection) : useSelector((state) => state.listDisplay.onhand)
+    const sortKey = listType === 'collection' ? useSelector((state) => state.collectionState.listDisplay.collectionFilters.sort) : useSelector((state) => state.collectionState.listDisplay.onhandFilters.sort)
+    const listDisplayState = listType === 'collection' ? useSelector ((state) => state.collectionState.listDisplay.collection) : useSelector((state) => state.collectionState.listDisplay.onhand)
 
     const handleChange = (e) => {
         dispatch(setSortKey({sortKey: e.target.value, listType, listState: listDisplayState}))

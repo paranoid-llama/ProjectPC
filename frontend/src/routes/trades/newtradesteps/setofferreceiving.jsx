@@ -20,7 +20,7 @@ function SetOfferReceivingFunc({comparisonData, selectedColData, ownerColData, o
     const hasComparisonData = Object.keys(comparisonData).length !== 0 && (comparisonData.comparedWith === selectedColData._id)
     const noComparisonData = !hasComparisonData
     const oneHomeCollection = selectedColData.gen === 'home' || ownerColData.gen === 'home'
-    const [offerData, setOfferData] = useState({userRate: false, ownerRate: false, display: 'offer', view: noComparisonData ? undefined : 'comparison', allowItemTrading: false, allowUserOffer: false, allowOwnerOffer: false})
+    const [offerData, setOfferData] = useState({userRate: false, ownerRate: false, display: 'offer', view: noComparisonData ? undefined : 'comparison', onhandView: 'byIndividual', allowItemTrading: false, allowUserOffer: false, allowOwnerOffer: false})
 
     const selectedColDataRef = useRef(selectedColData._id)
     // const comparisonDataRef
@@ -131,6 +131,8 @@ function SetOfferReceivingFunc({comparisonData, selectedColData, ownerColData, o
                     oneHomeCollection={oneHomeCollection}
                     fullCollectionData={setPokemonFullColData}
                     wantedPokemonData={offerData.display === 'offer' ? getWantedData(ownerColData.ownedPokemon) : []}
+                    onhandView={offerData.onhandView}
+                    changeOnhandView={() => setOfferData({...offerData, onhandView: offerData.onhandView === 'byIndividual' ? 'byPokemon' : 'byIndividual'})}
                 />
             }
             {(offerData.display === 'items') &&

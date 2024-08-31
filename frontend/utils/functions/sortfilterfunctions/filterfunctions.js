@@ -42,7 +42,10 @@ const filterMultipleKeys = (totalList, genKeys, ballKeys, otherKeys, currentSort
                 const hasAllFilteredBalls = !booleanList.includes(false)
                 return hasAllFilteredBalls
             } else {
-                const booleanList = ballKeys.map((key) => pokemon.ball === key)
+                //pokemon.balls indicates onhand list is organized by pokemon, not individually
+                const booleanList = pokemon.balls !== undefined ? 
+                    ballKeys.map(key => pokemon.balls[key] !== undefined && pokemon.balls[key].numTotal !== 0) : 
+                    ballKeys.map((key) => pokemon.ball === key)
                 const hasAnyFilteredBalls = booleanList.includes(true)
                 return hasAnyFilteredBalls
             }
@@ -72,7 +75,9 @@ const filterByGen = (list, genFilter, listType) => {
 
 const filterByOwnedBall = (list, ballFilter, listType) => {
     const newList = listType === 'collection' ? list.filter((pokemon) => pokemon.balls[ballFilter] !== undefined && pokemon.balls[ballFilter].isOwned === true) : 
-                        list.filter((pokemon) => pokemon.ball === ballFilter)
+                        list[0].balls !== undefined ?  
+                            list.filter(p => p.balls[ballFilter] !== undefined && p.balls[ballFilter].numTotal !== 0) : 
+                            list.filter((pokemon) => pokemon.ball === ballFilter)
     return newList
 }
 

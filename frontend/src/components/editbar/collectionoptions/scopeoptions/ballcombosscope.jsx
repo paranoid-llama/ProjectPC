@@ -1,8 +1,7 @@
 import { useState, useEffect, useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { changeModalState } from "../../../../app/slices/editmode";
-import { setCollectionInitialState } from "../../../../app/slices/collection";
-import { setListInitialState } from "../../../../app/slices/listdisplay";
+import { setListState } from "../../../../app/slices/collectionstate";
 import { selectScopeFormData, selectExcludedBallCombos } from "../../../../app/selectors/selectors";
 import { getOneArrData } from "../../../../../utils/functions/scope/getonearrdata";
 import { getBallsInGen } from "../../../../../common/infoconstants/miscconstants.mjs";
@@ -20,8 +19,8 @@ export default function BallCombosScope({elementBg, collectionGen, collectionId}
     const scopeTotal = useSelector((state) => state.editmode.pokemonScopeTotal)
     const totalList = getOneArrData(scopeTotal)
     const pokemonScope = useSelector((state) => selectScopeFormData(state, scopeTotal))
-    const collectionState = useSelector((state) => state.collection)
-    const ballScope = useSelector((state) => state.options.collectingBalls)
+    const collectionState = useSelector((state) => state.collectionState.collection)
+    const ballScope = useSelector((state) => state.collectionState.options.collectingBalls)
     const excludedBallCombosInit = useSelector((state) => selectExcludedBallCombos(state))
     const totalPossibleBalls = getBallsInGen(collectionGen)
 
@@ -84,8 +83,7 @@ export default function BallCombosScope({elementBg, collectionGen, collectionId}
             setExcludedCombos({...excludedCombos, saving: true})
             const successFunc = () => {
                 setTimeout(() => {
-                    dispatch(setCollectionInitialState(newCollectionListState))
-                    dispatch(setListInitialState({collection: newCollectionListState, onlyUpdateCollection: true, resetCollectionFilters: true}))
+                    dispatch(setListState({collection: newCollectionListState, onlyUpdateCollection: true, resetCollectionFilters: true}))
     
                     //spawning alert
                     const alertMessage = `Updated Excluded Pokemon/Ball Combos!`

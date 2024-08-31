@@ -1,21 +1,33 @@
 import * as React from 'react';
-import {useRef, useEffect} from 'react'
+import {useRef, useEffect, useLayoutEffect} from 'react'
 import store from '../../../app/store';
 import {Paper, Table, TableHead, TableRow, TableBody, TableContainer, TableCell, Box, useTheme} from '@mui/material'
 import {TableVirtuoso} from 'react-virtuoso'
 import { useLocation } from 'react-router';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { setScrollPosition } from '../../../app/slices/collectionstate';
 import OnHandRowContent from './onhandrowcontent'
 import './../../../routes/showCollection.css'
 import { interchangeableAltFormMons } from '../../../../common/infoconstants/pokemonconstants.mjs';
 import {connect} from 'react-redux'
+import OnHandByPokemonDisplay from './onhandbypokemondisplay';
+import displayOnHandByPokemon from '../../../../utils/functions/display/displayonhandbypokemon';
+import { setHeaders as setByPokemonHeaders, setColumns } from './bypokemoncomponents';
 
-export default function ShowOnHandList({onhandList, collectionID, styles, eggMoveInfo, isEditMode, isHomeCollection, localDisplayState=undefined, height=800, isTradePage, tradeSide, wantedByOtherListData=[], userData}) {
+export default function ShowOnHandList({onhandList, collectionID, styles, collectionListStyles, eggMoveInfo, isEditMode, isHomeCollection, collectingBallsConst, localDisplayState=undefined, height=800, isTradePage, tradeSide, wantedByOtherListData=[], userData, localOnhandView}) {
     const theme = useTheme()
-    const listState = useSelector(state => state.listDisplay.onhand)
+    const dispatch = useDispatch()
+    const listState = useSelector(state => state.collectionState.listDisplay.onhand)
+    const viewType = useSelector((state) => state.collectionState.listDisplay.onhandView)
     const listDisplay = localDisplayState === undefined ? listState : localDisplayState
     const link = useLocation().pathname
-    const linkRef = useRef(link)
+    const previousScrollPosition = useSelector((state) => state.collectionState.previousOnhandScrollPosition)
+    const previousColId = useSelector((state) => state.collectionState.prevColId)
+
+    const trueOnhandView = localOnhandView ? localOnhandView : viewType
+
+    const ballScopeState = useSelector((state) => state.collectionState.options.collectingBalls)
+    const ballScopeDisplay = (ballScopeState === undefined || (!isEditMode)) ? collectingBallsConst : ballScopeState
 
     const scrollRef = useRef(null)
     const scrollPosition = useRef()
@@ -24,13 +36,28 @@ export default function ShowOnHandList({onhandList, collectionID, styles, eggMov
         sx: {':hover': {cursor: 'pointer', opacity: 0.5}},
     } : {}
 
-    useEffect(() => {
-        const sameIDBetweenRefs = linkRef.current.includes(collectionID) && link.includes(collectionID)
-        if (scrollPosition.current !== undefined && (sameIDBetweenRefs)) { 
-            setTimeout(() => scrollRef.current.scrollTo({top: scrollPosition.current}), 1000)
+    useLayoutEffect(() => {
+        const sameIDBetweenRefs = collectionID === previousColId
+        if (previousScrollPosition && sameIDBetweenRefs) {
+            setTimeout(() => {
+              scrollRef.current.scrollTo({top: previousScrollPosition})  
+            }, 1000)  
         }
-        linkRef.current = link
     }, [link])
+
+    useEffect(() => {
+        return () => {
+            dispatch(setScrollPosition({scrollPos: scrollPosition.current, latestColId: collectionID, onhandScrollRef: true}))
+        }
+    })
+
+    // useEffect(() => {
+    //     const sameIDBetweenRefs = linkRef.current.includes(collectionID) && link.includes(collectionID)
+    //     if (scrollPosition.current !== undefined && (sameIDBetweenRefs)) { 
+    //         setTimeout(() => scrollRef.current.scrollTo({top: scrollPosition.current}), 1000)
+    //     }
+    //     linkRef.current = link
+    // }, [link])
 
     const emColumns = isHomeCollection ? [] : [
         {label: 'EM Count', dataKey: 'emCount', width: '10%'},
@@ -110,6 +137,17 @@ export default function ShowOnHandList({onhandList, collectionID, styles, eggMov
         )
     }
 
+    function rowContentByPokemon(_index, row) {
+        const byPokemonColumns = setColumns(userData, ballScopeDisplay)
+        return (
+            <OnHandByPokemonDisplay 
+                row={row}
+                columns={byPokemonColumns}
+                styles={collectionListStyles}
+            />
+        )
+    }
+
     const VirtuosoTableComponents = {
         Scroller: React.forwardRef((props, ref) => (
           <TableContainer 
@@ -146,8 +184,8 @@ export default function ShowOnHandList({onhandList, collectionID, styles, eggMov
             <TableVirtuoso
                 data={listDisplay}
                 components={VirtuosoTableComponents}
-                fixedHeaderContent={setHeaders}
-                itemContent={rowContent}
+                fixedHeaderContent={trueOnhandView === 'byPokemon' ? () => setByPokemonHeaders(setColumns(userData, ballScopeDisplay), collectionListStyles) : setHeaders}
+                itemContent={trueOnhandView === 'byPokemon' ? rowContentByPokemon : rowContent}
                 sx={{backgroundColor: '#272625', zIndex: 100}}
             />
         </Paper>

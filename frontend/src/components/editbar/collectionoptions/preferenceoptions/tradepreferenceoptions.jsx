@@ -6,14 +6,14 @@ import { AlertsContext } from '../../../../alerts/alerts-context'
 import { ErrorContext } from '../../../../app/contexts/errorcontext'
 import { useDispatch, useSelector } from 'react-redux'
 import { changeModalState } from '../../../../app/slices/editmode'
-import { setTradePreferencesState } from '../../../../app/slices/options'
+import { setTradePreferencesState } from '../../../../app/slices/collectionstate'
 import { backendChangeOptions } from '../../../../../utils/functions/backendrequests/collectionoptionsedit'
 import SaveChangesConfirmModal from '../savechangesconfirmmodal'
 
 export default function TradePreferenceOptions({elementBg, collectionId, isHomeCollection}) {
     const dispatch = useDispatch()
     const {handleError} = useContext(ErrorContext)
-    const preferencesInit = useSelector((state) => state.options.tradePreferences)
+    const preferencesInit = useSelector((state) => state.collectionState.options.tradePreferences)
     const [preferences, setPreferences] = useState({pref: {...preferencesInit, rates: undefined}, saveChangesConfirmOpen: false})
 
     //alerts

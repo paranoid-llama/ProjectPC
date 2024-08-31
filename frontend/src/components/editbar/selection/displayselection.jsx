@@ -13,25 +13,30 @@ import RenderOnHandEdit from './onhandlist/renderonhandedit'
  function DisplaySelection({collection, selection, listType, showEditScreen, pokemon, idxOfPokemon}) {
     const ownerID = collection.owner._id
     const collectionID = collection._id
-    const pokemonBallInfo = selection !== '' && (listType === 'collection' ? pokemon.balls : 
+    // console.log(pokemon)
+    const pokemonDeletedFromMemory = listType === 'onHand' && collection.ownedPokemon.filter(p => p.imgLink === pokemon.imgLink).length === 0
+
+    const pokemonBallInfo = (!pokemonDeletedFromMemory && selection !== '') && (listType === 'collection' ? pokemon.balls : 
         collection.ownedPokemon.filter(p => p.imgLink === pokemon.imgLink)[0].balls)
+    
     const noSelection = selection === ''
     const buttonArea = noSelection ? 'noSelection' : 
         showEditScreen === false ? 'selectionConfirm' :
         listType === 'collection' ? 'collectionEdit' :
         listType === 'onHand' && 'onHandEdit'
     const selectedBall = useSelector((state) => state.editmode.selectedBall)
-    const allEggMoves = useSelector((state) => state.listDisplay.eggMoveInfo)
+    const allEggMoves = useSelector((state) => state.collectionState.eggMoveInfo)
+    const onhandViewType = useSelector((state) => state.collectionState.listDisplay.onhandView)
 
     return (
         <>
         <FlexAppBarContainer
             widthPercent='80%'
-            additionalStyles={{color: 'black', justifyContent: 'center', display: 'flex', height: '100%', zIndex: 999}}
+            additionalStyles={{color: 'black', justifyContent: 'center', position: 'relative', display: 'flex', height: '100%', zIndex: 999}}
         >
             {/* {onHandNoSelection ? <Box sx={{width: '81.5136%', display: 'flex', justifyContent: 'end'}}><NothingSelected listType={listType}/></Box> : */}
-            {noSelection ? <NothingSelected listType={listType} isHomeCollection={collection.gen === 'home'} collectionID={collectionID}/> :
-            showEditScreen === false ? <ShowSelectionConfirm listType={listType} pokemon={pokemon}/> :
+            {noSelection ? <NothingSelected listType={listType} onhandViewType={onhandViewType} isHomeCollection={collection.gen === 'home'} collectionID={collectionID}/> :
+            showEditScreen === false ? <ShowSelectionConfirm listType={listType} pokemon={pokemon} pokemonDeletedFromMemory={pokemonDeletedFromMemory}/> :
             listType === 'collection' ? <RenderCollectionEdit collectionId={collection._id} ownerId={ownerID} pokemon={pokemon} ballInfo={pokemonBallInfo} allEggMoves={allEggMoves} isHomeCollection={collection.gen === 'home'}/> :
             listType === 'onHand' && <RenderOnHandEdit collectionId={collection._id} ownerId={ownerID} pokemon={pokemon} idxOfPokemon={idxOfPokemon} allEggMoves={allEggMoves} isHomeCollection={collection.gen === 'home'}/>
             }
@@ -74,8 +79,8 @@ const mapStateToProps = function(state) {
     const pokemon = selection !== '' ? 
         listType === 'collection' ? selectCollectionPokemon(state, selection) :
         listType === 'onHand' && selectOnHandPokemon(state, selection) : 'none'
-    const idxOfPokemon = selection !== '' && (listType === 'collection' ? state.collection.indexOf(pokemon) :
-        listType === 'onHand' && state.onhand.indexOf(pokemon))
+    const idxOfPokemon = selection !== '' && (listType === 'collection' ? state.collectionState.collection.indexOf(pokemon) :
+        listType === 'onHand' && state.collectionState.onhand.indexOf(pokemon))
     return {selection, listType, showEditScreen, pokemon, idxOfPokemon}
 }
 

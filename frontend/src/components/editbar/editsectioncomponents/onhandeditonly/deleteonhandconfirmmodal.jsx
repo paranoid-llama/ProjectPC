@@ -7,9 +7,8 @@ import {useDispatch} from 'react-redux'
 import {Modal, Box, Backdrop, Fade, Typography, Button} from '@mui/material'
 import modalStyles from '../../../../../utils/styles/componentstyles/modalstyles'
 import ImgData from '../../../collectiontable/tabledata/imgdata'
-import { deleteOnHand } from '../../../../app/slices/onhand'
 import { deselect } from '../../../../app/slices/editmode'
-import { removePokemonFromList } from '../../../../app/slices/listdisplay'
+import { removeOnHandPokemonFromList } from '../../../../app/slices/collectionstate'
 import { deleteOnHandPutRequest } from '../../../../../utils/functions/backendrequests/deleteonhand'
 import { capitalizeFirstLetter } from '../../../../../utils/functions/misc'
 
@@ -33,16 +32,8 @@ export default function DeleteOnHandConfirm({open, handleClose, pokemonName, dex
         const successFunc = () => {
             dispatch(deselect()) 
 
-            dispatch(removePokemonFromList({pokemonid: pokemonId, listType: 'onhand'})) //list display state - refer to slice
-            // dispatch(deleteOnHand(pokemonId)) //onhand pokemon state //brings an error when deleting it from this part of the state. same effect is brought if this is left out, though its less cleaner
-            //might be useful to leave this out as it leaves the option to revert changes if user wants to manually save (not have auto-save)
-            
-            
-            setTimeout(() => {
-                dispatch(deleteOnHand(pokemonId))
-            }, 500)
-            // setting timeout to update onhand pokemon state for each individual row actually works with only one re-render on the deleted row and re-renders on the other row (which should be normal)
-            // do not know why it works this way but hey it does
+            dispatch(removeOnHandPokemonFromList({pokemonid: pokemonId})) //list display state - refer to slice
+
             setIsDeleting(false)
             handleClose()
             //spawning alert

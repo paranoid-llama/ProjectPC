@@ -7,7 +7,7 @@ import {useSelector, useDispatch} from 'react-redux'
 import {toggleEditScreenState} from './../../../app/slices/editmode'
 import { setSelectedBall } from './../../../app/slices/editmode'
 
-export default function ShowSelectionConfirm({listType, pokemon}) {
+export default function ShowSelectionConfirm({listType, pokemon, pokemonDeletedFromMemory}) {
     const dispatch = useDispatch()
     const userData = useRouteLoaderData('root')
     const capitalizedBallName = listType === 'onHand' && `${pokemon.ball[0].toUpperCase()}${pokemon.ball.slice(1)}`
@@ -27,9 +27,14 @@ export default function ShowSelectionConfirm({listType, pokemon}) {
                 <Typography sx={{fontSize: '15px', marginLeft: '10px', paddingRight: '15px'}}>
                     {listType === 'onHand' && capitalizedBallName} {getNameDisplay(userData.user.settings.display.pokemonNames, pokemon.name, pokemon.natDexNum)} is selected
                 </Typography>
-            </Box>
+            </Box> 
         </Box>
-        <Button onClick={() => dispatch(toggleEditScreenState())}>Edit Selection</Button>
+        {pokemonDeletedFromMemory &&
+            <Box sx={{position: 'absolute', bottom: '0px'}}>
+                <Typography sx={{fontSize: '11px'}}>Re-add this pokemon to your collection to edit, or delete this on-hand.</Typography>
+            </Box>
+        }
+        {!pokemonDeletedFromMemory && <Button onClick={() => dispatch(toggleEditScreenState())}>Edit Selection</Button>}
         </>
     )
 }

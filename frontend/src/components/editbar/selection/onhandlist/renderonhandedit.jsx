@@ -4,7 +4,7 @@ import { AlertsContext } from '../../../../alerts/alerts-context'
 import {Box, Typography, FormGroup} from '@mui/material'
 import {useDispatch, connect, useSelector} from 'react-redux'
 import {selectCollectionPokemon} from './../../../../app/selectors/selectors'
-import {setBall, setGender, setOnHandIsHA, setOnHandEmCount, setOnHandEms, deleteOnHandEms, setQty} from './../../../../app/slices/onhand'
+import {setBall, setGender, setIsHA, setEmCount, setEms, deleteEms, setQty} from './../../../../app/slices/collectionstate'
 import { setUnsavedChanges } from '../../../../app/slices/editmode'
 import {getOwnedBalls, setMaxEmArr, selectNextEmCount} from './../../../../../utils/functions/misc'
 import EditWrapper from './../components/editwrapper'
@@ -62,7 +62,7 @@ export default function RenderOnHandEdit({collectionId, ownerId, pokemon, idxOfP
     }
     const handleIsHAChange = (event) => {
         const newValue = event.target.value === 'true'
-        dispatch(setOnHandIsHA({idx: idxOfPokemon, listType}))
+        dispatch(setIsHA({idx: idxOfPokemon, listType}))
         // if (unsavedOnhandChanges === false) {addAlert({severity: 'error', timeout: 4, message: 'You have unsaved on-hand changes. Make sure to save before leaving!'})}
         dispatch(setUnsavedChanges('onhand'))
         // const successFunc = () => dispatch(setOnHandIsHA({idx: idxOfPokemon, listType}))
@@ -78,13 +78,13 @@ export default function RenderOnHandEdit({collectionId, ownerId, pokemon, idxOfP
         // }
         const hasAllPossibleEggMoves = (possibleEggMoves.length === maxEMs) && (newValue === maxEMs)
         setPopOutScreens({...popOutScreens, eggmoveScreen: {...popOutScreens.eggmoveScreen, idx: ''}})
-        dispatch(setOnHandEmCount({idx: idxOfPokemon, listType, numEMs: newValue}))
+        dispatch(setEmCount({idx: idxOfPokemon, listType, numEMs: newValue}))
         if (newValue < pokemon.EMs.length) {
-            dispatch(deleteOnHandEms({idx: idxOfPokemon, listType}))
+            dispatch(deleteEms({idx: idxOfPokemon, listType}))
         }
         if (hasAllPossibleEggMoves) {
             for (let eggmove of possibleEggMoves) {
-                dispatch(setOnHandEms({idx: idxOfPokemon, listType, emName: eggmove}))
+                dispatch(setEms({idx: idxOfPokemon, listType, emName: eggmove}))
             }
         }
         // if (unsavedOnhandChanges === false) {addAlert({severity: 'error', timeout: 4, message: 'You have unsaved on-hand changes. Make sure to save before leaving!'})}
@@ -123,7 +123,7 @@ export default function RenderOnHandEdit({collectionId, ownerId, pokemon, idxOfP
         // if the max possible ems is 4 or less AND we are taking out an egg move, decrease the em count
         const changeEMCount = increaseEMCount || decreaseEMCount
         
-        dispatch(setOnHandEms({idx: idxOfPokemon, listType, emName: selectedEM}))
+        dispatch(setEms({idx: idxOfPokemon, listType, emName: selectedEM}))
         // next two if statements determine how the selected EM (selection box) moves depending on whether an egg move is being added (1st) or removed (2nd)
         if (!(pokemon.EMs.includes(selectedEM))) {
             const newSelectedEMIdx = (popOutScreens.eggmoveScreen.idx === 3 && newEMArr === 4) ? '' : popOutScreens.eggmoveScreen.idx+1 // if all egg moves slots are selected, remove selection borders. if not, select next empty slot
@@ -132,7 +132,7 @@ export default function RenderOnHandEdit({collectionId, ownerId, pokemon, idxOfP
             setPopOutScreens({...popOutScreens, eggmoveScreen: {...popOutScreens.eggmoveScreen, idx: ''}})
         }
         if (changeEMCount) {
-            dispatch(setOnHandEmCount({idx: idxOfPokemon, listType, numEMs: newEMArr.length}))
+            dispatch(setEmCount({idx: idxOfPokemon, listType, numEMs: newEMArr.length}))
         }
         // if (unsavedOnhandChanges === false) {addAlert({severity: 'error', timeout: 4, message: 'You have unsaved on-hand changes. Make sure to save before leaving!'})}
         dispatch(setUnsavedChanges('onhand'))
@@ -178,14 +178,14 @@ export default function RenderOnHandEdit({collectionId, ownerId, pokemon, idxOfP
             // handleError(backendFunc, false, successFunc, () => {})
         }
     }
-    
+
     const ownedPokemonInfo = selectCollectionPokemon(store.getState(), pokemon.imgLink)
     //below is like that as it prevents errors arising from a user having a certain onhand ball combo then changing the ball scope of that ball,
     //resulting in the collection data being wiped. 
     const allowedBalls = !getOwnedBalls(ownedPokemonInfo.balls).includes(pokemon.ball) ? [...getOwnedBalls(ownedPokemonInfo.balls), pokemon.ball] : getOwnedBalls(ownedPokemonInfo.balls)
     const possibleGenders = ownedPokemonInfo.possibleGender
-    const noHA = ownedPokemonInfo.balls[allowedBalls[0]].isHA === undefined
-    const noEMs = ownedPokemonInfo.balls[allowedBalls[0]].EMs === undefined
+    const noHA = ownedPokemonInfo.balls[pokemon.ball].isHA === undefined
+    const noEMs = ownedPokemonInfo.balls[pokemon.ball].EMs === undefined
     const possibleEggMoves = allEggMoves[pokemon.name]
     const maxEMs = possibleEggMoves === undefined ? 0 : possibleEggMoves.length > 4 ? 4 : possibleEggMoves.length
     const emCountSelectionList = setMaxEmArr(maxEMs) 

@@ -1,5 +1,6 @@
 import {configureStore} from '@reduxjs/toolkit'
 import { resizeEvent } from 'redux-window'
+import collectionState from './slices/collectionstate'
 import onhand from './slices/onhand'
 import collection from './slices/collection'
 import editmode from './slices/editmode'
@@ -11,6 +12,7 @@ import reduxWindow from 'redux-window'
 
 const store = configureStore({
     reducer: {
+        collectionState: collectionState.reducer,
         listDisplay: listDisplay.reducer,
         onhand: onhand.reducer,
         collection: collection.reducer,

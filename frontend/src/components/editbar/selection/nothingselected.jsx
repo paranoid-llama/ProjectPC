@@ -5,7 +5,7 @@ import OnHandPokemonSelectionForm from '../editsectioncomponents/onhandeditonly/
 import { setDeleteOnHandMode } from '../../../app/slices/editmode'
 import BulkDeleteConfirm from '../editsectioncomponents/onhandeditonly/bulkdeleteconfirm'
 
-export default function NothingSelected({listType, isHomeCollection, collectionID}) {
+export default function NothingSelected({listType, onhandViewType, isHomeCollection, collectionID}) {
     const onhandList = listType === 'onHand'
     const theme = useTheme()
     const dispatch = useDispatch()
@@ -24,9 +24,16 @@ export default function NothingSelected({listType, isHomeCollection, collectionI
         </Box>
         }
         <Box sx={{width: '60%', display: 'flex', justifyContent: 'center'}}>
-            <Typography sx={{textAlign: 'center'}}>{deleteOnHandMode ? <span style={{color: 'rgb(220, 50, 70)'}}>Delete Mode is on! Click on an on-hand to flag for deletion!</span> : 'Nothing is selected. Click on a row to select!'}</Typography>
+            <Typography sx={{textAlign: 'center'}}>
+                {deleteOnHandMode ? 
+                    <span style={{color: 'rgb(220, 50, 70)'}}>Delete Mode is on! Click on an on-hand to flag for deletion!</span> : 
+                onhandList && onhandViewType === 'byPokemon' ? 
+                    `Viewing On-hands by Pokemon is view only. Switch view mode to edit!` : 
+                    'Nothing is selected. Click on a row to select!'
+                }
+            </Typography>
         </Box>
-        {onhandList && 
+        {(onhandList && !(onhandViewType === 'byPokemon')) && 
         <Box sx={{width: '20%', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
             <Box sx={{...theme.components.box.fullCenterCol}}>
                 {deleteOnHandMode ? 

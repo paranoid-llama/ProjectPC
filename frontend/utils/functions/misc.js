@@ -46,6 +46,7 @@ function getOwnedBalls(ballsObj) {
 
 function getPokemonWithOwnedBalls(collection) {
     const listOfPokemon = collection.map(pokemon => {
+        if (pokemon.disabled) {return undefined}
         const hasOwnedBalls = Object.values(pokemon.balls).map(ballInfo => ballInfo.isOwned).includes(true)
         const isAnyIntFormMon = interchangeableAltFormMons.map(mon => pokemon.name.includes(mon)).includes(true) && pokemon.name.includes('Any')
         if (hasOwnedBalls && isAnyIntFormMon) {

@@ -28,21 +28,31 @@ export const initializeCollectionPageState = (collection, tools) => {
     //     dispatch(initOnhand(collection.onHand))
     //     dispatch(initOptions({...collection.options, collectionName: collection.name}))
     // }
-    dispatch(initList({collection: collection.ownedPokemon, onhand: collection.onHand, updatedEggMoveInfo: collection.eggMoveInfo, updatedHomeGames: collection.availableGamesInfo, resetCollectionFilters: true, resetOnHandFilters: true}))
+    dispatch(initList(collection))
 }
 
-export async function collectionLoaderEditPage({params}, dispatch, initList, initCol, initOnhand, initOptions) {
+export async function collectionLoaderEditPage(dispatch, initCol) {
+    // const collection = await fetch(`${backendurl}/collections/${params.id}`)
+    //                         .then(async(res) => {
+    //                             const data = await res.json()
+    //                             if (res.ok) {return data} 
+    //                             else {throw data}
+    //                         }) 
+
+    // dispatch(initCol(collection.ownedPokemon))
+    // dispatch(initOnhand(collection.onHand))
+    // dispatch(initOptions({...collection.options, collectionName: collection.name}))
+    dispatch(initCol(collection))
+        
+    return collection
+}
+
+export async function collectionLoaderNoDefer({params}) {
     const collection = await fetch(`${backendurl}/collections/${params.id}`)
                             .then(async(res) => {
                                 const data = await res.json()
                                 if (res.ok) {return data} 
                                 else {throw data}
                             }) 
-
-    dispatch(initCol(collection.ownedPokemon))
-    dispatch(initOnhand(collection.onHand))
-    dispatch(initOptions({...collection.options, collectionName: collection.name}))
-    dispatch(initList({collection: collection.ownedPokemon, onhand: collection.onHand, updatedEggMoveInfo: collection.eggMoveInfo, updatedHomeGames: collection.availableGamesInfo, resetCollectionFilters: true, resetOnHandFilters: true}))
-        
     return collection
 }

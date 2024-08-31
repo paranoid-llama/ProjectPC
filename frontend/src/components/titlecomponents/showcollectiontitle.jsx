@@ -26,8 +26,8 @@ export default function ShowCollectionTitle({collectionInfo, collectionID, optio
     const [displayScreen, setDisplayScreen] = useState('ballProgress')
     const [comparisonModal, setComparisonModal] = useState(false)
     const gen8Collection = isNaN(parseInt(collectionInfo.gen))
-    const tradePreferencesState = useSelector((state) => state.options.tradePreferences)
-    const tradePreferences = isEditMode ? tradePreferencesState : options.tradePreferences
+    const tradePreferencesState = useSelector((state) => state.collectionState.options.tradePreferences)
+    const tradePreferences = (isEditMode) ? tradePreferencesState : options.tradePreferences
     const ownerTradesDisabled = collectionInfo.owner.settings.privacy.disabledTrades
     const itemsState = tradePreferences.items
     const collectionType = gen8Collection ? `${collectionInfo.gen.toUpperCase()} Aprimon Collection` : `Gen ${collectionInfo.gen} Aprimon Collection`
@@ -161,12 +161,12 @@ export default function ShowCollectionTitle({collectionInfo, collectionID, optio
                         }
                         </>
                     }
-                    {isOwner && <Button sx={{width: '40%', fontSize: '12px'}} onClick={initializeEditMode}>Edit Mode</Button>}
+                    {(isOwner && !isEditMode) && <Button sx={{width: '40%', fontSize: '12px'}} onClick={initializeEditMode}>Edit Mode</Button>}
                     {isEditMode && <Button sx={{fontSize: '12px'}} onClick={() => dispatch(changeModalState({open: true, screen: 'main'}))}>Collection Options</Button>}
                 </Box>
             </Box>
             <Box sx={{display: 'flex', flexDirection: 'column', alignItems: 'center', width: '55%'}}>
-                {displayScreen === 'ballProgress' && <CollectionProgress ballScopeInit={options.collectingBalls} isEditMode={isEditMode} collectionList={collectionInfo.ownedPokemon} userData={userData}/>}
+                {displayScreen === 'ballProgress' && <CollectionProgress ballScopeInit={options.collectingBalls} isEditMode={isEditMode} collectionList={collectionInfo.ownedPokemon} isOwner={isOwner} userData={userData}/>}
                 {displayScreen === 'rates' && <RateDisplay rates={tradePreferences.rates} owner={collectionInfo.owner.username} collectionGen={collectionInfo.gen}/>}
                 {displayScreen === 'items' && <ItemDisplay collectionGen={collectionInfo.gen} itemTradeStatus={tradePreferences.items} lfItems={tradePreferences.lfItems} ftItems={tradePreferences.ftItems}/>}
             </Box>

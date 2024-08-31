@@ -277,8 +277,9 @@ export default function NavBar() {
                                             >
                                                 {userData.user.collections.map((col, idx) => {
                                                     const isFirst = idx === 0
+                                                    const disabled = location === `/collections/${col._id}` || location === `/collections/${col._id}/edit`
                                                     const hoverBorderRadiusKeep = idx === 0 ? {borderTopLeftRadius: '10px'} : idx === userData.user.collections.length-1 ? {borderBottomLeftRadius: '10px', borderBottomRightRadius: '10px'} : {}
-                                                    const collectionHoverStyle = {'&:hover': {backgroundColor: theme.palette.color1.main, ...hoverBorderRadiusKeep}}
+                                                    const collectionHoverStyle = disabled ? {opacity: 0.75} : {'&:hover': {backgroundColor: theme.palette.color1.main, ...hoverBorderRadiusKeep}}
                                                     const collectionType = isNaN(parseInt(col.gen)) ? `${col.gen.toUpperCase()} Aprimon Collection` : `Gen ${col.gen} Aprimon Collection`
                                                     return (
                                                         <Box 
@@ -291,7 +292,7 @@ export default function NavBar() {
                                                                 ...collectionHoverStyle
                                                             }}
                                                             key={`user-collection-${idx+1}-option-${collectionType}`}
-                                                            onClick={() => {
+                                                            onClick={disabled ? null : () => {
                                                                 navigate(`/collections/${col._id}`)
                                                                 setUserArea({open: false})
                                                             }}

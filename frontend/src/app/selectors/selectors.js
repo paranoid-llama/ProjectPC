@@ -2,26 +2,26 @@ import {createSelector, createDraftSafeSelector} from '@reduxjs/toolkit'
 import { getBallProgress } from '../../../utils/functions/ballprogresscircle/ballprogressstate'
 
 const selectCollectionList = (state) => {
-    return state.collection
+    return state.collectionState.collection
 }
 
 const selectEnabledPokemonInCollectionList = (state) => {
-    return state.collection[0] === undefined ? state.collection : state.collection.filter(mon => mon.disabled === undefined) 
+    return state.collectionState.collection[0] === undefined ? state.collectionState.collection : state.collectionState.collection.filter(mon => mon.disabled === undefined) 
 }
 
 const selectOnHandList = (state) => {
-    return state.onhand
+    return state.collectionState.onhand
 }
 
 const selectPokemonIdentifier = (state, id) => id
 
 const selectCollectionIdx = (state, id) => {
-    const idx = state.collection.map((p, idx) => {return (p.imgLink === id ? idx : undefined)}).filter(p => p !== undefined)[0]
+    const idx = state.collectionState.collection.map((p, idx) => {return (p.imgLink === id ? idx : undefined)}).filter(p => p !== undefined)[0]
     return idx
 }
 
 const selectOnHandPokemonIdx = (state, id) => {
-    const idx = state.onhand.map((p, idx) => {return (p._id === id ? idx : undefined)}).filter(p => p !== undefined)[0]
+    const idx = state.collectionState.onhand.map((p, idx) => {return (p._id === id ? idx : undefined)}).filter(p => p !== undefined)[0]
     return idx
 }
 
@@ -31,9 +31,9 @@ const seeSelectedId = (state) => {
 
 const selectListFromListType = (state) => {
     if (state.editmode.listType === 'collection') {
-        return state.collection
+        return state.collectionState.collection
     } else if (state.editmode.listType === 'onHand') {
-        return state.onhand
+        return state.collectionState.onhand
     }
 }
 const selectPokemon = (state, pokemon) => pokemon

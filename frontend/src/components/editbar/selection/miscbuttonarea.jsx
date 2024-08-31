@@ -1,7 +1,8 @@
 import { useState } from "react";
 import FlexAppBarContainer from "./components/flexappbarcontainer";
 import { useDispatch } from "react-redux"
-import { setTags } from "../../../app/slices/collection"
+import { setTags } from "../../../app/slices/collectionstate"
+import { setUnsavedChanges } from "../../../app/slices/editmode";
 import { useTagRequest } from "../../../../utils/functions/backendrequests/editcollection";
 import {Button, Modal, Box, ToggleButton} from '@mui/material'
 import DeleteOnHandConfirm from "../editsectioncomponents/onhandeditonly/deleteonhandconfirmmodal";
@@ -18,7 +19,8 @@ export default function MiscButtonArea({currentView, collectionID, pokemonInfo={
 
     const handleEditTags = (tagType, idx, ball) => {
         dispatch(setTags({tagType, idx, ball}))
-        useTagRequest(tagType, pokemonInfo.activeTag, {pokename: pokemonInfo.name, ballname: ball}, collectionID)
+        // useTagRequest(tagType, pokemonInfo.activeTag, {pokename: pokemonInfo.name, ballname: ball}, collectionID)
+        dispatch(setUnsavedChanges())
     }
 
     const generateButtons = () => {

@@ -8,7 +8,7 @@ import { getCollectionProgressPercent, checkBadgeMilestone } from './postpremidd
 import { collectionProgressAggField } from '../controllers/searchcontroller.js';
 import { postDeleteColEditTradeCol } from './postpremiddleware.js';
 
-const opts = {toJSON: {virtuals: true}, minimize: false}
+const opts = {toJSON: {virtuals: true}, minimize: true}
 
 const collectionSchema = new Schema ({
     owner: {
@@ -129,7 +129,7 @@ const collectionSchema = new Schema ({
                 disabled: Boolean,
                 isOwned: Boolean,
                 isHA: Boolean,
-                EMs: Array,
+                EMs: {type: Array, default: undefined},
                 emCount: Number,
                 default: Boolean,
                 highlyWanted: Boolean,
@@ -140,7 +140,7 @@ const collectionSchema = new Schema ({
                 disabled: Boolean,
                 isOwned: Boolean,
                 isHA: Boolean,
-                EMs: Array,
+                EMs: {type: Array, default: undefined},
                 emCount: Number,
                 default: Boolean,
                 highlyWanted: Boolean,
@@ -151,7 +151,7 @@ const collectionSchema = new Schema ({
                 disabled: Boolean,
                 isOwned: Boolean,
                 isHA: Boolean,
-                EMs: Array,
+                EMs: {type: Array, default: undefined},
                 emCount: Number,
                 default: Boolean,
                 highlyWanted: Boolean,
@@ -162,7 +162,7 @@ const collectionSchema = new Schema ({
                 disabled: Boolean,
                 isOwned: Boolean,
                 isHA: Boolean,
-                EMs: Array,
+                EMs: {type: Array, default: undefined},
                 emCount: Number,
                 default: Boolean,
                 highlyWanted: Boolean,
@@ -173,7 +173,7 @@ const collectionSchema = new Schema ({
                 disabled: Boolean,
                 isOwned: Boolean,
                 isHA: Boolean,
-                EMs: Array,
+                EMs: {type: Array, default: undefined},
                 emCount: Number,
                 default: Boolean,
                 highlyWanted: Boolean,
@@ -184,7 +184,7 @@ const collectionSchema = new Schema ({
                 disabled: Boolean,
                 isOwned: Boolean,
                 isHA: Boolean,
-                EMs: Array,
+                EMs: {type: Array, default: undefined},
                 emCount: Number,
                 default: Boolean,
                 highlyWanted: Boolean,
@@ -195,7 +195,7 @@ const collectionSchema = new Schema ({
                 disabled: Boolean,
                 isOwned: Boolean,
                 isHA: Boolean,
-                EMs: Array,
+                EMs: {type: Array, default: undefined},
                 emCount: Number,
                 default: Boolean,
                 highlyWanted: Boolean,
@@ -206,7 +206,7 @@ const collectionSchema = new Schema ({
                 disabled: Boolean,
                 isOwned: Boolean,
                 isHA: Boolean,
-                EMs: Array,
+                EMs: {type: Array, default: undefined},
                 emCount: Number,
                 default: Boolean,
                 highlyWanted: Boolean,
@@ -217,7 +217,7 @@ const collectionSchema = new Schema ({
                 disabled: Boolean,
                 isOwned: Boolean,
                 isHA: Boolean,
-                EMs: Array,
+                EMs: {type: Array, default: undefined},
                 emCount: Number,
                 default: Boolean,
                 highlyWanted: Boolean,
@@ -228,7 +228,7 @@ const collectionSchema = new Schema ({
                 disabled: Boolean,
                 isOwned: Boolean,
                 isHA: Boolean,
-                EMs: Array,
+                EMs: {type: Array, default: undefined},
                 emCount: Number,
                 default: Boolean,
                 highlyWanted: Boolean,
@@ -239,7 +239,7 @@ const collectionSchema = new Schema ({
                 disabled: Boolean,
                 isOwned: Boolean,
                 isHA: Boolean,
-                EMs: Array,
+                EMs: {type: Array, default: undefined},
                 emCount: Number,
                 default: Boolean,
                 highlyWanted: Boolean,
@@ -254,7 +254,7 @@ const collectionSchema = new Schema ({
         gender: String,
         isHA: Boolean,
         emCount: Number,
-        EMs: {type: Array},
+        EMs: {type: Array, default: undefined},
         reserved: Number,
         qty: Number
     }]

@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { getBallsInGen } from '../../../../../common/infoconstants/miscconstants'
 import { changeModalState } from '../../../../app/slices/editmode'
 import { setListInitialState } from '../../../../app/slices/listdisplay'
-import { setSortingOptionsState } from '../../../../app/slices/options'
+import { setSortingOptionsState } from '../../../../app/slices/collectionstate'
 import { backendChangeOptions } from '../../../../../utils/functions/backendrequests/collectionoptionsedit'
 import { sortOnHandList } from '../../../../../common/sortingfunctions/onhandsorting.mjs'
 import OnHandSortSettingsModalContents from '../../../collectioncreation/stepcomponents/optionsselection/aprimon/onhandsortsettingsmodalcontents'
@@ -16,8 +16,8 @@ export default function OnHandSortingOptions({elementBg, collectionGen, collecti
     const dispatch = useDispatch()
     const {handleError} = useContext(ErrorContext)
     const totalBalls = getBallsInGen(collectionGen)
-    const currentOptions = useSelector((state) => state.options.sorting.onhand)
-    const onhandListState = useSelector((state) => state.onhand)
+    const currentOptions = useSelector((state) => state.collectionState.options.sorting.onhand)
+    const onhandListState = useSelector((state) => state.collectionState.onhand)
 
     const buttonStyles = {
         opacity: 0.5,
@@ -99,9 +99,7 @@ export default function OnHandSortingOptions({elementBg, collectionGen, collecti
                 const backendReq = async() => await backendChangeOptions('sort', backendReqData, collectionId)
                 const successFunc = () => {
                     dispatch(setSortingOptionsState({listType: 'onhand', data: editedOptionsObj}))
-                    if (sortingOptions.reSortWillHappen) {
-                        dispatch(setListInitialState({onhand: sortedOnHandList, resetOnHandFilters: true, onlyUpdateOnHand: true}))
-                    }
+
                     //spawning alert
                     const alertMessage = `Updated On-Hand Sorting Options${sortingOptions.reSortWillHappen ? ' and re-sorted the list!' : '!'}`
                     const alertInfo = {severity: 'success', message: alertMessage, timeout: 3}

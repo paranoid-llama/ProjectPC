@@ -9,7 +9,7 @@ import IsOwnedCheckbox from '../tabledata/isownedcheckbox'
 import DataCell from '../tabledata/datacell'
 import {useLoaderData} from 'react-router-dom'
 import {useSelector, useDispatch, connect} from 'react-redux'
-import {setIsOwned, setCollectionIsHA, setCollectionEmCount, setCollectionEms, deleteCollectionEms} from './../../../app/slices/collection'
+import {setIsOwned, setIsHA, setEmCount, setEms, deleteEms} from './../../../app/slices/collectionstate'
 import {setMaxEmArr, selectNextEmCount} from './../../../../utils/functions/misc'
 import {seeIfPokemonIsSelected, selectCollectionPokemon, selectIdxOfMon} from './../../../app/selectors/selectors'
 import {setSelected, deselect, setSelectedAfterChangingOwned} from './../../../app/slices/editmode'
@@ -21,6 +21,7 @@ import {createSelector} from '@reduxjs/toolkit'
 import {setCollectionInitialState} from '../../../app/slices/collection'
 import { setUnsavedChanges } from './../../../app/slices/editmode';
 import store from '../../../app/store'
+import newObjectId from '../../../../utils/functions/newobjectid';
 
 const blackTableCellStyles = { //for illegal ball combos
     color: 'white',
@@ -106,21 +107,31 @@ export function TableRowGroupingNoRedux({columns, row, id, collectionId, ownerId
 function TableRowGrouping({columns, row, id, collectionId, ownerId, styles, isSelected, setSelected, isEditMode, isHomeCollection, userData}) {
     const dispatch = useDispatch()
     // console.log(`rendered ${row.name}`)
+
+    if (row === undefined) { //when switching between collections theres seems to be a bit of lag in updating the state, even though i tried to stop it.
+        return <>
+            {columns.map(c => {
+                return (
+                    <TableCell key={`${id}-${c.dataKey}-${newObjectId()}-undefined-row`} sx={{backgroundColor: 'black'}}></TableCell>
+                )
+            })}
+        </>
+    }
+
     const {handleError} = useContext(ErrorContext)
     const {addAlert} = useContext(AlertsContext)
-
     //following data is used for editing values in the list
-    const possibleEggMoves = (isEditMode && !isHomeCollection) ? useSelector((state) => state.listDisplay.eggMoveInfo[row.name]) : null
+    const possibleEggMoves = (isEditMode && !isHomeCollection) ? useSelector((state) => state.collectionState.eggMoveInfo[row.name]) : null
     const maxEMs = (isEditMode && !isHomeCollection) ? possibleEggMoves.length > 4 ? 4 : possibleEggMoves.length : null
     const emCountSelectionList = (isEditMode && !isHomeCollection) ? setMaxEmArr(maxEMs) : null
-    const idx = isEditMode ? useSelector(state => state.collection.indexOf(row)) : null
+    const idx = isEditMode ? useSelector(state => state.collectionState.collection.findIndex((p) => p.imgLink === id)) : null
     const unsavedChanges = isEditMode ? useSelector((state) => state.editmode.unsavedChanges) : null
 
     //available games
-    const availableGames = (isHomeCollection) ? useSelector((state) => state.listDisplay.availableGamesInfo[row.name]) : null
+    const availableGames = (isHomeCollection) ? useSelector((state) => state.collectionState.availableGamesInfo[row.name]) : null
 
     //default data
-    const globalDefaults = isEditMode ? useSelector((state) => state.options.globalDefaults) : null
+    const globalDefaults = isEditMode ? useSelector((state) => state.collectionState.options.globalDefaults) : null
     const checkDefault = Object.keys(row.balls)[Object.values(row.balls).map((b) => b.default !== undefined).indexOf(true)]
     const currentDefault = checkDefault === undefined ? 'none' : checkDefault
 
@@ -142,15 +153,15 @@ function TableRowGrouping({columns, row, id, collectionId, ownerId, styles, isSe
             }
             dispatch(setIsOwned({idx, ball: ballname, ballDefault: defaultData}))
         } else if (key === 'isHA') {
-            dispatch(setCollectionIsHA({idx, ball: ballname, listType: 'collection'}))
+            dispatch(setIsHA({idx, ball: ballname, listType: 'collection'}))
         } else if (key === 'emCount') {
-            dispatch(setCollectionEmCount({idx, ball: ballname, listType: 'collection', numEMs: newValue}))
+            dispatch(setEmCount({idx, ball: ballname, listType: 'collection', numEMs: newValue}))
             if (deleteEMs) {
-                dispatch(deleteCollectionEms({idx, ball: ballname, listType: 'collection'}))
+                dispatch(deleteEms({idx, ball: ballname, listType: 'collection'}))
             }
             if (hasAllPossibleEMs) {
                 for (let eggmove of possibleEggMoves) {
-                    dispatch(setCollectionEms({idx, ball: ballname, listType: 'collection', emName: eggmove}))
+                    dispatch(setEms({idx, ball: ballname, listType: 'collection', emName: eggmove}))
                 }
             }
         }

@@ -1,4 +1,4 @@
-import { useRouteLoaderData, useNavigate, useLocation, useLoaderData, useParams } from "react-router-dom";
+import { useRouteLoaderData, useNavigate, useLocation, useLoaderData, useParams, useOutletContext } from "react-router-dom";
 import BodyWrapper from "../routepartials/bodywrapper";
 import { useEffect, useContext, useState, Fragment } from "react";
 import { AlertsContext } from "../../../alerts/alerts-context";
@@ -9,7 +9,7 @@ export default function PrivateRoute({Component, PlaceholderComponent, routeType
     const userData = useRouteLoaderData("root")
     // const privateTradePage = routeType === 'userTrades' ? loaderData.settings.account.privatizeTrades
     const pathname = useLocation().pathname
-    const editCollectionLoaderD = routeType === 'editCollection' && useLoaderData() 
+    const editCollectionLoaderD = routeType === 'editCollection' && useLoaderData()
     const Placeholder = PlaceholderComponent === undefined ? BodyWrapper : PlaceholderComponent
     const unauthorizedRedirect = routeType === 'editCollection' ? useLocation().pathname.slice(0, -5) : 
         routeType === 'tradeCounteroffer' ? useLocation().pathname.slice(0, -14) : 
@@ -25,6 +25,8 @@ export default function PrivateRoute({Component, PlaceholderComponent, routeType
     const isAuthorized = !notLoggedIn && ((routeType === 'editCollection' || routeType === 'tradeCounteroffer') ? (userData.user._id === comparisonRef && (routeType === 'tradeCounteroffer' ? loaderData.tradeData.history.length < 5 : true)) : 
         (routeType === 'userSettings' || routeType === 'userNotifications' || routeType === 'userTrades') && userData.user.username === comparisonRef)
 
+    // const otherProps = routeType === 'editCollection' ? {collection: editCollectionLoaderD} : {}
+    const otherProps = {}
 
     //alerts
     const [alertIds, setAlertIds] = useState([])
@@ -57,6 +59,6 @@ export default function PrivateRoute({Component, PlaceholderComponent, routeType
         };
     }, [])
     return (
-        !isAuthorized ? <Placeholder /> : <Component {...loaderDataProp}/>
+        !isAuthorized ? <Placeholder /> : <Component {...loaderDataProp} {...otherProps}/>
     )
 }

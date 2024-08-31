@@ -6,7 +6,7 @@ import { useState, useEffect, useContext, useRef } from 'react'
 import { AlertsContext } from '../../../alerts/alerts-context'
 import { ErrorContext } from '../../../app/contexts/errorcontext'
 import { changeModalState } from '../../../app/slices/editmode'
-import { setNameState, setGlobalDefaultState } from '../../../app/slices/options'
+import { setNameState, setGlobalDefaultState } from '../../../app/slices/collectionstate'
 import { backendChangeOptions } from '../../../../utils/functions/backendrequests/collectionoptionsedit'
 import deleteCollectionRequest from '../../../../utils/functions/backendrequests/deletecollection'
 import ControlledTextInput from '../../functionalcomponents/controlledtextinput'
@@ -16,8 +16,8 @@ import ConfirmDecisionModal from '../../functionalcomponents/confirmdecisionmoda
 export default function OtherOptions({elementBg, collectionId, collectionGen, collectionType, owner}) {
     const dispatch = useDispatch()
     const {handleError} = useContext(ErrorContext)
-    const collectionNameState = useSelector((state) => state.options.collectionName)
-    const globalDefaultInit = useSelector((state) => state.options.globalDefaults)
+    const collectionNameState = useSelector((state) => state.collectionState.options.collectionName)
+    const globalDefaultInit = useSelector((state) => state.collectionState.options.globalDefaults)
     const collectionNameRef = useRef(collectionNameState)
     const navigate = useNavigate()
 

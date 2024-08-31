@@ -8,8 +8,7 @@ import {useSelector, useDispatch} from 'react-redux'
 import {AlertsContext} from '../../../../alerts/alerts-context'
 import {getPokemonWithOwnedBalls, getOwnedBalls, randomGender, setNewOnHandPokemonState, selectivelyReturnIsHAAndEMs, selectNextEmCount, setMaxEmArr, handleEMsState, capitalizeFirstLetter} from './../../../../../utils/functions/misc'
 import { selectCollectionPokemon } from '../../../../app/selectors/selectors'
-import {setPokemon, setNewOnHand} from '../../../../app/slices/onhand'
-import {addOnHandPokemonToList, changeOnHandPokemon} from '../../../../app/slices/listdisplay'
+import {setPokemonSpecies, addOnHandPokemonToList} from '../../../../app/slices/collectionstate'
 import { newOnHandPutReq } from '../../../../../utils/functions/backendrequests/addonhand'
 import { bulkEditOnHandInfo } from '../../../../../utils/functions/backendrequests/editcollection'
 import ConfirmDecisionModal from '../../../functionalcomponents/confirmdecisionmodal'
@@ -51,9 +50,9 @@ export default function OnHandPokemonSelectionForm({collectionID, speciesEditOnl
     const userNameDisplaySettings = useRouteLoaderData('root').user.settings.display.pokemonNames
     const {handleError} = useContext(ErrorContext)
 
-    const allEggMoveInfo = useSelector((state) => state.listDisplay.eggMoveInfo)
-    const sortingOptions = useSelector((state) => state.options.sorting.onhand)
-    const onhandState = useSelector((state) => state.onhand)
+    const allEggMoveInfo = useSelector((state) => state.collectionState.eggMoveInfo)
+    const sortingOptions = useSelector((state) => state.collectionState.options.sorting.onhand)
+    const onhandState = useSelector((state) => state.collectionState.onhand)
     const initialSelection = initialPokemonData.imgLink === undefined ? {} : selectCollectionPokemon(store.getState(), initialPokemonData.imgLink)
     const [pokemonData, setPokemonData] = useState({selection: {...initialSelection}, searchData: '', ball: initialPokemonData.ball, newOnHandData: {}, otherNewOnHands: [], selectedNewOnHand: 0, saving: false})
     const [confirmDecisionModal, setConfirmDecisionModal] = useState(false)
@@ -65,7 +64,7 @@ export default function OnHandPokemonSelectionForm({collectionID, speciesEditOnl
     const specificPokemonDataPath = addingMultipleOnhands ? pokemonData.otherNewOnHands[pokemonData.selectedNewOnHand] : pokemonData
     // console.log(pokemonData)
 
-    const collectionData = useSelector(state => state.collection)
+    const collectionData = useSelector(state => state.collectionState.collection)
 
     const eggMoveData = {
         noEMs: specificPokemonDataPath.newOnHandData.gender !== undefined ? specificPokemonDataPath.newOnHandData.EMs === undefined : false,
@@ -163,13 +162,12 @@ export default function OnHandPokemonSelectionForm({collectionID, speciesEditOnl
         const saveToDataBase = {...sharedData, _id: initialPokemonData._id}
         setPokemonData({...pokemonData, saving: true})
         const successFunc = () => {
-            dispatch(setPokemon({
-                idx: idxOfInitialPokemon,
+            dispatch(setPokemonSpecies({
+                id: initialPokemonData._id,
                 imgLink: pokemonData.selection.imgLink,
                 pokemonData: sharedData,
                 sortingOptions
             }))
-            dispatch(changeOnHandPokemon({onhandId: initialPokemonData._id, newPokeData: sharedData, sortingOptions}))
             setPokemonData({...pokemonData, saving: false})
             //spawning alert
             const alertMessage = `Changed the On-Hand to ${capitalizeFirstLetter(pokemonData.ball)} ${pokemonData.selection.name}!`
@@ -367,8 +365,7 @@ export default function OnHandPokemonSelectionForm({collectionID, speciesEditOnl
             const newOnHandsFormattedForState = pokemonData.otherNewOnHands.map(pData => {return getStateBackendOnhandData(pData).stateInfo}) 
             const backendFunc = async() => await newOnHandPutReq(newOnHandsFormattedForBackend, collectionID)
             const successFunc = () => {
-                dispatch(setNewOnHand(newOnHandsFormattedForState)) //updates row content state
-                dispatch(addOnHandPokemonToList({newOnhand: newOnHandsFormattedForState, sortingOptions})) //updates show list state, which allows the new on hand to appear
+                dispatch(addOnHandPokemonToList({newOnhand: newOnHandsFormattedForState, sortingOptions}))
                 setPokemonData({...pokemonData, saving: false})
                 //spawning alert
                 const alertMessage = `Added Multiple On-hand Pokemon!`
@@ -381,8 +378,7 @@ export default function OnHandPokemonSelectionForm({collectionID, speciesEditOnl
         } else {
             const {saveToDataBase, stateInfo} = getStateBackendOnhandData(pokemonData)
             const successFunc = () => {
-                dispatch(setNewOnHand(stateInfo)) //updates row content state
-                dispatch(addOnHandPokemonToList({newOnhand: stateInfo, sortingOptions})) //updates show list state, which allows the new on hand to appear
+                dispatch(addOnHandPokemonToList({newOnhand: stateInfo, sortingOptions})) 
                 setPokemonData({...pokemonData, saving: false})
                 //spawning alert
                 const alertMessage = `Added ${capitalizeFirstLetter(pokemonData.ball)} ${pokemonData.selection.name}`

@@ -11,16 +11,15 @@ import { saveScopeChangesAndGetNewList } from '../../../../../utils/functions/sc
 import SaveChangesConfirmModal from '../savechangesconfirmmodal';
 import { AlertsContext } from '../../../../alerts/alerts-context';
 import { ErrorContext } from '../../../../app/contexts/errorcontext';
-import { setCollectionInitialState } from '../../../../app/slices/collection';
-import { setListInitialState } from '../../../../app/slices/listdisplay';
+import { setListState } from '../../../../app/slices/collectionstate';
 
 export default function PokemonScope({elementBg, collectionGen, collectionId}) {
     const dispatch = useDispatch()
     const {handleError} = useContext(ErrorContext)
     const scopeTotal = useSelector((state) => state.editmode.pokemonScopeTotal)
     const oneArrLegalityInfo = getOneArrData(scopeTotal, false)
-    const collectionState = useSelector((state) => state.collection)
-    const optionsState = useSelector((state) => state.options)
+    const collectionState = useSelector((state) => state.collectionState.collection)
+    const optionsState = useSelector((state) => state.collectionState.options)
     const formDataInit = useSelector((state) => selectScopeFormData(state, scopeTotal))
     const groupKeys = Object.keys(scopeTotal)
     const groupKeysWithSubGroups = groupKeys.filter((groupKey) => !Array.isArray(scopeTotal[groupKey]))
@@ -112,8 +111,7 @@ export default function PokemonScope({elementBg, collectionGen, collectionId}) {
                     const updatedEggMoveInfo = newListState.updatedEggMoveInfo 
                     const updateEggMoveData = updatedEggMoveInfo !== undefined
                     const updatedHomeGames = newListState.updatedHomeGames
-                    dispatch(setCollectionInitialState(actualListState))
-                    dispatch(setListInitialState({collection: actualListState, onlyUpdateCollection: true, resetCollectionFilters: true, updatedEggMoveInfo: updateEggMoveData ? updatedEggMoveInfo : undefined, updatedHomeGames}))
+                    dispatch(setListState({collection: actualListState, onlyUpdateCollection: true, resetCollectionFilters: true, updatedEggMoveInfo: updateEggMoveData ? updatedEggMoveInfo : undefined, updatedHomeGames}))
 
                     //spawning alert
                     const alertMessage = `Updated Pokemon Scope!`

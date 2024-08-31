@@ -12,7 +12,7 @@ export default function OptionsSub({elementBg, screenType, collectionGen}) {
     const [isPending, startTransition] = useTransition()
     const [groupError, setGroupError] = useState({error: false})
     const scopeTotal = useSelector((state) => state.editmode.pokemonScopeTotal)
-    const itemsState = useSelector((state) => state.options.tradePreferences.items)
+    const itemsState = useSelector((state) => state.collectionState.options.tradePreferences.items)
 
     const buttons = screenType === 'changeScope' ? [{screen: 'pokemonScope', display: 'Pokemon Scope'}, {screen: 'ballScope', display: 'Ball Scope'}, {screen: 'excludedCombos', display: 'Excluded Ball Combos'}] : 
         screenType === 'sorting' ? [{screen: 'collectionSort', display: 'Collection Sorting Settings'}, {screen: 'onhandSort', display: 'On-Hand Sorting Settings'}, {screen: 'customSort', display: 'Custom Sort Collection'}] : 

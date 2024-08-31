@@ -304,7 +304,7 @@ export default function ShowOffer({numOfOffers, tradeParticipants, offersBasicDa
                 {canMarkComplete ?
                 <>
                 <Box sx={{width: '100%', height: '100%', ...theme.components.box.fullCenterCol, gap: 2}}>
-                    <ToggleButton value='' onChange={markTradeAsComplete} selected={markedCompleteData === loggedInUserData.user.userData} variant='contained' sx={{backgroundColor: 'rgb(40, 167, 69)', color: 'white', py: 1, ':hover': {backgroundColor: 'rgba(40, 167, 69, 0.5)'}}} disabled={markingComplete}>
+                    <ToggleButton value='' onChange={markTradeAsComplete} selected={markedCompleteData === loggedInUserData.user.userData} variant='contained' sx={{backgroundColor: 'rgb(40, 167, 69)', color: 'white', py: 1, ':hover': {backgroundColor: 'rgba(40, 167, 69, 0.5)'}, '&.Mui-disabled': {backgroundColor: 'rgba(40, 167, 69, 0.75)', color: 'white'}}} disabled={markingComplete}>
                         {
                             markingComplete ? (markedCompleteAlready ? <>Marking Incomplete<DotWaitingText/></>  : <>Marking Complete<DotWaitingText/></> ) : 
                             markedCompleteAlready ? 'Mark Incomplete' : 'Mark as Complete'

@@ -8,12 +8,12 @@ import getNameDisplay from '../../../utils/functions/display/getnamedisplay'
 import { setOnHandInitialState } from './onhand'
 import { selectivelyReturnIsHAAndEMs } from '../../../utils/functions/misc'
 
-const backendurl = import.meta.env.VITE_BACKEND_URL
+// const backendurl = import.meta.env.VITE_BACKEND_URL
 
-export const fetchCollectionData = createAsyncThunk('collection/fetchCollectionStatus', async(colId) => {
-    const response = await fetch(`${backendurl}/collections/${colId}`).then(res => res.json())
-    return response
-})
+// export const fetchCollectionData = createAsyncThunk('collection/fetchCollectionStatus', async(colId) => {
+//     const response = await fetch(`${backendurl}/collections/${colId}`).then(res => res.json())
+//     return response
+// })
 
 //this slice controls the display for the show list components (showonhandlist, showcollectionlist). 
 //separated from the other slices as it controls the state of the list displays ONLY (not the row content) and allows it to update when the length of the lists change 
@@ -138,29 +138,6 @@ const listDisplay = createSlice({
             const newState = {...state, [listType]: newListStateSorted}
             return newState
         }
-    },
-    extraReducers: (builder) => {
-        builder
-            .addCase(setSortingOptionsState, (state, action) => {
-                const {listType, data} = action.payload
-                if (data.reorder === false) {
-                    return state
-                }
-                if (listType === 'onhand') {
-                    state.onhand = sortOnHandList(data.sortFirstBy, data.default, data.ballOrder, state.onhand)
-                    return state
-                } else {
-                    state.collection = sortList(data.default, state.collection)
-                    return state
-                }
-            })
-            .addCase(fetchCollectionData.fulfilled, (state, action) => {
-                state.collection = action.payload.ownedPokemon.filter(p => !p.disabled)
-                state.onhand = action.payload.onHand
-                state.eggMoveInfo = action.payload.eggMoveInfo
-                state.availableGamesInfo = action.payload.availableGamesInfo
-                return state
-            })
     }
 })
 

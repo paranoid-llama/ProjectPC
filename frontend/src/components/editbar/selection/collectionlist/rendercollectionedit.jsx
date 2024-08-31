@@ -3,7 +3,7 @@ import { ErrorContext } from '../../../../app/contexts/errorcontext'
 import { AlertsContext } from '../../../../alerts/alerts-context'
 import {useDispatch, connect, useSelector} from 'react-redux'
 import store from './../../../../app/store'
-import {setIsOwned, setCollectionIsHA, setCollectionEmCount, setCollectionEms, deleteCollectionEms, setDefault} from './../../../../app/slices/collection'
+import {setIsOwned, setIsHA, setEmCount, setEms, deleteEms, setDefault} from './../../../../app/slices/collectionstate'
 import { setUnsavedChanges } from './../../../../app/slices/editmode'
 import {setSelectedBall} from './../../../../app/slices/editmode'
 import {Box, Typography, FormGroup, FormControl, FormControlLabel, FormLabel, ToggleButton} from '@mui/material'
@@ -43,7 +43,7 @@ function RenderCollectionEdit({collectionId, ownerId, pokemon, ballInfo, selecte
     const emCountSelectionList = setMaxEmArr(maxEMs) 
 
     //default logic used for isOwned state and setDefault state
-    const globalDefault = useSelector((state) => state.options.globalDefaults)
+    const globalDefault = useSelector((state) => state.collectionState.options.globalDefaults)
     const checkDefault = Object.keys(ballInfo)[Object.values(ballInfo).map((b) => b.default !== undefined).indexOf(true)]
     const currentDefault = checkDefault === undefined ? 'none' : checkDefault
     
@@ -54,15 +54,14 @@ function RenderCollectionEdit({collectionId, ownerId, pokemon, ballInfo, selecte
     // const isHAState = useSelector((state) => state.collection[selectedIdx].balls[renderedBall].isHA)
     // const emCountState = useSelector((state) => state.collection[selectedIdx].balls[renderedBall].emCount)
     // const EMs = useSelector((state) => state.collection[selectedIdx].balls[renderedBall].EMs)
-    const selectedIdx = useSelector(state => state.collection.indexOf(pokemon))
+    const selectedIdx = useSelector(state => state.collectionState.collection.indexOf(pokemon))
     const isOwnedState = pokemon.balls[renderedBall].isOwned
     const isHAState = pokemon.balls[renderedBall].isHA
     const emCountState = pokemon.balls[renderedBall].emCount
     const EMs = pokemon.balls[renderedBall].EMs
     
-
-    const noEMs = ballInfo[allowedBalls[0]].EMs === undefined
-    const noHA = ballInfo[allowedBalls[0]].isHA === undefined
+    const noEMs = pokemon.balls[renderedBall].EMs === undefined
+    const noHA = pokemon.balls[renderedBall].isHA === undefined
    
     const handleBallChange = (event, newBall) => {
         dispatch(setSelectedBall(newBall))
@@ -80,7 +79,7 @@ function RenderCollectionEdit({collectionId, ownerId, pokemon, ballInfo, selecte
     }
     const handleIsHAChange = (event) => {
         const newValue = event.target.value === 'true' // event.target.value comes out as a string instead of boolean
-        dispatch(setCollectionIsHA({idx: selectedIdx, ball: renderedBall, listType}))
+        dispatch(setIsHA({idx: selectedIdx, ball: renderedBall, listType}))
         // if (unsavedChanges === false) {addAlert({severity: 'error', timeout: 4, message: 'You have unsaved changes. Make sure to save before leaving!'})}
         dispatch(setUnsavedChanges())
         // const successFunc = () => dispatch(setCollectionIsHA({idx: selectedIdx, ball: renderedBall, listType}))
@@ -99,14 +98,14 @@ function RenderCollectionEdit({collectionId, ownerId, pokemon, ballInfo, selecte
         setEditEggMoves({...editEggMoves, idx: ''})
         const hasAllPossibleEggMoves = (possibleEggMoves.length === maxEMs) && (newValue === maxEMs)
         if (newValue < EMs.length) {
-            dispatch(deleteCollectionEms({idx: selectedIdx, ball: renderedBall, listType}))
+            dispatch(deleteEms({idx: selectedIdx, ball: renderedBall, listType}))
         }
         if (hasAllPossibleEggMoves) {
             for (let eggmove of possibleEggMoves) {
-                dispatch(setCollectionEms({idx: selectedIdx, ball: renderedBall, listType, emName: eggmove}))
+                dispatch(setEms({idx: selectedIdx, ball: renderedBall, listType, emName: eggmove}))
             }
         }
-        dispatch(setCollectionEmCount({idx: selectedIdx, ball: renderedBall, listType, numEMs: newValue}))
+        dispatch(setEmCount({idx: selectedIdx, ball: renderedBall, listType, numEMs: newValue}))
         // if (unsavedChanges === false) {addAlert({severity: 'error', timeout: 4, message: 'You have unsaved changes. Make sure to save before leaving!'})}
         dispatch(setUnsavedChanges())
         // const successFunc = () => {
@@ -135,8 +134,8 @@ function RenderCollectionEdit({collectionId, ownerId, pokemon, ballInfo, selecte
 
     const handleEMChange = (event) => {
         if (event === 'onlyOnePossibleEM') {
-            dispatch(setCollectionEms({idx: selectedIdx, ball: renderedBall, listType, emName: possibleEggMoves[0]}))
-            dispatch(setCollectionEmCount({idx: selectedIdx, ball: renderedBall, listType, numEMs: 1} ))
+            dispatch(setEms({idx: selectedIdx, ball: renderedBall, listType, emName: possibleEggMoves[0]}))
+            dispatch(setEmCount({idx: selectedIdx, ball: renderedBall, listType, numEMs: 1} ))
             dispatch(setUnsavedChanges())
             // const onlyOneEmSuccess = () => {
             //     dispatch(setCollectionEms({idx: selectedIdx, ball: renderedBall, listType, emName: possibleEggMoves[0]}))
@@ -156,9 +155,9 @@ function RenderCollectionEdit({collectionId, ownerId, pokemon, ballInfo, selecte
             const decreaseEMCount = maxEMs === possibleEggMoves.length && EMs.length > newEMArr.length
             // if the max possible ems is 4 or less AND we are taking out an egg move, decrease the em count
             const changeEMCount = increaseEMCount || decreaseEMCount
-            dispatch(setCollectionEms({idx: selectedIdx, ball: renderedBall, listType, emName: selectedEM}))
+            dispatch(setEms({idx: selectedIdx, ball: renderedBall, listType, emName: selectedEM}))
             if (changeEMCount) {
-                dispatch(setCollectionEmCount({idx: selectedIdx, ball: renderedBall, listType, numEMs: newEMArr.length}))
+                dispatch(setEmCount({idx: selectedIdx, ball: renderedBall, listType, numEMs: newEMArr.length}))
             }
             // next two if statements determine how the selected EM (selection box) moves depending on whether an egg move is being added (1st) or removed (2nd)
             if (!(EMs.includes(selectedEM))) {

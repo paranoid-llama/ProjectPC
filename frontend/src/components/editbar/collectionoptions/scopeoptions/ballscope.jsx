@@ -4,12 +4,10 @@ import ImgData from '../../../collectiontable/tabledata/imgdata'
 import SaveChangesConfirmModal from '../savechangesconfirmmodal'
 import { AlertsContext } from '../../../../alerts/alerts-context'
 import { ErrorContext } from '../../../../app/contexts/errorcontext'
-import { useState, useEffect, useContext } from 'react'
+import { useState, useEffect, useContext, useMemo } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { changeModalState } from '../../../../app/slices/editmode'
-import { setListInitialState } from '../../../../app/slices/listdisplay'
-import { setCollectionInitialState } from '../../../../app/slices/collection'
-import { setBallScope } from '../../../../app/slices/options'
+import { setBallScope } from '../../../../app/slices/collectionstate'
 import { getBallsInGen } from '../../../../../common/infoconstants/miscconstants'
 import { getOneArrData } from '../../../../../utils/functions/scope/getonearrdata'
 import { capitalizeFirstLetter } from '../../../../../utils/functions/misc'
@@ -21,9 +19,11 @@ export default function BallScope({elementBg, collectionGen, collectionId}) {
     const dispatch = useDispatch()
     const {handleError} = useContext(ErrorContext)
     const oneArrLegalBalls = getOneArrData(useSelector((state) => state.editmode.pokemonScopeTotal), false, false)
-    const legalBallInfo = oneArrLegalBalls.filter(mon => useSelector((state) => state.listDisplay.collection).map(listMon => listMon.imgLink === mon.imgLink).includes(true))
-    const ballScopeInit = useSelector((state) => state.options.collectingBalls)
-    const collectionState = useSelector((state) => state.collection)
+    //changed collection state to filter disabled mons, and changed legalballinfo to use that instead of collection list display. think thats what
+    //i meant to do, but cataloguing in case it comes to an error
+    const collectionState = useSelector((state) => state.collectionState.collection).filter(p => !(p.disabled))
+    const legalBallInfo = oneArrLegalBalls.filter(mon => collectionState.map(listMon => listMon.imgLink === mon.imgLink).includes(true))
+    const ballScopeInit = useSelector((state) => state.collectionState.options.collectingBalls)
     const totalBalls = getBallsInGen(collectionGen)
     const [formData, setFormData] = useState({balls: ballScopeInit, removedPokemon: [], confirmChangesModal: false})
     const addedBalls = formData.balls.filter(ball => !ballScopeInit.includes(ball))
@@ -91,9 +91,7 @@ export default function BallScope({elementBg, collectionGen, collectionId}) {
             setFormData({...formData, saving: true})
             const successFunc = () => {
                 setTimeout(() => {
-                    dispatch(setBallScope(formData.balls))
-                    dispatch(setCollectionInitialState(newListState))
-                    dispatch(setListInitialState({collection: newListState, onlyUpdateCollection: true, resetCollectionFilters: true}))
+                    dispatch(setBallScope({newCollectingBalls: formData.balls, newListState}))
     
                     //spawning alert
                     const alertMessage = `Updated Ball Scope!`

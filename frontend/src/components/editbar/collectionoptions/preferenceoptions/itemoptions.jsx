@@ -3,7 +3,7 @@ import { AlertsContext } from "../../../../alerts/alerts-context";
 import { ErrorContext } from "../../../../app/contexts/errorcontext";
 import { useDispatch, useSelector } from "react-redux";
 import { changeModalState } from "../../../../app/slices/editmode";
-import { setItemState } from "../../../../app/slices/options";
+import { setItemState } from "../../../../app/slices/collectionstate";
 import { getPossibleItems } from "../../../../../common/infoconstants/miscconstants.mjs";
 import { backendChangeOptions } from "../../../../../utils/functions/backendrequests/collectionoptionsedit";
 import ItemSelectionModalContents from "../../../collectioncreation/stepcomponents/optionsselection/aprimon/itemselectionmodalcontents";
@@ -12,7 +12,7 @@ import SaveChangesConfirmModal from "../savechangesconfirmmodal";
 export default function ItemOptions({elementBg, collectionGen, collectionId}) {
     const dispatch = useDispatch()
     const {handleError} = useContext(ErrorContext)
-    const tradePreferences = useSelector((state) => state.options.tradePreferences)
+    const tradePreferences = useSelector((state) => state.collectionState.options.tradePreferences)
     const lfDisabled = tradePreferences.items === 'none' || tradePreferences.items === 'ft'
     const ftDisabled = tradePreferences.items === 'none' || tradePreferences.items === 'lf'
     const totalItems = getPossibleItems(collectionGen)

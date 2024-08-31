@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useRef, useEffect, useState} from 'react'
+import {useRef, useEffect, useLayoutEffect, useState, memo} from 'react'
 import {Fragment} from 'react'
 import { apriballs } from '../../../../common/infoconstants/miscconstants.mjs';
 import {Paper, Table, TableHead, TableRow, TableBody, TableContainer, TableCell, Box, Button, useTheme} from '@mui/material'
@@ -11,23 +11,26 @@ import { capitalizeFirstLetter } from '../../../../utils/functions/misc';
 import {useSelector, useDispatch, connect} from 'react-redux'
 import { useLocation } from 'react-router';
 import { interchangeableAltFormMons } from '../../../../common/infoconstants/pokemonconstants.mjs';
+import { setScrollPosition } from '../../../app/slices/collectionstate';
 import {setCollectionInitialState} from '../../../app/slices/collection'
 import {setSelected} from '../../../app/slices/editmode'
 
-export default function ShowCollectionList({collection, styles, isEditMode, localDisplayState=undefined, height=800, noStates=false, isTradePage=false, tradeSide=null, wantedByOtherListData=[], userData}) {
+export default function ShowCollectionList({collection, isCollectionOwner, styles, isEditMode, localDisplayState=undefined, height=800, noStates=false, isTradePage=false, tradeSide=null, wantedByOtherListData=[], userData}) {
     const theme = useTheme()
-    // const ballScopeState = !noStates && useSelector((state) => state.options.collectingBalls)
-    const ballScopeState = apriballs
-    const listState = !noStates && useSelector((state) => state.listDisplay.collection)
+    const dispatch = useDispatch()
+    const ballScopeState = !noStates && useSelector((state) => state.collectionState.options.collectingBalls)
+    const listState = useSelector((state) => state.collectionState.listDisplay.collection)
+    const previousScrollPosition = useSelector((state) => state.collectionState.lastScrollPosition)
+    const previousColId = useSelector((state) => state.collectionState.prevColId)
     const link = useLocation().pathname
-    const linkRef = useRef(link)
+    // const linkRef = useRef(link)
 
     // console.log(collection)
     // console.log(listState)
     // ^^ listdisplay always uses state to cover for filtering/sorting functions (which anyone should be able to do)
 
     //apparently, on first render, this component loads faster than the initial state can initialize, meaning we have the one line below.
-    const ballScopeDisplay = (ballScopeState === undefined || !isEditMode) ? collection.options.collectingBalls : ballScopeState
+    const ballScopeDisplay = (ballScopeState === undefined || (!isEditMode)) ? collection.options.collectingBalls : ballScopeState
     const listDisplay = (localDisplayState !== undefined) ? localDisplayState : listState
 
     // console.log(listDisplay)
@@ -40,17 +43,38 @@ export default function ShowCollectionList({collection, styles, isEditMode, loca
         
     // })
 
-    useEffect(() => {
-        const id = collection._id
-        const sameIDBetweenRefs = linkRef.current.includes(id) && link.includes(id)
-        if (scrollPosition.current !== undefined && (sameIDBetweenRefs)) { 
+    // useEffect(() => {
+        
+    // }, [])
+
+    useLayoutEffect(() => {
+        const sameIDBetweenRefs = collection._id === previousColId
+        if (previousScrollPosition && sameIDBetweenRefs) {
             setTimeout(() => {
-                scrollRef.current.scrollTo({top: scrollPosition.current})
-                
-            }, 2500)
+              scrollRef.current.scrollTo({top: previousScrollPosition})  
+            }, 1000)  
         }
-        linkRef.current = link
     }, [link])
+
+    useEffect(() => {
+        return () => {
+            dispatch(setScrollPosition({scrollPos: scrollPosition.current, latestColId: collection._id}))
+        }
+    })
+
+    // useEffect(() => {
+    //     const id = collection._id
+    //     const sameIDBetweenRefs = linkRef.current.includes(id) && link.includes(id)
+    //     console.log(scrollPosition)
+    //     if (scrollPosition.current !== undefined && (sameIDBetweenRefs)) { 
+    //         console.log('FIRED!')
+    //         setTimeout(() => {
+    //             scrollRef.current.scrollTo({top: scrollPosition.current})
+                
+    //         }, 1000)
+    //     }
+    //     linkRef.current = link
+    // }, [link])
 
     const setBallCols = () => {
         const cols = []
@@ -116,7 +140,7 @@ export default function ShowCollectionList({collection, styles, isEditMode, loca
     }
 
     function rowContent(_index, row) {
-        const includePokemonProp = isEditMode ? {} : {row}
+        const includePokemonProp = (isEditMode) ? {} : {row}
         const TrueTableRow = isTradePage ? ConnectlessTableRow : TableRowGrouping
         const pokeWantedData = isTradePage ? wantedByOtherListData.filter(p => {
             const interchangeableMon = interchangeableAltFormMons.map(iName => p.name.includes(iName)).includes(true)
@@ -132,6 +156,7 @@ export default function ShowCollectionList({collection, styles, isEditMode, loca
                     // row={row}
                     // idx={_index}
                     id={row.imgLink}
+                    isCollectionOwner={isCollectionOwner}
                     collectionId={collection._id}
                     ownerId={collection.owner._id}
                     styles={styles}

@@ -3,7 +3,7 @@ import ArrowForward from '@mui/icons-material/ArrowForward'
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { useDispatch, useSelector } from 'react-redux'
 import { changeModalState } from '../../../../app/slices/editmode'
-import { setRate } from '../../../../app/slices/options';
+import { setRate } from '../../../../app/slices/collectionstate';
 import { useState, useEffect, useContext } from 'react'
 import { AlertsContext } from '../../../../alerts/alerts-context'
 import { ErrorContext } from '../../../../app/contexts/errorcontext';
@@ -15,7 +15,7 @@ import SaveChangesConfirmModal from '../savechangesconfirmmodal'
 export default function RateOptions({elementBg, collectionGen, collectionId}) {
     const dispatch = useDispatch()
     const {handleError} = useContext(ErrorContext)
-    const ratesInit = useSelector((state) => state.options.tradePreferences.rates)
+    const ratesInit = useSelector((state) => state.collectionState.options.tradePreferences.rates)
     const items = getPossibleItems(collectionGen)
     const rateTotalItemsStep = items.map(item => apriballLiterals.includes(item.value) ? 'Apriballs' : item.display)
     const rateTotalItems = rateTotalItemsStep.filter((item, idx) => rateTotalItemsStep.indexOf(item) === idx)

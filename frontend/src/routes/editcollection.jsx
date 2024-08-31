@@ -1,7 +1,7 @@
 import {AppBar, Typography, Box, Button, Alert, Modal, Fade, Backdrop, useTheme, CircularProgress} from '@mui/material'
 import modalStyles from '../../utils/styles/componentstyles/modalstyles.jsx'
 import { setUnsavedChanges } from '../app/slices/editmode.jsx'
-import {useLocation, useLoaderData, Link, useNavigate, useRevalidator} from 'react-router-dom'
+import {useLocation, useLoaderData, useRouteLoaderData, Link, useNavigate, useRevalidator} from 'react-router-dom'
 import { useEffect, useRef, useContext, useState, useTransition } from 'react'
 import { ErrorContext } from '../app/contexts/errorcontext.jsx'
 import { AlertsContext } from '../alerts/alerts-context.jsx'
@@ -37,9 +37,9 @@ export default function EditCollection({}) {
 
     const leaveEditMode = () => {
         dispatch(setUnsavedChanges('reset')) 
-        revalidator.revalidate()
-        navigate(linkBack)
         
+        navigate(linkBack)
+        revalidator.revalidate()
         //do not switch the order of these or it ends up revalidating the edit route before it changes which means every other unnecessary state 
         //(col onhand options) gets revalidated too. at least, i THINK thats what happens since it re-renders a LOT when leaving edit mode
     }
@@ -47,8 +47,8 @@ export default function EditCollection({}) {
     const saveCollectionEdits = (exitAfter=false) => {
         //do not compare collection laoder data and collection state, since scope/ball scope/excluded combos update does NOT revalidate to update the loader data.
         //if you do compare, and the user changes the scope before changing, those scope changes wont be reflected in the laoder data.
-        const collectionState = store.getState().collection
-        const onhandState = store.getState().onhand
+        const collectionState = store.getState().collectionState.collection
+        const onhandState = store.getState().collectionState.onhand
         const newOwnedPokemonArr = unsavedChanges ? JSON.parse(JSON.stringify(collectionState)).map(p => {
             delete p.imgLink
             delete p.possibleGender

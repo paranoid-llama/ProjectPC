@@ -8,7 +8,7 @@ import SpeciesSelect from './modalcomponents/speciesselect'
 import ImgData from '../../../collectiontable/tabledata/imgdata'
 import { capitalizeFirstLetter } from '../../../../../utils/functions/misc'
 import { deleteOnHandPutRequest } from '../../../../../utils/functions/backendrequests/deleteonhand'
-import { removePokemonFromList } from '../../../../app/slices/listdisplay'
+import { removeOnHandPokemonFromList } from '../../../../app/slices/collectionstate'
 import { deleteOnHand } from '../../../../app/slices/onhand'
 import { deselect, setDeleteOnHandMode } from '../../../../app/slices/editmode'
 import EmTooltipWrapper from '../../../collectiontable/tabledata/emtooltipwrapper'
@@ -54,7 +54,7 @@ export default function BulkDeleteConfirm({open, toggleModal, collectionID}) {
     const dispatch = useDispatch()
     const {addAlert} = useContext(AlertsContext)
     const {handleError} = useContext(ErrorContext)
-    const totalOnhands = useSelector((state) => state.onhand)
+    const totalOnhands = useSelector((state) => state.collectionState.onhand)
     const flaggedOnhands = useSelector((state) => state.editmode.deletedOnHandIds)
     const setToBeDeletedOhData = totalOnhands.filter(p => flaggedOnhands.includes(p._id))
 
@@ -71,11 +71,9 @@ export default function BulkDeleteConfirm({open, toggleModal, collectionID}) {
         const backendFunc = async() => await deleteOnHandPutRequest(flaggedOnhands, collectionID)
         const successFunc = () => {
             dispatch(deselect())
-            dispatch(removePokemonFromList({pokemonid: flaggedOnhands, listType: 'onhand'}))
-            setTimeout(() => {
-                dispatch(deleteOnHand(flaggedOnhands))
-            }, 500)
+            dispatch(removeOnHandPokemonFromList({pokemonid: flaggedOnhands}))
             dispatch(setDeleteOnHandMode(false))
+            
             setSavePending(false)
             const alertInfo = {severity: 'success', timeout: 5, message: 'Deleted multiple On-Hand pokemon!'}
             addAlert(alertInfo)

@@ -1,7 +1,7 @@
 import {Box, Typography, styled, TextField, ToggleButtonGroup, useTheme} from '@mui/material'
 import { useLoaderData, useRouteLoaderData } from 'react-router'
 import { useSelector, useDispatch } from 'react-redux'
-import { setFilters, filterSearch } from '../../../app/slices/listdisplay' 
+import { setFilters, filterSearch } from '../../../app/slices/collectionstate' 
 import { deselect } from '../../../app/slices/editmode'
 import { generations, genRomans, apriballs } from '../../../../common/infoconstants/miscconstants'
 import { checkForTypeOfFilter } from '../../../../utils/functions/sortfilterfunctions/filterfunctions'
@@ -10,8 +10,9 @@ import ImgData from '../tabledata/imgdata'
 import ListSearch from '../../functionalcomponents/listsearch'
 import {useDebouncedCallback} from 'use-debounce'
 import { selectScreenBreakpoint } from '../../../app/selectors/windowsizeselectors'
+import displayOnHandByPokemon from '../../../../utils/functions/display/displayonhandbypokemon'
 
-export default function Filter({listType, collection, isEditMode}) {
+export default function Filter({listType, collection, isOwner, isEditMode}) {
     const dispatch = useDispatch()
     const theme = useTheme()
     const collectionGen = collection.gen
@@ -19,6 +20,7 @@ export default function Filter({listType, collection, isEditMode}) {
      collectionGen === 'bdsp' ? 4 : collectionGen
     const userData = useRouteLoaderData('root')
     const screenSize = useSelector((state) => selectScreenBreakpoint(state, 'filtersort'))
+    const onhandViewType = useSelector(state => state.collectionState.listDisplay.onhandView)
     const nameDisplaySettings = !userData.loggedIn ? undefined : userData.user.settings.display.pokemonNames
     const gens = collection.gen === 'home' ? genRomans : genRomans.slice(0, genNum)
 
@@ -32,11 +34,11 @@ export default function Filter({listType, collection, isEditMode}) {
         }
     })
 
-    const listLiteralState = listType === 'collection' ? useSelector((state) => state.collection) : useSelector((state) => state.onhand)
+    const listLiteralState = listType === 'collection' ? useSelector((state) => state.collectionState.collection) : onhandViewType === 'byPokemon' ? displayOnHandByPokemon(useSelector((state) => state.collectionState.onhand), collection.ownedPokemon) : useSelector((state) => state.collectionState.onhand)
 
-    const currentFilters = listType === 'collection' ? useSelector((state) => state.listDisplay.collectionFilters) : useSelector((state) => state.listDisplay.onhandFilters)
-    const listState = listType === 'collection' ? useSelector((state) => state.listDisplay.collection) : useSelector((state) => state.listDisplay.onhand)
-    const totalList = isEditMode ? listType === 'collection' ? listLiteralState.filter((mon) => mon.disabled === undefined) : listLiteralState : listType === 'collection' ? collection.ownedPokemon : collection.onHand
+    const currentFilters = listType === 'collection' ? useSelector((state) => state.collectionState.listDisplay.collectionFilters) : useSelector((state) => state.collectionState.listDisplay.onhandFilters)
+    const listState = listType === 'collection' ? useSelector((state) => state.collectionState.listDisplay.collection) : useSelector((state) => state.collectionState.listDisplay.onhand)
+    const totalList = (isEditMode) ? listType === 'collection' ? listLiteralState.filter((mon) => mon.disabled === undefined) : listLiteralState : listType === 'collection' ? collection.ownedPokemon : onhandViewType === 'byPokemon' ? displayOnHandByPokemon(collection.onHand, collection.ownedPokemon) : collection.onHand
     const ballFilters = currentFilters.filters.ballFilters
     const genFilters = currentFilters.filters.genFilters
     const miscFilters = currentFilters.filters.otherFilters
@@ -176,8 +178,8 @@ export default function Filter({listType, collection, isEditMode}) {
             <Box sx={{height: '20%', width: '100%', display: 'flex', alignItems: 'start'}}>
                 <Typography color='white' variant='h6'>Filter By</Typography>
             </Box>
-            <Box sx={{...theme.components.box.fullCenterCol, flexDirection: screenSize === 'lg' ? 'row' : 'column', width: '100%', height: '80%', marginLeft: '10px', gap: 2}}>
-                <Box sx={{...theme.components.box.fullCenterCol, width: '100%', height: '60%', gap: 1.5, ...genBallFilterContainerStyles}}>
+            <Box sx={{...theme.components.box.fullCenterCol, flexDirection: screenSize === 'lg' ? (listType === 'onhand' ? 'row-reverse' : 'row') : 'column', width: '100%', height: '80%', marginLeft: '10px', gap: 2}}>
+                <Box sx={{...theme.components.box.fullCenterCol, width: '100%', height: '60%', gap: 1.5, ...genBallFilterContainerStyles, mr: screenSize === 'lg' && listType === 'onhand' ? 3 : 0}}>
                     <Box sx={{height: '50%', width: '100%', ...theme.components.box.fullCenterCol}}>
                         <Typography color='white' sx={{width: '100%', fontSize: '12px', textAlign: 'start'}}>Generation</Typography>
                         {generateGenFilters()}
@@ -189,7 +191,7 @@ export default function Filter({listType, collection, isEditMode}) {
                 </Box>
                 <Box sx={{height: '20%', width: '100%', display: 'flex', flexDirection: screenSize === 'lg' ? 'column' : 'row', ...otherFilterContainerStyles}}>
                     
-                    <Box sx={{width: screenSize === 'lg' ? '80%' : '55%', height: screenSize === 'lg' ? '60%' : '100%', display: 'flex', flexDirection: screenSize === 'lg' ? 'column' : 'row', mt: 0.75, ...otherFilterButtonContStyles}}>
+                    <Box sx={{width: screenSize === 'lg' ? '80%' : '55%', height: screenSize === 'lg' ? (listType === 'onhand' ? '10%' : '60%') : '100%', display: 'flex', flexDirection: screenSize === 'lg' ? 'column' : 'row', mt: 0.75, ...otherFilterButtonContStyles}}>
                         { listType !== 'onhand' &&
                         <>
                         <Box sx={{width: screenSize === 'lg' ? '100%' : '60%', marginRight: '5px'}}>
@@ -217,7 +219,7 @@ export default function Filter({listType, collection, isEditMode}) {
                         </>
                         }
                     </Box>
-                    <Box sx={{width: screenSize === 'lg' ? '80%' : '40%', height: screenSize === 'lg' ? '40%' : '100%', display: 'flex', alignItems: 'center', mt: screenSize === 'lg' ? 0 : 0.5}}>
+                    <Box sx={{width: screenSize === 'lg' ? (listType === 'onhand' ? '90%' : '80%') : '40%', height: screenSize === 'lg' ? '40%' : '100%', display: 'flex', alignItems: 'center', mt: screenSize === 'lg' ? 0 : 0.5}}>
                         <ListSearch 
                             queryFunc={handleSearchChange} 
                             textFieldProps={{
