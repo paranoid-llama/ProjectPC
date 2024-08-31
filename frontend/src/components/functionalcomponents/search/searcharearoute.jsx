@@ -96,7 +96,7 @@ export default function SearchAreaRoute({query, searchType, result, page, change
             {searching &&
                 <> 
                     <Box sx={{...theme.components.box.fullCenterCol, width: '100%', height: '50px', mt: 10}}>
-                        <Typography sx={{color: 'grey'}}>
+                        <Typography sx={{color: 'grey', mb: 2}}>
                         <i>
                             Searching<DotWaitingText/>
                         </i>
