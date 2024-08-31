@@ -122,6 +122,10 @@ function validateOptions(options, ballScope, homeCol) {
     const validatedGlobalDefaults = Object.keys(globalDefaults).includes('isHA') && typeof globalDefaults.isHA === 'boolean' && (globalDefaults.emCount === undefined ? true : typeof globalDefaults.emCount === 'number')
     const validatedTradePreferences = validateTradePreferences(tradePreferences, homeCol)
     const validatedSortingOpts = validateSortingOpts(sorting)
+    // console.log(validatedCollectingBalls)
+    // console.log(validatedGlobalDefaults)
+    // console.log(validatedTradePreferences)
+    // console.log(validatedSortingOpts)
     return validatedCollectingBalls && validatedTradePreferences && validatedGlobalDefaults && validatedSortingOpts
 }
 
@@ -135,7 +139,7 @@ function validateSortingOpts(sortingOpts) {
     }
     const validatedCollectionSorting = (collection.default !== undefined && sortingKeys.includes(collection.default)) && (collection.reorder !== undefined && typeof collection.reorder === 'boolean')
     const validatedOnhandSorting = (onhand.default !== undefined && sortingKeys.includes(onhand.default)) && (onhand.reorder !== undefined && typeof onhand.reorder === 'boolean') &&
-        (onhand.ballOrder !== undefined && Array.isArray(onhand.ballOrder) && onhand.ballOrder.length === 11 && !onhand.ballOrder.map(ball => apriballs.includes(ball)).includes(false)) &&
+        (onhand.ballOrder !== undefined && Array.isArray(onhand.ballOrder) && !onhand.ballOrder.map(ball => apriballs.includes(ball)).includes(false)) &&
         (onhand.sortFirstBy === 'pokemon' || onhand.sortFirstBy === 'ball')
     return validatedCollectionSorting && validatedOnhandSorting
 }
