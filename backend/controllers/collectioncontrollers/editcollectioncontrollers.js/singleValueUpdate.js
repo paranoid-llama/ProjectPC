@@ -7,7 +7,7 @@ export default async function updateCollectionSingleValue(req, res) {
     const setModifier = newOnhand === undefined ? {$set: {ownedPokemon: newOwnedPokemonArr}} : 
         newOwnedPokemonArr === undefined ? {$set: {onHand: newOnhand}} : {$set: {ownedPokemon: newOwnedPokemonArr, onHand: newOnhand}}
     
-    await Collection.updateOne({
+    await Collection.findOneAndUpdate({
         _id: id
         }, setModifier
     )

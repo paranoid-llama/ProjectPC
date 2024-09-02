@@ -18,7 +18,7 @@ dotenv.config()
 
 const SECRET = process.env.SECRET
 const dbUrl = process.env.DB_URL || "mongodb://127.0.0.1:27017/ProjectPC"
-const frontendUrl = process.env.FRONTEND_URL
+const frontendUrl = process.env.FRONTEND_URL || true
 
 //utils and classes
 import catchAsync from './utils/catchAsync.js'

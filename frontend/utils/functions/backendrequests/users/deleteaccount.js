@@ -3,7 +3,7 @@ const intServerError = {
     message: "Our server has encountered an unexpected error!",
     status: 500
 }
-const backendurl = import.meta.env.VITE_BACKEND_URL
+const backendurl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000'
 
 export default async function deleteUserAccount(username, inputPassword) {
     return await fetch(`${backendurl}/users/${username}`, {

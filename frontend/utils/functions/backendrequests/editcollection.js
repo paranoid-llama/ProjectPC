@@ -1,5 +1,5 @@
 import handleApiResponse from "./handleapiresponse"
-const backendurl = import.meta.env.VITE_BACKEND_URL
+const backendurl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000'
 
 const getCollectionEditData = (key, value, pokename, ballname, otherFieldsData) => {
     return {pokename, ballname, [key]: value, otherFieldsData, editType: 'singleValue'}

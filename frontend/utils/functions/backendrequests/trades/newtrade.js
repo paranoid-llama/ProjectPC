@@ -1,5 +1,5 @@
 import handleApiResponse from "../handleapiresponse"
-const backendurl = import.meta.env.VITE_BACKEND_URL
+const backendurl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000'
 
 export const newTradeBackendFormatting = (pokemonOffer, itemOffer, pokemonReceiving, itemReceiving, offerValue, receivingValue, traderGen, ownerGen) => {
     const formattedGen = traderGen === ownerGen ? ownerGen : `${traderGen}-${ownerGen}`

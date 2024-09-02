@@ -396,10 +396,10 @@ const setCollection = (identifier, names, ballData, gapRows, ballOrder, collecti
         if (isInterchangeableAltFormMon) {
             //note: pokemon in this section come out as '*pokemonname* (Any)'
             const isPokemonInImportedNamesList = formattedNames.includes(interchangeableAltFormMons.filter(iAltFormMon => pokemon.name.includes(iAltFormMon))[0].toLowerCase())
-            const hasOtherFormsInList = !noDexNums ? identifier.filter(dexNum => dexNum === pokemon.natDexNum).length > 1 : formattedNames.filter((name) => name.includes(pokemon.name.toLowerCase())).length > 1
+            const hasOtherFormsInList = !noDexNums ? identifier.filter(dexNum => dexNum === pokemon.natDexNum).length > 1 : formattedNames.filter((name) => name.includes(pokemon.name.slice(0, pokemon.name.indexOf(' ')).toLowerCase().trim())).length > 1
             if (isPokemonInImportedNamesList && hasOtherFormsInList) { //this checks if, for example, the user has 'Oricorio' in their list but also has 'Oricorio (Baile)', and causes 'Oricorio' to fail since the form is unidentified AND other forms are present. the error gets reported in the forEach
                 const errorMessage = `Detected ${pokemon.name} (Changeable Alternate Form Pokemon) with an unidentified form name, and other forms of the same pokemon is present. Remove other form names if you want to have any form, or identify the form name.`
-                // possibleUnsuccessfulImportRows.push({row: formatImportRow(idx, trueGapRows, rowStart), pokemonName: pokemon.name, errorMessage})
+                possibleUnsuccessfulImportRows.push({row: formatImportRow(idx, trueGapRows, rowStart), pokemonName: pokemon.name, errorMessage})
                 return false
             }
             if (isPokemonInImportedNamesList === true) {
@@ -417,9 +417,9 @@ const setCollection = (identifier, names, ballData, gapRows, ballOrder, collecti
     }).sort((a,b) => {
         const aName = (!noDexNums && (a.displayName === undefined)) ? a.natDexNum : (a.displayName !== undefined && a.displayName !== '') ? a.displayName.toLowerCase().trim() : a.name.toLowerCase().trim()
         const bName = (!noDexNums && (b.displayName === undefined)) ? b.natDexNum : (b.displayName !== undefined && b.displayName !== '') ? b.displayName.toLowerCase().trim() : b.name.toLowerCase().trim()
-        // console.log(aName)
         const aRef = (!noDexNums && (a.displayName === undefined)) ? dexNumOrderRef[identifier.indexOf(aName)].order : listOrderRef[formattedNames.indexOf(aName)].order
         const bRef = (!noDexNums && (b.displayName === undefined)) ? dexNumOrderRef[identifier.indexOf(bName)].order : listOrderRef[formattedNames.indexOf(bName)].order
+        
         if (aRef < bRef) {
             return -1
         } else if (aRef > bRef) {

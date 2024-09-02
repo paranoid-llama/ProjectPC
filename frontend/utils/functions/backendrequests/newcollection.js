@@ -1,5 +1,5 @@
 import handleApiResponse from "./handleapiresponse"
-const backendurl = import.meta.env.VITE_BACKEND_URL
+const backendurl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000'
 
 const createNewCollection = async(newCollectionInfo, type) => {
     const collectionIdRes = await fetch(`${backendurl}/collections/new`, {

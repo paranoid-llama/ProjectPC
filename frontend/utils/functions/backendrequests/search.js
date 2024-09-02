@@ -1,5 +1,5 @@
 import handleApiResponse from "./handleapiresponse"
-const backendurl = import.meta.env.VITE_BACKEND_URL
+const backendurl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000'
 
 const searchDB = async(searchType, query, pageNum=undefined) => {
     const skipModifier = pageNum === undefined ? '' : `&skip=${(pageNum-1)*10}`
