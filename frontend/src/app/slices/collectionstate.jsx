@@ -7,7 +7,7 @@ import displayOnHandByPokemon from "../../../utils/functions/display/displayonha
 import { filterList } from "../../../utils/functions/sortfilterfunctions/filterfunctions";
 import { changeList } from "./editmode";
 
-const backendurl = import.meta.env.VITE_BACKEND_URL
+const backendurl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000'
 
 export const fetchCollectionData = createAsyncThunk('collection/fetchCollectionStatus', async(colId) => {
     const response = await fetch(`${backendurl}/collections/${colId}`).then(res => res.json())

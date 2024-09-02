@@ -29,7 +29,7 @@ const collectionReducers = {
             delete state.collection[idx].balls[ball][tagType]
             return state
         }
-        if (state[idx].balls[ball][otherTag] !== undefined) {
+        if (state.collection[idx].balls[ball][otherTag] !== undefined) {
             delete state.collection[idx].balls[ball][otherTag]
         }
         state.collection[idx].balls[ball][tagType] = true
