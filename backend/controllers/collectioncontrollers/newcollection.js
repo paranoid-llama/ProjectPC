@@ -9,6 +9,14 @@ dotenv.config()
 
 const APIKEY = process.env.API_KEY
 
+const importException = (res) => {
+    const exception = new Error()
+    exception.name = 'Server Error'
+    exception.message = `There was an error with the import and we could not receive data from google sheets.`
+    exception.status = 500
+    return res.status(500).send(exception)
+} 
+
 export async function createNewCollection(req, res) {
     const {newCollectionInfo, type} = req.body
     //type refers to 'aprimon', 'livingdex', etc. useful for when newer types of collection are supported
@@ -71,21 +79,33 @@ export async function importCollectionFromSheets(req, res) {
         headers: {
             "Content-Type": "application/json"
         },
-    }).then((data) => data.json())
+    }).then(async(data) => {
+        if (!data.ok) {
+           return importException(res)
+        } else return await data.json()
+    })
 
     const ballData = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values:batchGet?key=${APIKEY}&majorDimension=ROWS&valueRenderOption=FORMULA&${balls.range}`, {
         method: 'GET',
         headers: {
             "Content-Type": "application/json"
         },
-    }).then((data) => data.json())
+    }).then(async(data) => {
+        if (!data.ok) {
+           return importException(res)
+        } else return await data.json()
+    })
 
     const colorData = (typeof HA === 'object' || !noEMColorImport) && await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}?key=${APIKEY}&${balls.range}&includeGridData=TRUE&fields=sheets.data.rowData.values.userEnteredFormat(backgroundColor)`, {
         method: 'GET',
         headers: {
             "Content-Type": "application/json"
         },
-    }).then((data) => data.json())
+    }).then(async(data) => {
+        if (!data.ok) {
+           return importException(res)
+        } else return await data.json()
+    })
 
     if (data.error !== undefined) {
         return res.json(data)
