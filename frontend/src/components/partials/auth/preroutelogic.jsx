@@ -17,10 +17,20 @@ export default function PreRouteLogic({logicType, Component}) {
     const {handleError} = useContext(ErrorContext)
     const cantBeLoggedIn = logicType === 'no-logged-in-user'
     const forgotPwTokenCheck = logicType === 'forgot-password-verify-token'
+    const siteOwnerOnly = logicType === 'admin-route'
 
     const errorOccurred = cantBeLoggedIn ? userData.loggedIn : false
     
     useEffect(() => {
+        if (siteOwnerOnly) {
+            const deniedAccess = !userData.loggedIn || (userData.loggedIn && userData.user.accountType !== 'owner')
+            if (deniedAccess) {
+                const redirect = '/'
+                const errorMessage = "You do not have access to this page!"
+                addAlert({severity: 'error', timeout: 5, message: errorMessage})
+                navigate(redirect)
+            }
+        }
         if (forgotPwTokenCheck) {
             const isLoggedIn = userData.loggedIn 
             if (isLoggedIn) {

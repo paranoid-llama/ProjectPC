@@ -78,7 +78,7 @@ export default function ShowCollectionList({collection, isCollectionOwner, style
 
     const setBallCols = () => {
         const cols = []
-        const ballOrder = userData.loggedIn ? userData.user.settings.display.ballOrder.filter(b => ballScopeDisplay.includes(b)) : ballScopeDisplay
+        const ballOrder = userData.loggedIn ? userData.user.settings.display.ballOrder.filter(b => ballScopeDisplay.includes(b)) : apriballs.filter(b => ballScopeDisplay.includes(b))
         ballOrder.forEach(ball => {
             cols.push({
                 label: capitalizeFirstLetter(ball),

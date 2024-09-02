@@ -9,6 +9,27 @@ export default function Announcements({}) {
 
     return (
         <InfoWrapper title='Announcements' wrapperSx={{...theme.components.box.fullCenterCol, justifyContent: 'start'}}>
+            <Box sx={{...theme.components.box.fullCenterCol, width: '100%', height: '320px', mb: 2}}>
+                <Box sx={{...theme.components.box.fullCenterCol, width: '100%', height: '320px', maxWidth: '800px', position: 'relative', border: `1px solid ${theme.palette.color1.dark}`, backgroundColor: hexToRgba(theme.palette.color1.main, 0.9), borderRadius: '10px'}}>
+                    <Box sx={{...theme.components.box.fullCenterCol, alignItems: 'start', height: '100%', justifyContent: 'start', width: '100%', ml: 4, mt: 3}}>
+                    <Typography sx={{fontSize: '36px', color: 'white', fontWeight: 700}}>Post-Launch Update</Typography>
+                    <Typography sx={{fontSize: '14px', color: 'white', textIndent: '30px', textAlign: 'left', width: '95%'}}>
+                        Thank you guys for joining the site! I just wanted to post a quick update about importing collections from google sheets. 
+                        I have found there were issues when users have tried to do so. I am aware of them and have made some small fixes to some of them.
+                        There might be more issues with importing collections, so I apologize for the inconvenience!
+                    </Typography>
+                    <Typography sx={{fontSize: '14px', color: 'white', textIndent: '30px', textAlign: 'left', width: '95%', mt: 1}}>
+                        In order to be able to help, I changed the Contact Us page so you can message me directly from there! I encourage anyone experiencing problems to 
+                        send a message through there, and I will respond to your user through the website. If you're looking specifically for help on importing, it would help if you sent
+                        more detailed information on the data you filled out on the form, the error that shows up and, if you're okay with it, a link to your sheet. Feel free to offer overall thoughts
+                        and suggestions through there as well!
+                    </Typography>
+                    <Box sx={{...theme.components.box.fullCenterRow, justifyContent: 'start', width: '95%', mt: 0}}>
+                        <Button sx={{fontSize: '14px', color: theme.palette.color3.main, ml: 3}} onClick={() => navigate('/info/contact-us')}>Contact Us</Button>
+                    </Box>
+                    </Box>
+                </Box>
+            </Box>
             <Box sx={{...theme.components.box.fullCenterCol, width: '100%', height: '300px', maxWidth: '800px', position: 'relative', border: `1px solid ${theme.palette.color1.dark}`, backgroundColor: hexToRgba(theme.palette.color1.main, 0.9), borderRadius: '10px'}}>
                 <Box sx={{...theme.components.box.fullCenterCol, alignItems: 'start', height: '100%', justifyContent: 'start', width: '100%', ml: 4, mt: 2}}>
                 <Typography sx={{fontSize: '36px', color: 'white', fontWeight: 700}}>Version 1.0 Launch</Typography>

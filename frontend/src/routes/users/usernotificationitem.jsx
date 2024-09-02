@@ -8,7 +8,7 @@ import ImgData from '../../components/collectiontable/tabledata/imgdata'
 export default function UserNotificationItem({notiType, notiTradeData, notiTitle, notiMessage, unread, onClickFunc}) {
     const theme = useTheme()
     const isTradeNoti = notiType.includes('trade-offer')
-    const typeDisplay = isTradeNoti ? '[TRADE]' : '[SYSTEM]' 
+    const typeDisplay = isTradeNoti ? '[TRADE]' : notiType === 'system' ?  '[SYSTEM]' : '[UPDATE]'
 
     const genDisplay1 = (isTradeNoti && notiTradeData.tradeGen.includes('-')) && notiTradeData.tradeGen.slice(0, notiTradeData.tradeGen.indexOf('-'))
     const genDisplay2 = (isTradeNoti && notiTradeData.tradeGen.includes('-')) && notiTradeData.tradeGen.slice(notiTradeData.tradeGen.indexOf('-')+1)

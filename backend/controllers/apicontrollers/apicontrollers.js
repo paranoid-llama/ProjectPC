@@ -4,15 +4,26 @@ import dotenv from 'dotenv'
 import bcrypt from 'bcrypt'
 dotenv.config()
 import { sendForgotPasswordEmail } from '../../emails/gmailSender.js';
+import { transporter } from '../../emails/gmailSender.js'
+
+const createMail = (recipientEmail, subject, html) => {
+    return {
+        from: 'pokellections.app@gmail.com',
+        to: recipientEmail,
+        subject,
+        html
+    }
+};
 
 const jwtSecret = process.env.JWT_SECRET
+const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173'
 
 export async function getSession(req, res) {
     const noUser = req.session === undefined || req.session.passport === undefined
     if (noUser) {
         res.json({})
     } else {
-        const userData = await User.findById(req.session.passport.user).lean().populate({path: 'collections', select: 'type gen -owner'}).select('username collections notifications.unread settings.privacy.blockedUsers settings.display').exec()
+        const userData = await User.findById(req.session.passport.user).lean().populate({path: 'collections', select: 'type gen -owner'}).select('username accountType collections notifications.unread settings.privacy.blockedUsers settings.display').exec()
         res.json(userData)
     }
 }
@@ -100,4 +111,37 @@ export async function resetPasswordWithJwt(req, res) {
             handleChangePassword(email)
         }
     })
+}
+
+export async function sendEmailToLlama(req, res) {
+    const {reason, subject, text, username} = req.body
+
+    const emailSubject = (!reason && !subject) ? 'User Message' : !reason ? subject : !subject ? `${reason} User Message` : subject
+
+    const emailOptions = createMail('llama.pokellections@gmail.com', emailSubject, 
+        `A user has send you a message. Reason: ${!reason ? 'unknown' : reason} 
+        <br>${!username ? 'The user is anonymous' : `User: ${username}`}</br>
+        <br>Text content:</br>
+        <br>${text}</br>
+        <br>Please do not reply to this message. <a href=${frontendUrl}/admin/send-notifications>Click here to respond if wanted.</a></br>`
+    )
+
+    const handleEmailResponse = (sent) => {
+        if (sent) {
+            res.json({error: false})
+        }
+        if (!sent) {
+            res.json({error: true})
+        }
+    }
+
+    transporter.sendMail(emailOptions, (error, info) => {
+        let val=undefined
+        if (error) {
+          val=false;
+        } else {
+          val=true;
+        }
+        handleEmailResponse(val)
+    }); 
 }

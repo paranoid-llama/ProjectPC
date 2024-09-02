@@ -31,6 +31,18 @@ const isLoggedIn = (req, res, next) => {
     next()
 }
 
+const isSiteOwner = async(req, res, next) => {
+    const isSiteOwner = req.user !== undefined && req.user.accountType === 'owner'
+    if (!isSiteOwner) {
+        const exception = new Error()
+        exception.name = 'Forbidden'
+        exception.message = "You aren't allowed to perform this action!"
+        exception.status = 403
+        return res.status(403).send(exception)
+    }
+    next()
+}
+
 const isCollectionOwner = async(req, res, next) => {
     const { id } = req.params
     const collection = await Collection.findById(id)
@@ -248,4 +260,15 @@ const canRespondToTrade = async(req, res, next) => {
     next()
 }
 
-export {initializePassportStrategy, isLoggedIn, isCollectionOwner, isTheUser, canOfferTrade, canRespondToTrade, isValidId, isValidOnHandId, isValidUsername, tradeExists}
+export {initializePassportStrategy, 
+    isLoggedIn, 
+    isSiteOwner,
+    isCollectionOwner, 
+    isTheUser, 
+    canOfferTrade, 
+    canRespondToTrade, 
+    isValidId, 
+    isValidOnHandId, 
+    isValidUsername, 
+    tradeExists
+}

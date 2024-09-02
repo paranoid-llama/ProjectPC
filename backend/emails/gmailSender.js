@@ -3,9 +3,9 @@ import dotenv from 'dotenv'
 
 dotenv.config()
 
-const frontendURL = process.env.FRONTEND_URL || 'http://localhost:5173/'
+const frontendURL = process.env.FRONTEND_URL || 'http://localhost:5173'
 
-const transporter = nodemailer.createTransport({
+export const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
     user: 'pokellections.app@gmail.com',

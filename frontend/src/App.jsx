@@ -68,7 +68,7 @@ import ResetPassword from './routes/resetpassword'
 import Announcements from './routes/announcements'
 import { fetchCollectionData } from './app/slices/collectionstate'
 import { ShowCollectionSkeleton, ShowUserSkeleton, ShowTradeSkeleton, UserNotificationsTradesSkeleton, UserSettingsSkeleton, NewTradeOfferSkeleton } from './components/partials/skeletons/routeskeletons'
-
+import SendMessagesPage from './routes/admin/sendmessagespage'
 
 //can add a bit of debounce by adding number parameter in case the event causes performance issues
 resizeEvent(store)
@@ -374,6 +374,10 @@ function Router() {
             />,
           loader: userLoader,
           id: 'userSettings',
+        },
+        {
+          path: '/admin/send-notifications',
+          element: <PreRouteLogic logicType='admin-route' Component={SendMessagesPage} />
         },
         {
           path: "*",

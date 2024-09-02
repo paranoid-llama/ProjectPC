@@ -42,8 +42,8 @@ export default function UserNotifications({userData}) {
                             <Typography>Filter by Notification Type</Typography>
                             <ToggleButtonGroup value={routeState.notificationType} exclusive onChange={(e, newVal) => setRouteState({...routeState, notificationType: newVal, pagination: 1, viewNotification: ''})}>
                                 <ToggleButton value='trade' sx={{paddingY: 0}}>Trade</ToggleButton>
-                                <ToggleButton value='site' sx={{paddingY: 0}}>System Message</ToggleButton>
-                                <ToggleButton value='update' sx={{paddingY: 0}}>Site Update</ToggleButton>
+                                <ToggleButton value='system' sx={{paddingY: 0}}>System Message</ToggleButton>
+                                <ToggleButton value='site update' sx={{paddingY: 0}}>Site Update</ToggleButton>
                             </ToggleButtonGroup>
                         </Box>
                         <Box sx={{...theme.components.box.fullCenterCol, width: '40%', height: '100%'}}>
@@ -100,7 +100,7 @@ export default function UserNotifications({userData}) {
                         </> : 
                         <>
                         <Box sx={{height: '580px', width: '80%', ...theme.components.box.fullCenterCol, justifyContent: 'start', flexDirection: 'column', mt: 1}}>
-                            <Box sx={{...theme.components.box.fullCenterCol, height: '85%', justifyContent: 'start', padding: 1, paddingX: 2, backgroundColor: hexToRgba(theme.palette.color1.main, 0.9), color: 'white', borderRadius: '15px', border: `2px solid ${theme.palette.color1.main}`}}>
+                            <Box sx={{...theme.components.box.fullCenterCol, height: '85%', width: '100%', justifyContent: 'start', padding: 1, paddingX: 2, backgroundColor: hexToRgba(theme.palette.color1.main, 0.9), color: 'white', borderRadius: '15px', border: `2px solid ${theme.palette.color1.main}`}}>
                                 <Box sx={{...theme.components.box.fullCenterRow, justifyContent: 'start', height: '10%', width: '100%', position: 'relative', borderBottom: `4px solid ${theme.palette.color1.main}`}}>
                                     <Typography sx={{fontWeight: 700, fontSize: '24px'}}>{viewNotificationDetails.title}</Typography>
                                     <Typography sx={{fontSize: '14px', position: 'absolute', right: '0px', top: '0px'}}>{viewNotificationDetails.type === 'system' ? '[SYSTEM]' : '[UPDATE]'}</Typography>
@@ -112,6 +112,11 @@ export default function UserNotifications({userData}) {
                             <Box sx={{...theme.components.box.fullCenterCol, height: '10%', width: '20%', position: 'absolute', left: '0px', bottom: '0px'}}>
                                 <Button sx={{fontSize: '12px'}} onClick={() => {setRouteState({...routeState, viewNotification: ''})}}>See all notifications</Button>
                             </Box>
+                            {viewNotificationDetails.type === 'update' &&
+                            <Box sx={{...theme.components.box.fullCenterCol, height: '10%', width: '20%', position: 'absolute', left: '0px', right: '0px'}}>
+                                <Button sx={{fontSize: '12px'}} onClick={() => {navigate('/announcements')}}>See announcements</Button>
+                            </Box>
+                            }
                         </Box>
                         </>
                         }

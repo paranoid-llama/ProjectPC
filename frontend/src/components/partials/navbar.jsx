@@ -229,9 +229,10 @@ export default function NavBar() {
                                 const evenOption = idx % 2 === 0
                                 const isCollectionOption = o === 'Collections'
                                 const isNotifications = o === 'Notifications'
+                                const disabledNotifications = isNotifications && location === `/users/${userData.user.username}/notifications`
                                 const linkTo = o === 'Notifications' ? `/users/${userData.user.username}/notifications` : o === 'Profile' ? `/users/${userData.user.username}` : o === 'Settings' ? `/users/${userData.user.username}/settings` : o === 'Logout' ? `/` : o === 'Trades' ? `/users/${userData.user.username}/trades` : null
                                 const backgroundColorStyle = evenOption ? {backgroundColor: theme.palette.color1.main} : {backgroundColor: theme.palette.color1.darker}
-                                const hoverStyle = evenOption ? {'&:hover': {backgroundColor: hexToRgba(theme.palette.color1.main, 0.5), cursor: 'pointer'}} : {'&:hover': {backgroundColor: hexToRgba(theme.palette.color1.darker, 0.3), cursor: 'pointer'}}
+                                const hoverStyle = disabledNotifications ? {} : evenOption ? {'&:hover': {backgroundColor: hexToRgba(theme.palette.color1.main, 0.5), cursor: 'pointer'}} : {'&:hover': {backgroundColor: hexToRgba(theme.palette.color1.darker, 0.3), cursor: 'pointer'}}
                                 return (
                                     <Box 
                                         sx={{
@@ -246,9 +247,9 @@ export default function NavBar() {
                                         key={`user-${o}-option`}
                                         onMouseEnter={isCollectionOption ? () => toggleCollectionArea(true) : null}
                                         onMouseLeave={isCollectionOption ? () => toggleCollectionArea(false) : null}
-                                        onClick={(isCollectionOption || (o === 'Logout' && loggingInOrOut)) ? null : () => navigateUserOption(o === 'Logout', linkTo)}
+                                        onClick={(isCollectionOption || (o === 'Logout' && loggingInOrOut)) || (o === 'Notifications' && location === `/users/${userData.user.username}/notifications`) ? null : () => navigateUserOption(o === 'Logout', linkTo)}
                                     >
-                                        <Typography sx={{width: '100%', textAlign: 'center', position: 'relative'}}>
+                                        <Typography sx={{width: '100%', textAlign: 'center', position: 'relative', opacity: location === `/users/${userData.user.username}/notifications` && o === 'Notifications' ? 0.5 : 1}}>
                                             {isCollectionOption && 
                                                 <ArrowBack sx={{position: 'absolute', left: '0%', width: '16px'}}/>
                                             }
@@ -256,7 +257,7 @@ export default function NavBar() {
                                             
                                         </Typography>
                                         {(isNotifications && unreadNotificationsAmount > 0) && 
-                                            <Box sx={{width: '20px', height: '20px', borderRadius: '50%', position: 'absolute', bottom: '20%', right: '75px', backgroundColor: 'rgb(250, 53, 69)'}}>
+                                            <Box sx={{width: '20px', height: '20px', borderRadius: '50%', position: 'absolute', bottom: '20%', right: '75px', backgroundColor: 'rgb(250, 53, 69)', opacity: location === `/users/${userData.user.username}/notifications` ? 0.5 : 1}}>
                                                 <Typography sx={{fontSize: '14px', width: '19px', fontWeight: 700, color: 'white', position: 'absolute', left: '0px', top: '0px', textAlign: 'center'}}>{unreadNotificationsAmount}</Typography>
                                             </Box>
                                         }

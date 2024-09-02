@@ -1,9 +1,10 @@
 import { capitalizeFirstLetter } from "../../../../utils/functions/misc"
 import { TableCell, Typography, TableRow, Box, Tooltip } from "@mui/material"
+import { apriballs } from "../../../../common/infoconstants/miscconstants.mjs"
 
 const setBallCols = (userData, ballScopeDisplay) => {
     const cols = []
-    const ballOrder = userData.loggedIn ? userData.user.settings.display.ballOrder.filter(b => ballScopeDisplay.includes(b)) : ballScopeDisplay
+    const ballOrder = userData.loggedIn ? userData.user.settings.display.ballOrder.filter(b => ballScopeDisplay.includes(b)) : apriballs.filter(b => ballScopeDisplay.includes(b))
     ballOrder.forEach(ball => {
         cols.push({
             label: capitalizeFirstLetter(ball),
