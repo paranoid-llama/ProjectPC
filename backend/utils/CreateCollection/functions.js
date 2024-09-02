@@ -210,8 +210,9 @@ function removeBallsOutsideScope(pokemon, ballScope, excludedCombos, importedBal
     if (Array.isArray(newPokemon)) {
         newPokemon.forEach((poke, idx) => {
             const hasExcludedCombos = excludedCombos[poke.name] !== undefined
+            const particularPokemonHasNoBallInfo = pokemon === undefined || importedBallInfo[idx] === undefined || (importedBallInfo[idx] !== undefined && newPokemon !== undefined && importedBallInfo[idx].name !==  newPokemon[idx].name)
             Object.keys(poke.balls).forEach(ball => {
-                if (!noImportedBallInfo) {
+                if (!noImportedBallInfo && !particularPokemonHasNoBallInfo) {
                     newPokemon[idx].balls[ball] = importedBallInfo.filter(pokeInfo => pokeInfo.name === poke.name)[0].balls[ball]
                 }
                 if (!ballScope.includes(ball)) {
