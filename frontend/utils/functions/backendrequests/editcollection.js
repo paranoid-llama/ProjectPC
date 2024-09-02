@@ -35,7 +35,9 @@ const usePutRequest = async(newOwnedPokemonArr=undefined, newOnhand=undefined, c
 
 //     return res
 // }
-// const useTagRequest = () => {}
+
+//this function is no longer used.
+const useTagRequest = () => {}
 // const useTagRequest = async(tag, activeTag, identifiers, collectionID, userID) => {
 //     const res = await fetch(`${backendurl}/collections/${collectionID}`, {
 //         method: 'PUT',
