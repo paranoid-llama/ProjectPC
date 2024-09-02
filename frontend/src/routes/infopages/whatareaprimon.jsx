@@ -1,12 +1,14 @@
 import {Box, Typography, useTheme, Button} from '@mui/material'
 import { apriballLiterals, specialBalls } from '../../../common/infoconstants/miscconstants.mjs'
 import { useRouteLoaderData } from 'react-router'
+import { useNavigate } from 'react-router'
 import ImgData from '../../components/collectiontable/tabledata/imgdata'
 import InfoWrapper from './infowrapper'
 import hexToRgba from 'hex-to-rgba'
 
 export default function WhatAreAprimon({}) {
     const theme = useTheme()
+    const navigate = useNavigate()
     const userData = useRouteLoaderData('root')
     const Highlighted = ({children}) => {
         return (
