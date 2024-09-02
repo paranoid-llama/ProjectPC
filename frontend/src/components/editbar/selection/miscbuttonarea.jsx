@@ -17,8 +17,6 @@ export default function MiscButtonArea({currentView, collectionID, pokemonInfo={
         setOnHandDeleteConfirm(false)
     }
 
-    console.log(pokemonInfo)
-
     const handleEditTags = (tagType, idx, ball) => {
         dispatch(setTags({tagType, idx, ball}))
         // useTagRequest(tagType, pokemonInfo.activeTag, {pokename: pokemonInfo.name, ballname: ball}, collectionID)
