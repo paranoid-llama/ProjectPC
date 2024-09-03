@@ -29,12 +29,13 @@ export default function ShowCollectionTitle({collectionInfo, collectionID, optio
     const tradePreferencesState = useSelector((state) => state.collectionState.options.tradePreferences)
     const tradePreferences = (isEditMode) ? tradePreferencesState : options.tradePreferences
     const ownerTradesDisabled = collectionInfo.owner.settings.privacy.disabledTrades
+    const collectionTradesDisabled = tradePreferences.status === 'closed'
     const itemsState = tradePreferences.items
     const collectionType = gen8Collection ? `${collectionInfo.gen.toUpperCase()} Aprimon Collection` : `Gen ${collectionInfo.gen} Aprimon Collection`
     const formattedTradePreferences = [tradePreferenceDisplay.onhandOnly[tradePreferences.onhandOnly], tradePreferenceDisplay.size[tradePreferences.size], tradePreferenceDisplay.items[tradePreferences.items]].filter(display => display !== undefined)
     
     const tradeableCollections = (userData !== undefined && collectionInfo.owner._id !== userData._id) && userData.collections.filter(col => checkIfCanTrade(collectionInfo, col))
-    const canInitiateTrade = (userData !== undefined && collectionInfo.owner._id !== userData._id) && tradeableCollections.length !== 0 
+    const canInitiateTrade = ((userData !== undefined && collectionInfo.owner._id !== userData._id) && tradeableCollections.length !== 0) && !owner
     const loggedInUserIsBlockedByOwner = userData !== undefined && collectionInfo.owner._id !== userData._id && collectionInfo.owner.settings.privacy.blockedUsers.includes(userData.username)
 
     useEffect(() => {
@@ -153,8 +154,8 @@ export default function ShowCollectionTitle({collectionInfo, collectionID, optio
                     {canInitiateTrade && 
                         <>
                         {
-                        (loggedInUserIsBlockedByOwner || ownerTradesDisabled) ? 
-                        <Tooltip title={ownerTradesDisabled ? 'This user has trades disabled at the moment!' : 'You were blocked by this user, and cannot initiate a trade!'}>
+                        (loggedInUserIsBlockedByOwner || ownerTradesDisabled || collectionTradesDisabled) ? 
+                        <Tooltip title={ownerTradesDisabled ? 'This user has trades disabled at the moment!' : collectionTradesDisabled ? 'This collection is not accepting trade offers' : 'You were blocked by this user, and cannot initiate a trade!'}>
                             <Typography sx={{':hover': {cursor: 'pointer'}, width: '40%', height: '18px', paddingTop: '6px', fontSize: '11px', color: 'grey', textAlign: 'center'}}>OFFER TRADE</Typography>
                         </Tooltip> :
                         <Button sx={{width: '40%', fontSize: '11px'}} onClick={() => navigate(`/collections/${collectionID}/trade`)}>Offer Trade</Button>
@@ -170,7 +171,7 @@ export default function ShowCollectionTitle({collectionInfo, collectionID, optio
                 {displayScreen === 'rates' && <RateDisplay rates={tradePreferences.rates} owner={collectionInfo.owner.username} collectionGen={collectionInfo.gen}/>}
                 {displayScreen === 'items' && <ItemDisplay collectionGen={collectionInfo.gen} itemTradeStatus={tradePreferences.items} lfItems={tradePreferences.lfItems} ftItems={tradePreferences.ftItems}/>}
             </Box>
-            {canInitiateTrade && <ComparisonMain open={comparisonModal} toggleModal={toggleComparisonModal} tradeableCollections={tradeableCollections} collectionData={collectionInfo}/>}
+            {canInitiateTrade && <ComparisonMain open={comparisonModal} toggleModal={toggleComparisonModal} tradeableCollections={tradeableCollections} collectionData={collectionInfo} userData={userData}/>}
         </Box>
     )
 }

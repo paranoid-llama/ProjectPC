@@ -9,7 +9,7 @@ import ComparisonDisplay from './comparisondisplay'
 import startComparison from '../../../../utils/functions/comparecollections/componentfunction'
 
 
-export default function ComparisonMain({open, toggleModal, tradeableCollections, collectionData, isTradePage=false, externalSelectedCol=undefined, externalChangeSelectedCol=undefined, externalComparisonData=undefined, extSetComparisonData=undefined, extSelectedColData=undefined, extCantChangeSelected=false}) {
+export default function ComparisonMain({open, toggleModal, tradeableCollections, collectionData, userData, isTradePage=false, externalSelectedCol=undefined, externalChangeSelectedCol=undefined, externalComparisonData=undefined, extSetComparisonData=undefined, extSelectedColData=undefined, extCantChangeSelected=false}) {
     const theme = useTheme()
     const {handleError} = useContext(ErrorContext)
     const [comparisonData, setComparisonData] = useState({screen: 'selection', selectedCol: tradeableCollections[0]._id, optionType: 'basic', options: {userList: {ha: true, em: false, onhand: false}, ownerList: {ha: true, em: false, onhand: false}}, advancedOptions: {equalizeBabyAdults: false, legendary: false, nonBreedable: false, evolvedRegional: false}, pendingTransition: false})
@@ -120,6 +120,7 @@ export default function ComparisonMain({open, toggleModal, tradeableCollections,
                             ownerBlockedUsers={collectionData.owner.settings.privacy.blockedUsers}
                             isTradePage={isTradePage}
                             closeModal={toggleModal}
+                            userData={userData}
                         />
                     }
                 </Box>

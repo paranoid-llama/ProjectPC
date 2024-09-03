@@ -9,7 +9,7 @@ import { compareDisplayGridComponents, listCompareDisplayIndividual, listCompare
 
 
 
-export default function ComparisonDisplay({userCollectionDisplay, userColId, ownerCollectionDisplay, ownerColId, comparisonData, ownerUsername, oneHomeCollection, goBackScreen, ownerTradeStatus, ownerBlockedUsers, ownerTradesDisabled, isTradePage, closeModal}) {
+export default function ComparisonDisplay({userData, userCollectionDisplay, userColId, ownerCollectionDisplay, ownerColId, comparisonData, ownerUsername, oneHomeCollection, goBackScreen, ownerTradeStatus, ownerBlockedUsers, ownerTradesDisabled, isTradePage, closeModal}) {
     const theme = useTheme()
     const navigate = useNavigate()
     const loggedInUserData = useRouteLoaderData("root")
@@ -27,7 +27,7 @@ export default function ComparisonDisplay({userCollectionDisplay, userColId, own
     const ListComponent = displayType === 'byIndividual' ? VirtuosoGrid : Virtuoso
     const aprimonCount = comparisonData[list].map(p => p.balls.filter(ballData => ballData.onhandId === undefined)).flat()
     const onhandCount = comparisonData[list].map(p => p.balls.filter(ballData => ballData.onhandId !== undefined)).flat()
-    const canGoNextScreen = (isTradePage || (canOfferAmount !== 0 || canReceiveAmount !== 0) || ownerTradeStatus !== 'open')
+    const canGoNextScreen = (isTradePage || ((canOfferAmount !== 0 || canReceiveAmount !== 0) && ownerTradeStatus === 'open' && !ownerBlockedUsers.includes(userData.username) && !ownerTradesDisabled))
     const userNameDisplaySettings = loggedInUserData.loggedIn ? loggedInUserData.user.settings.display.pokemonNames : undefined
 
     const navigateOpts = {
@@ -80,7 +80,7 @@ export default function ComparisonDisplay({userCollectionDisplay, userColId, own
             <Box sx={{...theme.components.box.fullCenterRow, height: '60%', alignItems: 'end'}}>
                 <Button variant='contained' sx={{mr: 10}} onClick={goBackScreen}>Compare another collection</Button>
                 {(!canGoNextScreen) ?
-                <Tooltip title={ownerTradeStatus !== 'open' ? 'This collection is not accepting trade offers' : 'One side cannot offer anything!'}>
+                <Tooltip title={ownerTradeStatus !== 'open' ? 'This collection is not accepting trade offers' : (canOfferAmount !== 0 || canReceiveAmount !== 0) ? 'One side cannot offer anything!' : ownerTradesDisabled ? 'This user has trades disabled at the moment!' : ownerBlockedUsers.includes(userData.username) && 'You were blocked by this user, and cannot initiate a trade!'}>
                     <Box sx={{'&:hover': {cursor: 'pointer'}}}>
                     <Button variant='contained' sx={{'&.Mui-disabled': {opacity: 0.5, backgroundColor: theme.palette.primary.main, color: 'white'}}} disabled>Offer Trade</Button>
                     </Box>
