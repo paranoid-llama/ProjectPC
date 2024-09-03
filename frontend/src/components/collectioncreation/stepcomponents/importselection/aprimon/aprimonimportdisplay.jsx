@@ -8,7 +8,7 @@ export default function AprimonImportDisplay({data, numOfBalls}) {
     const badRanges = data.rangeIssue !== undefined 
     const missingInfo = data.missingInfo !== undefined
     const ballColIssue = data.ballColIssue !== undefined
-    const backendError = data.status !== undefined && !apiCallError && !badRanges && !missingInfo && !ballColIssue 
+    const backendError = data.status !== undefined && !apiCallError && !badRanges && !missingInfo && !ballColIssue
 
     const setBallColIssue = (type) => {
         return (

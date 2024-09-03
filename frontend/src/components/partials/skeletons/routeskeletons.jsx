@@ -88,7 +88,7 @@ export function UserNotificationsTradesSkeleton({}) {
     return (
         <BodyWrapper sx={{display: 'flex', flexDirection: 'column', justifyContent: 'start', alignItems: 'center'}}>
             <Box sx={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', maxWidth: '1200px', width: '100%'}}>
-                <Box sx={{maxHeight: '150px', height: '10%', width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', justifyContent: 'start', mt: -2, pb: 0.5, borderBottom: '1px solid rgba(100,100,100, 0.5)'}}>
+                <Box sx={{maxHeight: '150px', height: '10%', width: '100%', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'start', mt: -2, pb: 0.5, borderBottom: '1px solid rgba(100,100,100, 0.5)'}}>
                     <Box sx={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'start', ml: 5, ...skeletonBg, height: '50px', width: '250px'}}></Box>
                 </Box>
                 <Box sx={{display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', height: '90%', width: '100%'}}>

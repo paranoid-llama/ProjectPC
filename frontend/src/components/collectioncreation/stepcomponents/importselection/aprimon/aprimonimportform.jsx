@@ -210,6 +210,7 @@ export default function AprimonImportForm({handleSubmit, isHomeCollection}) {
     const ballColOrderNoError = (error.ballOrder !== true && error.ballColFrom !== true && error.ballColFrom !== 'true' && error.ballColTo !== true && error.ballColTo !== 'true')
 
     const spreadSheetIdToolTip = 'Your spreadsheet ID is in the link: https://docs.google.com/spreadsheets/d/(SPREADSHEET_ID)/edit#gid=123456789 Make sure anyone with the link can view the spreadsheet!'
+    const sheetNameToolTip = 'The Sheet Name is the name of the particular sheet within the entire spreadsheet, NOT the spreadsheet name. It is displayed on the bottom of the spreadsheet editor.'
     const rowSpanToolTip = 'The range of rows your collection encompasses. First value will be the first pokemon, and the second one will be the last pokemon. Ensure most of the imported fields spans this range!'
     const identifierToolTip = "These are used to associate data with a particular pokemon. National Dex # is not required, but you have to make sure all your pokemon are spelled correctly if you don't import it!"
     const haImportToolTip = "The data on whether or not a specific pokemon/ball combo you own has their hidden ability as well. You can leave this blank and it will be assumed that they all have their hidden abilities (if applicable)"
@@ -251,6 +252,13 @@ export default function AprimonImportForm({handleSubmit, isHomeCollection}) {
                                         value={importData.sheetName}
                                         onChange={(e) => handleImportDataChange(e, 'sheetName')}
                                         FormHelperTextProps={formHelperTextProps}
+                                        InputProps={{
+                                            endAdornment: <InputAdornment position="end" sx={{':hover': {cursor: 'pointer'}}}>
+                                                            <CustomWidthTooltip title={sheetNameToolTip} arrow>
+                                                                <HelpIcon/>
+                                                            </CustomWidthTooltip> 
+                                                          </InputAdornment>
+                                        }}
                                         {...setErrorProps(error.sheetName)}
                                     />
                                 </Box>

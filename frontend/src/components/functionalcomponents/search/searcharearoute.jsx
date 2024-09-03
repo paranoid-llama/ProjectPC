@@ -33,7 +33,7 @@ export default function SearchAreaRoute({query, searchType, result, page, change
                         subType={collection.gen}
                         owner={collection.owner[0].username}
                         progress={collection.progress}
-                        percentProgress={percentProgress === 100 ? 99 : percentProgress}
+                        percentProgress={percentProgress}
                         collectionId={collection._id}
                     />
                 )

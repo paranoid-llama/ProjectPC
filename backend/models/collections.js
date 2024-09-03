@@ -295,8 +295,8 @@ collectionSchema.virtual('eggMoveInfo').get(function() {
 collectionSchema.post('findOneAndUpdate', async function(doc) {
     //logic for badges here. doc is the collection.
     if (doc) {
-        const colProg = getCollectionProgressPercent(doc) + getCollectionProgressPercent(doc, false)
         const user = await User.findById(doc.owner).populate({path: 'collections', select: 'ownedPokemon'})
+        const colProg = getCollectionProgressPercent(user.collections.filter(c => c._id.toString() === doc._id.toString())[0]) 
         const otherColProgs = user.collections.map(col => {return {_id: col._id, progress: getCollectionProgressPercent(col)}}).filter(col => col._id.toString() !== doc._id.toString()).map(col => col.progress)
         const badgeChange = checkBadgeMilestone(colProg, user.settings.profile.badges, otherColProgs)
         if (badgeChange === 'no-change') {return}

@@ -80,21 +80,47 @@ export async function importCollectionFromSheets(req, res) {
             headers: {
                 "Content-Type": "application/json"
             },
-        }).then(data => data.json())
+        }).then(async(data) => {
+            if (data.ok) {
+                return await data.json()
+            } else {
+                return null
+            }
+        })
 
         const ballData = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values:batchGet?key=${APIKEY}&majorDimension=ROWS&valueRenderOption=FORMULA&${balls.range}`, {
             method: 'GET',
             headers: {
                 "Content-Type": "application/json"
             },
-        }).then(data => data.json())
+        }).then(async(data) => {
+            if (data.ok) {
+                return await data.json()
+            } else {
+                return null
+            }
+        })
 
         const colorData = (typeof HA === 'object' || !noEMColorImport) && await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}?key=${APIKEY}&${balls.range}&includeGridData=TRUE&fields=sheets.data.rowData.values.userEnteredFormat(backgroundColor)`, {
             method: 'GET',
             headers: {
                 "Content-Type": "application/json"
             },
-        }).then(data => data.json())
+        }).then(async(data) => {
+            if (data.ok) {
+                return await data.json()
+            } else {
+                return null
+            }
+        })
+
+        if (!data || !ballData || ((typeof HA === 'object' || !noEMColorImport) && !colorData)) {
+            const exception = new Error()
+            exception.name = 'Sheets API Call Bad Request'
+            exception.message = `There was an error with the import and we could not receive data from google sheets. Double check that the ID, sheet name, row span, and ball range are correct!`
+            exception.status = 400
+            return res.status(400).send(exception)
+        }
 
         if (data.error !== undefined) {
             return res.json(data)
@@ -132,7 +158,6 @@ export async function importCollectionFromSheets(req, res) {
         
         res.json(newCollection)
     } catch (e) {
-        console.log(e)
         const exception = new Error()
         exception.name = 'Server Error'
         exception.message = `There was an error with the import and we could not receive data from google sheets.`
