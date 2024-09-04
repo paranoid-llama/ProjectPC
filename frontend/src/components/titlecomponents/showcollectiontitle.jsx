@@ -35,7 +35,7 @@ export default function ShowCollectionTitle({collectionInfo, collectionID, optio
     const formattedTradePreferences = [tradePreferenceDisplay.onhandOnly[tradePreferences.onhandOnly], tradePreferenceDisplay.size[tradePreferences.size], tradePreferenceDisplay.items[tradePreferences.items]].filter(display => display !== undefined)
     
     const tradeableCollections = (userData !== undefined && collectionInfo.owner._id !== userData._id) && userData.collections.filter(col => checkIfCanTrade(collectionInfo, col))
-    const canInitiateTrade = ((userData !== undefined && collectionInfo.owner._id !== userData._id) && tradeableCollections.length !== 0) && !owner
+    const canInitiateTrade = ((userData !== undefined && collectionInfo.owner._id !== userData._id) && tradeableCollections.length !== 0)
     const loggedInUserIsBlockedByOwner = userData !== undefined && collectionInfo.owner._id !== userData._id && collectionInfo.owner.settings.privacy.blockedUsers.includes(userData.username)
 
     useEffect(() => {
