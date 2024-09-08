@@ -4,6 +4,7 @@ import { getPossibleItems } from '../../../common/infoconstants/miscconstants.mj
 import ImgData from '../collectiontable/tabledata/imgdata'
 
 export default function ItemDisplay({collectionGen, itemTradeStatus, lfItems, ftItems}) {
+    console.log(ftItems)
     const startAtLf = itemTradeStatus === 'lf' || itemTradeStatus === 'lf/ft'
     const [itemType, setItemType] = useState(startAtLf ? 'lf' : 'ft')
     const changeItemType = (newVal) => {setItemType(newVal)}

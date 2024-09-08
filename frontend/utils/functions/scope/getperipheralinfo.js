@@ -31,7 +31,7 @@ const getScopePeripheralInfo = (modalState, groupKeys, formData, typeTotalMons) 
 
     const amountIncluded = totalMonsActiveSubGroupLength === formDataActiveSubGroupLength || 
         (interchangeableAltFormGroupActive && (
-            typeTotalMons.alternateForms.interchangeable.filter(mon => mon.imgLink.includes('-')).length === formData.alternateForms.interchangeable.filter(mon => mon.id.includes('-')).length)) ? 'All' :
+            typeTotalMons.alternateForms.interchangeable.filter(mon => !mon.imgLink.includes('-a') && !mon.imgLink.includes('-any')).length === formData.alternateForms.interchangeable.filter(mon => !mon.id.includes('-a') && !mon.id.includes('-any')).length)) ? 'All' :
         formDataActiveSubGroupLength === 0 ? 'None' : 'Some'
 
     return {groupTotal, activeSubGroupKey, hasSubGroups, groupInfo, babyAdultMonGroupActive, interchangeableAltFormGroupActive, 

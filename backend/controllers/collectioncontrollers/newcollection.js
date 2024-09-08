@@ -58,7 +58,7 @@ export async function importCollectionFromSheets(req, res) {
         const requiredFields = [{display: 'Sheet Name', formKey: 'sheetName'}, {display: 'Row Span From', formKey: 'rowSpanFrom'}, {display: 'Row Span To', formKey: 'rowSpanTo'}, {display: 'Names', formKey: 'nameCol'}, {display: 'Ball Column From', formKey: 'ballColFrom'}, {display: 'Ball Column To', formKey: 'ballColTo'}, {display: 'Ball Order', formKey: 'ballOrder'}]
         const missingFields = requiredFields.filter((field) => (rawRequiredFormData[field.formKey] === '' || rawRequiredFormData[field.formKey].length === 0)).map((missingField) => missingField.display)
         if (spreadsheetId === '') {
-            missingFields.unshift('Spreadsheet ID')
+            missingFields.unshift('Spreadsheet Link')
         }
         return res.json({missingInfo: true, missingFields})
     }
@@ -117,7 +117,7 @@ export async function importCollectionFromSheets(req, res) {
         if (!data || !ballData || ((typeof HA === 'object' || !noEMColorImport) && !colorData)) {
             const exception = new Error()
             exception.name = 'Sheets API Call Bad Request'
-            exception.message = `There was an error with the import and we could not receive data from google sheets. Double check that the ID, sheet name, row span, and ball range are correct!`
+            exception.message = `There was an error with the import and we could not receive data from google sheets. Double check that the link, sheet name, row span, and ball range are correct!`
             exception.status = 400
             return res.status(400).send(exception)
         }

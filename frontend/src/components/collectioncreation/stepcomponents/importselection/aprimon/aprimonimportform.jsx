@@ -141,8 +141,10 @@ export default function AprimonImportForm({handleSubmit, isHomeCollection}) {
             (formState.emImport.type.includes('color-coded') && formState.emImport.type.includes('column-info')) ? {colors: formState.emImport.colors.filter(color => color !== ''), cols: formState.emImport.cols.map((col) => col.toUpperCase())} :
             formState.emImport.type.includes('color-coded') ? {colors: formState.emImport.colors.filter(color => color !== '')} : 
             formState.emImport.type.includes('column-info') && {cols: formState.emImport.cols.map((col) => col.toUpperCase())}   
+        const extractedIdFromImportDataLink = importData.spreadsheetId.includes('docs.google.com') ? importData.spreadsheetId.slice(importData.spreadsheetId.indexOf('spreadsheets/d/')+15, importData.spreadsheetId.indexOf('/edit')) : importData.spreadsheetId
         const formattedImportData = {
             ...importData,
+            spreadsheetId: extractedIdFromImportDataLink,
             ballColSpan: {from: importData.ballColSpan.from.toUpperCase(), to: importData.ballColSpan.to.toUpperCase(), order: formState.ballOrder},
             haImport: {import: !untouchedHaImportFields, assumeAll: untouchedHaImportFields, ...haImportFields},
             emImport: {import: !untouchedEmImportFields, ...emImportFields}
@@ -209,7 +211,8 @@ export default function AprimonImportForm({handleSubmit, isHomeCollection}) {
 
     const ballColOrderNoError = (error.ballOrder !== true && error.ballColFrom !== true && error.ballColFrom !== 'true' && error.ballColTo !== true && error.ballColTo !== 'true')
 
-    const spreadSheetIdToolTip = 'Your spreadsheet ID is in the link: https://docs.google.com/spreadsheets/d/(SPREADSHEET_ID)/edit#gid=123456789 Make sure anyone with the link can view the spreadsheet!'
+    // const spreadSheetIdToolTip = 'Your spreadsheet ID is in the link: https://docs.google.com/spreadsheets/d/(SPREADSHEET_ID)/edit#gid=123456789 Make sure anyone with the link can view the spreadsheet!'
+    const spreadSheetIdToolTip = 'The link for your spreadsheet page, which looks like this: https://docs.google.com/spreadsheets/d/(SPREADSHEET_ID)/edit#gid=123456789 Make sure it is NOT the published spreadsheet link (it has to be the one from your edit page), and that anyone with the link can view the spreadsheet. '
     const sheetNameToolTip = 'The Sheet Name is the name of the particular sheet within the entire spreadsheet, NOT the spreadsheet name. It is displayed on the bottom of the spreadsheet editor.'
     const rowSpanToolTip = 'The range of rows your collection encompasses. First value will be the first pokemon, and the second one will be the last pokemon. Ensure most of the imported fields spans this range!'
     const identifierToolTip = "These are used to associate data with a particular pokemon. National Dex # is not required, but you have to make sure all your pokemon are spelled correctly if you don't import it!"
@@ -229,7 +232,7 @@ export default function AprimonImportForm({handleSubmit, isHomeCollection}) {
                             <TextField 
                                 fullWidth 
                                 size='small' 
-                                label='Spreadsheet ID'
+                                label='Spreadsheet Link'
                                 value={importData.spreadsheetId}
                                 onChange={(e) => handleImportDataChange(e, 'spreadsheetId')}
                                 InputProps={{

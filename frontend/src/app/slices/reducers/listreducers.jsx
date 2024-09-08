@@ -1,4 +1,5 @@
 import { sortOnHandList } from "../../../../common/sortingfunctions/onhandsorting.mjs"
+import getDefaultData from "../../../../utils/functions/defaultdata"
 
 //operations related to changing the values on a single pokemon in a collection, which is used to edit the row data.
 
@@ -46,6 +47,25 @@ const collectionReducers = {
             state.collection[idx].balls[ball].default = true
         }
         return state
+    },
+    setMultipleIsOwned: (state, action) => {
+        const {idx, ballDefault, globalDefault, possibleEggMoves} = action.payload
+        const currentTotalBallData = state.collection[idx].balls
+        const maxEMs = possibleEggMoves === undefined ? 0 : possibleEggMoves.length > 4 ? 4 : possibleEggMoves.length
+        const newBallData = {}
+        Object.keys(state.collection[idx].balls).forEach(b => {
+            const ballData = state.collection[idx].balls[b]
+            if (ballData.disabled || ballData.isOwned) {
+                newBallData[b] = ballData
+            } else {
+                const newBallParticularData = {...ballData, isOwned: true, highlyWanted: undefined, pending: undefined, ...getDefaultData(globalDefault, ballDefault, state.collection[idx].balls, maxEMs, possibleEggMoves, b)}
+                newBallData[b] = newBallParticularData
+            }
+        })
+        console.log(currentTotalBallData)
+        console.log(newBallData)
+        state.collection[idx].balls = newBallData
+        return state
     }
 }
 
@@ -53,6 +73,10 @@ const onhandReducers = {
     setBall: (state, action) => {
         const {idx, ball} = action.payload
         state.onhand[idx].ball = ball
+        state.listDisplay.onhand = state.listDisplay.onhand.map(p => {
+            if (p._id === state.onhand[idx]._id) {p.ball = ball}
+            return p 
+        })
         return state
     },
     setGender: (state, action) => {

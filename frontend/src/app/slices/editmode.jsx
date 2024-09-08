@@ -22,7 +22,7 @@ const editmode = createSlice({
             return newState
         },
         changeList: (state, action) => {
-            const newState = {...state, listType: action.payload, deleteOnHandMode: false, deletedOnHandIds: []}
+            const newState = {...state, listType: action.payload, deleteOnHandMode: false, deletedOnHandIds: [], setFullSetMode: false}
             return newState
         },
         toggleEditScreenState: (state) => {
@@ -63,7 +63,11 @@ const editmode = createSlice({
             const onhandId = action.payload
             const newOnHandIdsToDelete = state.deletedOnHandIds.includes(onhandId) ? state.deletedOnHandIds.filter(ohId => ohId !== onhandId) : [...state.deletedOnHandIds, onhandId]
             return {...state, deletedOnHandIds: newOnHandIdsToDelete}
-        }
+        },
+        // setCompleteSetMode: (state, action) => {
+        //     state.setFullSetMode = !state.setFullSetMode
+        //     return state
+        // }
     }
 })
 

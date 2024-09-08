@@ -7,11 +7,20 @@ export default function getDefaultData(globalDefault, ballDefault, pokemonBallDa
     if (!noBallDefault) {
         const specificPokemonData = {}
         if (addedBallData.isHA !== undefined) {
-            specificPokemonData.isHA = ballDefaultData.isHA
+            if (ballDefaultData.isHA === undefined) {
+                specificPokemonData.isHA = globalDefault.isHA
+            } else {
+                specificPokemonData.isHA = ballDefaultData.isHA
+            } 
         }
         if (addedBallData.emCount !== undefined) {
-            specificPokemonData.emCount = ballDefaultData.emCount
-            specificPokemonData.EMs = ballDefaultData.EMs
+            if (ballDefaultData.emCount === undefined) {
+                specificPokemonData.emCount = globalDefault.emCount
+                specificPokemonData.EMs = []
+            } else {
+                specificPokemonData.emCount = ballDefaultData.emCount
+                specificPokemonData.EMs = ballDefaultData.EMs
+            }
         }
         return specificPokemonData
     } else if (noBallDefault) { //ball defaults (which are essentially pokemon specific defaults) override global defaults, which means this if happens AFTER
@@ -20,7 +29,7 @@ export default function getDefaultData(globalDefault, ballDefault, pokemonBallDa
             specificPokemonData.isHA = true
         }
         if (globalDefault.emCount !== 0 && addedBallData.emCount !== undefined) {
-        const numOfPossibleEMs = possibleEMs.length
+            const numOfPossibleEMs = possibleEMs.length
             if ((numOfPossibleEMs <= 4) && (globalDefault.emCount >= numOfPossibleEMs)) {
                 specificPokemonData.emCount = maxEMs
                 specificPokemonData.EMs = possibleEMs

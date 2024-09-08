@@ -217,9 +217,9 @@ export default function NewCollection() {
     // console.log(formData)
 
     return (
-        <BodyWithBanner bodySx={{overflowX: 'hidden', overflowY: 'hidden', height: '100%', mt: 2, mb: 0}} bannerSx={{backgroundColor: '#26BCC9', color: 'black'}} text='Create New Collection'>
+        <BodyWithBanner bodySx={{overflowX: 'hidden', overflowY: 'hidden', height: '100%', mt: 2, mb: 0, display: 'flex', justifyContent: 'center'}} bannerSx={{backgroundColor: '#26BCC9', color: 'black'}} text='Create New Collection'>
             {/*extra box with margin top needed due to overflow*/}
-            <Box sx={{height: '100%', mt: 3, mx: 1}}> 
+            <Box sx={{height: '100%', mt: 3, mx: 1, width: '100%', maxWidth: '1200px'}}> 
                 <CreationProgress progress={creationProgress} />
                 {(formBodyProgress === 0 || slideClasses.step1 !== 'none') && 
                     <CollectionTypeSelection handleChange={handleCollectionTypeChange} cssClass={slideClasses.step1} userData={userData}/>

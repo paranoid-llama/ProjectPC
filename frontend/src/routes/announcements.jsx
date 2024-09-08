@@ -9,6 +9,35 @@ export default function Announcements({}) {
 
     return (
         <InfoWrapper title='Announcements' wrapperSx={{...theme.components.box.fullCenterCol, justifyContent: 'start'}}>
+            <Box sx={{...theme.components.box.fullCenterCol, width: '100%', height: '510px', mb: 2}}>
+                <Box sx={{...theme.components.box.fullCenterCol, width: '90%', height: '510px', maxWidth: '800px', position: 'relative', border: `1px solid ${theme.palette.color1.dark}`, backgroundColor: hexToRgba(theme.palette.color1.main, 0.9), borderRadius: '10px'}}>
+                    <Box sx={{...theme.components.box.fullCenterCol, alignItems: 'start', height: '100%', justifyContent: 'start', width: '100%', ml: 4, mt: 3}}>
+                        <Typography sx={{fontSize: '36px', color: 'white', fontWeight: 700}}>Post-Launch Update 2</Typography>
+                        <Typography sx={{fontSize: '14px', color: 'white', textIndent: '30px', width: '95%', textAlign: 'left', textAlign: 'left'}}>Hey guys! First off, I want to thank everyone for the positive reception to the site! I've been working on implementing some smaller, more easier-to-implement features and so here are the changes:</Typography>
+                        <Box sx={{...theme.components.box.fullCenterCol, width: '90%', justifyContent: 'start', mt: 1}}>
+                            <Box sx={{...theme.components.box.fullCenterCol, width: '100%', alignItems: 'start'}}>
+                                <Typography sx={{fontSize: '13px', color: 'white', textIndent: '30px', textAlign: 'left'}}> - Added more filtering options. You can now:</Typography>
+                                    <Typography sx={{fontSize: '12px', color: 'white', textIndent: '50px', textAlign: 'left'}}> - Filter by game in HOME collections</Typography>
+                                    <Typography sx={{fontSize: '12px', color: 'white', textIndent: '50px', textAlign: 'left'}}> - Filter out completed sets of pokemon (where they have all ball combinations owned)</Typography>
+                                    <Typography sx={{fontSize: '12px', color: 'white', textIndent: '50px', textAlign: 'left'}}> - Reset filters</Typography>
+                                <Typography sx={{fontSize: '13px', color: 'white', textIndent: '30px', textAlign: 'left'}}> - Added an option to complete an entire pokemon set with one button when they are selected</Typography>
+                                <Typography sx={{fontSize: '13px', color: 'white', textIndent: '30px', textAlign: 'left'}}> - Fixed an error with editing LF/FT Items in non-HOME collections, if you had not set it up when creating the collection</Typography>
+                                <Typography sx={{fontSize: '13px', color: 'white', textIndent: '30px', textAlign: 'left'}}> - Changed the color of wanted/pending tags so they pop out more</Typography>
+                                <Typography sx={{fontSize: '13px', color: 'white', textIndent: '30px', textAlign: 'left'}}> - Slightly changed collection importing</Typography>
+                            </Box>
+                        <Typography sx={{color: 'white', fontSize: '14px', width: '95%', textIndent: '30px', mt: 2, textAlign: 'left'}}>
+                            Many of these changes came from feedback given to the site, so thank you if you had suggested these! On top of those smaller changes, 
+                            I'm looking to perform some bigger ones well (many also suggested to me), which include linking HOME collections to HOME game collections,
+                            exporting collections, and making the site mobile friendly (especially the collection/edit collection page). These might take a month or longer 
+                            to complete. 
+                        </Typography>
+                        <Typography sx={{color: 'white', fontSize: '14px', mt: 1}}>
+                            Thanks again for using the site!
+                        </Typography>
+                        </Box>
+                    </Box>
+                </Box>
+            </Box>
             <Box sx={{...theme.components.box.fullCenterCol, width: '100%', height: '320px', mb: 2}}>
                 <Box sx={{...theme.components.box.fullCenterCol, width: '100%', height: '320px', maxWidth: '800px', position: 'relative', border: `1px solid ${theme.palette.color1.dark}`, backgroundColor: hexToRgba(theme.palette.color1.main, 0.9), borderRadius: '10px'}}>
                     <Box sx={{...theme.components.box.fullCenterCol, alignItems: 'start', height: '100%', justifyContent: 'start', width: '100%', ml: 4, mt: 3}}>

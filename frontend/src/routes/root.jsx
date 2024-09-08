@@ -19,68 +19,44 @@ export default function Root() {
             <Typography sx={{fontWeight: 700, mt: 2, color: 'white'}}>This website is not built for mobile</Typography>
         </Box>
         <Box sx={{width: '100%', height: '50px', display: 'flex', mb: 5, backgroundColor: theme.palette.color2.main, borderBottomRightRadius: '100%', borderBottomLeftRadius: '100%'}}></Box>
-        <Box sx={{...theme.components.box.fullCenterCol, width: '100%', height: '320px', mb: 2}}>
-          <Box sx={{...theme.components.box.fullCenterCol, width: '90%', height: '320px', maxWidth: '800px', position: 'relative', border: `1px solid ${theme.palette.color1.dark}`, backgroundColor: hexToRgba(theme.palette.color1.main, 0.9), borderRadius: '10px'}}>
+        <Box sx={{...theme.components.box.fullCenterCol, width: '100%', height: '450px', mb: 2}}>
+          <Box sx={{...theme.components.box.fullCenterCol, width: '90%', height: '450px', maxWidth: '800px', position: 'relative', border: `1px solid ${theme.palette.color1.dark}`, backgroundColor: hexToRgba(theme.palette.color1.main, 0.9), borderRadius: '10px'}}>
             <Button sx={{textTransform: 'none', position: 'absolute', top: '0px', left: '0px', ml: 2, fontSize: '11px', color: theme.palette.color3.main}} size='small' onClick={() => navigate('/announcements')}><ArrowRightAltIcon/> Announcements</Button>
             <Box sx={{...theme.components.box.fullCenterCol, alignItems: 'start', height: '100%', justifyContent: 'start', width: '100%', ml: 4, mt: 3}}>
-              <Typography sx={{fontSize: '36px', color: 'white', fontWeight: 700}}>Post-Launch Update</Typography>
-              <Typography sx={{fontSize: '14px', color: 'white', textIndent: '30px', width: '95%'}}>
-                Thank you guys for joining the site! I just wanted to post a quick update about importing collections from google sheets. 
-                I have found there were issues when users have tried to do so. I am aware of them and have made some small fixes to some of them.
-                There might be more issues with importing collections, so I apologize for the inconvenience!
-              </Typography>
-              <Typography sx={{fontSize: '14px', color: 'white', textIndent: '30px', width: '95%'}}>
-                In order to be able to help, I changed the Contact Us page so you can message me directly from there! I encourage anyone experiencing problems to 
-                send a message through there, and I will respond to your user through the website. If you're looking specifically for help on importing, it would help if you sent
-                more detailed information on the data you filled out on the form, the error that shows up and, if you're okay with it, a link to your sheet. Feel free to offer overall thoughts
-                and suggestions through there as well!
-              </Typography>
-              <Box sx={{...theme.components.box.fullCenterRow, justifyContent: 'start', width: '95%', mt: 0}}>
-                <Button sx={{fontSize: '14px', color: theme.palette.color3.main, ml: 3}} onClick={() => navigate('/info/contact-us')}>Contact Us</Button>
-              </Box>
-            </Box>
-          </Box>
-        </Box>
-        <Box sx={{...theme.components.box.fullCenterCol, width: '100%', height: '300px', mb: 2}}>
-          <Box sx={{...theme.components.box.fullCenterCol, width: '90%', height: '300px', maxWidth: '800px', position: 'relative', border: `1px solid ${theme.palette.color1.dark}`, backgroundColor: hexToRgba(theme.palette.color1.main, 0.9), borderRadius: '10px'}}>
-            <Button sx={{textTransform: 'none', position: 'absolute', top: '0px', left: '0px', ml: 2, fontSize: '11px', color: theme.palette.color3.main}} size='small' onClick={() => navigate('/announcements')}><ArrowRightAltIcon/> Announcements</Button>
-            <Box sx={{...theme.components.box.fullCenterCol, alignItems: 'start', height: '100%', justifyContent: 'start', width: '100%', ml: 4, mt: 3}}>
-              <Typography sx={{fontSize: '36px', color: 'white', fontWeight: 700}}>Version 1.0 Launch</Typography>
-              <Typography sx={{fontSize: '14px', color: 'white', textIndent: '30px', width: '95%'}}>The site is launched! Thank you for visiting this site! We currently support any of the following aprimon collections:</Typography>
-              <Box sx={{...theme.components.box.fullCenterRow, width: '90%', justifyContent: 'start', mt: 1}}>
-                <Box sx={{...theme.components.box.fullCenterCol, width: '40%', alignItems: 'start'}}>
-                  <Typography sx={{fontSize: '14px', color: 'white', textIndent: '30px'}}> - Gen 6 (X/Y) Collections</Typography>
-                  <Typography sx={{fontSize: '14px', color: 'white', textIndent: '30px'}}> - Gen 7 (Sun/Moon) Collections</Typography>
-                  <Typography sx={{fontSize: '14px', color: 'white', textIndent: '30px'}}> - Sword/Shield Collections</Typography>
-                </Box>
-                <Box sx={{...theme.components.box.fullCenterCol, width: '60%', alignItems: 'start'}}>
-                  <Typography sx={{fontSize: '14px', color: 'white', textIndent: '30px'}}> - Brilliant Diamond/Shining Pearl Collections</Typography>
-                  <Typography sx={{fontSize: '14px', color: 'white', textIndent: '30px'}}> - Gen 9 (Scarlet/Violet) Collections</Typography>
-                  <Typography sx={{fontSize: '14px', color: 'white', textIndent: '30px'}}> - Pokemon HOME Collections</Typography>
-                </Box>
+              <Typography sx={{fontSize: '36px', color: 'white', fontWeight: 700}}>Post-Launch Update 2</Typography>
+              <Typography sx={{fontSize: '14px', color: 'white', textIndent: '30px', width: '95%'}}>Hey guys! First off, I want to thank everyone for the positive reception to the site! I've been working on implementing some smaller, more easier-to-implement features and so here are the changes:</Typography>
+              <Box sx={{...theme.components.box.fullCenterCol, width: '90%', justifyContent: 'start', mt: 1}}>
+                <Box sx={{...theme.components.box.fullCenterCol, width: '100%', alignItems: 'start'}}>
+                  <Typography sx={{fontSize: '13px', color: 'white', textIndent: '30px'}}> - Added more filtering options. You can now:</Typography>
+                    <Typography sx={{fontSize: '12px', color: 'white', textIndent: '50px'}}> - Filter by game in HOME collections</Typography>
+                    <Typography sx={{fontSize: '12px', color: 'white', textIndent: '50px'}}> - Filter out completed sets of pokemon (where they have all ball combinations owned)</Typography>
+                    <Typography sx={{fontSize: '12px', color: 'white', textIndent: '50px'}}> - Reset filters</Typography>
+                  <Typography sx={{fontSize: '13px', color: 'white', textIndent: '30px'}}> - Added an option to complete an entire pokemon set with one button when they are selected</Typography>
+                  <Typography sx={{fontSize: '13px', color: 'white', textIndent: '30px'}}> - Fixed an error with editing LF/FT Items in non-HOME collections, if you had not set it up when creating the collection</Typography>
+                  <Typography sx={{fontSize: '13px', color: 'white', textIndent: '30px'}}> - Changed the color of wanted/pending tags so they pop out more</Typography>
+                  <Typography sx={{fontSize: '13px', color: 'white', textIndent: '30px'}}> - Slightly changed collection importing</Typography>
               </Box>
               <Typography sx={{color: 'white', fontSize: '14px', width: '95%', textIndent: '30px', mt: 2}}>
-                <b>This website is not optimized for smaller screen sizes!</b> The best experience is achieved on screen sizes no smaller than tablets!
+                Many of these changes came from feedback given to the site, so thank you if you had suggested these! On top of those smaller changes, 
+                I'm looking to perform some bigger ones well (many also suggested to me), which include linking HOME collections to HOME game collections,
+                exporting collections, and making the site mobile friendly (especially the collection/edit collection page). These might take a month or longer 
+                to complete. 
               </Typography>
-              <Box sx={{...theme.components.box.fullCenterRow, justifyContent: 'start', width: '95%', mt: 2}}>
-                <Typography sx={{color: 'white', fontSize: '14px', textIndent: '30px'}}>
-                  Check out our other pages to read more:
-                </Typography>
-                <Button sx={{fontSize: '14px', color: theme.palette.color3.main, ml: 6}} onClick={() => navigate('/info/about-us')}>About Us</Button>
-                <Button sx={{fontSize: '14px', color: theme.palette.color3.main, ml: 3}} onClick={() => navigate('/info/contact-us')}>Contact Us</Button>
-              </Box>
+              <Typography sx={{color: 'white', fontSize: '14px'}}>
+                Thanks again for using the site!
+              </Typography>
             </Box>
           </Box>
         </Box>
-        
-        <Features />
-        <Box sx={{...theme.components.box.fullCenterCol, mt: 1}}>
-          {!userData.loggedIn && 
-          <Box sx={{width: '50%', height: '100px', borderRadius: '10px', backgroundColor: theme.palette.color1.light, color: theme.palette.color1.contrastTextLight, ...theme.components.box.fullCenterCol}}>
-            <Typography sx={{fontSize: '24px', fontWeight: 700}}>Try it out!</Typography>
-            <Button size='large' onClick={() => navigate('/register')} sx={{'&.MuiButtonBase-root': {color: theme.palette.color1.contrastText, backgroundColor: theme.palette.color2.main}}}>Get Started and Register</Button>
-          </Box>}
-        </Box>
       </Box>
+      <Features />
+      <Box sx={{...theme.components.box.fullCenterCol, mt: 1}}>
+        {!userData.loggedIn && 
+        <Box sx={{width: '50%', height: '100px', borderRadius: '10px', backgroundColor: theme.palette.color1.light, color: theme.palette.color1.contrastTextLight, ...theme.components.box.fullCenterCol}}>
+          <Typography sx={{fontSize: '24px', fontWeight: 700}}>Try it out!</Typography>
+          <Button size='large' onClick={() => navigate('/register')} sx={{'&.MuiButtonBase-root': {color: theme.palette.color1.contrastText, backgroundColor: theme.palette.color2.main}}}>Get Started and Register</Button>
+        </Box>}
+      </Box>
+    </Box>
     );
   }

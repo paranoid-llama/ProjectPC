@@ -95,8 +95,8 @@ export default function DataCell({label, styles, alignment='none', isEditMode, i
                         const margin = idx !== 0 ? {ml: 1} : {} 
                         return (
                             <Box key={`available-home-games-display-${nameOfGame}`} sx={{display: 'flex'}}>
-                            <Typography sx={{fontSize: '10px', color: firstGameColor, opacity: gamesEnabled ? 1 : 0.4, ...margin}}>{firstGame}</Typography>
-                            <Typography sx={{fontSize: '10px', color: secondGameColor, opacity: gamesEnabled ? 1 : 0.4}}>/{secondGame}</Typography>
+                                <Typography sx={{fontSize: '10px', color: firstGameColor, opacity: gamesEnabled ? 1 : 0.4, ...margin}}>{firstGame}</Typography>
+                                <Typography sx={{fontSize: '10px', color: secondGameColor, opacity: gamesEnabled ? 1 : 0.4}}>/{secondGame}</Typography>
                             </Box>
                         )
                     })}

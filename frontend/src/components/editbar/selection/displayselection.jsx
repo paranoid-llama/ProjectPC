@@ -27,6 +27,7 @@ import RenderOnHandEdit from './onhandlist/renderonhandedit'
     const selectedBall = useSelector((state) => state.editmode.selectedBall)
     const allEggMoves = useSelector((state) => state.collectionState.eggMoveInfo)
     const onhandViewType = useSelector((state) => state.collectionState.listDisplay.onhandView)
+    const globalDefault = useSelector((state) => state.collectionState.options.globalDefaults)
 
     return (
         <>
@@ -36,7 +37,7 @@ import RenderOnHandEdit from './onhandlist/renderonhandedit'
         >
             {/* {onHandNoSelection ? <Box sx={{width: '81.5136%', display: 'flex', justifyContent: 'end'}}><NothingSelected listType={listType}/></Box> : */}
             {noSelection ? <NothingSelected listType={listType} onhandViewType={onhandViewType} isHomeCollection={collection.gen === 'home'} collectionID={collectionID}/> :
-            showEditScreen === false ? <ShowSelectionConfirm listType={listType} pokemon={pokemon} pokemonDeletedFromMemory={pokemonDeletedFromMemory}/> :
+            showEditScreen === false ? <ShowSelectionConfirm listType={listType} pokemon={pokemon} pokemonDeletedFromMemory={pokemonDeletedFromMemory} pokemonIdx={idxOfPokemon} globalDefault={globalDefault} possibleEggMoves={allEggMoves[pokemon.name]}/> :
             listType === 'collection' ? <RenderCollectionEdit collectionId={collection._id} ownerId={ownerID} pokemon={pokemon} ballInfo={pokemonBallInfo} allEggMoves={allEggMoves} isHomeCollection={collection.gen === 'home'}/> :
             listType === 'onHand' && <RenderOnHandEdit collectionId={collection._id} ownerId={ownerID} pokemon={pokemon} idxOfPokemon={idxOfPokemon} allEggMoves={allEggMoves} isHomeCollection={collection.gen === 'home'}/>
             }

@@ -6,6 +6,7 @@ import { commonReducers } from "./commonreducers/sharedReducers";
 import displayOnHandByPokemon from "../../../utils/functions/display/displayonhandbypokemon";
 import { filterList } from "../../../utils/functions/sortfilterfunctions/filterfunctions";
 import { changeList } from "./editmode";
+import { hideFullSets } from "../../../utils/functions/display/fullsetview";
 
 const backendurl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000'
 
@@ -35,6 +36,7 @@ const collectionState = createSlice({
         setIsOwned: collectionReducers.setIsOwned,
         setTags: collectionReducers.setTags,
         setDefault: collectionReducers.setDefault,
+        setMultipleIsOwned: collectionReducers.setMultipleIsOwned,
 
         setBall: onhandReducers.setBall,
         setGender: onhandReducers.setGender,
@@ -59,10 +61,41 @@ const collectionState = createSlice({
                 state.listDisplay.onhandView = 'byPokemon'
             }
             else {
-                state.listDisplay.onhand = filterList(useState ? state.onhand : action.payload.onhand, '', '', 'onhand', useState ? state.onhand : action.payload.onhand, true, [...state.listDisplay.onhandFilters.filters.ballFilters, ...state.listDisplay.onhandFilters.filters.genFilters, ...state.listDisplay.onhandFilters.filters.otherFilters], state.listDisplay.onhandFilters.sort)
+                const filtersData = {
+                    ballFilters: state.listDisplay.onhandFilters.filters.ballFilters,
+                    genFilters: state.listDisplay.onhandFilters.filters.genFilters,
+                    otherFilters: state.listDisplay.onhandFilters.filters.otherFilters
+                }
+                state.listDisplay.onhand = filterList(useState ? state.onhand : action.payload.onhand, '', '', 'onhand', useState ? state.onhand : action.payload.onhand, true, filtersData, state.listDisplay.onhandFilters.sort, state.availableGamesInfo)
                 state.listDisplay.onhandView = 'byIndividual'
             }
             return state
+        },
+        toggleFullSetView: (state, action) => {
+            const useState = action.payload.useState
+            state.listDisplay.showFullSets = !state.listDisplay.showFullSets
+            if (state.listDisplay.showFullSets) {
+                const filtersData = {
+                    ballFilters: state.listDisplay.collectionFilters.filters.ballFilters,
+                    genFilters: state.listDisplay.collectionFilters.filters.genFilters,
+                    otherFilters: state.listDisplay.collectionFilters.filters.otherFilters
+                }
+                state.listDisplay.collection = filterList(useState ? state.collection.filter(p => p.disabled === undefined) : action.payload.collection, '', '', 'collection', useState ? state.collection.filter(p => p.disabled === undefined) : action.payload.collection, true, filtersData, state.listDisplay.collectionFilters.sort, state.availableGamesInfo)
+            } else {
+                state.listDisplay.collection = hideFullSets(state.listDisplay.collection)
+            }
+            return state
+        },
+        resetFilters: (state, action) => {
+            const {useState, onhand, collection, listType} = action.payload
+            state.listDisplay[`${listType}Filters`].filters = {genFilters: [], ballFilters: [], otherFilters: []}
+            if (listType === 'collection') {
+                state.listDisplay.showFullSets = true
+                state.listDisplay.collection = useState ? state.collection.filter(p => p.disabled === undefined) : collection 
+            } else {
+                const onhandListToUse = useState ? state.onhand : onhand 
+                state.listDisplay.onhand = state.listDisplay.onhandView === 'byIndividual' ? onhandListToUse : displayOnHandByPokemon(onhandListToUse, useState ? state.collection : collection)
+            }
         },
 
         setRate: optionsReducers.setRate,
@@ -100,9 +133,9 @@ const collectionState = createSlice({
 
 export const {
     initializeTotalState, setListDisplayInitialState, setIsHA, setEmCount, setEms, deleteEms,
-    setIsOwned, setTags, setDefault,
+    setIsOwned, setTags, setDefault, setMultipleIsOwned,
     setBall, setGender, setPokemonSpecies, setQty,
-    setListState, addOnHandPokemonToList, removeOnHandPokemonFromList, setSortKey, setFilters, filterSearch, setScrollPosition, setOnHandView,
+    setListState, addOnHandPokemonToList, removeOnHandPokemonFromList, setSortKey, setFilters, filterSearch, setScrollPosition, setOnHandView, toggleFullSetView, resetFilters,
     setRate, setBallScope, setSortingOptionsState, setTradePreferencesState, setItemState, setNameState, setGlobalDefaultState,
 } = collectionState.actions
 

@@ -1,4 +1,5 @@
 import displayOnHandByPokemon from "../../../../utils/functions/display/displayonhandbypokemon"
+import { hideFullSets } from "../../../../utils/functions/display/fullsetview"
 
 export const setInitialState = (state, action) => {
     const extractedState = action.payload
@@ -85,10 +86,18 @@ export const commonReducers = {
         state.collection = []
         state.onhand = []
         
-        state.listDisplay.collection = col.ownedPokemon.filter(p => !(p.disabled))
+        
+        if (!currColUrl.includes(state.latestColId)) {
+            state.listDisplay.showFullSets = true
+            state.listDisplay.collection = col.ownedPokemon.filter(p => !(p.disabled))
+        } else {
+            state.listDisplay.collection = state.listDisplay.showFullSets ? col.ownedPokemon.filter(p => !(p.disabled)) : hideFullSets(col.ownedPokemon.filter(p => !(p.disabled)))
+        }
+
         if (initOnHandView && !(currColUrl.includes(state.latestColId))) {
             state.listDisplay.onhandView = initOnHandView
         }
+
         if (state.listDisplay.onhandView === 'byPokemon') {state.listDisplay.onhand = displayOnHandByPokemon(col.onHand, col.ownedPokemon)}
         else { state.listDisplay.onhand = col.onHand }
         // state.listDisplay.onhand = action.payload.onHand

@@ -22,6 +22,7 @@ export default function ShowCollectionList({collection, isCollectionOwner, style
     const listState = useSelector((state) => state.collectionState.listDisplay.collection)
     const previousScrollPosition = useSelector((state) => state.collectionState.lastScrollPosition)
     const previousColId = useSelector((state) => state.collectionState.prevColId)
+    // const showFullSets = useSelector((state) => state.collectionState.listDisplay.showFullSets)
     const link = useLocation().pathname
     // const linkRef = useRef(link)
 

@@ -1,8 +1,9 @@
-import {Box, Typography, styled, TextField, ToggleButtonGroup, useTheme} from '@mui/material'
+import {Box, Typography, styled, TextField, ToggleButtonGroup, useTheme, Button} from '@mui/material'
 import { useLoaderData, useRouteLoaderData } from 'react-router'
 import { useSelector, useDispatch } from 'react-redux'
 import { setFilters, filterSearch } from '../../../app/slices/collectionstate' 
 import { deselect } from '../../../app/slices/editmode'
+import { resetFilters } from '../../../app/slices/collectionstate'
 import { generations, genRomans, apriballs } from '../../../../common/infoconstants/miscconstants'
 import { checkForTypeOfFilter } from '../../../../utils/functions/sortfilterfunctions/filterfunctions'
 import MuiToggleButton from '@mui/material/ToggleButton'
@@ -11,6 +12,8 @@ import ListSearch from '../../functionalcomponents/listsearch'
 import {useDebouncedCallback} from 'use-debounce'
 import { selectScreenBreakpoint } from '../../../app/selectors/windowsizeselectors'
 import displayOnHandByPokemon from '../../../../utils/functions/display/displayonhandbypokemon'
+import { getGameColor, homeDisplayGames } from '../../../../common/infoconstants/miscconstants.mjs'
+import hexToRgba from 'hex-to-rgba'
 
 export default function Filter({listType, collection, isOwner, isEditMode}) {
     const dispatch = useDispatch()
@@ -23,6 +26,7 @@ export default function Filter({listType, collection, isOwner, isEditMode}) {
     const onhandViewType = useSelector(state => state.collectionState.listDisplay.onhandView)
     const nameDisplaySettings = !userData.loggedIn ? undefined : userData.user.settings.display.pokemonNames
     const gens = collection.gen === 'home' ? genRomans : genRomans.slice(0, genNum)
+    const ballScope = isEditMode ? useSelector((state) => state.collectionState.options.collectingBalls) : collection.options.collectingBalls
 
     const ToggleButton = styled(MuiToggleButton)({
         '&.MuiToggleButton-sizeSmall': {
@@ -34,14 +38,16 @@ export default function Filter({listType, collection, isOwner, isEditMode}) {
         }
     })
 
-    const listLiteralState = listType === 'collection' ? useSelector((state) => state.collectionState.collection) : onhandViewType === 'byPokemon' ? displayOnHandByPokemon(useSelector((state) => state.collectionState.onhand), collection.ownedPokemon) : useSelector((state) => state.collectionState.onhand)
+    const listLiteralState = listType === 'collection' ? useSelector((state) => state.collectionState.collection) : onhandViewType === 'byPokemon' ? displayOnHandByPokemon(useSelector((state) => state.collectionState.onhand), isEditMode ? useSelector((state) => state.collectionState.collection) : collection.ownedPokemon) : useSelector((state) => state.collectionState.onhand)
 
     const currentFilters = listType === 'collection' ? useSelector((state) => state.collectionState.listDisplay.collectionFilters) : useSelector((state) => state.collectionState.listDisplay.onhandFilters)
     const listState = listType === 'collection' ? useSelector((state) => state.collectionState.listDisplay.collection) : useSelector((state) => state.collectionState.listDisplay.onhand)
-    const totalList = (isEditMode) ? listType === 'collection' ? listLiteralState.filter((mon) => mon.disabled === undefined) : listLiteralState : listType === 'collection' ? collection.ownedPokemon : onhandViewType === 'byPokemon' ? displayOnHandByPokemon(collection.onHand, collection.ownedPokemon) : collection.onHand
+    const totalList = (isEditMode) ? listType === 'collection' ? listLiteralState.filter((mon) => mon.disabled === undefined) : listLiteralState : listType === 'collection' ? collection.ownedPokemon.filter(p => p.disabled === undefined) : onhandViewType === 'byPokemon' ? displayOnHandByPokemon(collection.onHand, collection.ownedPokemon) : collection.onHand
+    const availableGamesInfo = useSelector((state) => state.collectionState.availableGamesInfo)
     const ballFilters = currentFilters.filters.ballFilters
     const genFilters = currentFilters.filters.genFilters
     const miscFilters = currentFilters.filters.otherFilters
+    const currentGameFilters = miscFilters.filter(f => homeDisplayGames.includes(f) || f === 'no-game')
     const activeFilters = ballFilters.concat(genFilters, miscFilters)
     const currentSortKey = currentFilters.sort
 
@@ -93,7 +99,7 @@ export default function Filter({listType, collection, isOwner, isEditMode}) {
                             value={genNum}
                             selected={genFilters.includes(genNum)}
                             sx={{borderRadius: '5px', borderWidth: '2px', paddingX: '15px', paddingY: '3px', ':hover': {cursor: 'pointer', opacity: '0.5', backgroundColor: theme.palette.color3.main}, '&.Mui-selected': {':hover': {cursor: 'pointer', opacity: '0.5', backgroundColor: theme.palette.color3.main}}, ...genFilterButtonPadding}}
-                            onClick={(e) => handleFilterChange(e, genFilters)}
+                            onClick={() => handleFilterChange(genNum, genFilters)}
                         >
                             {gen}
                         </ToggleButton>
@@ -106,7 +112,7 @@ export default function Filter({listType, collection, isOwner, isEditMode}) {
     const generateBallFilters = () => {
         return (
             <ToggleButtonGroup>
-                {apriballs.map(ball => {
+                {apriballs.filter(b => ballScope.includes(b)).map(ball => {
                     return (
                         <ToggleButton 
                             key={`${ball}-ball-filter`} 
@@ -114,7 +120,7 @@ export default function Filter({listType, collection, isOwner, isEditMode}) {
                             value={ball}
                             selected={ballFilters.includes(ball)}
                             sx={{borderRadius: '25px', borderWidth: '1px', padding: 0, marginLeft: '1px', zIndex: 200, ':hover': {cursor: 'pointer', opacity: '0.5', backgroundColor: theme.palette.color3.main}, '&.Mui-selected': {':hover': {cursor: 'pointer', opacity: '0.5', backgroundColor: theme.palette.color3.main}}, ...ballFilterButtonPadding}}
-                            onClick={(e) => handleFilterChange(e, ballFilters)}
+                            onClick={() => handleFilterChange(ball, ballFilters)}
                         >
                             <ImgData type='ball' linkKey={ball} customValue={ball}/>
                         </ToggleButton>
@@ -124,10 +130,50 @@ export default function Filter({listType, collection, isOwner, isEditMode}) {
         )
     }
 
-    const handleFilterChange = (e, specificCategoryFilters) => {
-        const filterKey = e.target.value !== undefined ? 
-        !isNaN(parseInt(e.target.value)) ? parseInt(e.target.value) : e.target.value : 
-        e.target.src.slice(56, e.target.src.length -4)
+    const generateGameFilters = () => {
+        return (
+            <ToggleButtonGroup>
+                {homeDisplayGames.map(game => {
+                    const nameOfGame = game === 9 ? 'S/V' : game === 'swsh' ? 'SW/SH' : game === 'bdsp' && 'BD/SP'
+                    const firstGame = nameOfGame.slice(0, nameOfGame.indexOf('/'))
+                    const secondGame = nameOfGame.slice(nameOfGame.indexOf('/')+1, nameOfGame.length)
+                    const firstGameColor = getGameColor(firstGame)
+                    const secondGameColor = getGameColor(secondGame)
+                    return (
+                        <ToggleButton 
+                            key={`${game}-game-filter`} 
+                            size='small' 
+                            value={game}
+                            selected={currentGameFilters.includes(game)}
+                            sx={{borderRadius: '25px', borderWidth: '1px', padding: 0, marginLeft: '1px', display: 'flex', zIndex: 200, ':hover': {cursor: 'pointer', opacity: '0.5', backgroundColor: theme.palette.color3.main}, '&.Mui-selected': {':hover': {cursor: 'pointer', opacity: '0.5', backgroundColor: theme.palette.color3.main}}, ...genFilterButtonPadding}}
+                            onClick={() => handleFilterChange(game, miscFilters, true)}
+                        >
+                            {/* <ImgData type='ball' linkKey={ball} customValue={ball}/> */}
+                            <Typography sx={{color: firstGameColor}}>{firstGame}</Typography>
+                            <Typography sx={{color: secondGameColor}}>/{secondGame}</Typography>
+                        </ToggleButton>
+                    )
+                })}
+                <ToggleButton 
+                    size='small' 
+                    value={'no-game'}
+                    selected={currentGameFilters.includes('no-game')}
+                    sx={{borderRadius: '25px', borderWidth: '1px', padding: 0, marginLeft: '1px', display: 'flex', zIndex: 200, ':hover': {cursor: 'pointer', opacity: '0.5', backgroundColor: theme.palette.color3.main}, '&.Mui-selected': {':hover': {cursor: 'pointer', opacity: '0.5', backgroundColor: theme.palette.color3.main}}, ...genFilterButtonPadding}}
+                    onClick={() => handleFilterChange('no-game', miscFilters, true)}
+                >
+                    <Typography sx={{color: 'white', fontSize: '12px'}}>None</Typography>
+                </ToggleButton>
+            </ToggleButtonGroup>
+        )
+    }
+
+    const handleFilterChange = (filterKey, specificCategoryFilters, isGameFilter) => {
+        // console.log(e.target.value)
+
+        // const filterKey = e.target.value !== undefined ? 
+        // !isNaN(parseInt(e.target.value)) ? parseInt(e.target.value) : e.target.value : 
+        // e.target.src.slice(56, e.target.src.length -4)
+
         dispatch(deselect())
 
         const isTag = filterKey === 'highlyWanted' || filterKey === 'pending'
@@ -142,16 +188,20 @@ export default function Filter({listType, collection, isOwner, isEditMode}) {
         const addingBallFiltersOnHand = listType === 'onhand' && checkForTypeOfFilter(activeFilters, 'ball') && !activeFilters.includes(filterKey)
         const changingBetweenTagAndBallFilters = (isTag && checkForTypeOfFilter(activeFilters, 'ball')) || (apriballs.includes(filterKey) && checkForTypeOfFilter(activeFilters, 'misc'))
         const switchingTags = (isTag && activeFilters.includes(otherTag))
+        const removingTags = (isTag && activeFilters.includes(filterKey) && !switchingTags)
+        const switchingBetweenNoGameAndGame = (isGameFilter) && ((filterKey === 'no-game' && currentGameFilters.length !== 0) || (filterKey !== 'no-game' && currentGameFilters.length !== 0))
+        const numberButIsGameFilter = isGameFilter && typeof filterKey === 'number'
+        const removingGameFilter = homeDisplayGames.includes(filterKey) && miscFilters.includes(filterKey)
         const reFilterList = removingBallFilter || //cases in which we need to refilter the list from the total list
                                 addingGenFilter || 
                                 noGenFilterButOtherFilters || 
                                 addingBallFiltersOnHand || 
                                 changingBetweenTagAndBallFilters || 
-                                switchingTags 
+                                switchingTags || removingTags || removingGameFilter || switchingBetweenNoGameAndGame
         
         const noFilters = activeFilters.length === 1 && activeFilters.includes(filterKey)
 
-        dispatch(setFilters({filterKey, listType, listState, totalList, reFilterList, noFilters, prevActiveFilters: activeFilters, specificCategoryFilters, currentSortKey, changingTagBallFilters: changingBetweenTagAndBallFilters, switchingTags}))
+        dispatch(setFilters({filterKey, listType, listState, totalList, reFilterList, noFilters, prevActiveFilters: activeFilters, specificCategoryFilters, currentSortKey, changingTagBallFilters: changingBetweenTagAndBallFilters, switchingTags, numberButIsGameFilter, switchingBetweenNoGameAndGame, availableGamesInfo}))
     }
 
     const handleSearchChange = (query, reFilterList) => {
@@ -175,19 +225,44 @@ export default function Filter({listType, collection, isOwner, isEditMode}) {
 
     return (
         <Box sx={{width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'start', marginLeft: '10px'}}>
-            <Box sx={{height: '20%', width: '100%', display: 'flex', alignItems: 'start'}}>
+            <Box sx={{height: '20%', width: '100%', display: 'flex', alignItems: 'start', position: 'relative'}}>
                 <Typography color='white' variant='h6'>Filter By</Typography>
+                <Button 
+                    sx={{
+                        border: `1px solid ${theme.palette.color1.dark}`, 
+                        position: 'absolute',
+                        right: '130px',
+                        backgroundColor: hexToRgba(theme.palette.color3.main, 0.75), 
+                        color: theme.palette.color1.main,
+                        padding: 0.5, ml: 2,
+                        fontSize: '11px',
+                        zIndex: 15,
+                        ':hover': {cursor: 'pointer', backgroundColor: hexToRgba(theme.palette.color3.main, 0.75), opacity: 0.65}
+                    }}
+                    onClick={() => {
+                        dispatch(deselect())
+                        dispatch(resetFilters({useState: isEditMode, collection: collection.ownedPokemon.filter(p => p.disabled === undefined), onhand: collection.onHand, listType}))
+                    }}
+                >
+                    Reset Filters
+                </Button>
+                
             </Box>
             <Box sx={{...theme.components.box.fullCenterCol, flexDirection: screenSize === 'lg' ? (listType === 'onhand' ? 'row-reverse' : 'row') : 'column', width: '100%', height: '80%', marginLeft: '10px', gap: 2}}>
-                <Box sx={{...theme.components.box.fullCenterCol, width: '100%', height: '60%', gap: 1.5, ...genBallFilterContainerStyles, mr: screenSize === 'lg' && listType === 'onhand' ? 3 : 0}}>
-                    <Box sx={{height: '50%', width: '100%', ...theme.components.box.fullCenterCol}}>
+                <Box sx={{...theme.components.box.fullCenterCol, width: '100%', height: '70%', gap: 1.5, ...genBallFilterContainerStyles, mr: screenSize === 'lg' && listType === 'onhand' ? 3 : 0}}>
+                    <Box sx={{height: collection.gen === 'home' ? '33%' : '50%', width: '100%', ...theme.components.box.fullCenterCol}}>
                         <Typography color='white' sx={{width: '100%', fontSize: '12px', textAlign: 'start'}}>Generation</Typography>
                         {generateGenFilters()}
                     </Box>
-                    <Box sx={{height: '50%', width: '100%', ...theme.components.box.fullCenterCol}}>
+                    <Box sx={{height: collection.gen === 'home' ? '33%' : '50%', width: '100%', ...theme.components.box.fullCenterCol}}>
                         <Typography color='white' sx={{width: '100%', fontSize: '12px', textAlign: 'start'}}>{listType === 'onhand' ? '' : 'Owned '}Ball</Typography>
                         {generateBallFilters()}
                     </Box>
+                    {collection.gen === 'home' &&
+                    <Box sx={{height: '34%', width: '100%', ...theme.components.box.fullCenterRow, mt: 1}}>
+                        <Typography color='white' sx={{fontSize: '12px', textAlign: 'start', mr: 1}}>Available Game:</Typography>
+                        {generateGameFilters()}
+                    </Box>}
                 </Box>
                 <Box sx={{height: '20%', width: '100%', display: 'flex', flexDirection: screenSize === 'lg' ? 'column' : 'row', ...otherFilterContainerStyles}}>
                     
@@ -200,7 +275,7 @@ export default function Filter({listType, collection, isOwner, isEditMode}) {
                                 value='highlyWanted' 
                                 selected={miscFilters.includes('highlyWanted')}
                                 sx={{borderRadius: '5px', borderWidth: '1px', fontSize: '13px', ':hover': {cursor: 'pointer', opacity: '0.5', backgroundColor: theme.palette.color3.main}, '&.Mui-selected': {':hover': {cursor: 'pointer', opacity: '0.5', backgroundColor: theme.palette.color3.main}}, ...hwButPad}}
-                                onClick={(e) => handleFilterChange(e, miscFilters)}
+                                onClick={() => handleFilterChange('highlyWanted', miscFilters)}
                             >
                                 Highly Wanted
                             </ToggleButton>
@@ -211,7 +286,7 @@ export default function Filter({listType, collection, isOwner, isEditMode}) {
                                 value='pending' 
                                 selected={miscFilters.includes('pending')}
                                 sx={{borderRadius: '5px', borderWidth: '1px', ':hover': {cursor: 'pointer', opacity: '0.5', backgroundColor: theme.palette.color3.main}, '&.Mui-selected': {':hover': {cursor: 'pointer', opacity: '0.5', backgroundColor: theme.palette.color3.main}}, ...pendButPad}}
-                                onClick={(e) => handleFilterChange(e, miscFilters)}
+                                onClick={() => handleFilterChange('pending', miscFilters)}
                             >
                                 Pending
                             </ToggleButton>

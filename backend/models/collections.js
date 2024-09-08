@@ -8,7 +8,7 @@ import { getCollectionProgressPercent, checkBadgeMilestone } from './postpremidd
 import { collectionProgressAggField } from '../controllers/searchcontroller.js';
 import { postDeleteColEditTradeCol } from './postpremiddleware.js';
 
-const opts = {toJSON: {virtuals: true}, minimize: true}
+const opts = {toJSON: {virtuals: true}, minimize: false}
 
 const collectionSchema = new Schema ({
     owner: {

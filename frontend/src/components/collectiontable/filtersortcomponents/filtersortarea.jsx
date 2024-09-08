@@ -27,17 +27,17 @@ export default function FilterSortArea({collection, isEditMode, isOwner}) {
     const toggleClass = !area.firstRender ?  
         area.open ? 'add-height' : 'shrink-height' : ''
 
-    const height = area.open ? '160px' : '0px'
+    const height = area.open ? '210px' : '0px'
     const containerPosition = area.open ? '10px' : '50px'
 
     return (
         <Box sx={{width: '100%', height, margin: '0'}} className={area.firstRender ? '' : toggleClass} ref={containerRef}>
             <Box sx={{width: '100%', position: 'relative', display: 'flex', flexDirection: 'column'}} >
                 <Slide in={area.open} direction='up' timeout={{appear: 200, enter: 500, exit: 1000}}>
-                    <Box sx={{width: '99.3%', height: '190px', position: 'absolute', backgroundColor: '#272625', border: '3px solid black', top: '20px', zIndex: 10, borderRadius: '10px', visibility: area.firstRender ? 'hidden' : 'visible'}}>
+                    <Box sx={{width: '99.3%', height: '240px', position: 'absolute', backgroundColor: '#272625', border: '3px solid black', top: '20px', zIndex: 10, borderRadius: '10px', visibility: area.firstRender ? 'hidden' : 'visible'}}>
                         <Box sx={{width: '100%', height: '100%', display: 'flex'}}>
                             <Box sx={{width: '40%', height: '70%'}}>
-                                <Sort listType={listType}/>
+                                <Sort listType={listType} isEditMode={isEditMode} collection={collection}/>
                             </Box>
                             <Box sx={{width: '60%', height: '95%'}}>
                                 <Filter listType={listType} collection={collection} isEditMode={isEditMode} isOwner={isOwner}/>

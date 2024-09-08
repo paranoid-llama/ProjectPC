@@ -14,7 +14,7 @@ import {connect, useDispatch} from 'react-redux'
 import EggMoveColumnDisplay from './eggmovecolumndisplay';
 import newObjectId from '../../../../utils/functions/newobjectid';
 
-function OnHandRowContent({columns, row, pokemonId, collectionId, styles, isSelected, setSelected, allEggMoveInfo, isEditMode, isHomeCollection, isTradePage, tradeSide, wantedByOtherList, userData}) {
+function OnHandRowContent({columns, row, pokemonId, collectionId, styles, isSelected, setSelected, allEggMoveInfo, availableGamesInfo, isEditMode, isHomeCollection, isTradePage, tradeSide, wantedByOtherList, userData}) {
     const dispatch = useDispatch()
 
     const skeletonRow = row === undefined
@@ -79,6 +79,9 @@ function OnHandRowContent({columns, row, pokemonId, collectionId, styles, isSele
                 const isBallColumn = c.dataKey === 'ball'
                 const wantedData = isBallColumn && (wantedByOtherList[0] === undefined ? {} : wantedByOtherList[0].balls.includes(row[c.dataKey]) ? {wanted: true} : {})
                 const reservedQty = (c.dataKey === 'qty' && row.reserved !== undefined) ? {reserved: row.reserved} : {}
+                const nameProps = (isHomeCollection && c.dataKey === 'name') ? {
+                    availableGames: availableGamesInfo[row.name]
+                } : {}
                 return (
                     c.dataKey === 'EMs' ?
                     <EggMoveColumnDisplay
@@ -127,6 +130,7 @@ function OnHandRowContent({columns, row, pokemonId, collectionId, styles, isSele
                         }
                         isEmDisplay={c.dataKey === 'EMs'}
                         {...reservedQty}
+                        {...nameProps}
                     />
                 )
             })}

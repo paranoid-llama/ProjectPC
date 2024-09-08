@@ -21,13 +21,13 @@
         height: 0px
     }
     to {
-        height: 150px
+        height: 210px
     }
 }
 
 @keyframes shrink-height {
     from {
-        height: 150px
+        height: 210px
     }
     to {
         height: 0px

@@ -37,7 +37,7 @@ export default function AprimonImportDisplay({data, numOfBalls}) {
                 We couldn't retrieve your data!
             </Typography>
             <Typography variant='p' sx={{fontFamily: 'Arial', fontSize: '14px'}}>
-                {apiCallErrorCode === 404 ? "The spreadsheet ID didn't match any spreadsheet in Google's database. Double check that the spreadsheet ID was input correctly." : 
+                {apiCallErrorCode === 404 ? `The spreadsheet ID we got from your link didn't match any spreadsheet in Google's database. Double check that the spreadsheet link was input correctly, and that it's ${<b>not</b>} the published spreadsheet link.` : 
                 apiCallErrorCode === 403 && "We don't have permission to view the spreadsheet. Double check that the spreadsheet is viewable to anyone with the link."}
             </Typography>
             {apiCallErrorCode === 404 && 

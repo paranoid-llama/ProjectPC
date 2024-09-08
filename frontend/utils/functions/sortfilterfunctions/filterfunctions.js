@@ -1,5 +1,6 @@
-import { apriballs, generations, findGenByDexNum } from "../../../common/infoconstants/miscconstants.mjs"
+import { apriballs, generations, findGenByDexNum, homeDisplayGames } from "../../../common/infoconstants/miscconstants.mjs"
 import { sortList } from "../../../common/sortingfunctions/customsorting.mjs"
+import { hideFullSets } from "../display/fullsetview"
 
 //checks if the current filter list has any of a specified type of filter. useful for accounting for refiltering when we're adding a second of a particular type of filter
 const checkForTypeOfFilter = (activeFilters, filterType) => {
@@ -16,8 +17,10 @@ const checkForTypeOfFilter = (activeFilters, filterType) => {
     return typeOfFilterPresent
 }
 
-const filterMultipleKeys = (totalList, genKeys, ballKeys, otherKeys, currentSortKey, listType) => {
+const filterMultipleKeys = (totalList, genKeys, ballKeys, otherKeys, currentSortKey, listType, availableGamesInfo, showFullSets=true) => {
     const filteredList = []
+    const tagFilters = otherKeys.filter(f => !homeDisplayGames.includes(f) && f !== 'no-game')
+    const gameFilters = otherKeys.filter(f => homeDisplayGames.includes(f) || f === 'no-game')
     if (genKeys.length !== 0) {
         const filteredByGenList = totalList.filter((pokemon) => {
             for (let key of genKeys) {
@@ -50,17 +53,63 @@ const filterMultipleKeys = (totalList, genKeys, ballKeys, otherKeys, currentSort
                 return hasAnyFilteredBalls
             }
         })
-        return currentSortKey === '' ? filteredByOwnedBallList : sortList(currentSortKey, filteredByOwnedBallList)
-    } else if (otherKeys.length !== 0) {
+        if (gameFilters.length !== 0) {
+            const finalFilteredListStep = filteredByOwnedBallList.filter((pokemon) => {
+                const gameInfo = availableGamesInfo[pokemon.name]
+                const noGame = gameFilters[0] === 'no-game'
+                if (noGame) {
+                    const noGames = gameInfo === undefined || gameInfo.length === 0
+                    return noGames
+                }
+                const isAvailableInAllGames = gameInfo !== undefined && !gameFilters.map(gF => gameInfo.includes(gF)).includes(false)
+                return isAvailableInAllGames
+            })
+            const finalFilteredList = showFullSets ? finalFilteredListStep : hideFullSets(finalFilteredListStep)
+            return currentSortKey === '' ? finalFilteredList : sortList(currentSortKey, finalFilteredList)
+        }
+        const finalFilteredList = showFullSets ? filteredByOwnedBallList : hideFullSets(filteredByOwnedBallList)
+        return currentSortKey === '' ? finalFilteredList : sortList(currentSortKey, finalFilteredList)
+    } else if (tagFilters.length !== 0) {
         const filteredByTagList = filteredList.filter((pokemon) => {
-            const booleanList = Object.values(pokemon.balls).map((ball) => ball[otherKeys[0]] !== undefined)
+            const booleanList = Object.values(pokemon.balls).map((ball) => ball[tagFilters[0]] !== undefined)
             const hasTagKey = booleanList.includes(true)
             return hasTagKey
         })
-        return currentSortKey === '' ? filteredByTagList : sortList(currentSortKey, filteredByTagList)
+        if (gameFilters.length !== 0) {
+            const finalFilteredListStep = filteredByTagList.filter((pokemon) => {
+                const gameInfo = availableGamesInfo[pokemon.name]
+                const noGame = gameFilters[0] === 'no-game'
+                if (noGame) {
+                    const noGames = gameInfo === undefined || gameInfo.length === 0
+                    return noGames
+                }
+                const isAvailableInAllGames = gameInfo !== undefined && !gameFilters.map(gF => gameInfo.includes(gF)).includes(false)
+                return isAvailableInAllGames
+            })
+            const finalFilteredList = showFullSets ? finalFilteredListStep : hideFullSets(finalFilteredListStep)
+            return currentSortKey === '' ? finalFilteredList : sortList(currentSortKey, finalFilteredList)
+        }
+    
+        const finalFilteredList = showFullSets ? filteredByTagList : hideFullSets(filteredByTagList)
+        return currentSortKey === '' ? finalFilteredList : sortList(currentSortKey, finalFilteredList)
     } 
+    if (gameFilters.length !== 0) {
+        const finalFilteredListStep = filteredList.filter((pokemon) => {
+            const gameInfo = availableGamesInfo[pokemon.name]
+            const noGame = gameFilters[0] === 'no-game'
+            if (noGame) {
+                const noGames = gameInfo === undefined || gameInfo.length === 0
+                return noGames
+            }
+            const isAvailableInAllGames = gameInfo !== undefined && !gameFilters.map(gF => gameInfo.includes(gF)).includes(false)
+            return isAvailableInAllGames
+        })
+        const finalFilteredList = showFullSets ? finalFilteredListStep : hideFullSets(finalFilteredListStep)
+        return currentSortKey === '' ? finalFilteredList : sortList(currentSortKey, finalFilteredList)
+    }
 
-    return currentSortKey === '' ? filteredList : sortList(currentSortKey, filteredList)
+    const finalFilteredList = showFullSets ? filteredList : hideFullSets(filteredList)
+    return currentSortKey === '' ? finalFilteredList : sortList(currentSortKey, finalFilteredList)
 }
 
 const filterByGen = (list, genFilter, listType) => {
@@ -91,12 +140,27 @@ const filterByTag = (list, tagFilter) => {
     return newList
 }
 
-const filterList = (list=[], filterKey, filterCategory, listType, totalList=[], reFilterList=false, filterKeys=[], currentSortKey='') => {
+const filterByGame = (list, gameFilters, availableGamesInfo) => {
+    const newList = list.filter(pokemon => {
+        const gameInfo = availableGamesInfo[pokemon.name]
+        const noGame = gameFilters[0] === 'no-game'
+        if (noGame) {
+            const noGames = gameInfo === undefined || gameInfo.length === 0
+            return noGames
+        }
+        const isAvailableInAllGames = gameInfo !== undefined && !gameFilters.map(gF => gameInfo.includes(gF)).includes(false)
+        return isAvailableInAllGames
+    })
+    return newList
+}
+
+const filterList = (list=[], filterKey, filterCategory, listType, totalList=[], reFilterList=false, filterKeys={}, currentSortKey='', availableGamesInfo={}, showFullSets=true) => {
     if (reFilterList) { //refer to filter.jsx notes for when refiltering the list (taking the total list and re-adding filters) is required
-        const ballFilters = filterKeys.filter(key => apriballs.includes(key))
-        const genFilters = filterKeys.filter(key => generations.includes(key))
-        const otherFilters = filterKeys.filter(key => (!generations.includes(key) && !apriballs.includes(key)))
-        const filteredList = filterMultipleKeys(totalList, genFilters, ballFilters, otherFilters, currentSortKey, listType)
+        const ballFilters = filterKeys.ballFilters.filter(key => apriballs.includes(key))
+        const genFilters = filterKeys.genFilters.filter(key => generations.includes(key))
+        const otherFiltersStep = filterKeys.otherFilters.filter(key => homeDisplayGames.includes(key) || key === 'highlyWanted' || key === 'pending' || key === 'no-game')
+        const otherFilters = otherFiltersStep.filter((key, idx) => otherFiltersStep.indexOf(key) === idx)
+        const filteredList = filterMultipleKeys(totalList, genFilters, ballFilters, otherFilters, currentSortKey, listType, availableGamesInfo, showFullSets)
         return filteredList
     }
     if (filterCategory === 'ballFilters') {
@@ -104,8 +168,13 @@ const filterList = (list=[], filterKey, filterCategory, listType, totalList=[], 
     } else if (filterCategory === 'genFilters') {
         return filterByGen(list, filterKey, listType)
     } else if (filterCategory === 'otherFilters') {
+        const isGameFilter = homeDisplayGames.includes(filterKey) || filterKey === 'no-game'
+        if (isGameFilter) {
+            const gameFilters = filterKeys.filter(f => homeDisplayGames.includes(f) || f === 'no-game')
+            return filterByGame(list, gameFilters, availableGamesInfo)
+        }
         return filterByTag(list, filterKey)
-    }
+    } 
 }
 
 export {filterList, checkForTypeOfFilter}

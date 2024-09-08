@@ -23,6 +23,7 @@ export default function ShowOnHandList({onhandList, collectionID, styles, collec
     const link = useLocation().pathname
     const previousScrollPosition = useSelector((state) => state.collectionState.previousOnhandScrollPosition)
     const previousColId = useSelector((state) => state.collectionState.prevColId)
+    const availableGamesInfo = useSelector((state) => state.collectionState.availableGamesInfo)
 
     const trueOnhandView = localOnhandView ? localOnhandView : viewType
 
@@ -126,6 +127,7 @@ export default function ShowOnHandList({onhandList, collectionID, styles, collec
                 collectionId={collectionID}
                 styles={styles}
                 allEggMoveInfo={eggMoveInfo}
+                availableGamesInfo={availableGamesInfo}
                 isEditMode={isEditMode}
                 isHomeCollection={isHomeCollection}
                 isTradePage={isTradePage}
@@ -139,11 +141,13 @@ export default function ShowOnHandList({onhandList, collectionID, styles, collec
 
     function rowContentByPokemon(_index, row) {
         const byPokemonColumns = setColumns(userData, ballScopeDisplay)
+        const availableGamesData = isHomeCollection ? {availableGames: availableGamesInfo[row.name]} : {}
         return (
             <OnHandByPokemonDisplay 
                 row={row}
                 columns={byPokemonColumns}
                 styles={collectionListStyles}
+                {...availableGamesData}
             />
         )
     }

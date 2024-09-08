@@ -66,13 +66,13 @@ export default function IsOwnedCheckbox({ballInfo, id, handleEditBallInfo, pokeN
         return (
             <Typography
                 sx={{
-                    color: 'white',
+                    color: theme.palette.color3.light,
                     border: 'none',
                     position: 'absolute',
                     margin: 0,
                     padding: '2px',
                     fontWeight: 700,
-                    opacity: 0.5,
+                    opacity: tagType === 'highlyWanted' ? 1 : 0.5,
                     top: '-23px',
                     fontSize: '12px'
                 }}
