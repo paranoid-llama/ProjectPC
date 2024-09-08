@@ -112,7 +112,7 @@ export default function UserNotifications({userData}) {
                             <Box sx={{...theme.components.box.fullCenterCol, height: '10%', width: '20%', position: 'absolute', left: '0px', bottom: '0px'}}>
                                 <Button sx={{fontSize: '12px'}} onClick={() => {setRouteState({...routeState, viewNotification: ''})}}>See all notifications</Button>
                             </Box>
-                            {viewNotificationDetails.type === 'update' &&
+                            {viewNotificationDetails.type === 'site update' &&
                             <Box sx={{...theme.components.box.fullCenterCol, height: '10%', width: '20%', position: 'absolute', left: '0px', right: '0px'}}>
                                 <Button sx={{fontSize: '12px'}} onClick={() => {navigate('/announcements')}}>See announcements</Button>
                             </Box>
