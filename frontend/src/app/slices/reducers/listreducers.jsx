@@ -53,8 +53,8 @@ const collectionReducers = {
         const currentTotalBallData = state.collection[idx].balls
         const maxEMs = possibleEggMoves === undefined ? 0 : possibleEggMoves.length > 4 ? 4 : possibleEggMoves.length
         const newBallData = {}
-        Object.keys(state.collection[idx].balls).forEach(b => {
-            const ballData = state.collection[idx].balls[b]
+        Object.keys(currentTotalBallData).forEach(b => {
+            const ballData = currentTotalBallData[b]
             if (ballData.disabled || ballData.isOwned) {
                 newBallData[b] = ballData
             } else {
@@ -62,8 +62,6 @@ const collectionReducers = {
                 newBallData[b] = newBallParticularData
             }
         })
-        console.log(currentTotalBallData)
-        console.log(newBallData)
         state.collection[idx].balls = newBallData
         return state
     }

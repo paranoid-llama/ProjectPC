@@ -124,7 +124,7 @@ const filterByGen = (list, genFilter, listType) => {
 
 const filterByOwnedBall = (list, ballFilter, listType) => {
     const newList = listType === 'collection' ? list.filter((pokemon) => pokemon.balls[ballFilter] !== undefined && pokemon.balls[ballFilter].isOwned === true) : 
-                        list[0].balls !== undefined ?  
+                        (list[0] !== undefined && list[0].balls !== undefined) ?  
                             list.filter(p => p.balls[ballFilter] !== undefined && p.balls[ballFilter].numTotal !== 0) : 
                             list.filter((pokemon) => pokemon.ball === ballFilter)
     return newList

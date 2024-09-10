@@ -84,12 +84,14 @@ const displayReducers = {
         //                                 (changingTagBallFilters && filterCategory === 'otherFilters') ? [...prevActiveFilters.filter((key) => !apriballs.includes(key)), filterKey] : 
         //                                 [...prevActiveFilters, filterKey]
         const listSpecificFilters = state.listDisplay[`${listType}Filters`].filters
+        if (changingTagBallFilters && filterCategory === 'ballFilters') {state.listDisplay[`${listType}Filters`].filters.otherFilters = [...state.listDisplay[`${listType}Filters`].filters.otherFilters.filter(k => k !== 'highlyWanted' && k !== 'pending')]}
+        if (changingTagBallFilters && filterCategory === 'otherFilters') {state.listDisplay[`${listType}Filters`].filters.ballFilters = []}
         const specificCatCurrFilters = listSpecificFilters[filterCategory]
         const newCatActiveFilterList = {
             [filterCategory]: specificCatCurrFilters.includes(filterKey) ? specificCatCurrFilters.filter(k => k !== filterKey) : 
                 switchingTags ? specificCatCurrFilters.filter(k => k !== otherTag).concat([filterKey]) : 
-                changingTagBallFilters && filterCategory === 'ballFilters' ? [...specificCatCurrFilters.filter(k => k !== 'highlyWanted' && k !== 'pending'), filterKey] : 
-                changingTagBallFilters && filterCategory === 'otherFilters' ? [...specificCatCurrFilters.filter(k => !apriballs.includes(k)), filterKey] : 
+                // changingTagBallFilters && filterCategory === 'ballFilters' ? [...specificCatCurrFilters.filter(k => k !== 'highlyWanted' && k !== 'pending'), filterKey] : 
+                // changingTagBallFilters && filterCategory === 'otherFilters' ? [...specificCatCurrFilters.filter(k => !apriballs.includes(k)), filterKey] : 
                 switchingBetweenNoGameAndGame ? [...specificCatCurrFilters.filter(f => filterKey === 'no-game' ? !homeDisplayGames.includes(f) : f !== 'no-game'), filterKey] :
                 [...specificCatCurrFilters, filterKey] 
         }
@@ -104,8 +106,7 @@ const displayReducers = {
             const filteredList = filterList([], filterKey, filterCategory, listType, totalList, reFilterList, newTotalActiveFilterList, currentSortKey, availableGamesInfo, state.listDisplay.showFullSets)
             state.listDisplay[listType] = filteredList
             state.listDisplay[`${listType}Filters`].filters[filterCategory] = newActiveFilterList
-            if (changingTagBallFilters && filterCategory === 'ballFilters') {state.listDisplay[`${listType}Filters`].filters.otherFilters = [...state.listDisplay[`${listType}Filters`].filters.otherFilters.filter(k => k !== 'highlyWanted' && k !== 'pending')]}
-            if (changingTagBallFilters && filterCategory === 'otherFilters') {state.listDisplay[`${listType}Filters`].filters.ballFilters = []}
+            
             // const newState = (changingTagBallFilters && filterCategory === 'ballFilters') ? 
             //     {...state, [listType]: filteredList, [`${listType}Filters`]: {...state[`${listType}Filters`], filters: {...state[`${listType}Filters`].filters, [filterCategory]: newActiveFilterList, otherFilters: []}}} :
             //     (changingTagBallFilters && filterCategory === 'otherFilters') ?
@@ -114,7 +115,7 @@ const displayReducers = {
             return state
         }
         if (noFilters) {
-            const totalListStep1 = listType === 'collection' && !state.listDisplay.showFullSets ? hideFullSets() : totalList
+            const totalListStep1 = listType === 'collection' && !state.listDisplay.showFullSets ? hideFullSets(totalList) : totalList
             const correctlySortedTotalList = currentSortKey === '' ? totalListStep1 : sortList(currentSortKey, totalListStep1)
             state.listDisplay[listType] = correctlySortedTotalList
             state.listDisplay[`${listType}Filters`].filters = {ballFilters: [], genFilters: [], otherFilters: []}
