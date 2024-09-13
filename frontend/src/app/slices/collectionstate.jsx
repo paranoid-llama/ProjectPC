@@ -110,7 +110,7 @@ const collectionState = createSlice({
         builder
             .addCase(fetchCollectionData.fulfilled, (state, action) => {
                 state.collection = action.payload.ownedPokemon
-                if (state.listDisplay.collection.length === 0) {state.listDisplay.collection = action.payload.ownedPokemon.filter(p => !(p.disabled))}
+                if (state.listDisplay.collection.length === 0) {state.listDisplay.collection = action.payload.ownedPokemon}
 
                 state.onhand = action.payload.onHand
                 if (state.listDisplay.onhand.length === 0){

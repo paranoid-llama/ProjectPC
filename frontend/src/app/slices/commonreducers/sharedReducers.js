@@ -87,7 +87,7 @@ export const commonReducers = {
         state.onhand = []
         
         
-        if (!currColUrl.includes(state.latestColId)) {
+        if (currColUrl !== undefined && !currColUrl.includes(state.latestColId)) {
             state.listDisplay.showFullSets = true
             state.listDisplay.collection = col.ownedPokemon.filter(p => !(p.disabled))
         } else {
