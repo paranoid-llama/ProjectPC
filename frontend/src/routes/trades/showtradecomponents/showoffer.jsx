@@ -11,6 +11,10 @@ import ScrollBar from '../../../components/functionalcomponents/scrollbar'
 import { acceptTradeOffer, rejectTradeOffer, counterTradeOffer, cancelTrade, toggleMarkedAsComplete } from '../../../../utils/functions/backendrequests/trades/traderesponse'
 import ConfirmDecisionModal from '../../../components/functionalcomponents/confirmdecisionmodal'
 import DotWaitingText from '../../../components/functionalcomponents/dotwaitingtext'
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import { capitalizeFirstLetter } from '../../../../utils/functions/misc'
+import { items } from '../../../../common/infoconstants/miscconstants.mjs'
+import getNameDisplay from '../../../../utils/functions/display/getnamedisplay'
 
 export default function ShowOffer({numOfOffers, tradeParticipants, offersBasicData, selectedOfferIdx, selectedOfferData, handleSelectedOfferChange, tradeId, tradeUsers, isPending, markedCompleteData, tradeStatus, errorSelection}) {
     const theme = useTheme()
@@ -21,6 +25,7 @@ export default function ShowOffer({numOfOffers, tradeParticipants, offersBasicDa
     const [statuses, setStatuses] = useState({tradeStatus, offerStatus: selectedOfferData.status})
     const [confirmDecisionModal, setConfirmDecisionModal] = useState({open: false, error: false, type: ''})
     const [markingComplete, setMarkingComplete] = useState(false)
+    const [copiedToClipboard, setCopiedToClipboard] = useState({offer: false, receiving: false})
     const isLatestOffer = numOfOffers === selectedOfferIdx+1
     const isTradeParticipant = loggedInUserData.loggedIn && tradeParticipants.includes(loggedInUserData.user.username)
     const otherParticipant = isTradeParticipant && tradeParticipants.filter(tradePart => tradePart !== loggedInUserData.user.username)[0]
@@ -56,6 +61,46 @@ export default function ShowOffer({numOfOffers, tradeParticipants, offersBasicDa
     useEffect(() => {
         setStatuses({...statuses, offerStatus: selectedOfferData.status})
     }, [selectedOfferData._id])
+    useEffect(() => {
+        if (copiedToClipboard.offer || copiedToClipboard.receiving) {
+            setTimeout(() => {
+                setCopiedToClipboard({offer: false, receiving: false})
+            }, 3000)
+        }
+    }, [copiedToClipboard.offer, copiedToClipboard.receiving])
+
+    const copyToClipboardFunc = (side) => {
+        const sideToUse = side === 'offer' ? selectedOfferData.trade.offer : selectedOfferData.trade.receiving
+        let text = ''
+        if (sideToUse.pokemon !== undefined) {
+            sideToUse.pokemon.forEach((p, idx) => {
+                p.balls.forEach(b => {
+                    const isLastEntry = idx === sideToUse.pokemon.length-1 && sideToUse.items === undefined
+                    const display = `${capitalizeFirstLetter(b.ball)}${b.isHA ? ' HA ' : ' '}${getNameDisplay(userNameDisplaySettings, p.name, p.natDexNum)}${b.onhandId !== undefined ? ' (On-Hand)' : ''}`
+                    if (isLastEntry) {
+                        text = text+display
+                    } else {
+                        text = text+`${display}\n`
+                    }
+                })
+            }) 
+        }
+        if (sideToUse.items !== undefined) {
+            sideToUse.items.forEach((i, idx) => {
+                const isLastEntry = idx === sideToUse.items.length-1
+                const nameDisplay = items.filter(item => item.value === i.name)[0].display
+                const display = `${nameDisplay} x${i.qty}`
+                if (isLastEntry) {
+                    text = text+display
+                }
+                else {
+                    text = text+`${display}\n`
+                }
+            })
+        }
+        navigator.clipboard.writeText(text)
+        setCopiedToClipboard({...copiedToClipboard, [side]: true})
+    }
 
     const offerPokemon = selectedOfferData.trade.offer.pokemon === undefined ? [] : reFormatToIndividual(selectedOfferData.trade.offer.pokemon, true)
     const receivingPokemon = selectedOfferData.trade.receiving.pokemon === undefined ? [] : reFormatToIndividual(selectedOfferData.trade.receiving.pokemon, true)
@@ -261,7 +306,14 @@ export default function ShowOffer({numOfOffers, tradeParticipants, offersBasicDa
                                 })
                             }}
                         />
-                        <Typography sx={{color: 'white', fontSize: '14px', mt: 0.5}}>{offerPokemon.length !== 0 ? `${offerPokemon.length} Aprimon${offerItemCount !== 0 ? ',' : ''} ` : ''}{offerItemCount !== 0 ? `${offerItemCount} Items ` : ''}(Value: {selectedOfferData.trade.offer.value})</Typography>
+                        <Box sx={{...theme.components.box.fullCenterRow, width: '100%'}}>
+                            <Box sx={{...theme.components.box.fullCenterRow, justifyContent: 'start', width: '50%'}}>
+                                <Typography sx={{color: 'white', fontSize: '14px', mt: 0.5, textIndent: '20px'}}>{offerPokemon.length !== 0 ? `${offerPokemon.length} Aprimon${offerItemCount !== 0 ? ',' : ''} ` : ''}{offerItemCount !== 0 ? `${offerItemCount} Items ` : ''}(Value: {selectedOfferData.trade.offer.value})</Typography>
+                            </Box>
+                            <Box sx={{...theme.components.box.fullCenterRow, justifyContent: 'end', width: '50%', mr: '20px'}}>
+                                <Tooltip title={copiedToClipboard.offer ? 'Copied!' : 'Copy to Clipboard'} arrow><Button onClick={() => copyToClipboardFunc('offer')}><ContentCopyIcon sx={{color: 'white', fontSize: '22px'}}/></Button></Tooltip>
+                            </Box>
+                        </Box>
                     </Box>
                     <Box sx={{...theme.components.box.fullCenterCol, width: '45%', height: '100%'}}>
                     <Typography sx={{color: 'white'}}>What they're requesting:</Typography>
@@ -280,7 +332,14 @@ export default function ShowOffer({numOfOffers, tradeParticipants, offersBasicDa
                                 })
                             }}
                         />
-                        <Typography sx={{color: 'white', fontSize: '14px', mt: 0.5}}>{receivingPokemon.length !== 0 ? `${receivingPokemon.length} Aprimon${receivingItemCount !== 0 ? ',' : ''} ` : ''}{receivingItemCount !== 0 ? `${receivingItemCount} Items ` : ''}(Value: {selectedOfferData.trade.receiving.value})</Typography>
+                        <Box sx={{...theme.components.box.fullCenterRow, width: '100%'}}>
+                            <Box sx={{...theme.components.box.fullCenterRow, justifyContent: 'start', width: '50%'}}>   
+                                <Typography sx={{color: 'white', fontSize: '14px', mt: 0.5, textIndent: '20px'}}>{receivingPokemon.length !== 0 ? `${receivingPokemon.length} Aprimon${receivingItemCount !== 0 ? ',' : ''} ` : ''}{receivingItemCount !== 0 ? `${receivingItemCount} Items ` : ''}(Value: {selectedOfferData.trade.receiving.value})</Typography>
+                            </Box>
+                            <Box sx={{...theme.components.box.fullCenterRow, justifyContent: 'end', width: '50%', mr: '20px'}}>
+                                <Tooltip title={copiedToClipboard.receiving ? 'Copied!' : 'Copy to Clipboard'} arrow><Button onClick={() => copyToClipboardFunc('receiving')}><ContentCopyIcon sx={{color: 'white', fontSize: '22px'}}/></Button></Tooltip>
+                            </Box>
+                        </Box>
                     </Box>
                 </Box>
             </Box>
