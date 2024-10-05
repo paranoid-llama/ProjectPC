@@ -76,7 +76,10 @@ export default function WhatAreAprimon({}) {
             {!userData.loggedIn && 
             <Box sx={{width: '50%', mt: 4, height: '100px', borderRadius: '10px', backgroundColor: theme.palette.color1.light, color: theme.palette.color1.contrastTextLight, ...theme.components.box.fullCenterCol}}>
                 <Typography sx={{fontSize: '24px', fontWeight: 700}}>Sounds fun, I wanna try!</Typography>
-                <Button size='large' onClick={() => navigate('/register')} sx={{'&.MuiButtonBase-root': {color: theme.palette.color1.contrastText, backgroundColor: theme.palette.color2.main}}}>Get Started and Register</Button>
+                <Box sx={{...theme.components.box.fullCenterRow, gap: 3}}>
+                    <Button size='large' onClick={() => navigate('/demo-collection/new')} sx={{'&.MuiButtonBase-root': {color: theme.palette.color1.contrastText, backgroundColor: theme.palette.color2.main}}}>Try a demo</Button>
+                    <Button size='large' onClick={() => navigate('/register')} sx={{'&.MuiButtonBase-root': {color: theme.palette.color1.contrastText, backgroundColor: theme.palette.color2.main}}}>Register</Button>
+                </Box>
             </Box>}
         </InfoWrapper>
     )
