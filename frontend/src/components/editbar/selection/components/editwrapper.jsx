@@ -5,7 +5,7 @@ import ImgData from '../../../collectiontable/tabledata/imgdata'
 
 export default function EditWrapper({children, imgLink, name, natDexNum, onClickFunc=undefined}) {
     const hoverStyles = onClickFunc !== undefined ? {'&:hover': {backgroundColor: '#cbcfd0', cursor: 'pointer'}} : {}
-    const userNameDisplaySettings = useRouteLoaderData('root').user.settings.display.pokemonNames
+    const userNameDisplaySettings = useRouteLoaderData('root').user === undefined ? undefined : useRouteLoaderData('root').user.settings.display.pokemonNames
     return (
         <Box sx={{width: '100%', height: '100%', display: 'flex', justifyContent: 'start', alignItems: 'center', gap: '1%'}}>
             <Box>

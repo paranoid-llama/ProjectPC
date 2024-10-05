@@ -3,7 +3,7 @@ import { createNewCollection } from "../../utils/functions/backendrequests/newco
 import { useState, useTransition, useRef, useEffect, useContext } from "react";
 import { Virtuoso } from "react-virtuoso";
 import { ErrorContext } from "../app/contexts/errorcontext";
-import {Box, Typography, Button} from "@mui/material";
+import {Box, Typography, Button, useTheme} from "@mui/material";
 import Header from "../components/titlecomponents/subcomponents/header";
 import BodyWrapper from "../components/partials/routepartials/bodywrapper";
 import BodyWithBanner from "../components/partials/routepartials/bodywithbanner";
@@ -15,14 +15,16 @@ import OptionSelection from "../components/collectioncreation/stepcomponents/opt
 import ReviewFinalizeBase from "../components/collectioncreation/stepcomponents/finalize/shared/reviewfinalizebase";
 import { selectAdjArrItem, capitalizeFirstLetter } from "../../utils/functions/misc";
 import { getPokemonGroups } from "../../utils/functions/backendrequests/getpokemongroups";
+import createDemoCollectionBackendRequest from "../../utils/functions/backendrequests/createnewdemocollection";
 import { ballIntros, apriballs, genGames } from "../../common/infoconstants/miscconstants.mjs";
 import { customSortCollectionListLogic } from "../../common/sortingfunctions/customsorting.mjs";
 import { creationInitializeScopeFormData } from "../../utils/functions/scope/statechanges";
 import { getOneArrData } from "../../utils/functions/scope/getonearrdata";
 import './newCollection.css'
 
-export default function NewCollection() {
+export default function NewCollection({demo=false}) {
     const navigate = useNavigate()
+    const theme = useTheme()
     const {handleError} = useContext(ErrorContext)
     const userData = useRouteLoaderData("root").user
     const revalidator = useRevalidator()
@@ -142,7 +144,7 @@ export default function NewCollection() {
         const newCustomSort = [...options.sorting.customSort, ...options.sorting.holdPokemon]
         options.sorting.customSort = newCustomSort
         options.sorting.holdPokemon = []
-        options.collectionName = collectionName === '' ? `${userData.username}'s ${formData.collectionType.subType} ${capitalizeFirstLetter(formData.collectionType.type)} Collection` : collectionName
+        options.collectionName = collectionName === '' ? `${demo ? 'My' : `${userData.username}'s`} ${formData.collectionType.subType} ${capitalizeFirstLetter(formData.collectionType.type)} Collection` : collectionName
         if (totalBalls.length !== options.sorting.onhand.ballOrder.length) {
             options.sorting.onhand.ballOrder = [...options.sorting.onhand.ballOrder, ...totalBalls.filter(ball => !options.sorting.onhand.ballOrder.includes(ball))]
         }
@@ -182,9 +184,10 @@ export default function NewCollection() {
             options: backendOptionsFormat,
             customSort: formData.options.sorting.customSort,
             collectionName: formData.options.collectionName,
-            owner: userData._id
+            owner: demo ? 'demo-user' : userData._id
         }
-        const finalizeCreationFunc = async() => {return await createNewCollection(newCollectionInfo, formData.collectionType.type)}
+        const finalizeCreationFunc = demo ? async() => {return await createDemoCollectionBackendRequest(newCollectionInfo, formData.collectionType.type)} : 
+            async() => {return await createNewCollection(newCollectionInfo, formData.collectionType.type)}
         handleError(finalizeCreationFunc, false, finalizeCreationSuccess, () => {})
         // const collectionId = await createNewCollection(newCollectionInfo, formData.collectionType.type)
         
@@ -196,6 +199,7 @@ export default function NewCollection() {
     }
 
     const finalizeCreationSuccess = (newId) => {
+        //note: newId becomes a complete collection object if its a demo collection
         setTimeout(() => {
             setFormData({...formData, redirectLink: newId})
             revalidator.revalidate()
@@ -214,15 +218,26 @@ export default function NewCollection() {
         }, 500)
     }
 
+    const demoBannerProps = demo ? {
+        doubleBanner: true,
+        doubleBannerSx: {alignItems: 'center', fontSize: '14px', backgroundColor: theme.palette.color3.main, color: theme.palette.color1.main},
+        doubleBannerText: <><span>You are not logged in and are now creating a demo collection.</span><span>You will only be able to permanently save your collection after you register!</span></>
+    } : {}
+
     // console.log(formData)
 
     return (
-        <BodyWithBanner bodySx={{overflowX: 'hidden', overflowY: 'hidden', height: '100%', mt: 2, mb: 0, display: 'flex', justifyContent: 'center'}} bannerSx={{backgroundColor: '#26BCC9', color: 'black'}} text='Create New Collection'>
+        <BodyWithBanner bodySx={{overflowX: 'hidden', overflowY: 'hidden', height: '100%', mt: 2, mb: 0, display: 'flex', justifyContent: 'start', alignItems: 'center', flexDirection: 'column'}} bannerSx={{backgroundColor: '#26BCC9', color: 'black'}} text='Create New Collection' {...demoBannerProps}>
             {/*extra box with margin top needed due to overflow*/}
+            {/* {demo && 
+            <Box sx={{width: '100%', mx: -10, alignItems: 'center', backgroundColor: theme.palette.color3.main}}>
+                <Typography sx={{color: theme.palette.color1.main}}>You are not logged in and now creating a demo collection. You will only be able to permanently save your collection after you register!</Typography>
+            </Box>
+            } */}
             <Box sx={{height: '100%', mt: 3, mx: 1, width: '100%', maxWidth: '1200px'}}> 
                 <CreationProgress progress={creationProgress} />
                 {(formBodyProgress === 0 || slideClasses.step1 !== 'none') && 
-                    <CollectionTypeSelection handleChange={handleCollectionTypeChange} cssClass={slideClasses.step1} userData={userData}/>
+                    <CollectionTypeSelection handleChange={handleCollectionTypeChange} cssClass={slideClasses.step1} userData={userData} demo={true}/>
                 }
                 {(formBodyProgress === 25 || slideClasses.step2 !== 'none') && 
                     <ImportSelection 
@@ -255,6 +270,7 @@ export default function NewCollection() {
                         customSort={formData.customSort}
                         goBackStep={{stepName: 'Scope Selection', func: goBackStep}}
                         userData={userData}
+                        demo={demo}
                         handleChange={handleOptionsSelection}
                     />
                 }
@@ -265,6 +281,7 @@ export default function NewCollection() {
                         cssClass={slideClasses.step5}
                         goBackStep={{stepName: 'Options Selection', func: goBackStep}}
                         redirectLink={formData.redirectLink}
+                        demo={demo}
                         handleChange={finalizeCreation}
                     />
                 }

@@ -10,7 +10,7 @@ import ShowSelectionConfirm from './showselectionconfirm'
 import RenderCollectionEdit from './collectionlist/rendercollectionedit'
 import RenderOnHandEdit from './onhandlist/renderonhandedit'
 
- function DisplaySelection({collection, selection, listType, showEditScreen, pokemon, idxOfPokemon}) {
+ function DisplaySelection({collection, selection, listType, showEditScreen, pokemon, idxOfPokemon, demo}) {
     const ownerID = collection.owner._id
     const collectionID = collection._id
     // console.log(pokemon)
@@ -36,10 +36,10 @@ import RenderOnHandEdit from './onhandlist/renderonhandedit'
             additionalStyles={{color: 'black', justifyContent: 'center', position: 'relative', display: 'flex', height: '100%', zIndex: 999}}
         >
             {/* {onHandNoSelection ? <Box sx={{width: '81.5136%', display: 'flex', justifyContent: 'end'}}><NothingSelected listType={listType}/></Box> : */}
-            {noSelection ? <NothingSelected listType={listType} onhandViewType={onhandViewType} isHomeCollection={collection.gen === 'home'} collectionID={collectionID}/> :
+            {noSelection ? <NothingSelected listType={listType} onhandViewType={onhandViewType} isHomeCollection={collection.gen === 'home'} collectionID={collectionID} demo={demo}/> :
             showEditScreen === false ? <ShowSelectionConfirm listType={listType} pokemon={pokemon} pokemonDeletedFromMemory={pokemonDeletedFromMemory} pokemonIdx={idxOfPokemon} globalDefault={globalDefault} possibleEggMoves={allEggMoves[pokemon.name]}/> :
             listType === 'collection' ? <RenderCollectionEdit collectionId={collection._id} ownerId={ownerID} pokemon={pokemon} ballInfo={pokemonBallInfo} allEggMoves={allEggMoves} isHomeCollection={collection.gen === 'home'}/> :
-            listType === 'onHand' && <RenderOnHandEdit collectionId={collection._id} ownerId={ownerID} pokemon={pokemon} idxOfPokemon={idxOfPokemon} allEggMoves={allEggMoves} isHomeCollection={collection.gen === 'home'}/>
+            listType === 'onHand' && <RenderOnHandEdit collectionId={collection._id} ownerId={ownerID} pokemon={pokemon} idxOfPokemon={idxOfPokemon} allEggMoves={allEggMoves} isHomeCollection={collection.gen === 'home'} demo={demo}/>
             }
         </FlexAppBarContainer>
         <MiscButtonArea 
@@ -55,7 +55,7 @@ import RenderOnHandEdit from './onhandlist/renderonhandedit'
                     isHA: pokemon.isHA, 
                     emCount: pokemon.emCount,
                     gender: pokemon.gender,
-                    isMaxEMs: pokemon.emCount === 4 || (collection.gen === 'home' ? true : pokemon.emCount === collection.eggMoveInfo[pokemon.name].length),
+                    isMaxEMs: pokemon.emCount === 4 || (collection.gen === 'home' ? true : pokemon.emCount === allEggMoves[pokemon.name].length),
                     pokemonId: pokemon._id
                 } : 
                 buttonArea === 'collectionEdit' && 
@@ -68,6 +68,7 @@ import RenderOnHandEdit from './onhandlist/renderonhandedit'
                                     pokemon.balls[selectedBall].pending !== undefined ? 'pending' : 'none'
                     }
             }
+            demo={demo}
         />
         </>
     )

@@ -15,7 +15,7 @@ import displayOnHandByPokemon from '../../../../utils/functions/display/displayo
 import { getGameColor, homeDisplayGames } from '../../../../common/infoconstants/miscconstants.mjs'
 import hexToRgba from 'hex-to-rgba'
 
-export default function Filter({listType, collection, isOwner, isEditMode}) {
+export default function Filter({listType, collection, isOwner, isEditMode, demo}) {
     const dispatch = useDispatch()
     const theme = useTheme()
     const collectionGen = collection.gen
@@ -26,7 +26,7 @@ export default function Filter({listType, collection, isOwner, isEditMode}) {
     const onhandViewType = useSelector(state => state.collectionState.listDisplay.onhandView)
     const nameDisplaySettings = !userData.loggedIn ? undefined : userData.user.settings.display.pokemonNames
     const gens = collection.gen === 'home' ? genRomans : genRomans.slice(0, genNum)
-    const ballScope = isEditMode ? useSelector((state) => state.collectionState.options.collectingBalls) : collection.options.collectingBalls
+    const ballScope = isEditMode || demo ? useSelector((state) => state.collectionState.options.collectingBalls) : collection.options.collectingBalls
 
     const ToggleButton = styled(MuiToggleButton)({
         '&.MuiToggleButton-sizeSmall': {
@@ -38,11 +38,14 @@ export default function Filter({listType, collection, isOwner, isEditMode}) {
         }
     })
 
-    const listLiteralState = listType === 'collection' ? useSelector((state) => state.collectionState.collection) : onhandViewType === 'byPokemon' ? displayOnHandByPokemon(useSelector((state) => state.collectionState.onhand), isEditMode ? useSelector((state) => state.collectionState.collection) : collection.ownedPokemon) : useSelector((state) => state.collectionState.onhand)
+    const collectionLiteral = useSelector((state) => state.collectionState.collection)
+    const onhandLiteral = useSelector((state) => state.collectionState.onhand)
+    const listLiteralStateStep1 = listType === 'collection' ? collectionLiteral : onhandLiteral
+    const listLiteralState = listType !== 'collection' && onhandViewType === 'byPokemon' ? displayOnHandByPokemon(listLiteralStateStep1, (isEditMode || demo) ? collectionLiteral : collection.ownedPokemon) : listLiteralStateStep1
 
     const currentFilters = listType === 'collection' ? useSelector((state) => state.collectionState.listDisplay.collectionFilters) : useSelector((state) => state.collectionState.listDisplay.onhandFilters)
     const listState = listType === 'collection' ? useSelector((state) => state.collectionState.listDisplay.collection) : useSelector((state) => state.collectionState.listDisplay.onhand)
-    const totalList = (isEditMode) ? listType === 'collection' ? listLiteralState.filter((mon) => mon.disabled === undefined) : listLiteralState : listType === 'collection' ? collection.ownedPokemon.filter(p => p.disabled === undefined) : onhandViewType === 'byPokemon' ? displayOnHandByPokemon(collection.onHand, collection.ownedPokemon) : collection.onHand
+    const totalList = (isEditMode || demo) ? listType === 'collection' ? listLiteralState.filter((mon) => mon.disabled === undefined) : listLiteralState : listType === 'collection' ? collection.ownedPokemon.filter(p => p.disabled === undefined) : onhandViewType === 'byPokemon' ? displayOnHandByPokemon(collection.onHand, collection.ownedPokemon) : collection.onHand
     const availableGamesInfo = useSelector((state) => state.collectionState.availableGamesInfo)
     const ballFilters = currentFilters.filters.ballFilters
     const genFilters = currentFilters.filters.genFilters
@@ -241,7 +244,7 @@ export default function Filter({listType, collection, isOwner, isEditMode}) {
                     }}
                     onClick={() => {
                         dispatch(deselect())
-                        dispatch(resetFilters({useState: isEditMode, collection: collection.ownedPokemon.filter(p => p.disabled === undefined), onhand: collection.onHand, listType}))
+                        dispatch(resetFilters({useState: (isEditMode || demo), collection: collection.ownedPokemon.filter(p => p.disabled === undefined), onhand: collection.onHand, listType}))
                     }}
                 >
                     Reset Filters

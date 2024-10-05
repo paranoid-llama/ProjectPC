@@ -15,7 +15,7 @@ import { ballScopeChange } from '../../../../../utils/functions/scope/statechang
 import { saveBallScopeChanges } from '../../../../../utils/functions/scope/savescopechanges'
 import { ownedPokemonEdit } from '../../../../../utils/functions/backendrequests/ownedpokemonedit'
 
-export default function BallScope({elementBg, collectionGen, collectionId}) {
+export default function BallScope({elementBg, collectionGen, collectionId, demo}) {
     const dispatch = useDispatch()
     const {handleError} = useContext(ErrorContext)
     const oneArrLegalBalls = getOneArrData(useSelector((state) => state.editmode.pokemonScopeTotal), false, false)
@@ -82,32 +82,47 @@ export default function BallScope({elementBg, collectionGen, collectionId}) {
     const finalizeChanges = async(saveChanges, nextScreen) => {
         if (saveChanges) {
             const newListState = saveBallScopeChanges(formData.balls, addedBalls, collectionState, legalBallInfo, formData.removedPokemon)
-            const newListBackendFormat = JSON.parse(JSON.stringify(newListState)).map(mon => {
-                delete mon.imgLink
-                delete mon.possibleGender
-                return mon
-            }) 
-            const backendFunc = async() => await ownedPokemonEdit(collectionGen, newListBackendFormat, collectionId, false, [], [], formData.balls)
             setFormData({...formData, saving: true})
-            const successFunc = () => {
+            if (demo) {
                 setTimeout(() => {
                     dispatch(setBallScope({newCollectingBalls: formData.balls, newListState}))
-    
+
                     //spawning alert
                     const alertMessage = `Updated Ball Scope!`
                     const alertInfo = {severity: 'success', message: alertMessage, timeout: 3}
                     const id = addAlert(alertInfo);
                     setAlertIds((prev) => [...prev, id]);
-    
+
                     dispatch(changeModalState({open: false}))
                 }, 1000)
-            }
-            const errorFunc = () => {
-                setTimeout(() => {
-                    dispatch(changeModalState({open: false}))
-                }, 1000)
-            }
-            handleError(backendFunc, false, successFunc, errorFunc)
+            } else {
+                const newListBackendFormat = JSON.parse(JSON.stringify(newListState)).map(mon => {
+                    delete mon.imgLink
+                    delete mon.possibleGender
+                    return mon
+                }) 
+                const backendFunc = async() => await ownedPokemonEdit(collectionGen, newListBackendFormat, collectionId, false, [], [], formData.balls)
+           
+                const successFunc = () => {
+                    setTimeout(() => {
+                        dispatch(setBallScope({newCollectingBalls: formData.balls, newListState}))
+        
+                        //spawning alert
+                        const alertMessage = `Updated Ball Scope!`
+                        const alertInfo = {severity: 'success', message: alertMessage, timeout: 3}
+                        const id = addAlert(alertInfo);
+                        setAlertIds((prev) => [...prev, id]);
+        
+                        dispatch(changeModalState({open: false}))
+                    }, 1000)
+                }
+                const errorFunc = () => {
+                    setTimeout(() => {
+                        dispatch(changeModalState({open: false}))
+                    }, 1000)
+                }
+                handleError(backendFunc, false, successFunc, errorFunc) 
+            } 
         } else if (nextScreen === 'goBack') {
             closeConfirmChangesModal()
         } else if (nextScreen === 'exit') {

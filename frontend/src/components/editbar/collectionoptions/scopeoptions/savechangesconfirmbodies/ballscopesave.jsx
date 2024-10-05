@@ -6,7 +6,7 @@ import ImgData from '../../../../collectiontable/tabledata/imgdata'
 import { capitalizeFirstLetter } from '../../../../../../utils/functions/misc'
 
 export default function BallScopeSave({addedBalls, removedBalls, newBallScope, fullBalls, removedPokemon}) {
-    const nameDisplaySettings = useRouteLoaderData('root').user.settings.display.pokemonNames
+    const nameDisplaySettings = useRouteLoaderData('root').user === undefined ? undefined : useRouteLoaderData('root').user.settings.display.pokemonNames
     const notRemovingPokemon = removedPokemon.length === 0
 
     const listItemContent = (index) => {

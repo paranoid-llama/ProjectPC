@@ -5,7 +5,7 @@ import CollectionTypeCard from './collectiontypecard'
 import { collectionTypes, collectionSubTypes } from '../../../../../common/infoconstants/miscconstants.mjs'
 import './collectiontypeselection.css'
 
-export default function CollectionTypeSelection({handleChange, cssClass, userData}) {
+export default function CollectionTypeSelection({handleChange, cssClass, userData, demo}) {
     const [subTypeSelection, setSubTypeSelection] = useState({screenOpen: Array.from(Array(collectionTypes.length), () => 'firstRender'), addHeight: 'firstRender'}) //whether subtype selection screen is open
     // const [addHeight, setAddHeight] = useState('firstRender')
     const heightClass = subTypeSelection.addHeight === true ? 'add-collection-creation-card-height' : subTypeSelection.addHeight === false ? 'shrink-collection-creation-card-height' : 'none'
@@ -71,6 +71,7 @@ export default function CollectionTypeSelection({handleChange, cssClass, userDat
                         slideClass={(cssClass === 'creation-step-slide-left-exit' && subTypeSelection.screenOpen[idx] === true) ? 'transition-slide-in-subtype' : slideClasses[idx]} 
                         userData={userData}
                         handleChange={handleChange}
+                        demo={demo}
                     />
                 )
             })}

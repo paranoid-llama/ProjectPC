@@ -9,7 +9,7 @@ import { backendChangeOptions } from "../../../../../utils/functions/backendrequ
 import ItemSelectionModalContents from "../../../collectioncreation/stepcomponents/optionsselection/aprimon/itemselectionmodalcontents";
 import SaveChangesConfirmModal from "../savechangesconfirmmodal";
 
-export default function ItemOptions({elementBg, collectionGen, collectionId}) {
+export default function ItemOptions({elementBg, collectionGen, collectionId, demo}) {
     const dispatch = useDispatch()
     const {handleError} = useContext(ErrorContext)
     const tradePreferences = useSelector((state) => state.collectionState.options.tradePreferences)
@@ -105,8 +105,7 @@ export default function ItemOptions({elementBg, collectionGen, collectionId}) {
             const newItems = {lfItems: items.data.lfItems, ftItems: items.data.ftItems}
             setItems({...items, saving: true})
             setTimeout(() => {
-                const backendReq = async() => await backendChangeOptions('items', newItems, collectionId)
-                const successFunc = () => {
+                if (demo) {
                     dispatch(setItemState(newItems))
 
                     //spawning alert
@@ -115,8 +114,20 @@ export default function ItemOptions({elementBg, collectionGen, collectionId}) {
                     const id = addAlert(alertInfo);
                     setAlertIds((prev) => [...prev, id]);
                     dispatch(changeModalState({open: false}))
+                } else {
+                    const backendReq = async() => await backendChangeOptions('items', newItems, collectionId)
+                    const successFunc = () => {
+                        dispatch(setItemState(newItems))
+
+                        //spawning alert
+                        const alertMessage = `Set Item Options!`
+                        const alertInfo = {severity: 'success', message: alertMessage, timeout: 3}
+                        const id = addAlert(alertInfo);
+                        setAlertIds((prev) => [...prev, id]);
+                        dispatch(changeModalState({open: false}))
+                    }
+                    handleError(backendReq, false, successFunc, () => {dispatch(changeModalState({open: false}))})
                 }
-                handleError(backendReq, false, successFunc, () => {dispatch(changeModalState({open: false}))})
             }, 1000)
         } else if (nextScreen === 'goBack') {
             setItems({...items, saveChangesConfirmOpen: false})

@@ -13,7 +13,7 @@ import ControlledTextInput from '../../functionalcomponents/controlledtextinput'
 import SaveChangesConfirmModal from './savechangesconfirmmodal'
 import ConfirmDecisionModal from '../../functionalcomponents/confirmdecisionmodal'
 
-export default function OtherOptions({elementBg, collectionId, collectionGen, collectionType, owner}) {
+export default function OtherOptions({elementBg, collectionId, collectionGen, collectionType, owner, demo}) {
     const dispatch = useDispatch()
     const {handleError} = useContext(ErrorContext)
     const collectionNameState = useSelector((state) => state.collectionState.options.collectionName)
@@ -105,11 +105,7 @@ export default function OtherOptions({elementBg, collectionId, collectionGen, co
             const noGlobalDefaultChanges = (globalDefaultInit.isHA === otherOptions.globalDefaults.isHA) && (globalDefaultInit.emCount === otherOptions.globalDefaults.emCount)
             setOtherOptions({...otherOptions, saving: true})
             setTimeout(() => {
-                const backendType = noNameChanges && !noGlobalDefaultChanges ? 'globalDefault' : 'name'
-                const info = noNameChanges && !noGlobalDefaultChanges ? {globalDefault: otherOptions.globalDefaults} : !noNameChanges && noGlobalDefaultChanges ? {name: newName} : {name: newName, globalDefault: otherOptions.globalDefaults}
-                const backendFunc = async() => await backendChangeOptions(backendType, info, collectionId)
-                
-                const successFunc = () => {
+                if (demo) {
                     if (!noNameChanges && !noGlobalDefaultChanges) {
                         // backendChangeOptions('name', {name: newName, globalDefault: otherOptions.globalDefaults}, collectionId)
                         dispatch(setNameState({name: newName, globalDefault: otherOptions.globalDefaults}))
@@ -127,9 +123,34 @@ export default function OtherOptions({elementBg, collectionId, collectionGen, co
                     const id = addAlert(alertInfo);
                     setAlertIds((prev) => [...prev, id]);
                     dispatch(changeModalState({open: false}))
-                }
+                } else {
+                    const backendType = noNameChanges && !noGlobalDefaultChanges ? 'globalDefault' : 'name'
+                    const info = noNameChanges && !noGlobalDefaultChanges ? {globalDefault: otherOptions.globalDefaults} : !noNameChanges && noGlobalDefaultChanges ? {name: newName} : {name: newName, globalDefault: otherOptions.globalDefaults}
+                    const backendFunc = async() => await backendChangeOptions(backendType, info, collectionId)
+                    
+                    const successFunc = () => {
+                        if (!noNameChanges && !noGlobalDefaultChanges) {
+                            // backendChangeOptions('name', {name: newName, globalDefault: otherOptions.globalDefaults}, collectionId)
+                            dispatch(setNameState({name: newName, globalDefault: otherOptions.globalDefaults}))
+                        } else if (!noNameChanges) {
+                            // backendChangeOptions('name', {name: newName}, collectionId)
+                            dispatch(setNameState({name: newName}))
+                        } else if (!noGlobalDefaultChanges) {
+                            // backendChangeOptions('globalDefault', {globalDefault: otherOptions.globalDefaults}, collectionId)
+                            dispatch(setGlobalDefaultState(otherOptions.globalDefaults))
+                        }
 
-                handleError(backendFunc, false, successFunc, () => {dispatch(changeModalState({open: false}))})
+                        //spawning alert
+                        const alertMessage = `Set Other Options!`
+                        const alertInfo = {severity: 'success', message: alertMessage, timeout: 3}
+                        const id = addAlert(alertInfo);
+                        setAlertIds((prev) => [...prev, id]);
+                        dispatch(changeModalState({open: false}))
+                    }
+
+                    handleError(backendFunc, false, successFunc, () => {dispatch(changeModalState({open: false}))})
+                }
+                
             }, 1000)
         } else if (nextScreen === 'goBack') {
             setOtherOptions({...otherOptions, saveChangesConfirmOpen: false})
@@ -166,7 +187,7 @@ export default function OtherOptions({elementBg, collectionId, collectionGen, co
                         FormHelperTextProps: {
                             sx: {fontSize: '10px', height: 2, color: 'white'}
                         },
-                        helperText: `If empty: '${owner}'s ${collectionType}'`,
+                        helperText: `If empty: '${demo ? 'My' : owner}${!demo ? "'s" : ''} ${collectionType}'`,
                         inputRef:  collectionNameRef
                     }}
                     textFieldStyles={{
@@ -211,8 +232,8 @@ export default function OtherOptions({elementBg, collectionId, collectionGen, co
                     </Box>
                 </Box>
             </Box>
-            <Box sx={{width: '90%', height: '20%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                <Button sx={{backgroundColor: '#ED4337', color: 'white'}} onClick={toggleDeleteCollectionModal}>Delete Collection</Button>
+            <Box sx={{width: '90%', height: '20%', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: demo ? 0.5 : 1}}>
+                <Button sx={{backgroundColor: '#ED4337', color: 'white', '&.Mui-disabled': {color: 'white'}}} onClick={toggleDeleteCollectionModal} disabled={demo}>Delete Collection</Button>
             </Box>
         </Box>
         <Box sx={{mt: 1, height: '35px', width: '100%', display: 'flex'}}>

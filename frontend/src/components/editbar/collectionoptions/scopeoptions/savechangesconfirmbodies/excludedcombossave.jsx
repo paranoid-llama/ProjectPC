@@ -7,7 +7,7 @@ import SpeciesSelect from '../../../editsectioncomponents/onhandeditonly/modalco
 import ImgData from '../../../../collectiontable/tabledata/imgdata'
 
 export default function ExcludedComboSave({addedPokemon, removedPokemon, ballChanges}) {
-    const nameDisplaySettings = useRouteLoaderData('root').user.settings.display.pokemonNames
+    const nameDisplaySettings = useRouteLoaderData('root').user === undefined ? undefined : useRouteLoaderData('root').user.settings.display.pokemonNames
     const totalList = sortByDexNum('NatDexNumL2H', [
         ...addedPokemon,
         ...removedPokemon,

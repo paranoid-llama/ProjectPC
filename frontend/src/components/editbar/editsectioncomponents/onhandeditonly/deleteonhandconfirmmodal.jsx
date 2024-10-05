@@ -12,7 +12,7 @@ import { removeOnHandPokemonFromList } from '../../../../app/slices/collectionst
 import { deleteOnHandPutRequest } from '../../../../../utils/functions/backendrequests/deleteonhand'
 import { capitalizeFirstLetter } from '../../../../../utils/functions/misc'
 
-export default function DeleteOnHandConfirm({open, handleClose, pokemonName, dexNum, ball, imgLink, isHA, emCount, gender, isMaxEMs, pokemonId, collectionID}) {
+export default function DeleteOnHandConfirm({open, handleClose, pokemonName, dexNum, ball, imgLink, isHA, emCount, gender, isMaxEMs, pokemonId, collectionID, demo}) {
 
     const dispatch = useDispatch()
     const userData = useRouteLoaderData('root').user
@@ -42,7 +42,11 @@ export default function DeleteOnHandConfirm({open, handleClose, pokemonName, dex
             const id = addAlert(alertInfo);
             setAlertIds((prev) => [...prev, id]);
         }
-        handleError(backendFunc, false, successFunc, () => {handleClose()})
+        if (demo) {
+            successFunc()
+        } else {
+            handleError(backendFunc, false, successFunc, () => {handleClose()})
+        }
     }
 
     const clearAlerts = () => {
@@ -83,7 +87,7 @@ export default function DeleteOnHandConfirm({open, handleClose, pokemonName, dex
                             <ImgData type='ball' linkKey={ball}/><Box sx={{width: '5%'}}></Box><ImgData linkKey={imgLink}/>
                         </Box>
                         <Box sx={{height: '30%', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                            <Typography>{capitalizeFirstLetter(ball)} Ball {gender !== 'none' && <ImgData type='gender' linkKey={gender} size='20px'/>} {getNameDisplay(userData.settings.display.pokemonNames, pokemonName, dexNum)}</Typography>
+                            <Typography>{capitalizeFirstLetter(ball)} Ball {gender !== 'none' && <ImgData type='gender' linkKey={gender} size='20px'/>} {getNameDisplay(userData === undefined ? undefined : userData.settings.display.pokemonNames, pokemonName, dexNum)}</Typography>
                         </Box>
                         <Box sx={{height: '25%', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                             {isHA !== undefined && <Typography sx={haStyles}>{isHA === false ? 'Non-HA' : 'HA'}</Typography>}

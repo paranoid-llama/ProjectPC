@@ -14,7 +14,7 @@ export default function AprimonPreviewImport({data, numOfBalls}) {
     const [openDataModal, setOpenDataModal] = useState(false)
     const [openErrorModal, setOpenErrorModal] = useState(false)
     const [errorDisplayType, setErrorDisplayType] = useState('rows')
-    const nameDisplaySettings = useRouteLoaderData('root').user.settings.display.pokemonNames
+    const nameDisplaySettings = useRouteLoaderData('root').user === undefined ? undefined : useRouteLoaderData('root').user.settings.display.pokemonNames
     const theme = useTheme()
 
     const openModal = (type) => {

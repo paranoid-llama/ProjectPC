@@ -10,7 +10,7 @@ import { backendChangeOptions } from '../../../../../utils/functions/backendrequ
 import { sortList } from '../../../../../common/sortingfunctions/customsorting.mjs'
 import SaveChangesConfirmModal from '../savechangesconfirmmodal'
 
-export default function CollectionSortingOptions({elementBg, collectionGen, collectionId}) {
+export default function CollectionSortingOptions({elementBg, collectionGen, collectionId, demo}) {
     const dispatch = useDispatch()
     const {handleError} = useContext(ErrorContext)
     const currentOptions = useSelector((state) => state.collectionState.options.sorting.collection)
@@ -76,6 +76,16 @@ export default function CollectionSortingOptions({elementBg, collectionGen, coll
             setSortingOptions({...sortingOptions, saving: true})
             setTimeout(() => {
                 const sortedCollectionList = sortingOptions.reSortWillHappen ? sortList(sortingOptions.options.default, collectionListState) : undefined
+                if (demo) {
+                    dispatch(setSortingOptionsState({listType: 'collection', data: sortingOptions.options}))
+                    
+                    //spawning alert
+                    const alertMessage = `Updated Collection Sorting Options${sortingOptions.reSortWillHappen ? ' and re-sorted the list!' : '!'}`
+                    const alertInfo = {severity: 'success', message: alertMessage, timeout: 3}
+                    const id = addAlert(alertInfo);
+                    setAlertIds((prev) => [...prev, id]);
+                    dispatch(changeModalState({open: false}))
+                } else {
                 const backendSortedList = sortingOptions.reSortWillHappen && JSON.parse(JSON.stringify(sortedCollectionList)).map(mon => {
                     delete mon.imgLink
                     delete mon.possibleGender
@@ -95,6 +105,9 @@ export default function CollectionSortingOptions({elementBg, collectionGen, coll
                 }
 
                 handleError(backendReq, false, successFunc, () => {dispatch(changeModalState({open: false}))})
+                }
+                
+                
             }, 1000)
         } else if (nextScreen === 'goBack') {
             setSortingOptions({...sortingOptions, saveChangesConfirmOpen: false})

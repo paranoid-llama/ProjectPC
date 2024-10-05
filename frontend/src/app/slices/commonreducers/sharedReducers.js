@@ -79,6 +79,7 @@ export const commonReducers = {
         if (action.payload.eggMoveInfo) {state.eggMoveInfo = action.payload.eggMoveInfo} else {state.eggMoveInfo = {}}
         if (action.payload.availableGamesInfo) {state.availableGamesInfo = action.payload.availableGamesInfo} else {state.availableGamesInfo = {}}
         state.options = {...action.payload.options, collectionName: action.payload.name}
+        state.demoData.gen = action.payload.gen
         return state
     },
     setListDisplayInitialState: (state, action) => {

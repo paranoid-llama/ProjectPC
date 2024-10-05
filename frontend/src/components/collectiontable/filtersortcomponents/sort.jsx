@@ -6,7 +6,7 @@ import hexToRgba from "hex-to-rgba"
 import { deselect } from "../../../app/slices/editmode"
 import { toggleFullSetView } from "../../../app/slices/collectionstate"
 
-export default function Sort({listType, isEditMode, collection}) {
+export default function Sort({listType, isEditMode, collection, demo}) {
     const dispatch = useDispatch()
     const theme = useTheme()
     const ToggleButton = styled(MuiToggleButton)({
@@ -89,7 +89,7 @@ export default function Sort({listType, isEditMode, collection}) {
                 }}
                 onClick={() => {
                     dispatch(deselect())
-                    dispatch(toggleFullSetView({useState: isEditMode, collection: collection.ownedPokemon.filter(p => p.disabled === undefined)}))
+                    dispatch(toggleFullSetView({useState: (isEditMode || demo), collection: collection.ownedPokemon.filter(p => p.disabled === undefined)}))
                 }}
             >
                 {showFullSets ? 'Hide' : 'Show'} Full Sets

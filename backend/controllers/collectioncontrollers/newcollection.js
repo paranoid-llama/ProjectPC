@@ -2,6 +2,7 @@ import Collection from "../../models/collections.js";
 import User from '../../models/users.js'
 import CollectionClass from '../../utils/createCollection.js'
 import lton from "letter-to-number";
+import { getAvailableHomeGames, getPossibleEggMoves, getImgLink, getPossibleGender } from "../../utils/schemavirtuals/collectionvirtuals.js";
 import { formatImportQuery, setEMQueries, detectBadRanges, formatImportedValues, setCollection } from "../../utils/CreateCollection/importCollection.js";
 import { getCollectionProgressPercent, checkBadgeMilestone} from "../../models/postpremiddleware.js";
 import dotenv from 'dotenv'
@@ -26,21 +27,15 @@ export async function createNewCollection(req, res) {
     await collection.save()
 
     const user = await User.findById(owner).populate({path: 'collections', select: 'ownedPokemon'})
-    
-    if (!user.settings.profile.badges.map(b => b.includes('apri')).includes(true)) {
-        user.settings.profile.badges = ['apri-novice', ...user.settings.profile.badges]
-        user.save()
+
+    const colProg = getCollectionProgressPercent(collection)
+    const badgeChange = checkBadgeMilestone(colProg, user.settings.profile.badges, user.collections.map(col => {return {_id: col._id, progress: getCollectionProgressPercent(col)}}).filter(col => col._id.toString() !== collection._id.toString()).map(col => col.progress))
+    if (badgeChange === 'no-change') {
         return res.json(collection._id)
     } else {
-        const colProg = getCollectionProgressPercent(collection)
-        const badgeChange = checkBadgeMilestone(colProg, user.settings.profile.badges, user.collections.map(col => {return {_id: col._id, progress: getCollectionProgressPercent(col)}}).filter(col => col._id.toString() !== collection._id.toString()).map(col => col.progress))
-        if (badgeChange === 'no-change') {
-            res.json(collection._id)
-        } else {
-            user.settings.profile.badges = badgeChange
-            user.save()
-            res.json(collection._id)
-        }
+        user.settings.profile.badges = badgeChange
+        user.save()
+        return res.json(collection._id)
     }
 }
 

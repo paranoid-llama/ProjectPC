@@ -16,7 +16,7 @@ import ScrollBar from '../../../../functionalcomponents/scrollbar'
 export default function PokemonBallCombosModalContents({elementBg, selectedMon, totalList, ballComboData, pokemonScopeData, ballScope, changePokemonSelection, allPossibleBalls, handleChange, changingScope=false, changeScopeSave, saveErrorNoticeShow}) {
     const theme = useTheme()
     const [filteredList, setFilteredList] = useState(totalList)
-    const nameDisplaySettings = useRouteLoaderData('root').user.settings.display.pokemonNames
+    const nameDisplaySettings = useRouteLoaderData('root').user === undefined ? undefined : useRouteLoaderData('root').user.settings.display.pokemonNames
 
     const noSelection = Object.keys(selectedMon).length === 0
     const selectedMonLegalBalls = !noSelection && selectedMon.legalBalls.map(lB => lB === 'apriball' ? apriballLiterals : lB).flat()

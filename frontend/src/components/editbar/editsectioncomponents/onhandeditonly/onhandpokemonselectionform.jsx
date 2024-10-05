@@ -43,11 +43,11 @@ const scrollerStyles = {
     },
 }
 
-export default function OnHandPokemonSelectionForm({collectionID, speciesEditOnly=false, open, handleClose, initialPokemonData, idxOfInitialPokemon, isHomeCollection}) {
+export default function OnHandPokemonSelectionForm({collectionID, speciesEditOnly=false, open, handleClose, initialPokemonData, idxOfInitialPokemon, isHomeCollection, demo}) {
     //usage in regular functions
     const dispatch = useDispatch()
     const theme = useTheme()
-    const userNameDisplaySettings = useRouteLoaderData('root').user.settings.display.pokemonNames
+    const userNameDisplaySettings = useRouteLoaderData('root').user === undefined ? undefined : useRouteLoaderData('root').user.settings.display.pokemonNames
     const {handleError} = useContext(ErrorContext)
 
     const allEggMoveInfo = useSelector((state) => state.collectionState.eggMoveInfo)
@@ -161,6 +161,7 @@ export default function OnHandPokemonSelectionForm({collectionID, speciesEditOnl
         }
         const saveToDataBase = {...sharedData, _id: initialPokemonData._id}
         setPokemonData({...pokemonData, saving: true})
+        
         const successFunc = () => {
             dispatch(setPokemonSpecies({
                 id: initialPokemonData._id,
@@ -176,12 +177,16 @@ export default function OnHandPokemonSelectionForm({collectionID, speciesEditOnl
             setAlertIds((prev) => [...prev, id]);
             handleCloseModal()
         }
-        const backendFunc = async() => await bulkEditOnHandInfo(saveToDataBase, initialPokemonData._id, collectionID)
-        const errorFunc = () => {
-            setPokemonData({...pokemonData, saving: false})
-            handleClose()
+        if (demo) {
+            successFunc()
+        } else {
+            const backendFunc = async() => await bulkEditOnHandInfo(saveToDataBase, initialPokemonData._id, collectionID)
+            const errorFunc = () => {
+                setPokemonData({...pokemonData, saving: false})
+                handleClose()
+            }
+            handleError(backendFunc, false, successFunc, errorFunc)
         }
-        handleError(backendFunc, false, successFunc, errorFunc)
     }
 
     const initNewSelection = (name, getFirstMon=false) => {
@@ -373,8 +378,13 @@ export default function OnHandPokemonSelectionForm({collectionID, speciesEditOnl
                 addAlert(alertInfo);
                 handleCloseModal()
             }
+            
             setPokemonData({...pokemonData, saving: false})
-            handleError(backendFunc, false, successFunc, errorFunc)
+            if (demo) {
+                successFunc()
+            } else {
+                handleError(backendFunc, false, successFunc, errorFunc)
+            }
         } else {
             const {saveToDataBase, stateInfo} = getStateBackendOnhandData(pokemonData)
             const successFunc = () => {
@@ -386,8 +396,12 @@ export default function OnHandPokemonSelectionForm({collectionID, speciesEditOnl
                 addAlert(alertInfo);
                 handleCloseModal()
             }
-            const backendFunc = async() => await newOnHandPutReq(saveToDataBase, collectionID)
-            handleError(backendFunc, false, successFunc, errorFunc)
+            if (demo) {
+                successFunc()
+            } else {
+                const backendFunc = async() => await newOnHandPutReq(saveToDataBase, collectionID)
+                handleError(backendFunc, false, successFunc, errorFunc)
+            }
         }  
     }
 

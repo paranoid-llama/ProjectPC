@@ -11,7 +11,7 @@ import MiscSelection from '../aprimon/miscselection';
 import Header from '../../../../titlecomponents/subcomponents/header';
 import { getPossibleItems, apriballLiterals, getBallsInGen } from '../../../../../../common/infoconstants/miscconstants.mjs';
 
-export default function OptionSelection({collectionType, formOptionsData, collectionGen, goBackStep, cssClass, customSort, userData, handleChange}) {
+export default function OptionSelection({collectionType, formOptionsData, collectionGen, goBackStep, cssClass, customSort, userData, handleChange, demo}) {
     const optionTabs = ['preferences', 'rates', 'sorting', 'misc']
     const [optionTab, setOptionTab] = useState(optionTabs[0])
     const collectionNameRef = useRef(null)
@@ -83,7 +83,7 @@ export default function OptionSelection({collectionType, formOptionsData, collec
                     <ControlledTextInput
                         textFieldProps={{
                             size: 'small',
-                            helperText: `If empty: '${userData.username}'s ${collectionType}'`,
+                            helperText: `If empty: '${demo ? 'My' : userData.username}${!demo ? "'s" : ''} ${collectionType}'`,
                             FormHelperTextProps: {
                                 sx: {fontSize: '10.5px', height: 2}
                             },

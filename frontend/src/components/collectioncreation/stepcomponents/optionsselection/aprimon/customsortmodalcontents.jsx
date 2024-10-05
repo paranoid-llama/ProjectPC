@@ -8,7 +8,7 @@ import SortItem from './dndcomponents/sortitem'
 import DroppableList from './dndcomponents/droppablelist'
 
 export default function CustomSortModalContents({elementBg, customSortState, holdPokemon, handleChange, handleChangeBySortKey, changingCustomSort=false, changeOptionsSave, saveErrorNoticeShow}) {
-    const nameDisplaySettings = useRouteLoaderData('root').user.settings.display.pokemonNames
+    const nameDisplaySettings = useRouteLoaderData('root').user === undefined ? undefined : useRouteLoaderData('root').user.settings.display.pokemonNames
     const sortKeys = ['NatDexNumL2H', 'NatDexNumH2L', 'A2Z', 'Z2A']
     const sortKeyButton = ['Dex Number - Lowest to Highest', 'Dex Number - Highest to Lowest', 'Name - A to Z', 'Name - Z to A']
 

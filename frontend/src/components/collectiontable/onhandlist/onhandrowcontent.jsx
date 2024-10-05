@@ -14,7 +14,7 @@ import {connect, useDispatch} from 'react-redux'
 import EggMoveColumnDisplay from './eggmovecolumndisplay';
 import newObjectId from '../../../../utils/functions/newobjectid';
 
-function OnHandRowContent({columns, row, pokemonId, collectionId, styles, isSelected, setSelected, allEggMoveInfo, availableGamesInfo, isEditMode, isHomeCollection, isTradePage, tradeSide, wantedByOtherList, userData}) {
+function OnHandRowContent({columns, row, pokemonId, collectionId, styles, isSelected, setSelected, allEggMoveInfo, availableGamesInfo, isEditMode, demo, isHomeCollection, isTradePage, tradeSide, wantedByOtherList, userData}) {
     const dispatch = useDispatch()
 
     const skeletonRow = row === undefined
@@ -139,7 +139,7 @@ function OnHandRowContent({columns, row, pokemonId, collectionId, styles, isSele
 }
 
 const mapStateToProps = (state, ownProps) => {
-    if (!ownProps.isEditMode) {
+    if (!ownProps.isEditMode && !ownProps.demo) {
         return {}
     }
     const pokemon = selectOnHandPokemon(state, ownProps.pokemonId)
@@ -151,7 +151,7 @@ const mapStateToProps = (state, ownProps) => {
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => {
-    if (!ownProps.isEditMode) {
+    if (!ownProps.isEditMode && !ownProps.demo) {
         return {}
     }
     return {

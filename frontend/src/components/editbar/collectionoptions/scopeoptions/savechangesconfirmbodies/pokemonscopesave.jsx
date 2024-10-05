@@ -5,7 +5,7 @@ import SpeciesSelect from '../../../editsectioncomponents/onhandeditonly/modalco
 import ImgData from '../../../../collectiontable/tabledata/imgdata'
 
 export default function PokemonScopeSave({addedPokemon, removedPokemon, collectionAutoSort, collectionSortOrder}) {
-    const nameDisplaySettings = useRouteLoaderData('root').user.settings.display.pokemonNames
+    const nameDisplaySettings = useRouteLoaderData('root').user === undefined ? undefined : useRouteLoaderData('root').user.settings.display.pokemonNames
     const sortDisplays = {
         'NatDexNumL2H': 'Dex Number - Lowest to Highest',
         'NatDexNumH2L': 'Dex Number - Highest to Lowest',

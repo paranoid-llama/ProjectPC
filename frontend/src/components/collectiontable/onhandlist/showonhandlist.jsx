@@ -14,7 +14,7 @@ import OnHandByPokemonDisplay from './onhandbypokemondisplay';
 import displayOnHandByPokemon from '../../../../utils/functions/display/displayonhandbypokemon';
 import { setHeaders as setByPokemonHeaders, setColumns } from './bypokemoncomponents';
 
-export default function ShowOnHandList({onhandList, collectionID, styles, collectionListStyles, eggMoveInfo, isEditMode, isHomeCollection, collectingBallsConst, localDisplayState=undefined, height=800, isTradePage, tradeSide, wantedByOtherListData=[], userData, localOnhandView}) {
+export default function ShowOnHandList({onhandList, collectionID, styles, collectionListStyles, eggMoveInfo, isEditMode, demo, isHomeCollection, collectingBallsConst, localDisplayState=undefined, height=800, isTradePage, tradeSide, wantedByOtherListData=[], userData, localOnhandView}) {
     const theme = useTheme()
     const dispatch = useDispatch()
     const listState = useSelector(state => state.collectionState.listDisplay.onhand)
@@ -28,7 +28,7 @@ export default function ShowOnHandList({onhandList, collectionID, styles, collec
     const trueOnhandView = localOnhandView ? localOnhandView : viewType
 
     const ballScopeState = useSelector((state) => state.collectionState.options.collectingBalls)
-    const ballScopeDisplay = (ballScopeState === undefined || (!isEditMode)) ? collectingBallsConst : ballScopeState
+    const ballScopeDisplay = (ballScopeState === undefined || (!isEditMode && !demo)) ? collectingBallsConst : ballScopeState
 
     const scrollRef = useRef(null)
     const scrollPosition = useRef()
@@ -111,7 +111,7 @@ export default function ShowOnHandList({onhandList, collectionID, styles, collec
     }
 
     function rowContent(_index, row) {
-        const includePokemonProp = isEditMode ? {} : {row}
+        const includePokemonProp = (isEditMode || demo) ? {} : {row}
         const pokeWantedData = isTradePage ? wantedByOtherListData.filter(p => {
             const interchangeableMon = interchangeableAltFormMons.map(iName => p.name.includes(iName)).includes(true)
             const nameComparator = interchangeableMon ? p.name.slice(0, p.name.indexOf('(')-1) : p.name
@@ -129,6 +129,7 @@ export default function ShowOnHandList({onhandList, collectionID, styles, collec
                 allEggMoveInfo={eggMoveInfo}
                 availableGamesInfo={availableGamesInfo}
                 isEditMode={isEditMode}
+                demo={demo}
                 isHomeCollection={isHomeCollection}
                 isTradePage={isTradePage}
                 tradeSide={tradeSide}

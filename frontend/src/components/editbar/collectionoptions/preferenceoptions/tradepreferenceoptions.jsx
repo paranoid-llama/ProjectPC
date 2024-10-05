@@ -10,7 +10,7 @@ import { setTradePreferencesState } from '../../../../app/slices/collectionstate
 import { backendChangeOptions } from '../../../../../utils/functions/backendrequests/collectionoptionsedit'
 import SaveChangesConfirmModal from '../savechangesconfirmmodal'
 
-export default function TradePreferenceOptions({elementBg, collectionId, isHomeCollection}) {
+export default function TradePreferenceOptions({elementBg, collectionId, isHomeCollection, demo}) {
     const dispatch = useDispatch()
     const {handleError} = useContext(ErrorContext)
     const preferencesInit = useSelector((state) => state.collectionState.options.tradePreferences)
@@ -75,8 +75,7 @@ export default function TradePreferenceOptions({elementBg, collectionId, isHomeC
             const newPreferences = {...preferencesInit, status: preferences.pref.status, size: preferences.pref.size, onhandOnly: preferences.pref.onhandOnly, items: preferences.pref.items}
             setPreferences({...preferences, saving: true})
             setTimeout(() => {
-                const backendReq = async() => await backendChangeOptions('preferences', {newPreferences}, collectionId)
-                const successFunc = () => {
+                if (demo) {
                     dispatch(setTradePreferencesState(newPreferences))
 
                     //spawning alert
@@ -85,8 +84,20 @@ export default function TradePreferenceOptions({elementBg, collectionId, isHomeC
                     addAlert(alertInfo);
                     // setAlertIds((prev) => [...prev, id]);
                     dispatch(changeModalState({open: false}))
+                } else {
+                   const backendReq = async() => await backendChangeOptions('preferences', {newPreferences}, collectionId)
+                    const successFunc = () => {
+                        dispatch(setTradePreferencesState(newPreferences))
+
+                        //spawning alert
+                        const alertMessage = `Set Trade Preferences!`
+                        const alertInfo = {severity: 'success', message: alertMessage, timeout: 3}
+                        addAlert(alertInfo);
+                        // setAlertIds((prev) => [...prev, id]);
+                        dispatch(changeModalState({open: false}))
+                    }
+                    handleError(backendReq, false, successFunc, () => {dispatch(changeModalState({open: false}))}) 
                 }
-                handleError(backendReq, false, successFunc, () => {dispatch(changeModalState({open: false}))})
             }, 1000)
         } else if (nextScreen === 'goBack') {
             setPreferences({...preferences, saveChangesConfirmOpen: false})

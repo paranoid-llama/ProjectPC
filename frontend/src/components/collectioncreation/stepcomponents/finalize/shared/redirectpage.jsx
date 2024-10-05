@@ -3,7 +3,7 @@ import LinearProgress from '@mui/material/LinearProgress'
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 
-export default function RedirectPage({redirectLink}) {
+export default function RedirectPage({redirectLink, demo}) {
     const [second, setSecond] = useState(5)
     const navigate = useNavigate()
     useEffect(() => {
@@ -12,11 +12,16 @@ export default function RedirectPage({redirectLink}) {
                 setSecond(second-1)
             }, 1000)
         } else if ((second === 0 && redirectLink !== undefined)) {
+            //note: if demo is true, redirectLink becomes full collection data.
+            const stateData = demo ? {state: {collection: redirectLink}} : {}
             setTimeout(() => {
-                navigate(`/collections/${redirectLink}`)
+                navigate(demo ? '/demo-collection' : `/collections/${redirectLink}`, stateData)
             }, 1000)
         }
     })
+
+    const stateProp = demo ? {state: {collection: redirectLink}} : {}
+
     if (second === 'redirect') {
     }
     return (
@@ -33,7 +38,7 @@ export default function RedirectPage({redirectLink}) {
                     You will be re-directed to your collection page in <b>{second}</b>...
                 </Typography>
                 <Typography sx={{fontSize: '14px'}}>
-                    Alternatively, you can <Link to={`/collections/${redirectLink}`}>click here</Link> to redirect immediately!
+                    Alternatively, you can <Link to={demo ? '/demo-collection' : `/collections/${redirectLink}`} {...stateProp}>click here</Link> to redirect immediately!
                 </Typography>
                 </>
             }

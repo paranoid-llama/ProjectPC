@@ -10,7 +10,7 @@ import CustomSortModalContents from '../../../collectioncreation/stepcomponents/
 import SaveChangesConfirmModal from '../savechangesconfirmmodal'
 import { setListState } from '../../../../app/slices/collectionstate'
 
-export default function CustomSortingOptions({elementBg, collectionGen, collectionId}) {
+export default function CustomSortingOptions({elementBg, collectionGen, collectionId, demo}) {
     const dispatch = useDispatch()
     const {handleError} = useContext(ErrorContext)
     const customSortStateInit = useSelector((state) => selectCustomSortData(state))
@@ -88,8 +88,7 @@ export default function CustomSortingOptions({elementBg, collectionGen, collecti
             })
             setSortData({...sortData, saving: true})
             setTimeout(() => {
-                const backendReq = async() => await ownedPokemonEdit(collectionGen, backendListFormat, collectionId)
-                const successFunc = () => {
+                if (demo) {
                     dispatch(setListState({collection: newCollectionListState, resetCollectionFilters: true, onlyUpdateCollection: true}))
 
                     //spawning alert
@@ -98,8 +97,20 @@ export default function CustomSortingOptions({elementBg, collectionGen, collecti
                     const id = addAlert(alertInfo);
                     setAlertIds((prev) => [...prev, id]);
                     dispatch(changeModalState({open: false}))
+                } else {
+                    const backendReq = async() => await ownedPokemonEdit(collectionGen, backendListFormat, collectionId)
+                    const successFunc = () => {
+                        dispatch(setListState({collection: newCollectionListState, resetCollectionFilters: true, onlyUpdateCollection: true}))
+
+                        //spawning alert
+                        const alertMessage = `Sorted Collection List!`
+                        const alertInfo = {severity: 'success', message: alertMessage, timeout: 3}
+                        const id = addAlert(alertInfo);
+                        setAlertIds((prev) => [...prev, id]);
+                        dispatch(changeModalState({open: false}))
+                    }
+                    handleError(backendReq, false, successFunc, () => {dispatch(changeModalState({open: false}))}) 
                 }
-                handleError(backendReq, false, successFunc, () => {dispatch(changeModalState({open: false}))})
             }, 1000)
         } else if (nextScreen === 'goBack') {
             setSortData({...sortData, saveChangesConfirmOpen: false})

@@ -7,7 +7,7 @@ import { useTagRequest } from "../../../../utils/functions/backendrequests/editc
 import {Button, Modal, Box, ToggleButton} from '@mui/material'
 import DeleteOnHandConfirm from "../editsectioncomponents/onhandeditonly/deleteonhandconfirmmodal";
 
-export default function MiscButtonArea({currentView, collectionID, pokemonInfo={}, listType}) {
+export default function MiscButtonArea({currentView, collectionID, pokemonInfo={}, listType, demo}) {
     const [onHandDeleteConfirm, setOnHandDeleteConfirm] = useState(false)
     const dispatch = useDispatch()
     const openOnHandDeleteConfirm = () => {
@@ -68,6 +68,7 @@ export default function MiscButtonArea({currentView, collectionID, pokemonInfo={
             isMaxEMs={pokemonInfo.isMaxEMs}
             pokemonId={pokemonInfo.pokemonId}
             collectionID={collectionID}
+            demo={demo}
             />
         }
         </>

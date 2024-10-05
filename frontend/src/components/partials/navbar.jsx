@@ -130,7 +130,7 @@ export default function NavBar() {
     }
 
     const icons = userData.loggedIn ? ['homeicon', 'search', 'createcollection', 'user'] : ['homeicon', 'search', 'createcollection', 'login']
-    const iconLinks = userData.loggedIn ? ['/', '/search', '/collections/new', `/users/${userData.username}`] : ['/', '/search', '/collections/new', '/login']
+    const iconLinks = userData.loggedIn ? ['/', '/search', '/collections/new', `/users/${userData.username}`] : ['/', '/search', '/demo-collection/new', '/login']
     const userProfileOptions = ['Notifications', 'Profile', 'Collections', 'Trades', 'Settings', 'Logout']
     const unreadNotificationsAmount = userData.loggedIn && userData.user.notifications.map((noti) => noti.unread ? 1 : 0).reduce((accumulator, currValue) => accumulator+currValue, 0)
 

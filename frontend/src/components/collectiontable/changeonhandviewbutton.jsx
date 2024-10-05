@@ -4,7 +4,7 @@ import { setOnHandView } from "../../app/slices/collectionstate";
 import { deselect } from "../../app/slices/editmode";
 import hexToRgba from "hex-to-rgba";
 
-export default function ChangeOnHandView({collectionLoaderData, isEditMode}) {
+export default function ChangeOnHandView({collectionLoaderData, isEditMode, demo}) {
     const theme = useTheme()
     const dispatch = useDispatch()
     const onhandView = useSelector((state) => state.collectionState.listDisplay.onhandView)
@@ -21,7 +21,7 @@ export default function ChangeOnHandView({collectionLoaderData, isEditMode}) {
             }}
             onClick={() => {
                 dispatch(deselect())
-                dispatch(setOnHandView({useState: isEditMode, onhand: collectionLoaderData.onHand, collection: collectionLoaderData.ownedPokemon}))
+                dispatch(setOnHandView({useState: (isEditMode || demo), onhand: collectionLoaderData.onHand, collection: collectionLoaderData.ownedPokemon}))
             }}
         >
             View by {onhandView === 'byIndividual' ? 'Pokemon' : 'Individual'}

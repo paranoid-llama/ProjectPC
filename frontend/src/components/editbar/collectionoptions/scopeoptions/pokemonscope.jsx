@@ -13,7 +13,7 @@ import { AlertsContext } from '../../../../alerts/alerts-context';
 import { ErrorContext } from '../../../../app/contexts/errorcontext';
 import { setListState } from '../../../../app/slices/collectionstate';
 
-export default function PokemonScope({elementBg, collectionGen, collectionId}) {
+export default function PokemonScope({elementBg, collectionGen, collectionId, demo}) {
     const dispatch = useDispatch()
     const {handleError} = useContext(ErrorContext)
     const scopeTotal = useSelector((state) => state.editmode.pokemonScopeTotal)
@@ -103,7 +103,7 @@ export default function PokemonScope({elementBg, collectionGen, collectionId}) {
 
     const finalizeChanges = async(saveChanges, nextScreen) => {
         if (saveChanges) {
-            const backendFunc = async() => await saveScopeChangesAndGetNewList(formData.addedPokemon, formData.removedPokemon, collectionState, collectionGen, collectionId, collectionAutoSort, collectionSortOrder, ballScope, oneArrLegalityInfo)
+            const backendFunc = async() => await saveScopeChangesAndGetNewList(formData.addedPokemon, formData.removedPokemon, collectionState, collectionGen, collectionId, collectionAutoSort, collectionSortOrder, ballScope, oneArrLegalityInfo, demo, {gen: collectionGen, ownedPokemon: collectionState})
             setModalState({...modalState, saving: true})
             const successFunc = (newListState) => {
                 setTimeout(() => {

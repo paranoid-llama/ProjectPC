@@ -48,7 +48,7 @@ function ListDeletedOnHandPokemon({pData, theme, firstItem}) {
     )
 }
 
-export default function BulkDeleteConfirm({open, toggleModal, collectionID}) {
+export default function BulkDeleteConfirm({open, toggleModal, collectionID, demo}) {
     const [savePending, setSavePending] = useState(false)
     const theme = useTheme()
     const dispatch = useDispatch()
@@ -79,11 +79,15 @@ export default function BulkDeleteConfirm({open, toggleModal, collectionID}) {
             addAlert(alertInfo)
             toggleModal()
         }
-        const errorFunc = () => {
-            setSavePending(false)
-            toggleModal()
-        }
-        handleError(backendFunc, false, successFunc, errorFunc)
+        if (demo) {
+            successFunc()
+        } else {
+            const errorFunc = () => {
+                setSavePending(false)
+                toggleModal()
+            }
+            handleError(backendFunc, false, successFunc, errorFunc)
+        }   
     }
 
     return (

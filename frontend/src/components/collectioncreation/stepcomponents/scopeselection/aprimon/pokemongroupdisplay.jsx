@@ -244,7 +244,7 @@ const generateOneOrOtherContent = (option1, option2, activePokemon, handleChange
 
 export default function PokemonGroupDisplay({totalPokemon, activePokemon, ballScope, isInterchangeableAltFormSelection, groupInfo, handleChange, tyroguePresent}) {
     const theme = useTheme()
-    const nameDisplaySettings = useRouteLoaderData('root').user.settings.display.pokemonNames
+    const nameDisplaySettings = useRouteLoaderData('root').user === undefined ? undefined :  useRouteLoaderData('root').user.settings.display.pokemonNames
     const isBabyAdultSelection = !Array.isArray(totalPokemon)
     const fullBabyData = isBabyAdultSelection && {
         total: totalPokemon.babies,

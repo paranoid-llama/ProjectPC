@@ -15,7 +15,7 @@ import { setScrollPosition } from '../../../app/slices/collectionstate';
 import {setCollectionInitialState} from '../../../app/slices/collection'
 import {setSelected} from '../../../app/slices/editmode'
 
-export default function ShowCollectionList({collection, isCollectionOwner, styles, isEditMode, localDisplayState=undefined, height=800, noStates=false, isTradePage=false, tradeSide=null, wantedByOtherListData=[], userData}) {
+export default function ShowCollectionList({collection, isCollectionOwner, styles, isEditMode, demo, localDisplayState=undefined, height=800, noStates=false, isTradePage=false, tradeSide=null, wantedByOtherListData=[], userData}) {
     const theme = useTheme()
     const dispatch = useDispatch()
     const ballScopeState = !noStates && useSelector((state) => state.collectionState.options.collectingBalls)
@@ -31,8 +31,9 @@ export default function ShowCollectionList({collection, isCollectionOwner, style
     // ^^ listdisplay always uses state to cover for filtering/sorting functions (which anyone should be able to do)
 
     //apparently, on first render, this component loads faster than the initial state can initialize, meaning we have the one line below.
-    const ballScopeDisplay = (ballScopeState === undefined || (!isEditMode)) ? collection.options.collectingBalls : ballScopeState
+    const ballScopeDisplay = (ballScopeState === undefined || (!isEditMode && !demo)) ? collection.options.collectingBalls : ballScopeState
     const listDisplay = (localDisplayState !== undefined) ? localDisplayState : listState
+
 
     // console.log(listDisplay)
 
@@ -90,7 +91,7 @@ export default function ShowCollectionList({collection, isCollectionOwner, style
         })
         return cols
     }
-    
+
     const columns = [
         {label: '#', dataKey: 'natDexNum', width: '5%'},
         {label: 'img', dataKey: 'natDexNum', width: '5%'},
@@ -141,7 +142,7 @@ export default function ShowCollectionList({collection, isCollectionOwner, style
     }
 
     function rowContent(_index, row) {
-        const includePokemonProp = (isEditMode) ? {} : {row}
+        const includePokemonProp = (isEditMode || demo) ? {} : {row}
         const TrueTableRow = isTradePage ? ConnectlessTableRow : TableRowGrouping
         const pokeWantedData = isTradePage ? wantedByOtherListData.filter(p => {
             const interchangeableMon = interchangeableAltFormMons.map(iName => p.name.includes(iName)).includes(true)
@@ -158,10 +159,11 @@ export default function ShowCollectionList({collection, isCollectionOwner, style
                     // idx={_index}
                     id={row.imgLink}
                     isCollectionOwner={isCollectionOwner}
-                    collectionId={collection._id}
-                    ownerId={collection.owner._id}
+                    collectionId={demo ? '' : collection._id}
+                    ownerId={demo ? '' : collection.owner._id}
                     styles={styles}
                     isEditMode={isEditMode}
+                    demo={demo}
                     isHomeCollection={collection.gen === 'home'}
                     availableGames={collection.availableGamesInfo !== undefined && collection.availableGamesInfo}
                     noStates={noStates}

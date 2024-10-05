@@ -34,6 +34,9 @@ export default function RegisterPage({}) {
     const theme = useTheme()
     const {handleError} = useContext(ErrorContext)
     const navigate = useNavigate()
+    const location = useLocation()
+    const hasCollection = location.state !== null && location.state.collection !== undefined
+    const collectionData = hasCollection && location.state.collection
 
     const [error, setError] = useState({username: false, usernameAvailable: 'none', email: false, emailAvailable: 'none', password: false, passwordFocused: false, confirmPassword: false, passwordsMatch: 'none', error: false, errorMessage: ''}) 
     const [password, setPassword] = useState({value: '', eightChars: false, oneUpper: false, oneLower: false, oneNumber: false})
@@ -200,11 +203,11 @@ export default function RegisterPage({}) {
             const securityQuestion3 = questionThreeAns.current.value === '' ? {} : {secQuestion3: securityQuestions[securityQuestion.questionThree], secAnswer3: questionThreeAns.current.value}
             const securityQuestionData = {...securityQuestion1, ...securityQuestion2, ...securityQuestion3}
             setRegistering(true)
-            const backendFunc = async() => {return await userRegisterRequest(usernameFieldRef.current.value, emailFieldRef.current.value, password.value, securityQuestionData)}
+            const backendFunc = async() => {return await userRegisterRequest(usernameFieldRef.current.value, emailFieldRef.current.value, password.value, securityQuestionData, hasCollection, collectionData)}
             const successFunc = (newUserId) => {
                 // navigate('/verify-account', {state: {newUserId, email: emailFieldRef.current.value}})
                 setRegistering(false)
-                navigate('/login', {state: {success: true, message: 'Account created!'}})
+                navigate('/login', {state: {success: true, message: `Account created${hasCollection ? ' and added your collection' : ''}!`}})
             }
             handleError(backendFunc, false, successFunc, () => {setRegistering(false)})
         }

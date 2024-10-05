@@ -8,7 +8,6 @@ export default async function ownedPokemonEdit(req, res) {
     const {id} = req.params
     const {getPokemonInfo, newPokemon, gen, ballScope, newOwnedCollectionList, newCollectingBalls} = req.body
     const collection = await Collection.findById(id)
-
     if (getPokemonInfo) {
         const newPokemonArr = getIndividualPokemonInfo(gen, newPokemon, ballScope)
         collection.ownedPokemon = collection.options.sorting.collection.reorder ? 

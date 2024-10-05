@@ -5,7 +5,7 @@ import OnHandPokemonSelectionForm from '../editsectioncomponents/onhandeditonly/
 import { setDeleteOnHandMode } from '../../../app/slices/editmode'
 import BulkDeleteConfirm from '../editsectioncomponents/onhandeditonly/bulkdeleteconfirm'
 
-export default function NothingSelected({listType, onhandViewType, isHomeCollection, collectionID}) {
+export default function NothingSelected({listType, onhandViewType, isHomeCollection, collectionID, demo}) {
     const onhandList = listType === 'onHand'
     const theme = useTheme()
     const dispatch = useDispatch()
@@ -54,12 +54,13 @@ export default function NothingSelected({listType, onhandViewType, isHomeCollect
                 </Button>
                 </>}
             </Box>
-            <OnHandPokemonSelectionForm collectionID={collectionID} open={openModal} handleClose={handleClose} initialPokemonData={{}} isHomeCollection={isHomeCollection}/>
+            <OnHandPokemonSelectionForm collectionID={collectionID} open={openModal} handleClose={handleClose} initialPokemonData={{}} isHomeCollection={isHomeCollection} demo={demo}/>
             {deleteOnHandMode &&
                 <BulkDeleteConfirm 
                     open={confirmDeleteModal}
                     toggleModal={toggleDeleteModal}
                     collectionID={collectionID}
+                    demo={demo}
                 />
             }
         </Box>}

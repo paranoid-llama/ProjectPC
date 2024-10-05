@@ -13,7 +13,7 @@ import { ownedPokemonEdit } from "../../../../../utils/functions/backendrequests
 import PokemonBallCombosModalContents from "../../../collectioncreation/stepcomponents/scopeselection/aprimon/pokemonballcombosmodalcontents";
 import SaveChangesConfirmModal from "../savechangesconfirmmodal";
 
-export default function BallCombosScope({elementBg, collectionGen, collectionId}) {
+export default function BallCombosScope({elementBg, collectionGen, collectionId, demo}) {
     const dispatch = useDispatch()
     const {handleError} = useContext(ErrorContext)
     const scopeTotal = useSelector((state) => state.editmode.pokemonScopeTotal)
@@ -74,14 +74,8 @@ export default function BallCombosScope({elementBg, collectionGen, collectionId}
     const finalizeChanges = async(saveChanges, nextScreen) => {
         if (saveChanges) {
             const newCollectionListState = saveExcludedCombos(excludedCombos.pokemonChange.addedPokemon, excludedCombos.pokemonChange.removedPokemon, excludedCombos.ballChange, collectionState)
-            const newListBackendFormat = JSON.parse(JSON.stringify(newCollectionListState)).map(mon => {
-                delete mon.imgLink
-                delete mon.possibleGender
-                return mon
-            })
-            const backendFunc = async() => await ownedPokemonEdit(collectionGen, newListBackendFormat, collectionId)
             setExcludedCombos({...excludedCombos, saving: true})
-            const successFunc = () => {
+            if (demo) {
                 setTimeout(() => {
                     dispatch(setListState({collection: newCollectionListState, onlyUpdateCollection: true, resetCollectionFilters: true}))
     
@@ -93,11 +87,32 @@ export default function BallCombosScope({elementBg, collectionGen, collectionId}
     
                     dispatch(changeModalState({open: false}))
                 }, 1000)
+            } else {
+                const newListBackendFormat = JSON.parse(JSON.stringify(newCollectionListState)).map(mon => {
+                    delete mon.imgLink
+                    delete mon.possibleGender
+                    return mon
+                })
+                const backendFunc = async() => await ownedPokemonEdit(collectionGen, newListBackendFormat, collectionId)
+                
+                const successFunc = () => {
+                    setTimeout(() => {
+                        dispatch(setListState({collection: newCollectionListState, onlyUpdateCollection: true, resetCollectionFilters: true}))
+        
+                        //spawning alert
+                        const alertMessage = `Updated Excluded Pokemon/Ball Combos!`
+                        const alertInfo = {severity: 'success', message: alertMessage, timeout: 3}
+                        const id = addAlert(alertInfo);
+                        setAlertIds((prev) => [...prev, id]);
+        
+                        dispatch(changeModalState({open: false}))
+                    }, 1000)
+                }
+                const errorFunc = () => {
+                    setTimeout(() => {dispatch(changeModalState({open: false}))}, 1000)
+                }
+                handleError(backendFunc, false, successFunc, errorFunc)
             }
-            const errorFunc = () => {
-                setTimeout(() => {dispatch(changeModalState({open: false}))}, 1000)
-            }
-            handleError(backendFunc, false, successFunc, errorFunc)
         } else if (nextScreen === 'goBack') {
             setExcludedCombos({...excludedCombos, saveChangesConfirmOpen: false})
         } else if (nextScreen === 'exit') {

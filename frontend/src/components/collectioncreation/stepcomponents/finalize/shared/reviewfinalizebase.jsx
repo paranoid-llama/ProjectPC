@@ -6,7 +6,7 @@ import Header from '../../../../titlecomponents/subcomponents/header'
 import RedirectPage from './redirectpage'
 import AprimonReviewFinalize from '../aprimon/aprimonreviewfinalize'
 
-export default function ReviewFinalizeBase({collectionType, formData, goBackStep, cssClass, handleChange, redirectLink}) {
+export default function ReviewFinalizeBase({collectionType, formData, goBackStep, cssClass, handleChange, redirectLink, demo}) {
     const [createdCollection, setCreatedCollection] = useState(false)
 
     const createCollection = () => {
@@ -21,7 +21,7 @@ export default function ReviewFinalizeBase({collectionType, formData, goBackStep
             <Typography sx={{fontSize: '12px'}}>{collectionType}</Typography>
             <Box sx={{width: '100%', height: '95%', position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
                 {createdCollection === false && <AprimonReviewFinalize formData={formData}/>}
-                {createdCollection === true && <RedirectPage redirectLink={redirectLink}/>}
+                {createdCollection === true && <RedirectPage redirectLink={redirectLink} demo={demo}/>}
             </Box>
             <Box sx={{width: '100%', display: 'flex', justifyContent: 'start', flexDirection: 'column', alignItems: 'center', position: 'absolute', top: '95%', zIndex: 1}}>
                 <Box sx={{display: 'flex', width: '90%'}}>

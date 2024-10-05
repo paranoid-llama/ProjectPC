@@ -1,7 +1,7 @@
 import {Box, Typography, Tabs, Tab} from '@mui/material'
 import { useState, useEffect } from 'react'
 
-export default function RateDisplay({rates, owner, collectionGen, definedAreaStyles=undefined, switchPlaces=false}) {
+export default function RateDisplay({rates, owner, collectionGen, definedAreaStyles=undefined, switchPlaces=false, demo}) {
     const [offerType, setOfferType] = useState('pokemonOffers')
     const changeOfferType = (newVal) => {setOfferType(newVal)}
 
@@ -18,7 +18,7 @@ export default function RateDisplay({rates, owner, collectionGen, definedAreaSty
         <Box sx={{width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
             <Box sx={{width: '100%', height: '10%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                 <Typography variant='h6' sx={{fontSize: '18px', fontWeight: 700}}>Rates</Typography>
-                <Typography sx={{fontSize: '12px', marginLeft: 2, fontWeight: 700}}>{switchPlaces ? `(You : ${owner})` : `${owner} : You`}</Typography>
+                <Typography sx={{fontSize: '12px', marginLeft: 2, fontWeight: 700}}>{switchPlaces ? `(${demo ? 'A trader' : 'You'} : ${demo ? 'You' : owner})` : `${demo ? 'You' : owner} : ${demo ? 'A trader' : 'You'}`}</Typography>
             </Box>
             <Tabs value={offerType} onChange={(e, newVal) => changeOfferType(newVal)} sx={{'&.MuiTabs-root': {height: '20px', minHeight: '12px', my: 1}, '& .MuiTab-root': {py: 0, minHeight: '12px'}}}>
                 <Tab label='Pokemon Offers' value='pokemonOffers'/>

@@ -1,4 +1,4 @@
-import {AppBar, Typography, Box, Button, Alert, Modal, Fade, Backdrop, useTheme, CircularProgress} from '@mui/material'
+import {AppBar, Typography, Box, Button, Alert, Modal, Fade, Backdrop, useTheme, CircularProgress, Tooltip} from '@mui/material'
 import modalStyles from '../../utils/styles/componentstyles/modalstyles.jsx'
 import { setUnsavedChanges } from '../app/slices/editmode.jsx'
 import {useLocation, useLoaderData, useRouteLoaderData, Link, useNavigate, useRevalidator} from 'react-router-dom'
@@ -19,7 +19,7 @@ import DisplaySelection from '../components/editbar/selection/displayselection.j
 import { changeModalState } from '../app/slices/editmode.jsx'
 import CollectionOptionsModal from '../components/editbar/collectionoptions/collectionoptionsmodal.jsx'
 
-export default function EditCollection({}) {
+export default function EditCollection({demo}) {
     const dispatch = useDispatch()
     const theme = useTheme()
     const [saving, setSaving] = useState(false)
@@ -28,9 +28,12 @@ export default function EditCollection({}) {
     const {addAlert} = useContext(AlertsContext)
     const navigate = useNavigate()
     const collection = useLoaderData()
+    const demoCollectionData = useLocation().state !== null && useLocation().state.collection
     const revalidator = useRevalidator()
     const unsavedChanges = useSelector((state) => state.editmode.unsavedChanges)
     const unsavedOnhandChanges = useSelector((state) => state.editmode.unsavedOnhandChanges)
+
+    const demoGen = demo && useSelector((state) => state.collectionState.demoData.gen)
     const anyUnsavedChanges = unsavedChanges || unsavedOnhandChanges
     const linkBack = useLocation().pathname.slice(0, -5)
     const toggleSaveConfirmModal = () => setSaveConfirm(!saveConfirm)
@@ -38,10 +41,26 @@ export default function EditCollection({}) {
     const leaveEditMode = () => {
         dispatch(setUnsavedChanges('reset')) 
         
-        navigate(linkBack)
+        const state = demo ? {state: {collection: passDemoCollectionForward()}} : {}
+        navigate(linkBack, state)
         revalidator.revalidate()
         //do not switch the order of these or it ends up revalidating the edit route before it changes which means every other unnecessary state 
         //(col onhand options) gets revalidated too. at least, i THINK thats what happens since it re-renders a LOT when leaving edit mode
+    }
+
+    const passDemoCollectionForward = () => {
+        const collectionDataInState = store.getState().collectionState
+        const collectionDatabaseFormat = {
+            type: 'aprimon',
+            name: collectionDataInState.options.collectionName,
+            gen: demoGen,
+            options: {...collectionDataInState.options, collectionName: undefined},
+            ownedPokemon: collectionDataInState.collection,
+            onHand: collectionDataInState.onhand,
+            eggMoveInfo: collectionDataInState.eggMoveInfo,
+            availableGamesInfo: collectionDataInState.availableGamesInfo 
+        }
+        return collectionDatabaseFormat
     }
 
     const saveCollectionEdits = (exitAfter=false) => {
@@ -89,12 +108,21 @@ export default function EditCollection({}) {
                 >   
                     <Button
                         sx={{color: '#73661e', height: '100%'}}
-                        onClick={anyUnsavedChanges ? toggleSaveConfirmModal : leaveEditMode}
+                        onClick={anyUnsavedChanges && !demo ? toggleSaveConfirmModal : leaveEditMode}
                     >
                         Leave Edit Mode
                     </Button>
                     {anyUnsavedChanges && 
                     <Box sx={{position: 'absolute', backgroundColor: '#e3e5e6', height: '48px', width: '150%', paddingLeft: '8px', top: '64.547px', left: '0px', color: '#73661e', borderBottomRightRadius: '5px', borderTop: '1px solid black'}}>
+                        {demo ? 
+                        <Tooltip title='Your changes are already saved, but not to the database. To save it there, click the button on the top of the page to register an account!'>
+                        <Button
+                            sx={{height: '100%', width: '100%', fontSize: '13px', ':hover': {cursor: 'auto'}}}
+                            onClick={null}
+                        >
+                            Save Changes
+                        </Button>
+                        </Tooltip> : 
                         <Button
                             sx={{height: '100%', width: '100%', fontSize: '13px'}}
                             onClick={() => saveCollectionEdits(false)}
@@ -102,10 +130,11 @@ export default function EditCollection({}) {
                         >
                             {saving ? 'Saving...' : 'Save Changes'}
                         </Button>
+                        }
                     </Box>
                     }
                 </FlexAppBarContainer>
-                <DisplaySelection collection={collection}/>
+                <DisplaySelection collection={demo ? {ownedPokemon: store.getState().collectionState.collection, owner: {_id: ''}, _id: '', gen: demoGen} : collection} demo={demo}/>
             </AppBar>
             <Modal
                 aria-labelledby='save-confirm'
@@ -150,7 +179,7 @@ export default function EditCollection({}) {
                     </Box>
                 </Fade>
             </Modal>
-            <CollectionOptionsModal collectionGen={collection.gen} collectionId={collection._id} ownerUsername={collection.owner.username}/>
+            <CollectionOptionsModal collectionGen={demo ? demoGen : collection.gen} collectionId={demo ? '' : collection._id} ownerUsername={demo ? '' : collection.owner.username} demo={demo}/>
         </Box>
         </>
     )

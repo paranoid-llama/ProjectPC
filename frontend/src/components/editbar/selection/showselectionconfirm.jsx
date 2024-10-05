@@ -35,7 +35,7 @@ export default function ShowSelectionConfirm({listType, pokemon, pokemonDeletedF
                 {listType === 'onHand' && <ImgData linkKey={pokemon.ball} type='ball'/>}
                 <ImgData linkKey={pokemon.imgLink}/>
                 <Typography sx={{fontSize: '15px', marginLeft: '10px', paddingRight: '15px'}}>
-                    {listType === 'onHand' && capitalizedBallName} {getNameDisplay(userData.user.settings.display.pokemonNames, pokemon.name, pokemon.natDexNum)} is selected
+                    {listType === 'onHand' && capitalizedBallName} {getNameDisplay(!userData.loggedIn ? {} : userData.user.settings.display.pokemonNames, pokemon.name, pokemon.natDexNum)} is selected
                 </Typography>
             </Box> 
         </Box>

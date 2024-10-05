@@ -15,7 +15,7 @@ import RateOptions from './preferenceoptions/rateoptions'
 import ItemOptions from './preferenceoptions/itemoptions'
 import OtherOptions from './otheroptions'
 
-export default function CollectionOptionsModal({collectionGen, collectionId, ownerUsername}) {
+export default function CollectionOptionsModal({collectionGen, collectionId, ownerUsername, demo}) {
     const dispatch = useDispatch()
     const modalState = useSelector((state) => state.editmode.collectionOptionsModal)
     const elementBg = modalStyles.onhand.modalElementBg
@@ -53,16 +53,16 @@ export default function CollectionOptionsModal({collectionGen, collectionId, own
                 <Box sx={{...modalStyles.onhand.modalContainer, height: modalHeight, width: '70%', minWidth: '575px', maxWidth: '850px', display: 'flex', alignItems: 'center'}}>
                     {modalState.screen === 'main' && <OptionsMain elementBg={elementBg}/>}
                     {isOptionsSubScreen && <OptionsSub elementBg={elementBg} screenType={modalState.screen} collectionGen={collectionGen}/>}
-                    {modalState.screen === 'pokemonScope' && <PokemonScope elementBg={elementBg} collectionGen={collectionGen} collectionId={collectionId}/>}
-                    {modalState.screen === 'ballScope' && <BallScope elementBg={elementBg} collectionGen={collectionGen} collectionId={collectionId}/>}
-                    {modalState.screen === 'excludedCombos' && <BallCombosScope elementBg={elementBg} collectionGen={collectionGen} collectionId={collectionId}/>}
-                    {modalState.screen === 'collectionSort' && <CollectionSortingOptions elementBg={elementBg} collectionGen={collectionGen} collectionId={collectionId}/>}
-                    {modalState.screen === 'onhandSort' && <OnHandSortingOptions elementBg={elementBg} collectionGen={collectionGen} collectionId={collectionId}/>}
-                    {modalState.screen === 'customSort' && <CustomSortingOptions elementBg={elementBg} collectionGen={collectionGen} collectionId={collectionId}/>}
-                    {modalState.screen === 'preferences' && <TradePreferenceOptions elementBg={elementBg} collectionId={collectionId} isHomeCollection={collectionGen === 'home'}/>}
-                    {modalState.screen === 'rates' && <RateOptions elementBg={elementBg} collectionGen={collectionGen} collectionId={collectionId}/>}
-                    {modalState.screen === 'items' && <ItemOptions elementBg={elementBg} collectionGen={collectionGen} collectionId={collectionId}/>}
-                    {modalState.screen === 'other' && <OtherOptions elementBg={elementBg} collectionGen={collectionGen} collectionId={collectionId} collectionType={collectionTypeText} owner={ownerUsername}/>}
+                    {modalState.screen === 'pokemonScope' && <PokemonScope elementBg={elementBg} collectionGen={collectionGen} collectionId={collectionId} demo={demo}/>}
+                    {modalState.screen === 'ballScope' && <BallScope elementBg={elementBg} collectionGen={collectionGen} collectionId={collectionId} demo={demo}/>}
+                    {modalState.screen === 'excludedCombos' && <BallCombosScope elementBg={elementBg} collectionGen={collectionGen} collectionId={collectionId} demo={demo}/>}
+                    {modalState.screen === 'collectionSort' && <CollectionSortingOptions elementBg={elementBg} collectionGen={collectionGen} collectionId={collectionId} demo={demo}/>}
+                    {modalState.screen === 'onhandSort' && <OnHandSortingOptions elementBg={elementBg} collectionGen={collectionGen} collectionId={collectionId} demo={demo}/>}
+                    {modalState.screen === 'customSort' && <CustomSortingOptions elementBg={elementBg} collectionGen={collectionGen} collectionId={collectionId} demo={demo}/>}
+                    {modalState.screen === 'preferences' && <TradePreferenceOptions elementBg={elementBg} collectionId={collectionId} isHomeCollection={collectionGen === 'home'} demo={demo}/>}
+                    {modalState.screen === 'rates' && <RateOptions elementBg={elementBg} collectionGen={collectionGen} collectionId={collectionId} demo={demo}/>}
+                    {modalState.screen === 'items' && <ItemOptions elementBg={elementBg} collectionGen={collectionGen} collectionId={collectionId} demo={demo}/>}
+                    {modalState.screen === 'other' && <OtherOptions elementBg={elementBg} collectionGen={collectionGen} collectionId={collectionId} collectionType={collectionTypeText} owner={ownerUsername} demo={demo}/>}
                </Box>
             </Fade>
         </Modal>

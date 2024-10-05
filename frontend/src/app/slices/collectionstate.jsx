@@ -23,7 +23,8 @@ const collectionState = createSlice({
         eggMoveInfo: {},
         availableGamesInfo: {},
         listDisplay: listDisplayInitialState,
-        options: optionsInitialState
+        options: optionsInitialState,
+        demoData: {gen: ''}
     },
     reducers: {
         initializeTotalState: commonReducers.initializeTotalState,

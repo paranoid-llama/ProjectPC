@@ -18,7 +18,7 @@ import { setCollectionInitialState } from '../../app/slices/collection'
 import { setOnHandInitialState } from '../../app/slices/onhand'
 import { setOptionsInitialState } from '../../app/slices/options'
 
-export default function ShowCollectionTitle({collectionInfo, collectionID, options, isEditMode, isOwner, userIsLoggedIn, userData}) {
+export default function ShowCollectionTitle({collectionInfo, collectionID, options, isEditMode, isOwner, userIsLoggedIn, userData, demo, passDemoCollectionForward}) {
     const theme = useTheme()
     const dispatch = useDispatch()
     const navigate = useNavigate()
@@ -27,8 +27,8 @@ export default function ShowCollectionTitle({collectionInfo, collectionID, optio
     const [comparisonModal, setComparisonModal] = useState(false)
     const gen8Collection = isNaN(parseInt(collectionInfo.gen))
     const tradePreferencesState = useSelector((state) => state.collectionState.options.tradePreferences)
-    const tradePreferences = (isEditMode) ? tradePreferencesState : options.tradePreferences
-    const ownerTradesDisabled = collectionInfo.owner.settings.privacy.disabledTrades
+    const tradePreferences = (isEditMode || demo) ? tradePreferencesState : options.tradePreferences
+    const ownerTradesDisabled = !demo && collectionInfo.owner.settings.privacy.disabledTrades
     const collectionTradesDisabled = tradePreferences.status === 'closed'
     const itemsState = tradePreferences.items
     const collectionType = gen8Collection ? `${collectionInfo.gen.toUpperCase()} Aprimon Collection` : `Gen ${collectionInfo.gen} Aprimon Collection`
@@ -104,7 +104,8 @@ export default function ShowCollectionTitle({collectionInfo, collectionID, optio
     }
 
     const initializeEditMode = () => {
-        navigate(`/collections/${collectionID}/edit`)
+        const state = demo ? {state: {collection: passDemoCollectionForward(true)}} : {}
+        navigate(demo ? '/demo-collection/edit' : `/collections/${collectionID}/edit`, state)
     }
 
     return (
@@ -122,7 +123,7 @@ export default function ShowCollectionTitle({collectionInfo, collectionID, optio
                 <TextSpaceSingle 
                     colorStyles={colorStyles2}
                     otherStyles={{borderBottom: '1px solid white', marginBottom: 0}} 
-                    text={collectionInfo.owner.username}
+                    text={demo ? 'You' : collectionInfo.owner.username}
                     label={'Owner'}
                     width='100%'
                 />
@@ -167,8 +168,8 @@ export default function ShowCollectionTitle({collectionInfo, collectionID, optio
                 </Box>
             </Box>
             <Box sx={{display: 'flex', flexDirection: 'column', alignItems: 'center', width: '55%'}}>
-                {displayScreen === 'ballProgress' && <CollectionProgress ballScopeInit={options.collectingBalls} isEditMode={isEditMode} collectionList={collectionInfo.ownedPokemon} isOwner={isOwner} userData={userData}/>}
-                {displayScreen === 'rates' && <RateDisplay rates={tradePreferences.rates} owner={collectionInfo.owner.username} collectionGen={collectionInfo.gen}/>}
+                {displayScreen === 'ballProgress' && <CollectionProgress ballScopeInit={options.collectingBalls} isEditMode={isEditMode} demo={demo} collectionList={collectionInfo.ownedPokemon} isOwner={isOwner} userData={userData}/>}
+                {displayScreen === 'rates' && <RateDisplay rates={tradePreferences.rates} owner={demo ? '' : collectionInfo.owner.username} collectionGen={collectionInfo.gen} demo={demo}/>}
                 {displayScreen === 'items' && <ItemDisplay collectionGen={collectionInfo.gen} itemTradeStatus={tradePreferences.items} lfItems={tradePreferences.lfItems} ftItems={tradePreferences.ftItems}/>}
             </Box>
             {canInitiateTrade && <ComparisonMain open={comparisonModal} toggleModal={toggleComparisonModal} tradeableCollections={tradeableCollections} collectionData={collectionInfo} userData={userData}/>}

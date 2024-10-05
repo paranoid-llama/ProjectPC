@@ -104,7 +104,7 @@ export function TableRowGroupingNoRedux({columns, row, id, collectionId, ownerId
 }
 
 //dont remove id, mapStateToProps uses it
-function TableRowGrouping({columns, row, id, collectionId, ownerId, styles, isSelected, setSelected, isEditMode, isHomeCollection, userData}) {
+function TableRowGrouping({columns, row, id, collectionId, ownerId, styles, isSelected, setSelected, isEditMode, demo, isHomeCollection, userData}) {
     const dispatch = useDispatch()
     // console.log(`rendered ${row.name}`)
 
@@ -121,17 +121,17 @@ function TableRowGrouping({columns, row, id, collectionId, ownerId, styles, isSe
     const {handleError} = useContext(ErrorContext)
     const {addAlert} = useContext(AlertsContext)
     //following data is used for editing values in the list
-    const possibleEggMoves = (isEditMode && !isHomeCollection) ? useSelector((state) => state.collectionState.eggMoveInfo[row.name]) : null
-    const maxEMs = (isEditMode && !isHomeCollection) ? possibleEggMoves.length > 4 ? 4 : possibleEggMoves.length : null
-    const emCountSelectionList = (isEditMode && !isHomeCollection) ? setMaxEmArr(maxEMs) : null
-    const idx = isEditMode ? useSelector(state => state.collectionState.collection.findIndex((p) => p.imgLink === id)) : null
-    const unsavedChanges = isEditMode ? useSelector((state) => state.editmode.unsavedChanges) : null
+    const possibleEggMoves = ((isEditMode || demo) && !isHomeCollection) ? useSelector((state) => state.collectionState.eggMoveInfo[row.name]) : null
+    const maxEMs = ((isEditMode || demo) && !isHomeCollection) ? possibleEggMoves.length > 4 ? 4 : possibleEggMoves.length : null
+    const emCountSelectionList = ((isEditMode || demo) && !isHomeCollection) ? setMaxEmArr(maxEMs) : null
+    const idx = (isEditMode || demo) ? useSelector(state => state.collectionState.collection.findIndex((p) => p.imgLink === id)) : null
+    const unsavedChanges = (isEditMode || demo) ? useSelector((state) => state.editmode.unsavedChanges) : null
 
     //available games
     const availableGames = (isHomeCollection) ? useSelector((state) => state.collectionState.availableGamesInfo[row.name]) : null
 
     //default data
-    const globalDefaults = isEditMode ? useSelector((state) => state.collectionState.options.globalDefaults) : null
+    const globalDefaults = (isEditMode || demo) ? useSelector((state) => state.collectionState.options.globalDefaults) : null
     const checkDefault = Object.keys(row.balls)[Object.values(row.balls).map((b) => b.default !== undefined).indexOf(true)]
     const currentDefault = checkDefault === undefined ? 'none' : checkDefault
 
@@ -241,7 +241,7 @@ function TableRowGrouping({columns, row, id, collectionId, ownerId, styles, isSe
 }
 
 const mapStateToProps = function(state, ownProps) {
-    if (!ownProps.isEditMode) {
+    if (!ownProps.isEditMode && !ownProps.demo) {
         return {}
     } 
     const isPokemonSelected = seeIfPokemonIsSelected(state, ownProps.id)
@@ -254,7 +254,7 @@ const mapStateToProps = function(state, ownProps) {
 }
 
 const mapDispatchToProps = function(dispatch, ownProps) {
-    if (!ownProps.isEditMode) {
+    if (!ownProps.isEditMode && !ownProps.demo) {
         return {}
     }
     return {

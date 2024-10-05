@@ -57,7 +57,7 @@ import ProtectedRoute from './components/partials/auth/protectedroute'
 import PrivateRoute from './components/partials/auth/privateroute'
 import AlertsProvider from './alerts/alerts-context'
 import ErrorProvider from './app/contexts/errorcontext'
-import { Skeleton, ThemeProvider } from '@mui/material'
+import { Skeleton, ThemeProvider, Typography } from '@mui/material'
 import theme from '../utils/styles/globalstyles/theme'
 import WhatAreAprimon from './routes/infopages/whatareaprimon'
 import AboutUs from './routes/infopages/aboutus'
@@ -69,6 +69,7 @@ import Announcements from './routes/announcements'
 import { fetchCollectionData } from './app/slices/collectionstate'
 import { ShowCollectionSkeleton, ShowUserSkeleton, ShowTradeSkeleton, UserNotificationsTradesSkeleton, UserSettingsSkeleton, NewTradeOfferSkeleton } from './components/partials/skeletons/routeskeletons'
 import SendMessagesPage from './routes/admin/sendmessagespage'
+import BodyWrapper from './components/partials/routepartials/bodywrapper'
 
 //can add a bit of debounce by adding number parameter in case the event causes performance issues
 resizeEvent(store)
@@ -170,6 +171,38 @@ function DeferLoaderComponent({Component, SkeletonComponent, postCompleteTools, 
   )
 }
 
+function DemoCollectionDeferAndReinit({Component, isEdit}) {
+  const colData = useLocation().state === null ? 'none' : useLocation().state.collection
+  const dispatch = useDispatch()
+  const colName = useSelector((state) => state.collectionState.options.collectionName)
+
+  useEffect(() => {
+      if (colData !== 'none') {
+        dispatch(initializeTotalState(colData))
+      }
+  })
+
+  return (
+    colData === 'none' ? 
+    <BodyWrapper>
+        <Box sx={{height: '750px', width: '100%', borderRadius: '10px', ...theme.components.box.fullCenterCol, justifyContent: 'start', color: 'black'}}>
+            <Typography sx={{fontSize: '32px', fontWeight: 700, my: 2}}>No data was sent to load a demo collection!</Typography>
+            <Typography sx={{fontSize: '24px', my: 1}}>If you think this is an error, contact us to resolve it!</Typography>
+        </Box>
+    </BodyWrapper> : 
+  !colName ? <ShowCollectionSkeleton/> : <Component demo={true}/>
+  )
+}
+
+function DemoEditCollection({}) {
+  return (
+    <>
+      <EditCollection demo={true}/>
+      <ShowCollection demo={true}/>
+    </>
+  )
+}
+
 // function LoaderErrorHandlerWrapper({Component}) {
 //   const loaderData = useLoaderData()
 
@@ -247,6 +280,24 @@ function Router() {
               path: 'contact-us',
               element: <ContactUs />
             }
+          ]
+        },
+        {
+          path: '/demo-collection',
+          element: <Outlet/>,
+          children: [
+            {
+              path: '',
+              element:<DemoCollectionDeferAndReinit Component={ShowCollection}/>,
+            },
+            {
+              path: 'new',
+              element:<NewCollection demo={true}/>
+            },
+            {
+              path: 'edit',
+              element:<DemoCollectionDeferAndReinit Component={DemoEditCollection}/>
+            },
           ]
         },
         {

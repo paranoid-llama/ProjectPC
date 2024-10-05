@@ -19,7 +19,7 @@ import { usePutRequest } from '../../../../../utils/functions/backendrequests/ed
 import '../../../../../utils/styles/componentstyles/eggmoveselection.css'
 import store from '../../../../app/store'
 
-export default function RenderOnHandEdit({collectionId, ownerId, pokemon, idxOfPokemon, allEggMoves, isHomeCollection}) {
+export default function RenderOnHandEdit({collectionId, ownerId, pokemon, idxOfPokemon, allEggMoves, isHomeCollection, demo}) {
     const [popOutScreens, setPopOutScreens] = useState({eggmoveScreen: {open: 'firstRenderFalse', idx: ''}, pokemonSelection: false})
     const {handleError} = useContext(ErrorContext)
     const {addAlert} = useContext(AlertsContext)
@@ -194,7 +194,7 @@ export default function RenderOnHandEdit({collectionId, ownerId, pokemon, idxOfP
         popOutScreens.eggmoveScreen.open === false && 'egg-moves-slide-out'
     return (
         <EditWrapper imgLink={pokemon.imgLink} name={pokemon.name} natDexNum={pokemon.natDexNum} onClickFunc={handleOpen}>
-            <OnHandPokemonSelectionForm speciesEditOnly={true} open={popOutScreens.pokemonSelection} handleClose={handleClose} initialPokemonData={pokemon} idxOfInitialPokemon={idxOfPokemon}/>
+            <OnHandPokemonSelectionForm speciesEditOnly={true} open={popOutScreens.pokemonSelection} handleClose={handleClose} initialPokemonData={pokemon} idxOfInitialPokemon={idxOfPokemon} demo={demo}/>
             <BallSelectionForm allowedBalls={allowedBalls} handleChange={handleBallChange} value={pokemon.ball} width='18%'/>
             <GenderSelectionForm gender={pokemon.gender} possibleGenders={possibleGenders} handleChange={handleGenderChange}/>
             <HASelectionForm noHA={noHA} isHA={pokemon.isHA} handleChange={handleIsHAChange} buttonSizes='small'/>

@@ -10,7 +10,7 @@ import { useState, forwardRef } from 'react'
 
 export default function SortingSelection({sortData, handleChange, handleCustomSortChange, totalBalls, tentativeBallOrder, holdPokemon}) {
     const [modalStates, setModalStates] = useState({onhandSortSettings: {open: false}, collectionSort: {open: false}})
-    const nameDisplaySettings = useRouteLoaderData('root').user.settings.display.pokemonNames
+    const nameDisplaySettings = useRouteLoaderData('root').user === undefined ? undefined : useRouteLoaderData('root').user.settings.display.pokemonNames
 
     const openModal = (type) => {
         setModalStates({...modalStates, [type]: {...modalStates[type], open: true}})

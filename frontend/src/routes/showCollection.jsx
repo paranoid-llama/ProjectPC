@@ -1,9 +1,9 @@
 import {useState, useRef, useEffect, useContext} from 'react';
 import { AlertsContext } from '../alerts/alerts-context';
-import {useLoaderData, Link, useRouteLoaderData, useLocation} from 'react-router-dom'
+import {useLoaderData, Link, useRouteLoaderData, useLocation, useNavigate} from 'react-router-dom'
 import * as React from 'react';
 import Box from '@mui/material/Box'
-import {Tabs, Tab, Button, useTheme} from '@mui/material'
+import {Tabs, Tab, Button, useTheme, Typography} from '@mui/material'
 import ShowCollectionList from '../components/collectiontable/collectionlist/showcollectionlist'
 import ShowOnHandList from '../components/collectiontable/onhandlist/showonhandlist'
 import ShowCollectionTitle from '../components/titlecomponents/showcollectiontitle';
@@ -21,18 +21,31 @@ import store from '../app/store';
 import {deselect, changeList} from './../app/slices/editmode'
 import listStyles from '../../utils/styles/componentstyles/liststyles';
 import ChangeOnHandView from '../components/collectiontable/changeonhandviewbutton';
+import collectionState from '../app/slices/collectionstate';
 
-export default function ShowCollection({collection, isCollectionOwner, colorStyles}) {
+export default function ShowCollection({collection, isCollectionOwner, colorStyles, demo=false}) {
     const theme = useTheme()
     const list = useSelector(state => state.editmode.listType)
     const pathData = useLocation()
+    const navigate = useNavigate()
+    const stateColData = pathData.state !== null && pathData.state.collection
     const currentLink = pathData.pathname 
     const currentlyLoggedInUser = useRouteLoaderData("root")
-    
-    const collectionLoaderData = collection ? collection : useLoaderData()
+    const collectionLoaderData = demo ? stateColData : collection ? collection : useLoaderData()
+
+    if (demo && !stateColData) {
+        return (
+            <BodyWrapper>
+                <Box sx={{height: '750px', width: '100%', borderRadius: '10px', ...theme.components.box.fullCenterCol, justifyContent: 'start', color: 'black'}}>
+                    <Typography sx={{fontSize: '32px', fontWeight: 700, my: 2}}>No data was sent to load a demo collection!</Typography>
+                    <Typography sx={{fontSize: '24px', my: 1}}>If you think this is an error, contact us to resolve it!</Typography>
+                </Box>
+            </BodyWrapper>
+        )
+    }
    
     const userIsLoggedIn = currentlyLoggedInUser.loggedIn && currentlyLoggedInUser.user._id !== collectionLoaderData.owner._id
-    const isOwner = (currentlyLoggedInUser.loggedIn && currentlyLoggedInUser.user._id === collectionLoaderData.owner._id)
+    const isOwner = demo || (currentlyLoggedInUser.loggedIn && currentlyLoggedInUser.user._id === collectionLoaderData.owner._id)
     const isEditMode = currentLink.includes('edit') && isOwner
 
     const collectionId = collectionLoaderData._id
@@ -84,15 +97,39 @@ export default function ShowCollection({collection, isCollectionOwner, colorStyl
     const collectionNameState = useSelector((state) => state.collectionState.options.collectionName)
     const changeOnhandViewMQuery = list === 'onHand' ? {'@media only screen and (min-width: 1101px)': {visibility: 'hidden'}} : {}
 
+    const passDemoCollectionForward = (betweenPages) => {
+        const collectionDataInState = store.getState().collectionState
+        const topLevelVirtuals = betweenPages ? {
+            eggMoveInfo: collectionDataInState.eggMoveInfo,
+            availableGamesInfo: collectionDataInState.availableGamesInfo
+        } : {}
+        const collectionDatabaseFormat = {
+            type: 'aprimon',
+            name: collectionDataInState.options.collectionName,
+            gen: collectionLoaderData.gen,
+            options: {...collectionDataInState.options, collectionName: undefined},
+            ownedPokemon: betweenPages ? collectionDataInState.collection : collectionDataInState.collection.map(p => {return {...p, imgLink: undefined, possibleGender: undefined}}),
+            onHand: betweenPages ? collectionDataInState.onhand : collectionDataInState.onhand.map(p => {return {...p, imgLink: undefined}}),
+            ...topLevelVirtuals
+        }
+        return collectionDatabaseFormat
+    }
+
     return (
         <>
         <Box sx={{flex: 1}}>
             <Box sx={{flexGrow: 1, width: '100%', alignItems: 'center'}}>
-                <Header additionalStyles={{backgroundColor: '#26BCC9', color: 'black'}}>{!isEditMode ? collectionName : collectionNameState}</Header>
+                <Header additionalStyles={{backgroundColor: '#26BCC9', color: 'black'}}>{(!isEditMode && !demo) ? collectionName : collectionNameState}</Header>
             </Box>
+            {demo && 
+            <Box sx={{width: '100%', height: '50px', justifyContent: 'center', alignItems: 'center', display: 'flex', backgroundColor: theme.palette.color3.main, gap: 2}}>
+                <Typography sx={{color: theme.palette.color1.main, fontWeight: 700}}>This is a demo collection. It will be lost once you leave the page. To permanently save the collection, register here:</Typography>
+                <Button size='large' onClick={() => navigate('/register', {state: {collection: passDemoCollectionForward()}})} sx={{'&.MuiButtonBase-root': {color: theme.palette.color1.contrastText, backgroundColor: theme.palette.color2.main}}}>Register</Button>
+            </Box>
+            }
             <BodyWrapper>
-                <ShowCollectionTitle collectionInfo={collectionLoaderData} collectionID={collectionId} options={collectionLoaderData.options} isEditMode={isEditMode} isOwner={isOwner} userIsLoggedIn={userIsLoggedIn} userData={currentlyLoggedInUser.user}/>
-                <FilterSortArea collection={collectionLoaderData} isEditMode={isEditMode} isOwner={isOwner}/>
+                <ShowCollectionTitle collectionInfo={collectionLoaderData} collectionID={collectionId} options={collectionLoaderData.options} isEditMode={isEditMode} demo={demo} isOwner={isOwner} userIsLoggedIn={userIsLoggedIn} userData={currentlyLoggedInUser.user} passDemoCollectionForward={passDemoCollectionForward}/>
+                <FilterSortArea collection={collectionLoaderData} isEditMode={isEditMode} demo={demo} isOwner={isOwner}/>
                 <Box sx={{flexGrow: 1, margin: 0, width: '100%', display: 'flex'}}>
                     <Tabs 
                         textcolor='inherit'
@@ -117,7 +154,7 @@ export default function ShowCollection({collection, isCollectionOwner, colorStyl
                     </Tabs>
                     <Box sx={{width: '60%', display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
                         {list === 'onHand' && 
-                            <ChangeOnHandView isEditMode={isEditMode} collectionLoaderData={collectionLoaderData}/>
+                            <ChangeOnHandView isEditMode={isEditMode} demo={demo} collectionLoaderData={collectionLoaderData}/>
                         }
                         <Box sx={{width: '50%', height: '100%', display: 'flex', flexDirection: 'column'}}>
                         </Box>
@@ -129,6 +166,7 @@ export default function ShowCollection({collection, isCollectionOwner, colorStyl
                     isCollectionOwner={isCollectionOwner}
                     styles={listStyles.collection}
                     isEditMode={isEditMode}
+                    demo={demo}
                     userData={currentlyLoggedInUser}
                 /> :
                 <ShowOnHandList
@@ -139,6 +177,7 @@ export default function ShowCollection({collection, isCollectionOwner, colorStyl
                     styles={listStyles.onhand}
                     collectionListStyles={listStyles.collection}
                     isEditMode={isEditMode}
+                    demo={demo}
                     isHomeCollection={collectionLoaderData.gen === 'home'}
                     userData={currentlyLoggedInUser}
                 />

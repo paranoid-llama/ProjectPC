@@ -1,7 +1,7 @@
 import { sortOnHandList } from "../../../../common/sortingfunctions/onhandsorting.mjs"
 import { sortList } from "../../../../common/sortingfunctions/customsorting.mjs"
 
-const optionsInitialState = {collectingBalls: [], globalDefaults: {}, sorting: {}, tradePreferences: {status: 'closed', size: 'any', onhandOnly: 'no', items: 'none', rates: {pokemonOffers: [], itemOffers: []}, lfItems: [], ftItems: {}}}
+const optionsInitialState = {collectingBalls: [], globalDefaults: {}, sorting: {}, tradePreferences: {status: 'closed', size: 'any', onhandOnly: 'no', items: 'none', rates: {pokemonOffers: [], itemOffers: []}, lfItems: [], ftItems: {}}, collectionName: ''}
 
 const optionsReducers = {
     setRate: (state, action) => {

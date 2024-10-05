@@ -12,7 +12,7 @@ import { sortOnHandList } from '../../../../../common/sortingfunctions/onhandsor
 import OnHandSortSettingsModalContents from '../../../collectioncreation/stepcomponents/optionsselection/aprimon/onhandsortsettingsmodalcontents'
 import SaveChangesConfirmModal from '../savechangesconfirmmodal'
 
-export default function OnHandSortingOptions({elementBg, collectionGen, collectionId}) {
+export default function OnHandSortingOptions({elementBg, collectionGen, collectionId, demo}) {
     const dispatch = useDispatch()
     const {handleError} = useContext(ErrorContext)
     const totalBalls = getBallsInGen(collectionGen)
@@ -89,15 +89,7 @@ export default function OnHandSortingOptions({elementBg, collectionGen, collecti
             const editedOptionsObj = {...sortingOptions.options, ballOrder: tentativeBallOrder}
             setSortingOptions({...sortingOptions, saving: true})
             setTimeout(() => {
-                const sortedOnHandList = sortingOptions.reSortWillHappen ? sortOnHandList(sortingOptions.options.sortFirstBy, sortingOptions.options.default, tentativeBallOrder, onhandListState) : undefined
-                const backendSortedList = sortingOptions.reSortWillHappen && JSON.parse(JSON.stringify(sortedOnHandList)).map(mon => {
-                    delete mon.imgLink
-                    delete mon.possibleGender
-                    return mon
-                })
-                const backendReqData = sortingOptions.reSortWillHappen ? {listType: 'onhand', data: sortingOptions.options, sortedList: backendSortedList} : {listType: 'onhand', data: sortingOptions.options}
-                const backendReq = async() => await backendChangeOptions('sort', backendReqData, collectionId)
-                const successFunc = () => {
+                if (demo) {
                     dispatch(setSortingOptionsState({listType: 'onhand', data: editedOptionsObj}))
 
                     //spawning alert
@@ -106,9 +98,28 @@ export default function OnHandSortingOptions({elementBg, collectionGen, collecti
                     const id = addAlert(alertInfo);
                     setAlertIds((prev) => [...prev, id]);
                     dispatch(changeModalState({open: false}))
+                } else {
+                    const sortedOnHandList = sortingOptions.reSortWillHappen ? sortOnHandList(sortingOptions.options.sortFirstBy, sortingOptions.options.default, tentativeBallOrder, onhandListState) : undefined
+                    const backendSortedList = sortingOptions.reSortWillHappen && JSON.parse(JSON.stringify(sortedOnHandList)).map(mon => {
+                        delete mon.imgLink
+                        delete mon.possibleGender
+                        return mon
+                    })
+                    const backendReqData = sortingOptions.reSortWillHappen ? {listType: 'onhand', data: sortingOptions.options, sortedList: backendSortedList} : {listType: 'onhand', data: sortingOptions.options}
+                    const backendReq = async() => await backendChangeOptions('sort', backendReqData, collectionId)
+                    const successFunc = () => {
+                        dispatch(setSortingOptionsState({listType: 'onhand', data: editedOptionsObj}))
+
+                        //spawning alert
+                        const alertMessage = `Updated On-Hand Sorting Options${sortingOptions.reSortWillHappen ? ' and re-sorted the list!' : '!'}`
+                        const alertInfo = {severity: 'success', message: alertMessage, timeout: 3}
+                        const id = addAlert(alertInfo);
+                        setAlertIds((prev) => [...prev, id]);
+                        dispatch(changeModalState({open: false}))
+                    }
+                    
+                    handleError(backendReq, false, successFunc, () => {dispatch(changeModalState({open: false}))})  
                 }
-                
-                handleError(backendReq, false, successFunc, () => {dispatch(changeModalState({open: false}))})
             }, 1000)
         } else if (nextScreen === 'goBack') {
             setSortingOptions({...sortingOptions, saveChangesConfirmOpen: false})

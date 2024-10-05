@@ -1,9 +1,12 @@
 import User from '../../models/users.js'
+import Collection from '../../models/collections.js'
 import bcrypt from 'bcrypt'
 import { apriballs } from '../../common/infoconstants/miscconstants.mjs'
+import { getCollectionProgressPercent } from '../../models/postpremiddleware.js'
+import { checkBadgeMilestone } from '../../models/postpremiddleware.js'
 
 export async function createNewUser(req, res) {
-    const {username, password, email, secQuestion1, secQuestion2, secQuestion3, secAnswer1, secAnswer2, secAnswer3} = req.body
+    const {username, password, email, secQuestion1, secQuestion2, secQuestion3, secAnswer1, secAnswer2, secAnswer3, addCollection, collectionData} = req.body
     const securityQuestions = [
         secAnswer1 === undefined ? undefined : {question: secQuestion1, answer: await bcrypt.hash(secAnswer1, 11)},
         secAnswer2 === undefined ? undefined : {question: secQuestion2, answer: await bcrypt.hash(secAnswer2, 11)},
@@ -32,6 +35,18 @@ export async function createNewUser(req, res) {
             ]
         })
         await newUser.save()
+        if (addCollection) {
+            const saveToDatabase = {...collectionData, owner: newUser._id, ownedPokemon: collectionData.ownedPokemon.map(p => {return {...p, imgLink: undefined, possibleGender: undefined}}), onHand: collectionData.onHand.map(p => {return {...p, imgLink: undefined}}), availableGamesInfo: undefined, eggMoveInfo: undefined, progress: undefined}
+            const collection = new Collection(saveToDatabase)
+            await collection.save()
+
+            const colProg = getCollectionProgressPercent(collection)
+            const badgeChange = checkBadgeMilestone(colProg, [], [])
+            if (badgeChange !== 'no-change') {
+                newUser.settings.profile.badges = badgeChange
+                await newUser.save()
+            }
+        }
         res.json(newUser._id)
     })
 }
