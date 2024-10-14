@@ -17,10 +17,8 @@ export default async function getSession() {
         const data = await res.json()
         if (res.ok) {return data} 
         else {throw data}
-    })  
-    console.log(userData)
+    }) 
     const userIsLoggedIn = Object.keys(userData).length !== 0
     const loggedInData = userIsLoggedIn ? {loggedIn: true, user: userData} : {loggedIn: false}
-    console.log(loggedInData)
-    return loggedInData
+    return loggedInData 
 }

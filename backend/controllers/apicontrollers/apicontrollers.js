@@ -20,9 +20,7 @@ const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173'
 
 export async function getSession(req, res) {
     const noUser = req.session === undefined || req.session.passport === undefined
-    console.log('hitting route correctly')
     if (noUser) {
-        console.log('HIT HERE')
         res.json({})
     } else {
         const userData = await User.findById(req.session.passport.user).lean().populate({path: 'collections', select: 'type gen -owner'}).select('username accountType collections notifications.unread settings.privacy.blockedUsers settings.display').exec()

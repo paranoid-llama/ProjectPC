@@ -78,13 +78,14 @@ const app = express();
 //middleware
 app.use(session(sessionConfig))
 app.use(cors({ credentials: true, origin: frontendUrl }))
+
 // app.use(nocache())
 app.use(express.json({ limit: '500kb' }))
 app.use(bodyParser.json({ limit: '500kb' }))
 // app.use((req, res, next) => {
 //     res.setHeader('Access-Control-Allow-Credentials', true);
 //     res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-//     res.setHeader('Access-Control-Allow-Origin', 'http://localhost:5173');
+//     res.setHeader('Access-Control-Allow-Origin', frontendUrl);
 
 //     next()
 // })
@@ -104,6 +105,8 @@ passport.serializeUser(function (user, cb) {
 passport.deserializeUser(async function (id, cb) {
     return await User.findById({_id: id}).then(user => cb(null, user))
 })
+
+
 
 //routes
 app.use('/collections', collectionRoutes)
