@@ -8,12 +8,12 @@ const backendurl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000'
 //<!doctype is not valid json
 
 export default async function getSession() {
-    const userData = await fetch(`${backendurl}/api/session`, {
+    const userData = await fetch(`https://backend-pokellections-a18896d7.koyeb.app/api/session`, {
         method: 'GET',
         credentials: 'include',
-        // headers: {
-        //     'Access-Control-Allow-Origin': 'https://pokellections.koyeb.app'
-        // },
+        headers: {
+            'Access-Control-Allow-Origin': 'https://pokellections.koyeb.app'
+        },
     }).then(async(res) => {
         if (res.status === 500) {throw intServerError}
         const data = await res.json()
