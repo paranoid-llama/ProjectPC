@@ -167,7 +167,7 @@ app.post('/collections/new/seeddb', catchAsync(async(req, res) => {
     //         display: {pokemonNames: {general: {regionalForms: 'default', originRegionalForms: 'default', alternateForms: 'default'}, specific: {}}, ballOrder: apriballs}
     //     }
     //     bcrypt.hash('12345', 11, async function(err, hash) {
-    //         const newUser = new User({username: user, password: hash, email: randEmail, settings})
+    //         const newUser = new User({username: user, password: hash, accountType: 'regular', email: randEmail, settings})
     //         await newUser.save()
     //     })
     // }

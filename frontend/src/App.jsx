@@ -68,7 +68,9 @@ import ResetPassword from './routes/resetpassword'
 import Announcements from './routes/announcements'
 import { fetchCollectionData } from './app/slices/collectionstate'
 import { ShowCollectionSkeleton, ShowUserSkeleton, ShowTradeSkeleton, UserNotificationsTradesSkeleton, UserSettingsSkeleton, NewTradeOfferSkeleton } from './components/partials/skeletons/routeskeletons'
+import AdminMain from './routes/admin/adminmain'
 import SendMessagesPage from './routes/admin/sendmessagespage'
+import ChangeTableData from './routes/admin/changetabledata'
 import BodyWrapper from './components/partials/routepartials/bodywrapper'
 
 //can add a bit of debounce by adding number parameter in case the event causes performance issues
@@ -427,8 +429,16 @@ function Router() {
           id: 'userSettings',
         },
         {
+          path: '/admin',
+          element: <PreRouteLogic logicType='admin-route' Component={AdminMain} />
+        },
+        {
           path: '/admin/send-notifications',
           element: <PreRouteLogic logicType='admin-route' Component={SendMessagesPage} />
+        },
+        {
+          path: '/admin/table-data',
+          element: <PreRouteLogic logicType='admin-route' Component={ChangeTableData} />
         },
         {
           path: "*",

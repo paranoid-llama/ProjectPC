@@ -115,7 +115,10 @@ function handleRegionalForms(pokemonInfo, ownedBallList, pokename, gen, multiple
 }
 
 function setBallInfo(pokemon, genKey, ballLegality, isHomeCollection=false) {
-    const hasHAAndIsLegal = pokemon.info.HA.hasHA && (ballLegality.haIsLegal === true)
+    const hasHAAndIsLegal = (pokemon.info.HA.hasHA && (ballLegality.haIsLegal === true)) || (ballLegality.haIsLegal === true && pokemon.name === 'ferroseed') 
+    //ferroseed is the only one who escapes this since his evo has an HA but he doesn't, but people tend to collect him as having HA anyway. I do not believe
+    //there will be another exception like this, so I'm singling him out here. 
+
     // const hasEMs = isHomeCollection ? (getBallPath(pokemon, 'home', '', '', true).eggmoves ? true : false) : (pokemon.specificGenInfo[genKey].eggmoves ? true : false)
     const hasEMs = isHomeCollection ? false : (pokemon.specificGenInfo[genKey].eggmoves ? true : false) //ems are disabled for home collections
     if (hasHAAndIsLegal === false && hasEMs === false) {

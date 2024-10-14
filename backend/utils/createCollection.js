@@ -167,10 +167,10 @@ class Collection {
         this.gen = gen
         this.options = options
         this.trades = []
-        this.ownedPokemon = ((ownedPokemonList !== undefined && remakeList) || (ownedPokemonList === undefined)) ? setOwnedPokemonList(gen, pokemonScope, ballScope, excludedCombos, false, ownedPokemonList !== undefined ? ownedPokemonList : false)
+        this.ownedPokemon = ((ownedPokemonList !== undefined && remakeList) || (ownedPokemonList === undefined)) ? setOwnedPokemonList(gen, pokemonScope, ballScope, excludedCombos, true, ownedPokemonList !== undefined ? ownedPokemonList : false)
                                 .flat()
                                 .filter(e => e !== undefined)
-                                .sort((a, b) => customSortCollectionListLogic(a, b, customSort, true)) 
+                                // .sort((a, b) => customSortCollectionListLogic(a, b, customSort, true)) 
                                 : ownedPokemonList.map((mon) => {return {name: mon.name, natDexNum: mon.natDexNum, gen: mon.gen, balls: mon.balls}})
                                 // .sort((a, b) => a.natDexNum > b.natDexNum ? 1 : -1)
                                 // .sort((a, b) => {

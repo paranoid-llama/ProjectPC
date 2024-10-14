@@ -13,7 +13,7 @@ export default function Announcements({}) {
                 <Box sx={{...theme.components.box.fullCenterCol, width: '90%', height: '510px', maxWidth: '800px', position: 'relative', border: `1px solid ${theme.palette.color1.dark}`, backgroundColor: hexToRgba(theme.palette.color1.main, 0.9), borderRadius: '10px'}}>
                     <Box sx={{...theme.components.box.fullCenterCol, alignItems: 'start', height: '100%', justifyContent: 'start', width: '100%', ml: 4, mt: 3}}>
                         <Typography sx={{fontSize: '36px', color: 'white', fontWeight: 700}}>Post-Launch Update 2</Typography>
-                        <Typography sx={{fontSize: '14px', color: 'white', textIndent: '30px', width: '95%', textAlign: 'left', textAlign: 'left'}}>Hey guys! First off, I want to thank everyone for the positive reception to the site! I've been working on implementing some smaller, more easier-to-implement features and so here are the changes:</Typography>
+                        <Typography sx={{fontSize: '14px', color: 'white', textIndent: '30px', width: '95%', textAlign: 'left'}}>Hey guys! First off, I want to thank everyone for the positive reception to the site! I've been working on implementing some smaller, more easier-to-implement features and so here are the changes:</Typography>
                         <Box sx={{...theme.components.box.fullCenterCol, width: '90%', justifyContent: 'start', mt: 1}}>
                             <Box sx={{...theme.components.box.fullCenterCol, width: '100%', alignItems: 'start'}}>
                                 <Typography sx={{fontSize: '13px', color: 'white', textIndent: '30px', textAlign: 'left'}}> - Added more filtering options. You can now:</Typography>
