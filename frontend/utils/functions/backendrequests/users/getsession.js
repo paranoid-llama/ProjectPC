@@ -5,9 +5,8 @@ const intServerError = {
 }
 const backendurl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000'
 
-//<!doctype is not valid json
-console.log(backendurl)
-console.log(import.meta.env)
+//double-check that the backendurl includes "https:// or http://", otherwise it will include the origin url (pokellections.koyeb.app OR localhost:5173) in the
+//fetch url. was a big source of frustration oct 14 2024
 
 export default async function getSession() {
     const userData = await fetch(`${backendurl}/api/session`, {
