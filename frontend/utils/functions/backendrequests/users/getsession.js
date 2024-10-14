@@ -5,6 +5,9 @@ const intServerError = {
 }
 const backendurl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000'
 
+//<!doctype is not valid json
+console.log(backendurl)
+
 export default async function getSession() {
     try {
         const userData = await fetch(`${backendurl}/api/session`, {
