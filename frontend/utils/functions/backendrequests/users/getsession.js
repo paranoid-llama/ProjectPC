@@ -7,6 +7,7 @@ const backendurl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000'
 
 //double-check that the backendurl includes "https:// or http://", otherwise it will include the origin url (pokellections.koyeb.app OR localhost:5173) in the
 //fetch url. was a big source of frustration oct 14 2024
+//also, if you are still having issues, double-check the network tab in dev tools to see which link its fetching from and wtf is happening.
 
 export default async function getSession() {
     const userData = await fetch(`${backendurl}/api/session`, {
