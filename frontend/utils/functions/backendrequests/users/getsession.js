@@ -6,9 +6,11 @@ const intServerError = {
 const backendurl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000'
 
 //<!doctype is not valid json
+console.log(backendurl)
+console.log(import.meta.env)
 
 export default async function getSession() {
-    const userData = await fetch(`https://backend-pokellections-a18896d7.koyeb.app/api/session`, {
+    const userData = await fetch(`${backendurl}/api/session`, {
         method: 'GET',
         credentials: 'include',
         headers: {
