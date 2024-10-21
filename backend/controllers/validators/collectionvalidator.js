@@ -2,6 +2,7 @@ import { collectionSubTypes, apriballs, tradePreferenceDisplay, items as totalIt
 import allPokemon from "../../utils/aprimonAPI/allpokemoninfo.js";
 import mongoose from "mongoose";
 import User from '../../models/users.js'
+import frontendToApiNameFormat from "../../utils/misc/frontendtoapiname.js";
 
 const allPokemonNames = allPokemon.map(p => p.info.special !== undefined ? [p.name.toLowerCase(), p.info.special.child.name.toLowerCase()] : p.name.toLowerCase()).flat()
 const allPokemonDexNums = allPokemon.map(p => p.info.special !== undefined ? [p.info.natDexNum, p.info.special.child.natDexNum] : p.info.natDexNum).flat()
@@ -29,7 +30,8 @@ export function validateNewOnHand(req, res, next) {
                 return res.status(400).send(exception)
             } 
         } else {
-            const pokemonIdx = allPokemonNames.map(pName => newOnHand.name.toLowerCase().includes(pName)).indexOf(true)
+            const pokemonSpeciesName = frontendToApiNameFormat(newOnHand.name).toLowerCase()
+            const pokemonIdx = allPokemonNames.map(pName => pokemonSpeciesName === pName.toLowerCase()).indexOf(true)
             const validatedPokemon = pokemonIdx !== -1
             const validQty = newOnHand.qty > 0 && newOnHand.qty <= 999
             const rightNatDexNum = pokemonIdx !== -1 && allPokemonDexNums[pokemonIdx] === newOnHand.natDexNum

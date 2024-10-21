@@ -197,6 +197,7 @@ export default function OtherOptions({elementBg, collectionId, collectionGen, co
                             py: 0.5
                         }
                     }}
+                    useExpandedRegex={true}
                     defaultValue={collectionNameState}
                     charLimit={60}
                 />

@@ -75,12 +75,12 @@ export default function RateOptions({elementBg, collectionGen, collectionId, dem
                 const sameQtys = !rateInfo.rate.map((r, rIdx) => rates.pokemonOffers[rateIdx].rate[rIdx] === r).includes(false)
                 return (sameTradeItems && sameQtys)
             }).includes(false)
-        const diffItemOffers = !(ratesInit.itemOffers.length === rates.itemOffers.length) || (ratesInit.itemOffers.length === 0 && rates.itemOffers.length !== 0) ||
+        const diffItemOffers = ratesInit.itemOffers === undefined ? false : (!(ratesInit.itemOffers.length === rates.itemOffers.length) || (ratesInit.itemOffers.length === 0 && rates.itemOffers.length !== 0) ||
             ratesInit.itemOffers.map((rateInfo, rateIdx) => {
                 const sameTradeItems = !rateInfo.items.map((i, iIdx) => rates.itemOffers[rateIdx].items[iIdx] === i).includes(false)
                 const sameQtys = !rateInfo.rate.map((r, rIdx) => rates.itemOffers[rateIdx].rate[rIdx] === r).includes(false)
                 return (sameTradeItems && sameQtys)
-            }).includes(false)
+            }).includes(false))
         const noChangesMade = !diffPokemonOffers && !diffItemOffers
         if (saveButtonSelected && noChangesMade) {
             setRates({...rates, saveErrorNotice: true})
@@ -100,7 +100,7 @@ export default function RateOptions({elementBg, collectionGen, collectionId, dem
 
     const finalizeChanges = (saveChanges, nextScreen) => {
         if (saveChanges) {
-            const newRatesSection = {pokemonOffers: rates.pokemonOffers.filter(rate => !rate.items.map(item => item === '').includes(true)), itemOffers: rates.itemOffers.filter(rate => !rate.items.map(item => item === '').includes(true))}
+            const newRatesSection = {pokemonOffers: rates.pokemonOffers.filter(rate => !rate.items.map(item => item === '').includes(true)), itemOffers: ratesInit.itemOffers === undefined ? undefined : rates.itemOffers.filter(rate => !rate.items.map(item => item === '').includes(true))}
             setRates({...rates, saving: true})
             setTimeout(() => {
                 if (demo) {
@@ -154,7 +154,7 @@ export default function RateOptions({elementBg, collectionGen, collectionId, dem
             <Typography sx={{fontSize: '14px', textAlign: 'center'}}>Select your exchange rates for trades. Up to 8 per type. All offers are organized as (You:Potential Trader)</Typography>
             <Tabs value={rates.tab} onChange={changeTab}>
                 <Tab value='pokemonOffers' label='Pokemon Offers'/>
-                <Tab value='itemOffers' label='Item Offers'/>
+                <Tab disabled={ratesInit.itemOffers === undefined} value='itemOffers' label='Item Offers'/>
             </Tabs>
             <Box sx={{width: '90%', height: '90%', display: 'flex', flexDirection: 'column', mt: 1}}>
                 <Box sx={{width: '100%', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'start', alignItems: 'center'}}>

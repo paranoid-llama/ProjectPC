@@ -65,16 +65,17 @@ export default function IndividualRateSelection({rate, rateIdx, possibleItems1, 
         <Box sx={{width: '100%', height: `${100/divideFactor}%`, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
             {rate.add === undefined &&
             <RateItem sx={{padding: 0.5, width: '90%', position: 'relative'}}>
-                {!isOriginalOnHandRate &&
+                {/* {!isOriginalOnHandRate && */}
                 <Button sx={{position: 'absolute', top: '50%', right: '0px', padding: 0, borderRadius: '50%'}} onClick={(e) => handleChange(rateIdx, false, undefined, undefined, true)}>
                     <CancelTwoToneIcon/>
                 </Button>
-                }
+                {/* } */}
                 <Box sx={{width: '100%', height: '50%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                    {isOriginalOnHandRate ? //the rate of onhandpokemon : pokemon. is required
+                    {/* {isOriginalOnHandRate ? //the rate of onhandpokemon : pokemon. is required
                         <Typography sx={{fontSize: '14px'}}>
                             On Hand HA Aprimon : HA Aprimon
-                        </Typography> :
+                        </Typography> : */}
+                    {/* removed original onhand rate stuff. no longer needed to be required. */}
                         <>
                         <Select 
                             sx={{'& .MuiSelect-select': {paddingY: 0, color: 'white', fontSize: '12px'}, '&.MuiInputBase-root': {width: '45%'}}}
@@ -92,7 +93,7 @@ export default function IndividualRateSelection({rate, rateIdx, possibleItems1, 
                             {generateOptions('trader')}
                         </Select>
                         </>
-                    }
+                    {/* } */}
                     
                 </Box>
                 <Box sx={{width: '100%', height: '50%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>

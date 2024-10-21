@@ -95,6 +95,7 @@ export default function OptionSelection({collectionType, formOptionsData, collec
                                 py: 0.5
                             }
                         }}
+                        useExpandedRegex={true}
                         defaultValue={optionsFormData.collectionName}
                         charLimit={60}
                     />
