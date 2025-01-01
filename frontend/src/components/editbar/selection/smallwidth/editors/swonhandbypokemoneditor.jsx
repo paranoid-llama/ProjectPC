@@ -10,7 +10,7 @@ import getNameDisplay from '../../../../../../utils/functions/display/getnamedis
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import hexToRgba from 'hex-to-rgba'
 import { capitalizeFirstLetter } from '../../../../../../utils/functions/misc'
-import { toggleEditScreenState } from '../../../../../app/slices/editmode'
+import { setUnsavedChanges, toggleEditScreenState } from '../../../../../app/slices/editmode'
 import newObjectId from '../../../../../../utils/functions/newobjectid'
 import { addOnHandPokemonToListByPokemon } from '../../../../../app/slices/collectionstate'
 import { selectAllOnHandsOfPokemon, selectOnHandPokemonByPokemon, selectOnHandPokemonIdx, selectOwnedBallsAndHangingOnHandBallsList } from '../../../../../app/selectors/selectors'
@@ -63,6 +63,7 @@ export default function SWOnhandByPokemonEditor({collectionID, demo, ohByPSWShow
             qty: 1
         }
         dispatch(addOnHandPokemonToListByPokemon(newOnhandData))
+        dispatch(setUnsavedChanges('onhand'))
         changeSelectedMon(newOnhandData._id)
     }
 

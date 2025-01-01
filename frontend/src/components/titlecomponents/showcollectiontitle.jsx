@@ -1,6 +1,8 @@
-import {Box, AppBar, Button, ToggleButton, ToggleButtonGroup, Tooltip, Typography, useTheme} from '@mui/material'
-import { useState, useEffect } from 'react'
+import {Box, AppBar, Button, ToggleButton, ToggleButtonGroup, Tooltip, Typography, useTheme, CircularProgress} from '@mui/material'
+import { useState, useEffect, useContext } from 'react'
 import { useLoaderData, useLocation, useNavigate, useRevalidator } from 'react-router-dom'
+import { AlertsContext } from '../../alerts/alerts-context'
+import { ErrorContext } from '../../app/contexts/errorcontext'
 import { Link } from 'react-router-dom'
 import Header from './subcomponents/header'
 import TextSpaceDouble from './subcomponents/textspacedouble'
@@ -18,7 +20,9 @@ import { checkIfCanTrade } from '../../../utils/functions/comparecollections/che
 import { setCollectionInitialState } from '../../app/slices/collection'
 import { setOnHandInitialState } from '../../app/slices/onhand'
 import { setOptionsInitialState } from '../../app/slices/options'
+import SmallWidthModalWrapper from '../partials/wrappers/smallwidthmodalwrapper'
 import SWDisplays from './subcomponents/swdisplays'
+import { usePutRequest } from '../../../utils/functions/backendrequests/editcollection'
 
 export default function ShowCollectionTitle({collectionInfo, collectionID, options, isEditMode, isOwner, userIsLoggedIn, userData, demo, passDemoCollectionForward, smallScreen}) {
     const theme = useTheme()
@@ -27,9 +31,12 @@ export default function ShowCollectionTitle({collectionInfo, collectionID, optio
     const revalidator = useRevalidator()
     const link = useLocation().pathname
     const linkBack = link.slice(0, -5)
+    const {handleError} = useContext(ErrorContext)
+    const {addAlert} = useContext(AlertsContext)
     const demoGen = demo && useSelector((state) => state.collectionState.demoData.gen)
     const [displayScreen, setDisplayScreen] = useState('ballProgress')
     const [comparisonModal, setComparisonModal] = useState(false)
+    const [unsavedChangesNoti, setUnsavedChangesNoti] = useState({open: false, saving: false})
     const gen8Collection = isNaN(parseInt(collectionInfo.gen))
     const tradePreferencesState = useSelector((state) => state.collectionState.options.tradePreferences)
     const tradePreferences = (isEditMode || demo) ? tradePreferencesState : options.tradePreferences
@@ -64,6 +71,9 @@ export default function ShowCollectionTitle({collectionInfo, collectionID, optio
 
     const changeDisplayScreen = (newVal) => {setDisplayScreen(newVal)}
     const toggleComparisonModal = () => {setComparisonModal(!comparisonModal)}
+    const unsavedChanges = useSelector((state) => smallScreen ? state.editmode.unsavedChanges : false)
+    const unsavedOnhandChanges = useSelector((state) => smallScreen ? state.editmode.unsavedOnhandChanges : false)
+    const anyUnsavedChanges = unsavedChanges || unsavedOnhandChanges
     // const generateInteractionButtons = 
    
     //breakpoints when the label wraps
@@ -129,6 +139,36 @@ export default function ShowCollectionTitle({collectionInfo, collectionID, optio
     const initializeEditMode = () => {
         const state = demo ? {state: {collection: passDemoCollectionForward(true)}} : {}
         navigate(demo ? '/demo-collection/edit' : `/collections/${collectionID}/edit`, state)
+    }
+    const saveCollectionEdits = (exitAfter=false) => {
+        //do not compare collection laoder data and collection state, since scope/ball scope/excluded combos update does NOT revalidate to update the loader data.
+        //if you do compare, and the user changes the scope before changing, those scope changes wont be reflected in the laoder data.
+        const collectionState = store.getState().collectionState.collection
+        const onhandState = store.getState().collectionState.onhand
+        const newOwnedPokemonArr = unsavedChanges ? JSON.parse(JSON.stringify(collectionState)).map(p => {
+            delete p.imgLink
+            delete p.possibleGender
+            return p
+        }) : undefined
+        const newOnhandList = unsavedOnhandChanges ? JSON.parse(JSON.stringify(onhandState)).map(p => {
+            delete p.imgLink
+            return p
+        }) : undefined
+        setUnsavedChangesNoti({...unsavedChangesNoti, saving: true})
+        const backendFunc = async() => await usePutRequest(newOwnedPokemonArr, newOnhandList, collectionID)
+        const successFunc = () => {
+            addAlert({severity: 'success', timeout: 5, message: 'Successfully saved the changes to your collection!'})
+            setUnsavedChangesNoti({...unsavedChangesNoti, saving: false})
+            if (exitAfter) {leaveEditMode()}
+            else {dispatch(setUnsavedChanges('reset'))}
+        }
+        const errorFunc = () => {
+            if (exitAfter) {
+                toggleSaveConfirmModal()
+            }
+            setUnsavedChangesNoti({...unsavedChangesNoti, saving: false})
+        }
+        handleError(backendFunc, false, successFunc, errorFunc)
     }
 
     return (
@@ -208,7 +248,7 @@ export default function ShowCollectionTitle({collectionInfo, collectionID, optio
                         </>
                     }
                     {(isOwner && !isEditMode) && <Button sx={{width: '40%', fontSize: '12px'}} onClick={initializeEditMode}>Edit Mode</Button>}
-                    {(isEditMode && smallScreen) && <Button sx={{fontSize: '11px', width: '50%'}} onClick={() => leaveEditMode()}>Leave Edit Mode</Button>}
+                    {(isEditMode && smallScreen) && <Button sx={{fontSize: '11px', width: '50%'}} onClick={() => (anyUnsavedChanges && !demo) ? setUnsavedChangesNoti({...unsavedChangesNoti, open: !unsavedChangesNoti.open}) : leaveEditMode()}>Leave Edit Mode</Button>}
                     {isEditMode && <Button sx={{fontSize: smallScreen ? '11px' : '12px', width: smallScreen ? '50%' : 'auto'}} onClick={() => dispatch(changeModalState({open: true, screen: 'main'}))}>Collection Options</Button>}
                 </Box>
             </Box>
@@ -220,6 +260,35 @@ export default function ShowCollectionTitle({collectionInfo, collectionID, optio
             </Box>
             }
             {canInitiateTrade && <ComparisonMain open={comparisonModal} toggleModal={toggleComparisonModal} tradeableCollections={tradeableCollections} collectionData={collectionInfo} userData={userData} sw={smallScreen}/>}
+            {(smallScreen && anyUnsavedChanges) && 
+            <SmallWidthModalWrapper 
+                ariaLabel='unsaved changes confirm'
+                ariaDescribe='confirm whether to leave edit mode when you have unsaved changes'
+                open={unsavedChangesNoti.open}
+                handleClose={() => setUnsavedChangesNoti({...unsavedChangesNoti, open: !unsavedChangesNoti.open})}
+                sx={{height: '50%', width: '100%'}}
+                buttonSx={{zIndex: 1}}
+            >
+                <Box sx={{...theme.components.box.fullCenterCol, backgroundColor: theme.palette.color1.dark, borderRadius: '10px', width: '95%', height: '95%', position: 'relative', justifyContent: 'start', color: 'white'}}>
+                    <Typography sx={{fontSize: '24px', fontWeight: 700, mt: 10, textAlign: 'center'}}>Wait! You have unsaved changes!</Typography>
+                    <Typography sx={{fontSize: '16px', mt: 5, textAlign: 'center'}}>Are you sure you want to exit edit mode?</Typography>
+                    <Box sx={{...theme.components.box.fullCenterRow, width: '90%', height: '50px', position: 'absolute', bottom: '30px', gap: 4}}>
+                        <Button variant='contained' size='small' sx={{fontSize: '9px', padding: 0}} disabled={unsavedChangesNoti.saving} onClick={() => leaveEditMode()}>Exit without saving</Button>
+                        <Button variant='contained' size='large' sx={{fontSize: '14px'}} disabled={unsavedChangesNoti.saving} onClick={() => saveCollectionEdits(true)}>
+                            {unsavedChangesNoti.saving ? 
+                                <CircularProgress
+                                    size='26.25px'
+                                    sx={{color: 'white'}}
+                                />  :
+                                'Save and Exit'
+                            }
+                        </Button>
+                        <Button variant='contained' size='medium' sx={{}} disabled={unsavedChangesNoti.saving} onClick={() => setUnsavedChangesNoti({...unsavedChangesNoti, open: false})}>Cancel</Button>
+                    </Box>
+                    
+                </Box>
+            </SmallWidthModalWrapper>
+            }
         </Box>
     )
 }
