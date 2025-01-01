@@ -30,6 +30,7 @@ function SmallWidthByPokemonDisplay({cols1, cols2, row={}, pokemonId, isEditMode
         dispatch(setUnsavedChanges('onhand'))
     }
 
+    console.log(row)
     return (
         <>
             <TableCell sx={{...theme.components.box.fullCenterCol, backgroundColor: theme.palette.color2.main, position: 'relative', height: noRow2 ? '131.344px' : '181.344px', color: 'white', width: '100%', padding: 0}}>
@@ -123,7 +124,7 @@ function SmallWidthByPokemonDisplay({cols1, cols2, row={}, pokemonId, isEditMode
                                             <ImgData type='ball' linkKey={b} size='50px'/>
                                         </Box>
                                         <Box sx={{...styles.indicators.indicatorRowTop, width: '100%', height: '100%'}}>
-                                        {bData.numNonHA !== 0 &&
+                                        {(bData.numNonHA !== 0 && bData.numNonHA !== undefined) &&
                                             <Tooltip title="The number of this on-hand which don't have their hidden ability" arrow>
                                                 <Typography
                                                     sx={{
@@ -153,7 +154,7 @@ function SmallWidthByPokemonDisplay({cols1, cols2, row={}, pokemonId, isEditMode
                                             {bData.numTotal}
                                         </Typography>
                                         <Box sx={{...styles.indicators.indicatorRow, display: 'flex', width: '100%', height: '100%'}}> 
-                                            {bData.reserved !== 0 &&
+                                            {bData.reserved !== 0 && bData.reserved !== undefined &&
                                             <Tooltip title='This On-Hand is reserved and is pending in an accepted trade/trade offer. The number indicates the reserved quantity.' arrow>
                                                 <Typography
                                                     sx={{
@@ -238,7 +239,7 @@ function SmallWidthByPokemonDisplay({cols1, cols2, row={}, pokemonId, isEditMode
                                             <ImgData type='ball' linkKey={b} size='50px'/>
                                         </Box>
                                         <Box sx={{position: 'relative', width: '100%', height: '100%'}}>
-                                        {bData.numNonHA !== 0 &&
+                                        {bData.numNonHA !== 0 && bData.numNonHA !== undefined &&
                                             <Tooltip title="The number of this on-hand which don't have their hidden ability" arrow>
                                                 <Typography
                                                     sx={{
@@ -270,7 +271,7 @@ function SmallWidthByPokemonDisplay({cols1, cols2, row={}, pokemonId, isEditMode
                                         </Typography>
                                         </Box>
                                         <Box sx={{position: 'relative', width: '100%', height: '100%'}}>
-                                            {bData.reserved !== 0 &&
+                                            {bData.reserved !== 0 && bData.reserved !== undefined &&
                                             <Tooltip title='This On-Hand is reserved and is pending in an accepted trade/trade offer. The number indicates the reserved quantity.' arrow>
                                                 <Typography
                                                     sx={{
