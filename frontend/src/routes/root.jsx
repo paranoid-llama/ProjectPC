@@ -50,7 +50,7 @@ export default function Root() {
                 Thanks again for using the site! Happy new year!
               </Typography>
             </Box>
-            <Typography sx={{position: 'absolute', top: '3px', right: '5px', fontSize: '12px', color: 'white'}}>December 31, 2024</Typography>
+            <Typography sx={{position: 'absolute', top: '3px', right: '5px', fontSize: '12px', color: 'white'}}>January 1, 2025</Typography>
           </Box>
         </Box>
       </Box>
