@@ -10,6 +10,7 @@ import { deselect, setSelected, setUnsavedChanges, toggleOnHandIdToDelete } from
 import newObjectId from "../../../../utils/functions/newobjectid";
 import { setQtyByPokemon } from "../../../app/slices/collectionstate";
 import Selection from "../selection";
+import getNameDisplay from "../../../../utils/functions/display/getnamedisplay";
 
 function OnHandByPokemonDisplay({columns, row, pokemonId, isEditMode, isSelected, setSelected, styles, availableGames=undefined, demo, userData, isHomeCollection, localHandleChange=null}) {
     // console.log(row)
@@ -45,7 +46,7 @@ function OnHandByPokemonDisplay({columns, row, pokemonId, isEditMode, isSelected
             const isBallQty = apriballs.includes(c.dataKey)
             const isBlackSquare = row.balls === undefined || (isBallQty && row.balls[c.dataKey] === undefined) || isBallQty && (row.balls[c.dataKey] !== undefined && row.balls[c.dataKey].numTotal === 0)
             
-            const label = !isBlackSquare && (isBallQty ? row.balls[c.dataKey] : row[c.dataKey])
+            const label = !isBlackSquare && (isBallQty ? row.balls[c.dataKey] : c.dataKey === 'name' ? getNameDisplay(!userData.loggedIn ? undefined : userData.user.settings.display.pokemonNames, row[c.dataKey], row.natDexNum) : row[c.dataKey])
             const alignment = c.label === '#' ? {width: '90%', position: 'relative'} :
             (c.label === 'img') ? {width: '90%'} : {width: '90%', position: 'relative'}
             const displayHomeGames = c.dataKey === 'name' && displayAvailableGames

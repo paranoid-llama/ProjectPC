@@ -147,6 +147,7 @@ export default function ShowOnHandList({onhandList, collectionID, styles, collec
                 styles={collectionListStyles}
                 isEditMode={isEditMode}
                 demo={demo}
+                userData={userData}
                 {...availableGamesData}
             />
         )
