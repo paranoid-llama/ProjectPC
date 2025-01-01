@@ -5,7 +5,7 @@ import { optionsInitialState, optionsReducers } from "./reducers/optionsreducers
 import { commonReducers } from "./commonreducers/sharedReducers";
 import displayOnHandByPokemon from "../../../utils/functions/display/displayonhandbypokemon";
 import { filterList } from "../../../utils/functions/sortfilterfunctions/filterfunctions";
-import { changeList } from "./editmode";
+import { changeList, setAllData, setPosRenderOHBallData } from "./editmode";
 import { hideFullSets } from "../../../utils/functions/display/fullsetview";
 
 const backendurl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000'
@@ -43,9 +43,11 @@ const collectionState = createSlice({
         setGender: onhandReducers.setGender,
         setPokemonSpecies: onhandReducers.setPokemonSpecies,
         setQty: onhandReducers.setQty,
+        setQtyByPokemon: onhandReducers.setQtyByPokemon,
 
         setListState: displayReducers.setListState,
         addOnHandPokemonToList: displayReducers.addOnHandPokemonToList,
+        addOnHandPokemonToListByPokemon: displayReducers.addOnHandPokemonToListByPokemon,
         removeOnHandPokemonFromList: displayReducers.removeOnHandPokemonFromList,
         setSortKey: displayReducers.setSortKey,
         setFilters: displayReducers.setFilters,
@@ -111,7 +113,7 @@ const collectionState = createSlice({
         builder
             .addCase(fetchCollectionData.fulfilled, (state, action) => {
                 state.collection = action.payload.ownedPokemon
-                if (state.listDisplay.collection.length === 0) {state.listDisplay.collection = action.payload.ownedPokemon}
+                if (state.listDisplay.collection.length === 0) {state.listDisplay.collection = action.payload.ownedPokemon.filter(p => !p.disabled)}
 
                 state.onhand = action.payload.onHand
                 if (state.listDisplay.onhand.length === 0){
@@ -129,14 +131,34 @@ const collectionState = createSlice({
                 state.lastOnhandScrollPosition = undefined
                 return state
             })
+            .addCase(setPosRenderOHBallData, (state, action) => {
+                const {onhandId, noOhUpdate, newBall} = action.payload
+                if (!noOhUpdate) {
+                    state.onhand = state.onhand.map((p) => {
+                        if (p._id === onhandId) {
+                            p.ball = newBall
+                        }
+                        return p
+                    })
+                }
+                return state
+            })
+            .addCase(setAllData, (state, action) => { //used in sw editors, which is why we use the pokemonIdx instead
+                const {noOhUpdate, newBall, pokemonIdx} = action.payload
+                if (!noOhUpdate) {
+                    // state.onhand[pokemonIdx].ball = newBall
+                    return {...state, onhand: state.onhand.map((p, idx) => idx === pokemonIdx ? {...p, ball: newBall} : p)}
+                }
+                return state
+            })
     }
 })
 
 export const {
     initializeTotalState, setListDisplayInitialState, setIsHA, setEmCount, setEms, deleteEms,
     setIsOwned, setTags, setDefault, setMultipleIsOwned,
-    setBall, setGender, setPokemonSpecies, setQty,
-    setListState, addOnHandPokemonToList, removeOnHandPokemonFromList, setSortKey, setFilters, filterSearch, setScrollPosition, setOnHandView, toggleFullSetView, resetFilters,
+    setBall, setGender, setPokemonSpecies, setQty, setQtyByPokemon,
+    setListState, addOnHandPokemonToList, addOnHandPokemonToListByPokemon, removeOnHandPokemonFromList, setSortKey, setFilters, filterSearch, setScrollPosition, setOnHandView, toggleFullSetView, resetFilters,
     setRate, setBallScope, setSortingOptionsState, setTradePreferencesState, setItemState, setNameState, setGlobalDefaultState,
 } = collectionState.actions
 

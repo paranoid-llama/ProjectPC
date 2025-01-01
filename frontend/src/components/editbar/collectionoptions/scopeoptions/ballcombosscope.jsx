@@ -13,7 +13,7 @@ import { ownedPokemonEdit } from "../../../../../utils/functions/backendrequests
 import PokemonBallCombosModalContents from "../../../collectioncreation/stepcomponents/scopeselection/aprimon/pokemonballcombosmodalcontents";
 import SaveChangesConfirmModal from "../savechangesconfirmmodal";
 
-export default function BallCombosScope({elementBg, collectionGen, collectionId, demo}) {
+export default function BallCombosScope({elementBg, collectionGen, collectionId, demo, sw}) {
     const dispatch = useDispatch()
     const {handleError} = useContext(ErrorContext)
     const scopeTotal = useSelector((state) => state.editmode.pokemonScopeTotal)
@@ -141,6 +141,7 @@ export default function BallCombosScope({elementBg, collectionGen, collectionId,
             changingScope={true}
             changeScopeSave={saveChangesConfirmOpen}
             saveErrorNoticeShow={excludedCombos.saveErrorNotice}
+            sw={sw}
         />
         <SaveChangesConfirmModal 
             open={excludedCombos.saveChangesConfirmOpen}
@@ -155,6 +156,7 @@ export default function BallCombosScope({elementBg, collectionGen, collectionId,
             handleChange={finalizeChanges}
             closeModal={closeSaveChanges}
             saving={excludedCombos.saving}
+            sw={sw}
         />
         </>
     )

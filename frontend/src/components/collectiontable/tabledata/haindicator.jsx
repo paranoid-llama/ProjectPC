@@ -3,11 +3,11 @@ import {Typography, ToggleButton, useTheme} from '@mui/material'
 const haTopMediaQuery = {'@media only screen and (min-width: 1201px)': {display: 'none'}}
 const haBottomMediaQuery = {'@media only screen and (max-width: 1200px)': {display: 'none'}}
 
-export default function HAIndicator({sx, textOnly, topPosition=false, isEditMode, isHAActive, handleChange, noTopRow}) {
-    const mediaQuery = !noTopRow && (topPosition ? haTopMediaQuery : haBottomMediaQuery)
+export default function HAIndicator({sx, textOnly, topPosition=false, isEditMode, isHAActive, handleChange, noTopRow, smallWidth}) {
+    const mediaQuery = smallWidth ? {} : !noTopRow && (topPosition ? haTopMediaQuery : haBottomMediaQuery)
     const disabledButton = !textOnly && !isEditMode
-    const positionStyle = topPosition ? {top: textOnly ? '0px' : '-2px'} : {bottom: textOnly ? '0px' : '-2px'}
-    const offset = !textOnly && !topPosition ? {left: '-2px'} : {}
+    const positionStyle = smallWidth ? {} :  topPosition ? {top: textOnly ? '0px' : '-2px'} : {bottom: textOnly ? '0px' : '-2px'}
+    const offset = smallWidth ? {} :  !textOnly && !topPosition ? {left: '-2px'} : {}
     if (textOnly) {
         return (
             <Typography 

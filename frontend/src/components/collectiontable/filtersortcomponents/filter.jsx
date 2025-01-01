@@ -200,9 +200,10 @@ export default function Filter({listType, collection, isOwner, isEditMode, demo}
                                 noGenFilterButOtherFilters || 
                                 addingBallFiltersOnHand || 
                                 changingBetweenTagAndBallFilters || 
-                                switchingTags || removingTags || removingGameFilter || switchingBetweenNoGameAndGame
+                                switchingTags || removingTags || removingGameFilter || switchingBetweenNoGameAndGame ||
+                                listType === 'onhand' && apriballs.includes(filterKey) //always need to do refilter when its onhand
         
-        const noFilters = activeFilters.length === 1 && activeFilters.includes(filterKey)
+        const noFilters = activeFilters.length === 1 && activeFilters.includes(filterKey) && (numberButIsGameFilter ? currentGameFilters.includes(filterKey) : true)
 
         dispatch(setFilters({filterKey, listType, listState, totalList, reFilterList, noFilters, prevActiveFilters: activeFilters, specificCategoryFilters, currentSortKey, changingTagBallFilters: changingBetweenTagAndBallFilters, switchingTags, numberButIsGameFilter, switchingBetweenNoGameAndGame, availableGamesInfo}))
     }

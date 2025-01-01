@@ -6,7 +6,7 @@ import { useRouteLoaderData } from 'react-router'
 import { useState, useEffect, useRef, forwardRef } from 'react'
 import { selectIfPokemonIsSelected } from '../../../app/selectors/tradeselectors'
 import { setPokemon } from '../../../app/slices/tradeoffer'
-import { compareDisplayGridComponents, IndividualCompareDisplayComponent, PokemonCompareDisplayComponent } from '../comparecollections/comparedisplaygridcomponents'
+import { getCompareDisplayGridComponents, IndividualCompareDisplayComponent, PokemonCompareDisplayComponent } from '../comparecollections/comparedisplaygridcomponents'
 import ShowCollectionList from '../../collectiontable/collectionlist/showcollectionlist'
 import ShowOnHandList from '../../collectiontable/onhandlist/showonhandlist'
 import { reFormatToIndividual, reFormatIndividualRow } from '../../../../utils/functions/comparecollections/comparison'
@@ -46,7 +46,7 @@ export default function SetPokemon({minHeight='650px', type, view, data, relValu
     const isIndividualCompareDisplay = view === 'comparison' && viewData.viewSub === 'individual'
     const formattedComparisonDisplay = isIndividualCompareDisplay ? reFormatToIndividual(viewData.listDisplay, true) : viewData.listDisplay
     const ShowComparisonDisplay = isIndividualCompareDisplay ? VirtuosoGrid : Virtuoso
-    const useGridComponentsIfGrid = isIndividualCompareDisplay ? compareDisplayGridComponents : {}
+    const useGridComponentsIfGrid = isIndividualCompareDisplay ? getCompareDisplayGridComponents() : {}
     const ItemContentFunc = isIndividualCompareDisplay ? IndividualCompareDisplayComponent : PokemonCompareDisplayComponent
 
     return (

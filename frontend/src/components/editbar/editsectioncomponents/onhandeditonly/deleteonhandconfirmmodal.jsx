@@ -3,7 +3,7 @@ import { ErrorContext } from '../../../../app/contexts/errorcontext'
 import { useRouteLoaderData } from 'react-router'
 import getNameDisplay from '../../../../../utils/functions/display/getnamedisplay'
 import {AlertsContext} from '../../../../alerts/alerts-context'
-import {useDispatch} from 'react-redux'
+import {useDispatch, useSelector} from 'react-redux'
 import {Modal, Box, Backdrop, Fade, Typography, Button} from '@mui/material'
 import modalStyles from '../../../../../utils/styles/componentstyles/modalstyles'
 import ImgData from '../../../collectiontable/tabledata/imgdata'
@@ -12,11 +12,12 @@ import { removeOnHandPokemonFromList } from '../../../../app/slices/collectionst
 import { deleteOnHandPutRequest } from '../../../../../utils/functions/backendrequests/deleteonhand'
 import { capitalizeFirstLetter } from '../../../../../utils/functions/misc'
 
-export default function DeleteOnHandConfirm({open, handleClose, pokemonName, dexNum, ball, imgLink, isHA, emCount, gender, isMaxEMs, pokemonId, collectionID, demo}) {
+export default function DeleteOnHandConfirm({open, handleClose, pokemonName, dexNum, ball, imgLink, isHA, emCount, gender, isMaxEMs, pokemonId, collectionID, demo, additionalDispatchProps={}, show=true}) {
 
     const dispatch = useDispatch()
     const userData = useRouteLoaderData('root').user
     const {handleError} = useContext(ErrorContext)
+    // const onhandView = useSelector((state) => state.collectionState.listDisplay.onhandView)
 
     const [alertIds, setAlertIds] = useState([])
     const {addAlert, dismissAlert} = useContext(AlertsContext)
@@ -30,9 +31,7 @@ export default function DeleteOnHandConfirm({open, handleClose, pokemonName, dex
         setIsDeleting(true)
         const backendFunc = async() => await deleteOnHandPutRequest(pokemonId, collectionID)
         const successFunc = () => {
-            dispatch(deselect()) 
-
-            dispatch(removeOnHandPokemonFromList({pokemonid: pokemonId})) //list display state - refer to slice
+            dispatch(removeOnHandPokemonFromList({pokemonid: pokemonId, ...additionalDispatchProps})) //list display state - refer to slice
 
             setIsDeleting(false)
             handleClose()
@@ -79,6 +78,8 @@ export default function DeleteOnHandConfirm({open, handleClose, pokemonName, dex
         >  
             <Fade in={open}>
                 <Box sx={{...modalStyles.onhand.modalContainer, height: '30%', width: '40%', display: 'flex', alignItems: 'center'}}>
+                    {show && 
+                    <>
                     <Box sx={{...modalStyles.onhand.modalElementBg, width: '90%'}}>
                         <Typography variant='body1' align='center' sx={{padding: '10px'}}>Are you sure you want to delete this pokemon?</Typography>
                     </Box>
@@ -87,7 +88,7 @@ export default function DeleteOnHandConfirm({open, handleClose, pokemonName, dex
                             <ImgData type='ball' linkKey={ball}/><Box sx={{width: '5%'}}></Box><ImgData linkKey={imgLink}/>
                         </Box>
                         <Box sx={{height: '30%', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                            <Typography>{capitalizeFirstLetter(ball)} Ball {gender !== 'none' && <ImgData type='gender' linkKey={gender} size='20px'/>} {getNameDisplay(userData === undefined ? undefined : userData.settings.display.pokemonNames, pokemonName, dexNum)}</Typography>
+                            <Typography>{capitalizeFirstLetter(ball)} Ball {(gender !== 'none' && gender !== 'unknown') && <ImgData type='gender' linkKey={gender} size='20px'/>} {getNameDisplay(userData === undefined ? undefined : userData.settings.display.pokemonNames, pokemonName, dexNum)}</Typography>
                         </Box>
                         <Box sx={{height: '25%', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                             {isHA !== undefined && <Typography sx={haStyles}>{isHA === false ? 'Non-HA' : 'HA'}</Typography>}
@@ -100,6 +101,8 @@ export default function DeleteOnHandConfirm({open, handleClose, pokemonName, dex
                         <Box sx={{width: '80%', height: '100%'}}></Box>
                         <Button variant='contained' onClick={handleClose}>No</Button>
                     </Box>
+                    </>
+                    }
                 </Box>
             </Fade>
         </Modal>

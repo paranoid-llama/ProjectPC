@@ -10,7 +10,7 @@ import CustomSortModalContents from '../../../collectioncreation/stepcomponents/
 import SaveChangesConfirmModal from '../savechangesconfirmmodal'
 import { setListState } from '../../../../app/slices/collectionstate'
 
-export default function CustomSortingOptions({elementBg, collectionGen, collectionId, demo}) {
+export default function CustomSortingOptions({elementBg, collectionGen, collectionId, demo, sw}) {
     const dispatch = useDispatch()
     const {handleError} = useContext(ErrorContext)
     const customSortStateInit = useSelector((state) => selectCustomSortData(state))
@@ -132,6 +132,7 @@ export default function CustomSortingOptions({elementBg, collectionGen, collecti
             changingCustomSort={true}
             changeOptionsSave={changeOptionsSave}
             saveErrorNoticeShow={sortData.saveErrorNotice}
+            sw={sw}
         />
         <SaveChangesConfirmModal 
             open={sortData.saveChangesConfirmOpen}
@@ -141,6 +142,7 @@ export default function CustomSortingOptions({elementBg, collectionGen, collecti
             handleChange={finalizeChanges}
             closeModal={closeSaveChangesConfirm}
             saving={sortData.saving}
+            sw={sw}
         />
         </>
     )

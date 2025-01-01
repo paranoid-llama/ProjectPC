@@ -1,15 +1,20 @@
-import {Box, Typography, Button} from '@mui/material'
+import {Box, Typography, Button, useTheme} from '@mui/material'
+import {Carousel} from 'react-responsive-carousel'
 import {useState, useEffect} from 'react'
 import BallProgress from './subcomponents/ballprogress'
+import ImgData from '../collectiontable/tabledata/imgdata'
 import { selectScreenBreakpoint } from '../../app/selectors/windowsizeselectors'
 import { selectBallProgress } from '../../app/selectors/selectors'
 import { useSelector } from 'react-redux'
 import { useLocation } from 'react-router-dom'
 import { setCirclePositionStyles, setRowXScaling } from '../../../utils/functions/ballprogresscircle/ballprogress'
 import { getBallProgress } from '../../../utils/functions/ballprogresscircle/ballprogressstate'
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
-export default function CollectionProgress({ballScopeInit, isEditMode, collectionList, isOwner, userData, demo}) {
+export default function CollectionProgress({ballScopeInit, isEditMode, collectionList, isOwner, userData, demo, sw}) {
     const [selectedBall, setSelectedBall] = useState('')
+    const theme = useTheme()
     const link = useLocation().pathname
     const breakpoint = useSelector((state) => selectScreenBreakpoint(state, 'ballprogress'))
     const collectionListState = useSelector((state) => state.collectionState.collection)
@@ -76,8 +81,89 @@ export default function CollectionProgress({ballScopeInit, isEditMode, collectio
         setSelectedBall('')
     }, [link])
 
+    const topRowSwTotalProgLen = sw && totalBalls.slice(0, Math.ceil(totalBalls.length/2)).length
+    const bottomRowSwTotalProgLen = sw && totalBalls.slice(Math.ceil(totalBalls.length/2), totalBalls.length).length
+    const totalProgSwTopRowGap = sw && (topRowSwTotalProgLen <= 4 ? 5 : topRowSwTotalProgLen === 5 ? 3 : 2)
+    const totalProgSwBottomRowGap = sw && (bottomRowSwTotalProgLen <= 4 ? 5 : bottomRowSwTotalProgLen === 5 ? 3 : 2)
+
+    const smSm = breakpoint === 'smSm'
+    const mdSm = breakpoint === 'mdSm'
+    const regSm = breakpoint === 'sm'
+
     return (
         <Box sx={{position: 'relative', height: '100%', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+            {sw ? 
+            <Carousel
+                infiniteLoop
+                showThumbs={false}
+                showIndicators={true}
+                showArrows={true}
+                showStatus={false}
+                width={smSm ? 320 : mdSm ? 400 : 550}
+                renderArrowNext={(clickHandler) => (
+                    <Button onClick={clickHandler} sx={{position: 'absolute', top: '0px', left: '50%', width: '50%', height: '100%', zIndex: 100, ...theme.components.box.fullCenterRow, justifyContent: 'end'}}><ArrowForwardIcon sx={{fontSize: smSm ? '32px' : mdSm ? '40px' : '50px', color: 'white', opacity: 0.75}}/></Button>
+                )}
+                renderArrowPrev={(clickHandler) => (
+                    <Button onClick={clickHandler} sx={{position: 'absolute', left: '0%', width: '50%', height: '100%', zIndex: 100, ...theme.components.box.fullCenterRow, justifyContent: 'start'}}><ArrowBackIcon sx={{fontSize: smSm ? '32px' : mdSm ? '40px' : '50px', color: 'white', opacity: 0.75}}/></Button>
+                )}
+            >
+                <Box sx={{height: '100%', ...theme.components.box.fullCenterCol, gap: 2}}>
+                    <Box sx={{height: '20%', ...theme.components.box.fullCenterRow, gap: regSm ? totalProgSwTopRowGap +2 : mdSm ? totalProgSwTopRowGap +1 : totalProgSwTopRowGap}}>
+                        {totalBalls.slice(0, Math.ceil(totalBalls.length/2)).map((ball) => {
+                            return (
+                                <Box key={`sw-total-progress-display-${ball}-ball`} sx={{width: regSm ? '48px' : mdSm ? '40px' : '32px', height: '45px'}}>
+                                    <BallProgress 
+                                        ball={ball}
+                                        size={regSm ? '48px' : mdSm ? '40px' : '32px'}
+                                        progress={getBallProgress(listToCompareFrom, ball)}
+                                        addProgLabel={false}
+                                        customProgColor={theme.palette.color3.dark}
+                                        sw={true}
+                                    />
+                                </Box>
+                            )
+                        })}
+                    </Box>
+                    <Box sx={{height: '30%', ...theme.components.box.fullCenterCol, gap: 1}}>
+                    <Typography sx={{fontSize: mdSm ? '32px' : '30px', fontWeight: 700}} variant='h4'>Total Progress</Typography>
+                    <Typography sx={{fontSize: mdSm ? '26px' : '24px', fontWeight: 700}} variant='h5'>{totalProgress.display} ({Math.floor(totalProgress.percent*100)/100}%)</Typography>
+                    </Box>
+                    <Box sx={{height: '20%', ...theme.components.box.fullCenterRow, gap: regSm ? totalProgSwBottomRowGap +2 : mdSm ? totalProgSwBottomRowGap+1 : totalProgSwBottomRowGap, mb: 2}}>
+                    {totalBalls.slice(Math.ceil(totalBalls.length/2), totalBalls.length).map((ball) => {
+                        return (
+                            <Box key={`sw-total-progress-display-${ball}-ball`} sx={{width: regSm ? '48px' : mdSm ? '40px' : '32px', height: '45px'}}>
+                                <BallProgress 
+                                    ball={ball}
+                                    size={regSm ? '48px' : mdSm ? '40px' : '32px'}
+                                    progress={getBallProgress(listToCompareFrom, ball)}
+                                    addProgLabel={false}
+                                    customProgColor={theme.palette.color3.dark}
+                                    sw={true}
+                                />
+                            </Box>
+                        )
+                    })}
+                    </Box>
+                </Box>
+                {totalBalls.map((ball, idx) => {
+                    return (
+                        <Box  key={`sw-individual-progress-display-${ball}-ball`} sx={{height: '100%', ...theme.components.box.fullCenterCol, justifyContent: 'start'}}>
+                            <Box sx={{width: '150px', height: '250px', mt: -3, mb: 1}}>
+                            <BallProgress 
+                                ball={ball}
+                                progress={getBallProgress(listToCompareFrom, ball)}
+                                sw={sw}
+                                customProgColor={theme.palette.color3.dark}
+                                size={158}
+                                addLabel={true}
+                                addProgLabel={true}
+                            />
+                            </Box>
+                        </Box>
+                    )
+                })}
+            </Carousel> : 
+            <>
             {setRowLayout && <Typography sx={{position: 'absolute', top: '-25px', ...totalProgressStyles.label, fontWeight: 700}} variant='h4'>Total Progress</Typography> }
             {setRowLayout && <Typography sx={{position: 'absolute', top: '-20px', ...totalProgressStyles.text, fontWeight: 700}} variant='h5'>{totalProgress.display}</Typography> }
             {setRowLayout &&
@@ -121,6 +207,7 @@ export default function CollectionProgress({ballScopeInit, isEditMode, collectio
                 <Button sx={{position: 'absolute', top: '-30px'}} size='small' onClick={seeTotalProgress}>
                     Total Progress
                 </Button>
+            }</>
             }
         </Box>
     )

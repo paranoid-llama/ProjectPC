@@ -15,7 +15,7 @@ import { ballScopeChange } from '../../../../../utils/functions/scope/statechang
 import { saveBallScopeChanges } from '../../../../../utils/functions/scope/savescopechanges'
 import { ownedPokemonEdit } from '../../../../../utils/functions/backendrequests/ownedpokemonedit'
 
-export default function BallScope({elementBg, collectionGen, collectionId, demo}) {
+export default function BallScope({elementBg, collectionGen, collectionId, demo, sw}) {
     const dispatch = useDispatch()
     const {handleError} = useContext(ErrorContext)
     const oneArrLegalBalls = getOneArrData(useSelector((state) => state.editmode.pokemonScopeTotal), false, false)
@@ -137,7 +137,7 @@ export default function BallScope({elementBg, collectionGen, collectionId, demo}
             totalBalls.map(ball => {
                 const ballDisplay = capitalizeFirstLetter(ball)
                 return (
-                    <Grid item xs={2} key={`ball-scope-${ball}-selection`} sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                    <Grid item xs={sw ? 3 : 2} key={`ball-scope-${ball}-selection`} sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                         <ToggleButton 
                             value={ball} 
                             sx={{
@@ -170,12 +170,12 @@ export default function BallScope({elementBg, collectionGen, collectionId, demo}
 
     return (
         <>
-        <Box sx={{...elementBg, width: '95%', height: '35px', display: 'flex', alignItems: 'center'}}>
+        <Box sx={{...elementBg, width: '95%', height: sw ? '80px' : '35px', display: 'flex', alignItems: 'center'}}>
             <Button sx={{color: 'rgb(38, 188, 201)', fontWeight: 700, textTransform: 'none', fontSize: '1rem'}} onClick={() => saveChangesConfirmOpen(false, 'main')}>Collection Options</Button>
             <ArrowForward sx={{color: 'rgb(38, 188, 201)'}}/>
             <Button sx={{color: 'rgb(38, 188, 201)', fontWeight: 700, textTransform: 'none', fontSize: '1rem'}} onClick={() => saveChangesConfirmOpen(false, 'changeScope')}>Change Scope</Button>
             <ArrowForward sx={{color: 'rgb(38, 188, 201)'}}/>
-            <Typography sx={{color: 'white', fontWeight: 700, mx: 1}}>Ball Scope</Typography>
+            <Typography sx={{color: 'white', fontWeight: 700, mx: 1, textAlign: 'center'}}>Ball Scope</Typography>
         </Box>
         <Box sx={{...elementBg, width: '95%', height: '80%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', mt: 1}}>
             <Typography sx={{fontWeight: 700, fontSize: '22px'}}>Change Ball Scope</Typography>
@@ -184,16 +184,16 @@ export default function BallScope({elementBg, collectionGen, collectionId, demo}
                 {renderBalls()}
             </Grid>
         </Box>
-        <Box sx={{mt: 1, height: '35px', width: '100%', display: 'flex'}}>
-            <Box sx={{...elementBg, width: '20%', height: '100%', mr: '20%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+        <Box sx={{mt: 1, height: sw ? '45px' : '35px', width: '100%', display: 'flex'}}>
+            <Box sx={{...elementBg, width: '20%', height: '100%', mr: sw ? '5%' : '20%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                 <Button size='small' variant='contained' sx={{py: 0}} onClick={() => saveChangesConfirmOpen(false, 'exit')}>Exit</Button>
             </Box>
-            <Box sx={{...elementBg, width: '20%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                <Button size='small' variant='contained' sx={{py: 0}} onClick={() => saveChangesConfirmOpen(true, 'changeScope')}>Save</Button>
+            <Box sx={{...elementBg, width: sw ? '35%' : '20%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                <Button size={sw ? 'large' : 'small'} variant='contained' sx={{py: 0, fontSize: sw ? '20px' : '15px'}} onClick={() => saveChangesConfirmOpen(true, 'changeScope')}>Save</Button>
             </Box>
             {formData.saveErrorNotice && 
-            <Box sx={{...elementBg, width: '25%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', ml: 5}}>
-                <Typography sx={{fontSize: '12px', color: 'white', fontWeight: 700}}>
+            <Box sx={{...elementBg, width: '25%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', ml: sw ? 1 : 5}}>
+                <Typography sx={{fontSize: '12px', color: 'white', fontWeight: 700, textAlign: 'center'}}>
                     No changes were made!
                 </Typography>
             </Box>
@@ -208,6 +208,7 @@ export default function BallScope({elementBg, collectionGen, collectionId, demo}
             handleChange={finalizeChanges}
             closeModal={closeConfirmChangesModal}
             saving={formData.saving}
+            sw={sw}
         />
         </>
     )

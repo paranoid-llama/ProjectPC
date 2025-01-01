@@ -19,7 +19,7 @@ import { usePutRequest } from '../../../../../utils/functions/backendrequests/ed
 import '../../../../../utils/styles/componentstyles/eggmoveselection.css'
 import store from '../../../../app/store'
 
-export default function RenderOnHandEdit({collectionId, ownerId, pokemon, idxOfPokemon, allEggMoves, isHomeCollection, demo}) {
+export default function RenderOnHandEdit({collectionId, ownerId, pokemon, idxOfPokemon, allEggMoves, isHomeCollection, demo, disableSpeciesEdit=false, setSelectedBall=false}) {
     const [popOutScreens, setPopOutScreens] = useState({eggmoveScreen: {open: 'firstRenderFalse', idx: ''}, pokemonSelection: false})
     const {handleError} = useContext(ErrorContext)
     const {addAlert} = useContext(AlertsContext)
@@ -38,7 +38,7 @@ export default function RenderOnHandEdit({collectionId, ownerId, pokemon, idxOfP
     }
 
     const handleBallChange = (e, newBall) => {
-        dispatch(setBall({idx: idxOfPokemon, ball: newBall}))
+        dispatch(setBall({idx: idxOfPokemon, ball: newBall, setSelectedBall}))
         // if (unsavedOnhandChanges === false) {addAlert({severity: 'error', timeout: 4, message: 'You have unsaved on-hand changes. Make sure to save before leaving!'})}
         dispatch(setUnsavedChanges('onhand'))
         // const successFunc = () => dispatch(setBall({idx: idxOfPokemon, ball: newBall}))
@@ -53,7 +53,7 @@ export default function RenderOnHandEdit({collectionId, ownerId, pokemon, idxOfP
         //     dispatch(setGender({idx: idxOfPokemon, gender: 'male'}))
         //     usePutRequest('gender', 'male', {id: pokemon._id}, 'onhand', collectionId, ownerId)
         // }
-        dispatch(setGender({idx: idxOfPokemon, gender: pokemon.gender === 'male' ? 'female' : 'male'}))
+        dispatch(setGender({idx: idxOfPokemon, gender: pokemon.gender === 'male' ? 'female' : pokemon.gender === 'female' ? 'unknown' : 'male'}))
         // if (unsavedOnhandChanges === false) {addAlert({severity: 'error', timeout: 4, message: 'You have unsaved on-hand changes. Make sure to save before leaving!'})}
         dispatch(setUnsavedChanges('onhand'))
         // const successFunc = () => dispatch(setGender({idx: idxOfPokemon, gender: pokemon.gender === 'male' ? 'female' : 'male'}))
@@ -193,8 +193,8 @@ export default function RenderOnHandEdit({collectionId, ownerId, pokemon, idxOfP
     const toggleClass = popOutScreens.eggmoveScreen.open === true ? 'egg-moves-slide-in' : 
         popOutScreens.eggmoveScreen.open === false && 'egg-moves-slide-out'
     return (
-        <EditWrapper imgLink={pokemon.imgLink} name={pokemon.name} natDexNum={pokemon.natDexNum} onClickFunc={handleOpen}>
-            <OnHandPokemonSelectionForm speciesEditOnly={true} open={popOutScreens.pokemonSelection} handleClose={handleClose} initialPokemonData={pokemon} idxOfInitialPokemon={idxOfPokemon} demo={demo}/>
+        <EditWrapper customNameWrapperStyles={{height: '100%'}} imgLink={pokemon.imgLink} name={pokemon.name} natDexNum={pokemon.natDexNum} onClickFunc={disableSpeciesEdit ? undefined : handleOpen}>
+            {!disableSpeciesEdit && <OnHandPokemonSelectionForm speciesEditOnly={true} open={popOutScreens.pokemonSelection} handleClose={handleClose} initialPokemonData={pokemon} idxOfInitialPokemon={idxOfPokemon} demo={demo}/>}
             <BallSelectionForm allowedBalls={allowedBalls} handleChange={handleBallChange} value={pokemon.ball} width='18%'/>
             <GenderSelectionForm gender={pokemon.gender} possibleGenders={possibleGenders} handleChange={handleGenderChange}/>
             <HASelectionForm noHA={noHA} isHA={pokemon.isHA} handleChange={handleIsHAChange} buttonSizes='small'/>

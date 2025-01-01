@@ -15,10 +15,6 @@ export const setIsHA = (state, action) => {
         state.collection[idx].balls[ball].isHA = !valuePath
     } else if (listType === 'onhand') {
         state.onhand[idx].isHA = !valuePath
-        state.listDisplay.onhand = state.listDisplay.onhand.map(p => {
-            if (p._id === state.onhand[idx]._id) {p.isHA = !p.isHA}
-            return p 
-        }) //need to do this so the changes are reflected immediately in pokemon onhand view
     }
     return state
 }
@@ -78,7 +74,7 @@ export const commonReducers = {
         state.listDisplay.onhandFilters = {sort: '', filters: {ballFilters: [], genFilters: [], otherFilters: []}}
         if (action.payload.eggMoveInfo) {state.eggMoveInfo = action.payload.eggMoveInfo} else {state.eggMoveInfo = {}}
         if (action.payload.availableGamesInfo) {state.availableGamesInfo = action.payload.availableGamesInfo} else {state.availableGamesInfo = {}}
-        state.options = {...action.payload.options, collectionName: action.payload.name}
+        state.options = {...action.payload.options, collectionName: state.options.collectionName === '' ? action.payload.name : state.options.collectionName}
         state.demoData.gen = action.payload.gen
         return state
     },

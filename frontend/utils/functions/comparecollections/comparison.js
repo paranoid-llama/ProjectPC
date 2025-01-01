@@ -137,7 +137,7 @@ const compareLists = (refList, compareFromList, specificOpts, advOpts, eggMoveDa
             if (noComparisonToBeMade) {return}
             const otherOnHandHasProvidedPokeBallCombo = onhandBallComboRef[pokemon.name] !== undefined && onhandBallComboRef[pokemon.name].includes(pokemon.ball)
             if (otherOnHandHasProvidedPokeBallCombo) {return}
-            const otherIAltFormProvided = iAltFormDiffSpecies && interchangeableToAnyRef[iAltFormDiffSpecies].includes(ball)
+            const otherIAltFormProvided = iAltFormDiffSpecies && interchangeableToAnyRef[iAltFormDiffSpecies].includes(pokemon.ball)
             if (otherIAltFormProvided) {return}
             const providedByAdultBabyLiteral = babyAdultEquivalent && refList.filter(p => p.name === equivalentPokemon).map((pData) => {
                 const eqBallData = pData
@@ -152,7 +152,7 @@ const compareLists = (refList, compareFromList, specificOpts, advOpts, eggMoveDa
             if (otherListBallData.isOwned === false) {
                 const pokemonDataThere = comparedList.filter(p => p.name === pokemon.name).length !== 0
                 if (iAltFormDiffSpecies) {
-                    interchangeableToAnyRef[iAltFormDiffSpecies].push(ball)
+                    interchangeableToAnyRef[iAltFormDiffSpecies].push(pokemon.ball)
                 }
                 onhandBallComboRef[pokemon.name] = onhandBallComboRef[pokemon.name] !== undefined ? [...onhandBallComboRef[pokemon.name], pokemon.ball] : [pokemon.ball]
                 if (pokemonDataThere) {

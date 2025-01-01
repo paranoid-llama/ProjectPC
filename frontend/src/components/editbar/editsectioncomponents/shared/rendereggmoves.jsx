@@ -1,8 +1,10 @@
-import {Grid, Box, ToggleButton, ToggleButtonGroup} from '@mui/material'
+import {Grid, Box, ToggleButton, ToggleButtonGroup, Tooltip, ClickAwayListener} from '@mui/material'
+import SWEditEggMovesForm from '../../selection/smallwidth/editors/swediteggmovesform'
 import EggMove from './../eggmovecomponents/eggmove'
 
-export default function RenderEggMoves({emCount, EMs, maxEms, idxOfSelectedEM, changeEMScreen=false, toggleScreen=undefined, handleEMChange, disabledSelection=false, noInfoBgColor, displayType='none'}) {
+export default function RenderEggMoves({emCount, EMs, maxEms, idxOfSelectedEM, changeEMScreen=false, toggleScreen=undefined, handleEMChange, disabledSelection=false, noInfoBgColor, displayType='none', otherEmTextStyles={}}) {
     const isOnHandEdit = displayType === 'onHandEditEMs'
+    // console.log(o)
     const renderEggMoveSlots = () => {
         return(
             Array.from(Array(maxEms).keys()).map(a => {
@@ -27,7 +29,8 @@ export default function RenderEggMoves({emCount, EMs, maxEms, idxOfSelectedEM, c
                         disabledWholeEMSelection={disabledSelection}
                         noInfoBgColor={noInfoBgColor}
                         key={keyIdentifier}
-                    />
+                        otherTextStyles={otherEmTextStyles}
+                    /> 
                 )
             })
         )
@@ -50,6 +53,7 @@ export default function RenderEggMoves({emCount, EMs, maxEms, idxOfSelectedEM, c
                         disabled={disabled}
                         dropDownMenu={true}
                         key={keyIdentifier}
+                        otherTextStyles={otherEmTextStyles}
                     />
                 )
             })

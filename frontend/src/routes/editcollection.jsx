@@ -18,6 +18,8 @@ import FlexAppBarContainer from '../components/editbar/selection/components/flex
 import DisplaySelection from '../components/editbar/selection/displayselection.jsx'
 import { changeModalState } from '../app/slices/editmode.jsx'
 import CollectionOptionsModal from '../components/editbar/collectionoptions/collectionoptionsmodal.jsx'
+import { selectScreenBreakpoint } from '../app/selectors/windowsizeselectors.js'
+import SWEditSelection from '../components/editbar/selection/smallwidth/sweditselection.jsx'
 
 export default function EditCollection({demo}) {
     const dispatch = useDispatch()
@@ -32,6 +34,8 @@ export default function EditCollection({demo}) {
     const revalidator = useRevalidator()
     const unsavedChanges = useSelector((state) => state.editmode.unsavedChanges)
     const unsavedOnhandChanges = useSelector((state) => state.editmode.unsavedOnhandChanges)
+
+    const screenBreakpoint = useSelector((state) => selectScreenBreakpoint(state, 'default'))
 
     const demoGen = demo && useSelector((state) => state.collectionState.demoData.gen)
     const anyUnsavedChanges = unsavedChanges || unsavedOnhandChanges
@@ -54,7 +58,7 @@ export default function EditCollection({demo}) {
             type: 'aprimon',
             name: collectionDataInState.options.collectionName,
             gen: demoGen,
-            options: {...collectionDataInState.options, collectionName: undefined},
+            options: {...collectionDataInState.options},
             ownedPokemon: collectionDataInState.collection,
             onHand: collectionDataInState.onhand,
             eggMoveInfo: collectionDataInState.eggMoveInfo,
@@ -102,6 +106,7 @@ export default function EditCollection({demo}) {
                 className='keepZidx'
                 sx={{backgroundColor: '#e3e5e6', height: '64.547px', display: 'flex', alignItems: 'center', flexDirection: 'row', zIndex: 700}}
             >
+                {screenBreakpoint !== 'sm' && 
                 <FlexAppBarContainer
                     widthPercent='10%'
                     additionalStyles={{paddingLeft: '8px', position: 'relative', height: '100%'}}
@@ -133,8 +138,18 @@ export default function EditCollection({demo}) {
                         }
                     </Box>
                     }
-                </FlexAppBarContainer>
-                <DisplaySelection collection={demo ? {ownedPokemon: store.getState().collectionState.collection, owner: {_id: ''}, _id: '', gen: demoGen} : collection} demo={demo}/>
+                </FlexAppBarContainer>}
+                <Box sx={{width: '0%', height: '100%', position: 'relative'}}>
+                    
+                </Box>
+                <DisplaySelection 
+                    collection={demo ? {ownedPokemon: store.getState().collectionState.collection, owner: {_id: ''}, _id: '', gen: demoGen} : collection} 
+                    demo={demo}
+                    anyUnsavedChanges={screenBreakpoint === 'sm' && anyUnsavedChanges}
+                    saving={screenBreakpoint === 'sm' && saving}
+                    saveCollectionEdits={screenBreakpoint === 'sm' && saveCollectionEdits}
+                    smScreen={screenBreakpoint === 'sm'}
+                />
             </AppBar>
             <Modal
                 aria-labelledby='save-confirm'
@@ -179,8 +194,15 @@ export default function EditCollection({demo}) {
                     </Box>
                 </Fade>
             </Modal>
-            <CollectionOptionsModal collectionGen={demo ? demoGen : collection.gen} collectionId={demo ? '' : collection._id} ownerUsername={demo ? '' : collection.owner.username} demo={demo}/>
+            <CollectionOptionsModal collectionGen={demo ? demoGen : collection.gen} collectionId={demo ? '' : collection._id} ownerUsername={demo ? '' : collection.owner.username} demo={demo} sw={screenBreakpoint === 'sm'}/>
         </Box>
+        {screenBreakpoint === 'sm' &&
+        <SWEditSelection 
+            collectionID={demo ? '00000' : collection._id}
+            gen={demo ? demoGen : collection.gen}
+            demo={demo}
+        />
+        }
         </>
     )
 }

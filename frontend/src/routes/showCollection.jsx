@@ -21,7 +21,11 @@ import store from '../app/store';
 import {deselect, changeList} from './../app/slices/editmode'
 import listStyles from '../../utils/styles/componentstyles/liststyles';
 import ChangeOnHandView from '../components/collectiontable/changeonhandviewbutton';
+import SmallWidthColList from '../components/collectiontable/collectionlist/smallwidth/smallwidthcol';
+import { selectScreenBreakpoint } from '../app/selectors/windowsizeselectors';
 import collectionState from '../app/slices/collectionstate';
+import SmallWidthOnHand from '../components/collectiontable/onhandlist/smallwidth/smallwidthonhand';
+import SWFilterSort from '../components/collectiontable/filtersortcomponents/swfiltersort';
 
 export default function ShowCollection({collection, isCollectionOwner, colorStyles, demo=false}) {
     const theme = useTheme()
@@ -32,6 +36,9 @@ export default function ShowCollection({collection, isCollectionOwner, colorStyl
     const currentLink = pathData.pathname 
     const currentlyLoggedInUser = useRouteLoaderData("root")
     const collectionLoaderData = demo ? stateColData : collection ? collection : useLoaderData()
+
+    const screenBreakpoint = useSelector((state) => selectScreenBreakpoint(state, 'default'))
+    const smallScreen = screenBreakpoint === 'sm'
 
     if (demo && !stateColData) {
         return (
@@ -107,7 +114,7 @@ export default function ShowCollection({collection, isCollectionOwner, colorStyl
             type: 'aprimon',
             name: collectionDataInState.options.collectionName,
             gen: collectionLoaderData.gen,
-            options: {...collectionDataInState.options, collectionName: undefined},
+            options: {...collectionDataInState.options},
             ownedPokemon: betweenPages ? collectionDataInState.collection : collectionDataInState.collection.map(p => {return {...p, imgLink: undefined, possibleGender: undefined}}),
             onHand: betweenPages ? collectionDataInState.onhand : collectionDataInState.onhand.map(p => {return {...p, imgLink: undefined}}),
             ...topLevelVirtuals
@@ -118,25 +125,26 @@ export default function ShowCollection({collection, isCollectionOwner, colorStyl
     return (
         <>
         <Box sx={{flex: 1}}>
-            <Box sx={{flexGrow: 1, width: '100%', alignItems: 'center'}}>
-                <Header additionalStyles={{backgroundColor: '#26BCC9', color: 'black'}}>{(!isEditMode && !demo) ? collectionName : collectionNameState}</Header>
+            <Box sx={{alignItems: 'center'}}>
+                <Header additionalStyles={{backgroundColor: '#26BCC9', color: 'black', fontSize: '18px', wordBreak: 'break-all'}} noWrap={false}>{(!isEditMode) ? collectionName : collectionNameState}</Header>
             </Box>
             {demo && 
-            <Box sx={{width: '100%', height: '50px', justifyContent: 'center', alignItems: 'center', display: 'flex', backgroundColor: theme.palette.color3.main, gap: 2}}>
-                <Typography sx={{color: theme.palette.color1.main, fontWeight: 700}}>This is a demo collection. It will be lost once you leave the page. To permanently save the collection, register here:</Typography>
+            <Box sx={{width: '100%', height: screenBreakpoint === 'sm' ? '120px' : '50px', justifyContent: 'center', alignItems: 'center', display: 'flex', flexDirection: screenBreakpoint === 'sm' ? 'column' : 'row', backgroundColor: theme.palette.color3.main, gap: screenBreakpoint === 'sm' ? 0 : 2}}>
+                <Typography sx={{color: theme.palette.color1.main, fontWeight: 700, textAlign: 'center', fontSize: screenBreakpoint === 'sm' ? '15px' : '16px'}}>This is a demo collection. It will be lost once you leave the page. To permanently save the collection, register here:</Typography>
                 <Button size='large' onClick={() => navigate('/register', {state: {collection: passDemoCollectionForward()}})} sx={{'&.MuiButtonBase-root': {color: theme.palette.color1.contrastText, backgroundColor: theme.palette.color2.main}}}>Register</Button>
             </Box>
             }
-            <BodyWrapper>
-                <ShowCollectionTitle collectionInfo={collectionLoaderData} collectionID={collectionId} options={collectionLoaderData.options} isEditMode={isEditMode} demo={demo} isOwner={isOwner} userIsLoggedIn={userIsLoggedIn} userData={currentlyLoggedInUser.user} passDemoCollectionForward={passDemoCollectionForward}/>
-                <FilterSortArea collection={collectionLoaderData} isEditMode={isEditMode} demo={demo} isOwner={isOwner}/>
+            <BodyWrapper sx={{margin: smallScreen ? 0 : 5}}>
+                <ShowCollectionTitle collectionInfo={collectionLoaderData} collectionID={collectionId} options={collectionLoaderData.options} isEditMode={isEditMode} demo={demo} isOwner={isOwner} userIsLoggedIn={userIsLoggedIn} userData={currentlyLoggedInUser.user} passDemoCollectionForward={passDemoCollectionForward} smallScreen={smallScreen}/>
+                {!smallScreen && <FilterSortArea collection={collectionLoaderData} isEditMode={isEditMode} demo={demo} isOwner={isOwner}/>}
+                {smallScreen && <SWFilterSort collection={collectionLoaderData} isEditMode={isEditMode} demo={demo} isOwner={isOwner}/>}
                 <Box sx={{flexGrow: 1, margin: 0, width: '100%', display: 'flex'}}>
                     <Tabs 
                         textcolor='inherit'
                         value={list}
                         onChange={changeListType}
                         indicatorColor='#FFDF26'
-                        sx={{width: '40%', zIndex: 100}}
+                        sx={{width: smallScreen ? '100%' : '40%', zIndex: 100}}
                     >
                         <Tab 
                             sx={list === 'collection' ? tabStyles(true) : tabStyles(false)} 
@@ -161,6 +169,16 @@ export default function ShowCollection({collection, isCollectionOwner, colorStyl
                     </Box>
                 </Box>
                 {list === 'collection' ? 
+                smallScreen ? 
+                <SmallWidthColList 
+                    collection={collectionLoaderData}
+                    demo={demo}
+                    isCollectionOwner={isCollectionOwner}
+                    styles={listStyles.collection}
+                    isEditMode={isEditMode}
+                    userData={currentlyLoggedInUser}
+                    height='680px'
+                /> : 
                 <ShowCollectionList
                     collection={collectionLoaderData}
                     isCollectionOwner={isCollectionOwner}
@@ -169,6 +187,20 @@ export default function ShowCollection({collection, isCollectionOwner, colorStyl
                     demo={demo}
                     userData={currentlyLoggedInUser}
                 /> :
+                smallScreen ? 
+                <SmallWidthOnHand 
+                    onhandList={collectionLoaderData.onHand}
+                    collectionID={collectionLoaderData._id}
+                    collectingBallsConst={collectionLoaderData.options.collectingBalls}
+                    eggMoveInfo={collectionLoaderData.eggMoveInfo}
+                    styles={listStyles.onhand}
+                    collectionListStyles={listStyles.collection}
+                    isEditMode={isEditMode}
+                    demo={demo}
+                    isHomeCollection={collectionLoaderData.gen === 'home'}
+                    userData={currentlyLoggedInUser}
+                    height='680px'
+                /> : 
                 <ShowOnHandList
                     onhandList={collectionLoaderData.onHand}
                     collectionID={collectionLoaderData._id}

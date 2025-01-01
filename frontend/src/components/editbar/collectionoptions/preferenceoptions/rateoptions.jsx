@@ -12,7 +12,7 @@ import { backendChangeOptions } from '../../../../../utils/functions/backendrequ
 import { getPossibleItems, apriballLiterals } from '../../../../../common/infoconstants/miscconstants';
 import SaveChangesConfirmModal from '../savechangesconfirmmodal'
 
-export default function RateOptions({elementBg, collectionGen, collectionId, demo}) {
+export default function RateOptions({elementBg, collectionGen, collectionId, demo, sw}) {
     const dispatch = useDispatch()
     const {handleError} = useContext(ErrorContext)
     const ratesInit = useSelector((state) => state.collectionState.options.tradePreferences.rates)
@@ -142,7 +142,7 @@ export default function RateOptions({elementBg, collectionGen, collectionId, dem
 
     return (
         <>
-        <Box sx={{...elementBg, width: '95%', height: '35px', display: 'flex', alignItems: 'center', mb: 1}}>
+        <Box sx={{...elementBg, width: '95%', height: sw ? '80px' : '35px', display: 'flex', alignItems: 'center', mb: 1}}>
             <Button sx={{color: 'rgb(38, 188, 201)', fontWeight: 700, textTransform: 'none', fontSize: '1rem'}} onClick={() => changeRatesSave(false, 'main')}>Collection Options</Button>
             <ArrowForward sx={{color: 'rgb(38, 188, 201)'}}/>
             <Button sx={{color: 'rgb(38, 188, 201)', fontWeight: 700, textTransform: 'none', fontSize: '1rem'}} onClick={() => changeRatesSave(false, 'tradePreferences')}>Trade Preferences</Button>
@@ -156,7 +156,7 @@ export default function RateOptions({elementBg, collectionGen, collectionId, dem
                 <Tab value='pokemonOffers' label='Pokemon Offers'/>
                 <Tab disabled={ratesInit.itemOffers === undefined} value='itemOffers' label='Item Offers'/>
             </Tabs>
-            <Box sx={{width: '90%', height: '90%', display: 'flex', flexDirection: 'column', mt: 1}}>
+            <Box sx={{width: sw ? '100%' : '90%', height: '90%', display: 'flex', flexDirection: 'column', mt: 1}}>
                 <Box sx={{width: '100%', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'start', alignItems: 'center'}}>
                     {rates[rates.tab].map((rate, idx) => {
                         return (
@@ -182,16 +182,16 @@ export default function RateOptions({elementBg, collectionGen, collectionId, dem
                 </Box>
             </Box>
         </Box>
-        <Box sx={{mt: 1, height: '35px', width: '100%', display: 'flex'}}>
-            <Box sx={{...elementBg, width: '20%', height: '100%', mr: '20%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+        <Box sx={{mt: 1, height: sw ? '45px' : '35px', width: '100%', display: 'flex'}}>
+            <Box sx={{...elementBg, width: '20%', height: '100%', mr: sw ? '5%' : '20%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                 <Button size='small' variant='contained' sx={{py: 0}} onClick={() => changeRatesSave(false, 'exit')}>Exit</Button>
             </Box>
-            <Box sx={{...elementBg, width: '20%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                <Button size='small' variant='contained' sx={{py: 0}} onClick={() => changeRatesSave(true, 'tradePreferences')}>Save</Button>
+            <Box sx={{...elementBg, width: sw ? '35%' : '20%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                <Button size={sw ? 'large' : 'small'} variant='contained' sx={{py: 0, fontSize: sw ? '20px' : '15px'}} onClick={() => changeRatesSave(true, 'tradePreferences')}>Save</Button>
             </Box>
             {rates.saveErrorNotice && 
-            <Box sx={{...elementBg, width: '25%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', ml: 5}}>
-                <Typography sx={{fontSize: '12px', color: 'white', fontWeight: 700}}>
+            <Box sx={{...elementBg, width: '25%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', ml: sw ? 1 : 5}}>
+                <Typography sx={{fontSize: '12px', color: 'white', fontWeight: 700, textAlign: 'center'}}>
                     No changes were made!
                 </Typography>
             </Box>
@@ -205,6 +205,7 @@ export default function RateOptions({elementBg, collectionGen, collectionId, dem
             handleChange={finalizeChanges}
             closeModal={closeSaveChangesConfirm}
             saving={rates.saving}
+            sw={sw}
         />
         </>
     )

@@ -137,6 +137,12 @@ const listStyles = {
             left: '-2px',
             widthScaling: {
                 width: '99.3%',
+                '@media only screen and (min-width: 0px) and (max-width: 499px)': {
+                    width: '98%'
+                },
+                '@media only screen and (min-width: 500px) and (max-width: 767px)': {
+                    width: '98.6%'
+                },
                 '@media only screen and (min-width: 768px) and (max-width: 850px)': {
                     width: '98.7%'
                 },

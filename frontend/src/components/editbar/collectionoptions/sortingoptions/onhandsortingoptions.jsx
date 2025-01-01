@@ -12,7 +12,7 @@ import { sortOnHandList } from '../../../../../common/sortingfunctions/onhandsor
 import OnHandSortSettingsModalContents from '../../../collectioncreation/stepcomponents/optionsselection/aprimon/onhandsortsettingsmodalcontents'
 import SaveChangesConfirmModal from '../savechangesconfirmmodal'
 
-export default function OnHandSortingOptions({elementBg, collectionGen, collectionId, demo}) {
+export default function OnHandSortingOptions({elementBg, collectionGen, collectionId, demo, sw}) {
     const dispatch = useDispatch()
     const {handleError} = useContext(ErrorContext)
     const totalBalls = getBallsInGen(collectionGen)
@@ -167,6 +167,7 @@ export default function OnHandSortingOptions({elementBg, collectionGen, collecti
             renderReorder={renderReorderButtons}
             saveErrorNoticeShow={sortingOptions.saveErrorNotice}
             reorderActive={sortingOptions.options.reorder}
+            sw={sw}
         />
         <SaveChangesConfirmModal 
             open={sortingOptions.saveChangesConfirmOpen}
@@ -177,6 +178,7 @@ export default function OnHandSortingOptions({elementBg, collectionGen, collecti
             handleChange={finalizeChanges}
             closeModal={closeSaveChangesConfirm}
             saving={sortingOptions.saving}
+            sw={sw}
         />
         </>
     )

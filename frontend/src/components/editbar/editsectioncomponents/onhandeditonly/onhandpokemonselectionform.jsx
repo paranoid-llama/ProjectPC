@@ -84,23 +84,7 @@ export default function OnHandPokemonSelectionForm({collectionID, speciesEditOnl
     const allowedBalls = (!allowedBallsStep1.includes(specificPokemonDataPath.ball) && speciesEditOnly) ? [...allowedBallsStep1, specificPokemonDataPath.ball] : allowedBallsStep1
 
     const scalingStyles = speciesEditOnly ? {height: '60%'} : {height: '80%'}
-
-    //alerts
-    const [alertIds, setAlertIds] = useState([])
-    const {addAlert, dismissAlert} = useContext(AlertsContext)
-
-    const clearAlerts = () => {
-        alertIds.forEach((id) => {
-            dismissAlert(id);
-        });
-        setAlertIds([]);
-    }
-
-    useEffect(() => {
-        return () => {
-            clearAlerts();
-        };
-    }, []);
+    const {addAlert} = useContext(AlertsContext)
 
     const updateSelectionState = (load, changingSelection=false, name, newBall=undefined) => {
         //load in this case refers to newOnHandData
@@ -273,6 +257,9 @@ export default function OnHandPokemonSelectionForm({collectionID, speciesEditOnl
     const handleGenderChange = () => {
         if (specificPokemonDataPath.newOnHandData.gender === 'male') {
             const newOnHandData = {...specificPokemonDataPath.newOnHandData, gender: 'female'}
+            setPokemonData(updateSelectionState(newOnHandData))
+        } else if (specificPokemonDataPath.newOnHandData.gender === 'female') {
+            const newOnHandData = {...specificPokemonDataPath.newOnHandData, gender: 'unknown'}
             setPokemonData(updateSelectionState(newOnHandData))
         } else {
             const newOnHandData = {...specificPokemonDataPath.newOnHandData, gender: 'male'}
@@ -552,7 +539,7 @@ export default function OnHandPokemonSelectionForm({collectionID, speciesEditOnl
                                 <Button  sx={{'& .Mui-disabled': {color: 'white'}}} size='large' variant='contained' onClick={handleAddNewOnHand} disabled={savePending}>{savePending ? <>Saving<DotWaitingText/></> : 'Save'}</Button>
                             </Box>
                             <Box sx={{width: '33%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                            <Button  size='small' variant='contained' onClick={handleAddAnotherOnhand} sx={{fontSize: '12px', padding: 0.5, '& .Mui-disabled': {color: 'white'}}} disabled={(pokemonData.otherNewOnHands.length === 0 && Object.keys(pokemonData.selection).length === 0) || (savePending)}>Add another on-hand</Button>
+                                <Button  size='small' variant='contained' onClick={handleAddAnotherOnhand} sx={{fontSize: '12px', padding: 0.5, '& .Mui-disabled': {color: 'white'}}} disabled={(pokemonData.otherNewOnHands.length === 0 && Object.keys(pokemonData.selection).length === 0) || (savePending)}>Add another on-hand</Button>
                             </Box>
                         </Box>
                         <ConfirmDecisionModal 

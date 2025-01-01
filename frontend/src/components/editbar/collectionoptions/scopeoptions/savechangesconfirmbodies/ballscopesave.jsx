@@ -5,7 +5,7 @@ import SpeciesSelect from '../../../editsectioncomponents/onhandeditonly/modalco
 import ImgData from '../../../../collectiontable/tabledata/imgdata'
 import { capitalizeFirstLetter } from '../../../../../../utils/functions/misc'
 
-export default function BallScopeSave({addedBalls, removedBalls, newBallScope, fullBalls, removedPokemon}) {
+export default function BallScopeSave({addedBalls, removedBalls, newBallScope, fullBalls, removedPokemon, sw}) {
     const nameDisplaySettings = useRouteLoaderData('root').user === undefined ? undefined : useRouteLoaderData('root').user.settings.display.pokemonNames
     const notRemovingPokemon = removedPokemon.length === 0
 
@@ -63,11 +63,11 @@ export default function BallScopeSave({addedBalls, removedBalls, newBallScope, f
                 const removedBall = removedBalls.includes(ball)
                 const includedBall = newBallScope.includes(ball)
                 return (
-                    <Grid item xs={2} key={`ball-scope-${ball}-confirm`} sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                    <Grid item xs={sw ? 3 : 2} key={`ball-scope-${ball}-confirm`} sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                         <ToggleButton 
                             value={ball} 
                             sx={{
-                                padding: 1.5, 
+                                padding: sw ? 0.85 : 1.5, 
                                 display: 'flex', 
                                 flexDirection: 'column',
                                 textTransform: 'none',
@@ -91,29 +91,36 @@ export default function BallScopeSave({addedBalls, removedBalls, newBallScope, f
 
     return (
         <>
-        <Box sx={{display: 'flex', height: notRemovingPokemon ? '40%' : '35%', width: '100%', flexDirection: 'column'}}>
-            <Typography sx={{fontWeight: 700, textAlign: 'center'}}>New Ball Scope</Typography>
+        <Box sx={{display: 'flex', height: sw ? '50%' : notRemovingPokemon ? '40%' : '35%', width: '100%', flexDirection: 'column'}}>
+            <Typography sx={{fontWeight: 700, textAlign: 'center', mt: sw ? -1 : 0}}>New Ball Scope</Typography>
             <Grid container sx={{height: '90%', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                 {renderBalls()}
             </Grid>
         </Box>
         {removedBalls.length !== 0 && 
-        <Box sx={{display: 'flex', height: '30px', width: '100%', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
-            <Typography sx={{fontSize: '12px'}}>
-                Associated ball data (Is Owned, HA, and EM info) will be <b>permanently deleted</b>!
+        <Box sx={{display: 'flex', height: '30px', width: '100%', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', mt: sw ? -1 : 0}}>
+            <Typography sx={{fontSize: '12px', textAlign: 'center'}}>
+                {!sw ? <>Associated ball data (Is Owned, HA, and EM info) will be <b>permanently deleted</b>!</> : 
+                    <>Ball Data will be <b>permanently deleted</b>!</>
+                }
             </Typography>
         </Box>
         }
-        <Box sx={{display: 'flex', height: notRemovingPokemon ? '30%' : '8%', width: '100%', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', mb: -2}}>
+        <Box sx={{display: 'flex', height: notRemovingPokemon ? '30%' : sw ? '13%' : '8%', width: '100%', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', mb: sw ? -1 : -2}}>
             {notRemovingPokemon ? 
                 <>
-                <Typography sx={{fontSize: '24px', textAlign: 'center'}}>
+                <Typography sx={{fontSize: sw ? '14px' : '24px', textAlign: 'center'}}>
                     No pokemon are set to be removed from the current ball scope changes.
                 </Typography>
                 <Typography sx={{fontSize: '12px', textAlign: 'center', mt: 3}}>
                     This typically only ever happens for Gen 6/Gen 7 collections. 
                 </Typography>
                 </> : 
+                sw ? 
+                <Typography sx={{textAlign: 'center', fontSize: '11px'}}>
+                    Certain pokemon whose only legal ball combinations were removed balls are set to be removed. 
+                    Below is the list of to be removed pokemon, as well as their legal ball combinations.
+                </Typography> : 
                 <>
                 <Typography sx={{textAlign: 'center', fontSize: '11px'}}>
                     Certain pokemon whose only legal ball combinations were removed balls are set to be removed.
@@ -134,7 +141,7 @@ export default function BallScopeSave({addedBalls, removedBalls, newBallScope, f
                 otherStyles={{width: '90%', mt: 1}}
                 virtuosoStyles={{border: '1px solid white'}}
             />
-            <Typography sx={{fontSize: '9px'}}>
+            <Typography sx={{fontSize: '9px', textAlign: 'center'}}>
                 Note: You will not be able to regain these pokemon by changing the ball scope back, only by changing the pokemon scope!
             </Typography>
         </Box>

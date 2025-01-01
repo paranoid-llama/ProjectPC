@@ -10,7 +10,7 @@ import { setTradePreferencesState } from '../../../../app/slices/collectionstate
 import { backendChangeOptions } from '../../../../../utils/functions/backendrequests/collectionoptionsedit'
 import SaveChangesConfirmModal from '../savechangesconfirmmodal'
 
-export default function TradePreferenceOptions({elementBg, collectionId, isHomeCollection, demo}) {
+export default function TradePreferenceOptions({elementBg, collectionId, isHomeCollection, demo, sw}) {
     const dispatch = useDispatch()
     const {handleError} = useContext(ErrorContext)
     const preferencesInit = useSelector((state) => state.collectionState.options.tradePreferences)
@@ -115,10 +115,10 @@ export default function TradePreferenceOptions({elementBg, collectionId, isHomeC
 
     return (
         <>
-        <Box sx={{...elementBg, width: '95%', height: '35px', display: 'flex', alignItems: 'center', mb: 1}}>
-            <Button sx={{color: 'rgb(38, 188, 201)', fontWeight: 700, textTransform: 'none', fontSize: '1rem'}} onClick={() => changePreferencesSave(false, 'main')}>Collection Options</Button>
+        <Box sx={{...elementBg, width: '95%', height: sw ? '80px' : '35px', display: 'flex', alignItems: 'center', mb: 1}}>
+            <Button sx={{color: 'rgb(38, 188, 201)', fontWeight: 700, textTransform: 'none', fontSize: sw ? '13px' : '1rem'}} onClick={() => changePreferencesSave(false, 'main')}>Collection Options</Button>
             <ArrowForward sx={{color: 'rgb(38, 188, 201)'}}/>
-            <Button sx={{color: 'rgb(38, 188, 201)', fontWeight: 700, textTransform: 'none', fontSize: '1rem'}} onClick={() => changePreferencesSave(false, 'tradePreferences')}>Trade Preferences</Button>
+            <Button sx={{color: 'rgb(38, 188, 201)', fontWeight: 700, textTransform: 'none', fontSize: sw ? '13px' : '1rem'}} onClick={() => changePreferencesSave(false, 'tradePreferences')}>Trade Preferences</Button>
             <ArrowForward sx={{color: 'rgb(38, 188, 201)'}}/>
             <Typography sx={{color: 'white', fontWeight: 700, mx: 1}}>Preferences</Typography>
         </Box>
@@ -189,7 +189,7 @@ export default function TradePreferenceOptions({elementBg, collectionId, isHomeC
                 <Select 
                     value={preferences.pref.items}
                     onChange={(e, newValue) => handleChange('items', newValue)}
-                    sx={{width: '50%', height: '100%', ...disabledItemSelection, '& .MuiSelect-select': {padding: 0.5, py: 1, color: 'white', border: '1px solid white'}}}
+                    sx={{width: sw ? '80%' : '50%', height: sw ? 'auto' : '100%', ...disabledItemSelection, '& .MuiSelect-select': {padding: 0.5, py: 1, color: 'white', border: '1px solid white'}}}
                 >
                     <MenuItem value='none'>Not looking to trade items</MenuItem>
                     <MenuItem value='lf'>I'm looking for items</MenuItem>
@@ -199,16 +199,16 @@ export default function TradePreferenceOptions({elementBg, collectionId, isHomeC
             </Box>
         </Box>
         
-        <Box sx={{mt: 1, height: '35px', width: '100%', display: 'flex'}}>
-            <Box sx={{...elementBg, width: '20%', height: '100%', mr: '20%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+        <Box sx={{mt: 1, height: sw ? '45px' : '35px', width: '100%', display: 'flex'}}>
+            <Box sx={{...elementBg, width: '20%', height: '100%', mr: sw ? '5%' : '20%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                 <Button size='small' variant='contained' sx={{py: 0}} onClick={() => changePreferencesSave(false, 'exit')}>Exit</Button>
             </Box>
-            <Box sx={{...elementBg, width: '20%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                <Button size='small' variant='contained' sx={{py: 0}} onClick={() => changePreferencesSave(true, 'tradePreferences')}>Save</Button>
+            <Box sx={{...elementBg, width: sw ? '35%' : '20%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                <Button size={sw ? 'large' : 'small'} variant='contained' sx={{py: 0, fontSize: sw ? '20px' : '15px'}} onClick={() => changePreferencesSave(true, 'tradePreferences')}>Save</Button>
             </Box>
             {preferences.saveErrorNotice && 
-            <Box sx={{...elementBg, width: '25%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', ml: 5}}>
-                <Typography sx={{fontSize: '12px', color: 'white', fontWeight: 700}}>
+            <Box sx={{...elementBg, width: '25%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', ml: sw ? 1 : 5}}>
+                <Typography sx={{fontSize: '12px', color: 'white', fontWeight: 700, textAlign: 'center'}}>
                     No changes were made!
                 </Typography>
             </Box>
@@ -222,6 +222,7 @@ export default function TradePreferenceOptions({elementBg, collectionId, isHomeC
             handleChange={finalizeChanges}
             closeModal={closeSaveChangesConfirm}
             saving={preferences.saving}
+            sw={sw}
         />
         </>
     )

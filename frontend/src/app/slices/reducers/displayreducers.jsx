@@ -4,11 +4,34 @@ import { sortOnHandList } from "../../../../common/sortingfunctions/onhandsortin
 import { apriballs, homeDisplayGames } from "../../../../common/infoconstants/miscconstants.mjs"
 import getNameDisplay from "../../../../utils/functions/display/getnamedisplay"
 import { hideFullSets } from "../../../../utils/functions/display/fullsetview"
+import {updateListWithNewOnHands} from "../../../../utils/functions/display/displayonhandbypokemon"
+import { removeByPokemonOhandsFromList } from "../../../components/collectiontable/onhandlist/onhandbypokemonupdates/ohbypokemonstateupdate"
 
 //operations related to editing the display state of the lists, to edit what is shown, how much is shown, etc.
 //used to give how much data is given to the table renderer (for filtering lists, for example)
 
-const listDisplayInitialState = {collection: [], onhand: [], collectionFilters: {sort: '', filters: {ballFilters: [], genFilters: [], otherFilters: []}}, onhandFilters: {sort: '', filters: {ballFilters: [], genFilters: [], otherFilters: []}}, onhandView: 'byIndividual', showFullSets: true}
+const listDisplayInitialState = {
+    collection: [], 
+    onhand: [], 
+    collectionFilters: {
+        sort: '', 
+        filters: {
+            ballFilters: [], 
+            genFilters: [], 
+            otherFilters: []
+        }
+    }, 
+    onhandFilters: {
+        sort: '', 
+        filters: {
+            ballFilters: [], 
+            genFilters: [], 
+            otherFilters: []
+        }
+    }, 
+    onhandView: 'byIndividual', 
+    showFullSets: true,
+}
 
 const displayReducers = {
     setListState: (state, action) => {
@@ -39,23 +62,62 @@ const displayReducers = {
         const {newOnhand, sortingOptions} = action.payload
         if (Array.isArray(newOnhand)) {
             state.onhand = [...state.onhand, ...newOnhand]
-            state.listDisplay.onhand = [...state.listDisplay.onhand, ...newOnhand]
+            if (state.listDisplay.onhandView === 'byPokemon') {
+                state.listDisplay.onhand = updateListWithNewOnHands(newOnhand, state.listDisplay.onhand, state.collection)
+            } else {
+                state.listDisplay.onhand = [...state.listDisplay.onhand, ...newOnhand]
+            }
         } else {
             state.onhand[state.onhand.length] = newOnhand
-            state.listDisplay.onhand[state.listDisplay.onhand.length] = newOnhand
+            if (state.listDisplay.onhandView === 'byPokemon') {
+                state.listDisplay.onhand = updateListWithNewOnHands([newOnhand], state.listDisplay.onhand, state.collection)
+            } else {
+                state.listDisplay.onhand[state.listDisplay.onhand.length] = newOnhand
+            }
         }
-        if (sortingOptions.reorder === true) {
-            state.onhand = sortOnHandList(sortingOptions.sortFirstBy, sortingOptions.default, sortingOptions.ballOrder, state.onhand)
-            state.listDisplay.onhand = sortOnHandList(sortingOptions.sortFirstBy, sortingOptions.default, sortingOptions.ballOrder, state.listDisplay.onhand)
+        const trueSortingOptions = sortingOptions === undefined ? state.options.sorting.onhand : sortingOptions
+        if (trueSortingOptions.reorder) {
+            state.onhand = sortOnHandList(trueSortingOptions.sortFirstBy, trueSortingOptions.default, trueSortingOptions.ballOrder, state.onhand)
+            state.listDisplay.onhand = sortOnHandList(trueSortingOptions.sortFirstBy, trueSortingOptions.default, trueSortingOptions.ballOrder, state.listDisplay.onhand)
+        }
+        return state
+    },
+    addOnHandPokemonToListByPokemon: (state, action) => { 
+        //via by pokemon detailed edit => +1. primarily used since we dont need to update the listDisplay 
+        //(because if we are adding to the list this way, they are already in the listdisplay, and the row will update via mapstatetoprops selectors). 
+        //always updates a single
+        const newOnhand = action.payload
+        state.onhand[state.onhand.length] = newOnhand
+        if (state.options.sorting.onhand.reorder) {
+            state.onhand = sortOnHandList(state.options.sorting.onhand.sortFirstBy, state.options.sorting.onhand.default, state.options.sorting.onhand.ballOrder, state.onhand)
         }
         return state
     },
     removeOnHandPokemonFromList: (state, action) => {
-        const {pokemonid} = action.payload
+        const {pokemonid, byPAddon} = action.payload
+        const byP = state.listDisplay.onhandView === 'byPokemon'
         const multipleRemoves = Array.isArray(pokemonid)
         if (multipleRemoves) {
-            state.onhand = state.onhand.filter(p => !pokemonid.includes(p._id))
-            state.listDisplay.onhand = state.listDisplay.onhand.filter(p => !pokemonid.includes(p._id))
+            state.onhand = state.onhand.filter(p => byP ? !pokemonid.includes(`${p.imgLink} ${p.ball}`) : !pokemonid.includes(p._id))
+            state.listDisplay.onhand = byP ? removeByPokemonOhandsFromList(state.listDisplay.onhand, pokemonid) : state.listDisplay.onhand.filter(p => !pokemonid.includes(p._id))
+            return state
+        }
+        if (byP) {
+            state.onhand = state.onhand.filter(p => pokemonid !== p._id)
+
+            const needToUpdateListDisplay = state.onhand.filter(p => p.imgLink === byPAddon.slice(0, byPAddon.indexOf(' '))).length === 0 
+            //indicates no more onhands of mon exists. the quantity in the list display will update regardless since the selectors
+            //in swbypokemonrow use state.onhand to calculate the qty. changing the list display is only needed if there is no longer any onhands of the pokemon.
+            if (needToUpdateListDisplay) {
+                state.listDisplay.onhand = state.listDisplay.onhand.map((p) => {
+                    const monImgL = byPAddon.slice(0, byPAddon.indexOf(' '))
+                    if (p.imgLink === monImgL) {
+                            return undefined
+                    }
+                    return p
+                }).filter(p => p !== undefined)
+            }
+            
             return state
         }
         state.onhand = state.onhand.filter(p => pokemonid !== p._id)
@@ -101,7 +163,7 @@ const displayReducers = {
             otherFilters: listSpecificFilters.otherFilters,
             ...newCatActiveFilterList
         }
-        const removingGenFilter = typeof filterKey === 'number' && specificCategoryFilters.includes(filterKey)                               
+        const removingGenFilter = typeof filterKey === 'number' && specificCategoryFilters.includes(filterKey) && !numberButIsGameFilter                               
         if (reFilterList) {
             const filteredList = filterList([], filterKey, filterCategory, listType, totalList, reFilterList, newTotalActiveFilterList, currentSortKey, availableGamesInfo, state.listDisplay.showFullSets)
             state.listDisplay[listType] = filteredList

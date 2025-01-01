@@ -17,12 +17,14 @@ const scrollComponent = (theme) => {
     }
 }
 
-export default function SpeciesSelect({searchOnChange, searchData, selection, listItemContent, totalCount, height='60%', onlyList=false, otherStyles={}, otherSubContainerStyles={}, virtuosoStyles={border: '1px solid black'}, onHoverStyles=false, virtuosoProps={}, nameDisplaySettings, customScroller=true}) {
+export default function SpeciesSelect({searchOnChange, searchData, selection, listItemContent, totalCount, height='60%', width=undefined, onlyList=false, otherStyles={}, otherSubContainerStyles={}, virtuosoStyles={border: '1px solid black'}, onHoverStyles=false, virtuosoProps={}, nameDisplaySettings, customScroller=true, flexDirection='row'}) {
     const theme = useTheme()
+    const widthSx = width ? {width} : {}
+    const colVer = flexDirection === 'column'
     return (
-        <Box sx={{...modalStyles.onhand.modalElementBg, height, display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', ...otherStyles}}>
+        <Box sx={{...modalStyles.onhand.modalElementBg, height, ...widthSx, display: 'flex', flexDirection, alignItems: 'center', justifyContent: 'center', ...otherStyles}}>
             {!onlyList && 
-            <Box sx={{width: '40%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
+            <Box sx={{width: colVer ? '100%' : '40%', height: colVer ? '30%' :'100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
                 <Box sx={{height: '5%', paddingBottom: '10px'}}>
                     <Typography sx={{fontSize: '18px', textDecoration: 'underline'}}>
                         Species
@@ -31,12 +33,12 @@ export default function SpeciesSelect({searchOnChange, searchData, selection, li
                 <Box sx={{height: '5%', paddingTop: '5px'}}>
                     {selection.imgLink !== undefined && <ImgData linkKey={selection.imgLink}/>}
                 </Box>
-                <Box sx={{height: '5%', paddingTop: '15px'}}>
+                <Box sx={{height: colVer ? 'auto' : '5%', paddingTop: '15px'}}>
                     <Typography sx={{fontSize: '14px'}}>
                         {selection.name !== undefined && (nameDisplaySettings === undefined ? selection.name : getNameDisplay(nameDisplaySettings, selection.name, selection.natDexNum))}
                     </Typography>
                 </Box>
-                <Box sx={{height: '25%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
+                <Box sx={{height: colVer ? '100%' :'25%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
                     <TextField 
                         placeholder='Search Pokemon' 
                         variant='outlined' 
@@ -54,7 +56,7 @@ export default function SpeciesSelect({searchOnChange, searchData, selection, li
                 </Box>
             </Box>
             }
-            <Box sx={{width: onlyList ? '100%' : '60%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', ...otherSubContainerStyles}}>
+            <Box sx={{width: onlyList || colVer ? '100%' : '60%', height: colVer ? '70%' :'100%', display: 'flex', justifyContent: 'center', alignItems: 'center', ...otherSubContainerStyles}}>
                 <Virtuoso 
                     {...virtuosoProps}
                     className={onHoverStyles ? 'virtuosohover' : 'none'}

@@ -1,7 +1,7 @@
 import {Box, Typography, Tabs, Tab} from '@mui/material'
 import { useState, useEffect } from 'react'
 
-export default function RateDisplay({rates, owner, collectionGen, definedAreaStyles=undefined, switchPlaces=false, demo}) {
+export default function RateDisplay({rates, owner, collectionGen, definedAreaStyles=undefined, switchPlaces=false, demo, sw}) {
     const [offerType, setOfferType] = useState('pokemonOffers')
     const changeOfferType = (newVal) => {setOfferType(newVal)}
 
@@ -29,18 +29,20 @@ export default function RateDisplay({rates, owner, collectionGen, definedAreaSty
                 rates[offerType].map((rate, idx) => {
                     const height = `${100/8}%`
                     const borderBottom = idx !== rates[offerType].length-1 ? {borderBottom: '1px solid rgba(0, 0, 0, 0.5)'} : {}
+                    const customI1Size = sw ? (rate.items[0] === 'On-Hand Non-HA Aprimon') ? '10px' : '12px' : '12px'
+                    const customI2Size = sw ? (rate.items[1].length >= 12) ? '11px' : '12px' : '12px'
                     return (
                         <Box sx={{height, display: 'flex', width: '100%'}} key={`${offerType}-rate-display-${idx+1}`}>
-                            <Typography sx={{height: '100%', width: '45%', fontSize: '12px', textAlign: 'center', ...borderBottom}}>
+                            <Typography sx={{height: '100%', width: '45%', fontSize: customI1Size, textAlign: 'center', ...borderBottom}}>
                                 {rate.items[0]} 
                             </Typography>
-                            <Typography sx={{height: '100%', width: '5%', fontSize: '12px', textAlign: 'center', ...borderBottom}}>
+                            <Typography sx={{height: '100%', width: sw ? '2.5%' : '5%', fontSize: '12px', textAlign: 'center', ...borderBottom}}>
                                 : 
                             </Typography>
-                            <Typography sx={{height: '100%', width: '30%', fontSize: '12px', textAlign: 'center', ...borderBottom}}>
+                            <Typography sx={{height: '100%', width: sw ? '35%' : '30%', fontSize: customI2Size, textAlign: 'center', ...borderBottom}}>
                                 {rate.items[1]}
                             </Typography>
-                            <Typography sx={{height: '100%', width: '20%', fontSize: '14px', textAlign: 'end', fontWeight: 700, ...borderBottom}}>
+                            <Typography sx={{height: '100%', width: sw ? '17.5%' : '20%', fontSize: '14px', textAlign: 'end', fontWeight: 700, ...borderBottom}}>
                                 {rate.rate[0]} : {rate.rate[1]}
                             </Typography>
                         </Box>

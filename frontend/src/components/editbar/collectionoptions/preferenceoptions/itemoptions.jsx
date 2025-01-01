@@ -9,7 +9,7 @@ import { backendChangeOptions } from "../../../../../utils/functions/backendrequ
 import ItemSelectionModalContents from "../../../collectioncreation/stepcomponents/optionsselection/aprimon/itemselectionmodalcontents";
 import SaveChangesConfirmModal from "../savechangesconfirmmodal";
 
-export default function ItemOptions({elementBg, collectionGen, collectionId, demo}) {
+export default function ItemOptions({elementBg, collectionGen, collectionId, demo, sw}) {
     const dispatch = useDispatch()
     const {handleError} = useContext(ErrorContext)
     const tradePreferences = useSelector((state) => state.collectionState.options.tradePreferences)
@@ -55,7 +55,7 @@ export default function ItemOptions({elementBg, collectionGen, collectionId, dem
         setItems({...items, data: {...items.data, lfItems: newLfItems}})
     }
 
-    const handleFtItemsChange = (item, changingQty, newQty) => {
+    const handleFtItemsChange = (item, changingQty, newQty, doNotUpdateFtSelectedItem=false) => {
         const copyOfFt = {...items.data.ftItems}
         if (Object.keys(copyOfFt).includes(item)) {
             if (changingQty) {
@@ -64,6 +64,10 @@ export default function ItemOptions({elementBg, collectionGen, collectionId, dem
                 }
             }
             else {
+                if (doNotUpdateFtSelectedItem) {
+                    setItems({...items, ftSelectedItem: item})
+                    return
+                }
                 delete copyOfFt[item]
                 setItems({...items, data: {...items.data, ftItems: copyOfFt}, ftSelectedItem: 'none'})
                 return
@@ -76,8 +80,8 @@ export default function ItemOptions({elementBg, collectionGen, collectionId, dem
         setItems({...items, data: {...items.data, ftItems: copyOfFt}})
     }
 
-    const changeFtSelectedItem = (newVal) => {
-        setItems({...items, ftSelectedItem: newVal.props.value})
+    const changeFtSelectedItem = (newVal, literalNewVal=false) => {
+        setItems({...items, ftSelectedItem: literalNewVal ? newVal : newVal.props.value})
     }
 
     const changeItemsSave = (saveButtonSelected, nextScreen) => {
@@ -155,6 +159,7 @@ export default function ItemOptions({elementBg, collectionGen, collectionId, dem
             changingItems={true}
             saveChanges={changeItemsSave}
             saveErrorNoticeShow={items.saveErrorNotice}
+            sw={sw}
         />
         <SaveChangesConfirmModal 
             open={items.saveChangesConfirmOpen}
@@ -164,6 +169,7 @@ export default function ItemOptions({elementBg, collectionGen, collectionId, dem
             handleChange={finalizeChanges}
             closeModal={closeSaveChangesConfirm}
             saving={items.saving}
+            sw={sw}
         />
         </>
     )

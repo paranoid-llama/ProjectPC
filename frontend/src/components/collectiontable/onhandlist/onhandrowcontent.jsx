@@ -7,14 +7,15 @@ import { toggleOnHandIdToDelete } from './../../../app/slices/editmode';
 import './../../../routes/showCollection.css'
 import TableCell from '@mui/material/TableCell'
 import DataCell from '../tabledata/datacell'
-import {seeIfPokemonIsSelected, selectOnHandPokemon} from './../../../app/selectors/selectors'
+import {seeIfPokemonIsSelected, selectIdxOfMon, selectOnHandPokemon, selectOnHandPokemonIdx} from './../../../app/selectors/selectors'
 import getNameDisplay from '../../../../utils/functions/display/getnamedisplay';
 import {setSelected} from './../../../app/slices/editmode'
 import {connect, useDispatch} from 'react-redux'
 import EggMoveColumnDisplay from './eggmovecolumndisplay';
 import newObjectId from '../../../../utils/functions/newobjectid';
+import { setIsHA } from '../../../app/slices/collectionstate';
 
-function OnHandRowContent({columns, row, pokemonId, collectionId, styles, isSelected, setSelected, allEggMoveInfo, availableGamesInfo, isEditMode, demo, isHomeCollection, isTradePage, tradeSide, wantedByOtherList, userData}) {
+function OnHandRowContent({columns, row, pokemonId, collectionId, styles, isSelected, setSelected, allEggMoveInfo, availableGamesInfo, isEditMode, demo, isHomeCollection, isTradePage, tradeSide, wantedByOtherList, userData, idxOfPokemon}) {
     const dispatch = useDispatch()
 
     const skeletonRow = row === undefined
@@ -47,18 +48,17 @@ function OnHandRowContent({columns, row, pokemonId, collectionId, styles, isSele
     // }) 
     // to check how often its re-rendering
 
-
     return (
         <React.Fragment>
             {columns.map(c => {
                 const genderlessLabel = (c.dataKey === 'gender' && row[c.dataKey] === 'none')
                 const label = c.dataKey === 'isHA' ? 
                     (row[c.dataKey] === undefined ? 'N/A' : row[c.dataKey] === true ? 'Yes' : 'No') : 
-                    (c.dataKey === 'EMs' && row[c.dataKey] !== undefined) ? row[c.dataKey][c.idx] :
                     genderlessLabel ? 'N/A' :
                     (c.dataKey === 'emCount' && row[c.dataKey] === undefined) ? 'N/A' :
                     row[c.dataKey] !== undefined ? (
-                        c.dataKey === 'name' && userData.loggedIn ? getNameDisplay(userData.user.settings.display.pokemonNames, row[c.dataKey], row.natDexNum) : row[c.dataKey]
+                        c.dataKey === 'name' && userData.loggedIn ? getNameDisplay(userData.user.settings.display.pokemonNames, row[c.dataKey], row.natDexNum) : 
+                        row[c.dataKey] === 'unknown' ? 'Unknown' : row[c.dataKey]
                     ) : undefined
                 const textSizeAdjustor = label === ('Paldean Tauros (Aqua)' || 'Paldean Tauros (Blaze)') ? {fontSize: '11.96px'} : 
                     label === 'Basculin (White-Striped)' ? {fontSize: '11.19px'} : {}
@@ -103,13 +103,16 @@ function OnHandRowContent({columns, row, pokemonId, collectionId, styles, isSele
                                 fullData: row
                             } : {}
                         }
+                        customPadding={0}
+                        customInnerWrapperSx={{height: '98%'}}
+                        centeredGridItems
                     /> : 
                     <DataCell
                         key={`${row._id}-${c.label}`}
                         label={label}
                         styles={styles}
-                        alignment={c.dataKey === 'name' || c.dataKey === 'emCount' ? {position: 'relative'} : alignment}
-                        imgParams={{isImg: genderlessLabel ? false : c.isImg, imgLinkKey: imgKey, imgType: imgType}}
+                        alignment={c.dataKey === 'name' || c.dataKey === 'emCount' || (row[c.dataKey] === 'unknown') ? {position: 'relative'} : alignment}
+                        imgParams={{isImg: (row[c.dataKey] === 'unknown' || genderlessLabel) ? false : c.isImg, imgLinkKey: imgKey, imgType: imgType}}
                         isEditMode={isEditMode}
                         leftMostCell={c.label === '#' ? true : false}
                         isSelected={isSelected}
@@ -131,6 +134,12 @@ function OnHandRowContent({columns, row, pokemonId, collectionId, styles, isSele
                         isEmDisplay={c.dataKey === 'EMs'}
                         {...reservedQty}
                         {...nameProps}
+                        checkboxCell={c.dataKey === 'isHA' && row[c.dataKey] !== undefined}
+                        checkboxData={{
+                            active: row[c.dataKey],
+                            onChange: () => dispatch(setIsHA({listType: 'onhand', idx: idxOfPokemon, ball: row.ball})),
+                            sx: {position: 'absolute', right: 'calc(50% - 21px)', top: 'calc(50% - 21px)', zIndex: 1}
+                        }}
                     />
                 )
             })}
@@ -143,10 +152,12 @@ const mapStateToProps = (state, ownProps) => {
         return {}
     }
     const pokemon = selectOnHandPokemon(state, ownProps.pokemonId)
+    const idxOfPokemon = selectOnHandPokemonIdx(state, ownProps.pokemonId)
     const isSelected = seeIfPokemonIsSelected(state, ownProps.pokemonId)
     return {
         row: pokemon,
-        isSelected
+        isSelected,
+        idxOfPokemon
     }
 }
 

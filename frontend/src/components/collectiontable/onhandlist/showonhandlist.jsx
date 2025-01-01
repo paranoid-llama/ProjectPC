@@ -24,7 +24,6 @@ export default function ShowOnHandList({onhandList, collectionID, styles, collec
     const previousScrollPosition = useSelector((state) => state.collectionState.previousOnhandScrollPosition)
     const previousColId = useSelector((state) => state.collectionState.prevColId)
     const availableGamesInfo = useSelector((state) => state.collectionState.availableGamesInfo)
-
     const trueOnhandView = localOnhandView ? localOnhandView : viewType
 
     const ballScopeState = useSelector((state) => state.collectionState.options.collectingBalls)
@@ -63,10 +62,6 @@ export default function ShowOnHandList({onhandList, collectionID, styles, collec
     const emColumns = isHomeCollection ? [] : [
         {label: 'EM Count', dataKey: 'emCount', width: '10%'},
         {label: 'Egg Moves', dataKey: 'EMs', width: '30%'},
-        // {label: 'EM 1', dataKey: 'EMs', width: '10%', idx: 0},
-        // {label: 'EM 2', dataKey: 'EMs', width: '10%', idx: 1},
-        // {label: 'EM 3', dataKey: 'EMs', width: '10%', idx: 2},
-        // {label: 'EM 4', dataKey: 'EMs', width: '10%', idx: 3},
     ]
 
     const columns = [
@@ -143,11 +138,15 @@ export default function ShowOnHandList({onhandList, collectionID, styles, collec
     function rowContentByPokemon(_index, row) {
         const byPokemonColumns = setColumns(userData, ballScopeDisplay)
         const availableGamesData = isHomeCollection ? {availableGames: availableGamesInfo[row.name]} : {}
+        const dataProp = isEditMode ? {} : {row}
         return (
             <OnHandByPokemonDisplay 
-                row={row}
+                {...dataProp}
+                pokemonId={row.imgLink}
                 columns={byPokemonColumns}
                 styles={collectionListStyles}
+                isEditMode={isEditMode}
+                demo={demo}
                 {...availableGamesData}
             />
         )

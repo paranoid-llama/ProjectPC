@@ -5,6 +5,7 @@ import { capitalizeFirstLetter } from '../../../../../utils/functions/misc'
 export default function GenderSelectionForm({width='15%', gender, possibleGenders, handleChange, newOnHand=false}) {
     const oneGenderOnly = possibleGenders === 'male' || possibleGenders === 'female'
     const genderless = possibleGenders === 'none'
+    const unknown = gender === 'unknown'
     const disabled = gender === undefined
     return (
         <Box sx={{width, display: 'flex', flexDirection: 'column', justifyContent: disabled ? 'center' : 'start', alignItems: 'center'}}>
@@ -21,6 +22,12 @@ export default function GenderSelectionForm({width='15%', gender, possibleGender
                     Genderless
                 </Typography>
             </Box>:
+            unknown ? 
+            <Box sx={{marginTop: '3px', height: '60%', display: 'flex', alignItems: 'center', padding: 0.5, borderRadius: '50%', ':hover': {backgroundColor: 'rgba(0, 0, 0, 0.04)', cursor: 'pointer'}}} onClick={handleChange}>
+                <Typography sx={{fontSize: newOnHand ? '16px' : '11px'}}>
+                    <i>Unknown</i>
+                </Typography>
+            </Box> : 
             <IconButton onClick={handleChange}>
                 <ImgData type='gender' linkKey={gender}/>
             </IconButton>}

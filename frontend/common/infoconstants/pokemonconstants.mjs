@@ -17,6 +17,8 @@ const interchangeableAltFormForms = {
     'Deerling': ['Spring', 'Summer', 'Autumn', 'Winter'],
     'Oricorio': ['Baile', 'Pom-Pom', "Pa'u", 'Sensu']
 }
+const interchangeableAltFormIds = {forms: ['412-p', '412-s', '412-t', '585-spr', '585-sum', '585-aut', '585-win', '741-b', '741-p', '741-pau', '741-sen'], any: ['412-a', '585-a', '741-a']}
+
 const nonBreedableAltFormMons = ['Sinistea', 'Poltchageist']
 //below is needed as normally the collection is generated without these identifiers, so theres no place where its shown in the collection list 
 const nonBreedableAltRegIdentifiers = {'Sinistea': 'phony', 'Poltchageist': 'counterfeit'}
@@ -158,7 +160,7 @@ const threeLetterShorten = ['Vivillon', 'Pumpkaboo', 'Gourgeist', 'Oricorio', 'D
 
 export {
     regionalFormRegions, alolanFormMons, galarianFormMons, hisuianFormMons, paldeanFormMons, regionalFormMons, multipleRegionalFormMons,
-    allAltFormMons, genderAltFormMons, interchangeableAltFormMons, interchangeableAltFormForms, nonBreedableAltFormMons, nonBreedableAltRegIdentifiers,
+    allAltFormMons, genderAltFormMons, interchangeableAltFormMons, interchangeableAltFormForms, interchangeableAltFormIds, nonBreedableAltFormMons, nonBreedableAltRegIdentifiers,
     altFormMonsWithExclusiveEMs, incenseAdultsWithExclusiveEMs, incenseBabiesWithExclusiveEMs, babiesOfGen1Pokemon, babiesOfGen2Pokemon, babiesOfGen3Pokemon,
     pokeBabies, pokeAdults, pokeIncenseBabies, pokeIncenseAdults, legendaryPokemon, nonBreedablePokemon, effectiveNonBreedable, evolvedRegionals, noCompareWithoutOnhand,
     uniqueRegionalFormPokemon, uniqueAlternateFormPokemon, pokemonNamesWithSpaces,

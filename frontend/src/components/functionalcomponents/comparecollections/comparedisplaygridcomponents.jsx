@@ -9,8 +9,9 @@ import hexToRgba from 'hex-to-rgba';
 import { capitalizeFirstLetter } from '../../../../utils/functions/misc'
 import getNameDisplay from '../../../../utils/functions/display/getnamedisplay';
 import EmTooltipWrapper from '../../collectiontable/tabledata/emtooltipwrapper';
+import ScrollBar from '../scrollbar';
 
-function ListEmAndEmcount({emCount, EMs, isMaxEMs, fontSize, hoverTooltip, otherStyles}) {
+function ListEmAndEmcount({emCount, EMs, isMaxEMs, fontSize, hoverTooltip, otherStyles, popperWidth='300px'}) {
     const [open, setOpen] = useState(false)
     const hoverAdjust = hoverTooltip ? {zIndex: 5} : {}
 
@@ -21,6 +22,7 @@ function ListEmAndEmcount({emCount, EMs, isMaxEMs, fontSize, hoverTooltip, other
             open={open}
             closeTooltip={() => setOpen(false)}
             hoverTooltipInstead={hoverTooltip}
+            popperWidth={popperWidth}
         >
             <Typography 
                 sx={{
@@ -76,43 +78,54 @@ const togglePokemonThemeDepStyles = (theme, noBorder=false) => {
         }
     }
 }
+const getCustomScroller = (getIt=false, theme) => {
+    return getIt ? 
+    {Scroller: forwardRef((props, ref) => {
+        const otherProps = {...props, ref: undefined, children: undefined, style: undefined}
+        return <ScrollBar style={props.style} forwardedRef={ref} color={theme.palette.color3.main} children={props.children} otherProps={otherProps}/>
+    })
+    } : {}
+}
 
-export const compareDisplayGridComponents = {
+export const getCompareDisplayGridComponents = (customXs=2, customScroller=false, theme, itemSx={}, listSx={}) => {return {
     List: forwardRef(({children, ...props}, ref) => (
-        <Grid {...props} container ref={ref} spacing={0.5} rowSpacing={1} sx={{width: '100%'}}>
+        <Grid {...props} container ref={ref} spacing={0.5} rowSpacing={1} sx={{width: '100%', ...listSx}}>
             {children}
         </Grid>
     )),
     Item: forwardRef(({children, ...props}, ref) => (
-        <Grid item {...props} xs={2} ref={ref} sx={{}}>
+        <Grid item {...props} xs={customXs} ref={ref} sx={{...itemSx}}>
             {children}
         </Grid>
-    ))
-}
+    )),
+    ...getCustomScroller(customScroller, theme)
+}}
 
-const listCompareDisplayPokemonBallComp = (p, theme, oneHomeCollection, ballData, showHAEMArea, displayHA, displayEM, showIsOnhandArea, hoverEMTooltip=false) => {
+
+
+const listCompareDisplayPokemonBallComp = (p, theme, oneHomeCollection, ballData, showHAEMArea, displayHA, displayEM, showIsOnhandArea, hoverEMTooltip=false, sw=false, specificScreenBp='lg') => {
     return (
         <>
         <Typography sx={{fontSize: '12px'}}>{capitalizeFirstLetter(ballData.ball)}</Typography>
         <ImgData type='ball' linkKey={ballData.ball} size='28px'/>
         {showHAEMArea && 
         <Box sx={{...theme.components.box.fullCenterRow, borderTop: '1px solid rgba(255,255,255, 0.3)', width: '95%'}}>
-            {ballData.isHA !== undefined && <Typography sx={{fontSize: '10px', opacity: ballData.isHA ? 1 : 0.5, fontWeight: ballData.isHA ? 700 : 400}}>HA</Typography>}
+            {ballData.isHA !== undefined && <Typography sx={{fontSize: sw ? specificScreenBp !== 'lg' ? specificScreenBp === 'sm' ? '10px' :  '12px' : '14px' : '10px', opacity: ballData.isHA ? 1 : 0.5, fontWeight: ballData.isHA ? 700 : 400}}>HA</Typography>}
             {(displayHA && displayEM) &&
                 <Box sx={{width: '10%'}}></Box>
             }
-            {(!oneHomeCollection && ballData.emCount !== undefined) && <ListEmAndEmcount emCount={ballData.emCount} EMs={ballData.EMs} isMaxEMs={ballData.isMaxEMs} fontSize='10px' hoverTooltip={hoverEMTooltip}/>}
+            {(!oneHomeCollection && ballData.emCount !== undefined) && <ListEmAndEmcount emCount={ballData.emCount} EMs={ballData.EMs} isMaxEMs={ballData.isMaxEMs} fontSize={ sw ? specificScreenBp !== 'lg' ? specificScreenBp === 'sm' ? '10px' : '12px' : '14px' : '10px'} hoverTooltip={hoverEMTooltip} popperWidth={specificScreenBp === 'sm' ? '280px' : '300px'}/>}
         </Box>}
         {showIsOnhandArea && 
             <Box sx={{...theme.components.box.fullCenterRow, borderTop: '1px solid rgba(255,255,255, 0.3)'}}>
-                <Typography sx={{fontSize: '10px'}}>On-Hand</Typography>
+                <Typography sx={{fontSize: sw ? specificScreenBp === 'sm' ? '9px' : '11px' : '10px'}}>On-Hand</Typography>
             </Box>
         }
         </>
     )
 }
 
-const listCompareDisplayIndividualComp = (p, theme, oneHomeCollection, showHAEMArea, displayHA, displayEM, displayName, nameSize, imgAreaMargin, selected=false, list, hoverEMTooltip=false) => {
+const listCompareDisplayIndividualComp = (p, theme, oneHomeCollection, showHAEMArea, displayHA, displayEM, displayName, nameSize, imgAreaMargin, selected=false, list, hoverEMTooltip=false, specificScreenBp='lg') => {
     return (
         <>
             <Box sx={{...theme.components.box.fullCenterCol, height: '70%', width: '100%', justifyContent: 'start'}}>
@@ -132,7 +145,7 @@ const listCompareDisplayIndividualComp = (p, theme, oneHomeCollection, showHAEMA
                     {(displayHA && displayEM) &&
                         <Box sx={{width: '20%'}}></Box>
                     }
-                    {(!oneHomeCollection && p.emCount !== undefined) && <ListEmAndEmcount emCount={p.emCount} EMs={p.EMs} isMaxEMs={p.isMaxEMs} fontSize='12px' hoverTooltip={hoverEMTooltip}/>}
+                    {(!oneHomeCollection && p.emCount !== undefined) && <ListEmAndEmcount emCount={p.emCount} EMs={p.EMs} isMaxEMs={p.isMaxEMs} fontSize='12px' hoverTooltip={hoverEMTooltip} popperWidth={specificScreenBp === 'sm' ? '280px' : '300px'}/>}
                 </Box>}
             </Box>}
             {p.onhandId && 
@@ -162,10 +175,11 @@ const listCompareDisplayIndividualComp = (p, theme, oneHomeCollection, showHAEMA
 }
 
 
-export function listCompareDisplayPokemon(p, oneHomeCollection, theme, list, toggle=false, randPar1, randPar2, userNameDisplaySettings) {
+export function listCompareDisplayPokemon(p, oneHomeCollection, theme, list, toggle=false, randPar1, randPar2, userNameDisplaySettings, sw, specificScreenBp) {
     //please dont delete list, randPar1, and randPar2. matches listcomparedisplayindividual params. see comaprisondisplay for details
     //toggle is an old parameter that isnt used now that i have PokemonCompareDisplayComponent
     const amountOfBalls = p.balls.length
+    const biggerAreaReq = amountOfBalls > 7 && sw 
     return (
         <>
         <Box 
@@ -178,17 +192,25 @@ export function listCompareDisplayPokemon(p, oneHomeCollection, theme, list, tog
                 <Box sx={{height: '100%', width: '45px', mx: 0.5, pointerEvents: 'none', ...theme.components.box.fullCenterRow}}>
                     <Typography sx={{fontSize: '12px'}}>#{p.natDexNum}</Typography>
                 </Box>
-                <Box sx={{height: '100%', width: '40%', mx: 0.5, pointerEvents: 'none', ...theme.components.box.fullCenterRow, justifyContent: 'start'}}>
+                <Box sx={{height: '100%', width: specificScreenBp === 'sm' ? '60%' : '40%', mx: 0.5, pointerEvents: 'none', ...theme.components.box.fullCenterRow, justifyContent: 'start'}}>
                     <Typography sx={{fontSize: '12px', textAlign: 'center'}}>{userNameDisplaySettings === undefined ? p.name : getNameDisplay(userNameDisplaySettings, p.name, p.natDexNum)}</Typography>
                 </Box>
                 {p.for !== undefined &&
+                <>
+                {specificScreenBp ==='sm' ? 
+                <Tooltip title={`This is an equivalent pokemon. ${list === 'offer' ? 'They' : 'You'} are looking for ${p.for}`}>
+                    <Box sx={{height: '100%', width: '20%', mr: 1, ...theme.components.box.fullCenterRow, justifyContent: 'end'}}>
+                        <Typography sx={{fontSize: '14px', cursor: 'pointer'}}>EQ</Typography>
+                    </Box>
+                </Tooltip> : 
                 <Box sx={{height: '100%', width: '43%', mx: 0.5, pointerEvents: 'none', ...theme.components.box.fullCenterRow, justifyContent: 'end'}}>
                     <Typography sx={{fontSize: '12px', textAlign: 'center'}}>For: {p.for}</Typography>
                 </Box>}
+                </>}
             </Box>
         </Box>
         <Box 
-            sx={{display: 'flex', alignItems: 'center', backgroundColor: '#283f57', borderRadius: '10px', my: 0.5, height: '100px', width: '100%', ...theme.components.box.fullCenterRow}}
+            sx={{display: 'flex', alignItems: 'center', backgroundColor: '#283f57', borderRadius: '10px', my: 0.5, height: biggerAreaReq ? '200px' : '100px', width: '100%', ...theme.components.box.fullCenterRow}}
         >
             <Grid container sx={{height: '80%', width: '100%', mt: 1, ...theme.components.box.fullCenterRow}} gap={0.6}>
                 {p.balls.map((ballData) => {
@@ -201,9 +223,9 @@ export function listCompareDisplayPokemon(p, oneHomeCollection, theme, list, tog
                         <Grid 
                             item 
                             key={`pokemon-${p.id}-${ballData.ball}${ballData.onhandId === undefined ? '' : `-onhand-${ballData.onhandId}`}`} 
-                            sx={{height: '100%', width: `${100/amountOfBalls}%`, maxWidth: '8%', position: 'relative', ...theme.components.box.fullCenterCol, justifyContent: 'start'}}
+                            sx={{height: biggerAreaReq ? '50%' : '100%', width: `${100/(sw ? specificScreenBp !== 'lg' ? 7 : 8 : amountOfBalls)}%`, maxWidth: sw ? 'auto' : '8%', position: 'relative', ...theme.components.box.fullCenterCol, justifyContent: 'start'}}
                         >
-                            {listCompareDisplayPokemonBallComp(p, theme, oneHomeCollection, ballData, showHAEMArea, displayHA, displayEM, showIsOnhandArea)}
+                            {listCompareDisplayPokemonBallComp(p, theme, oneHomeCollection, ballData, showHAEMArea, displayHA, displayEM, showIsOnhandArea, false, sw, specificScreenBp)}
                         </Grid> 
                     )
                 })}
@@ -215,7 +237,7 @@ export function listCompareDisplayPokemon(p, oneHomeCollection, theme, list, tog
 
 //this component uses a virtuoso grid. virtuoso grids bug out if every item is not the same height, which is why the height is defined.
 //do not add a variable height to this component.
-export function listCompareDisplayIndividual(p, oneHomeCollection, theme, list, toggle=false, isSelected, toggleFunc, userNameDisplaySettings) {
+export function listCompareDisplayIndividual(p, oneHomeCollection, theme, list, toggle=false, isSelected, toggleFunc, userNameDisplaySettings, sw, specificScreenBp) {
     const showHAEMArea = (oneHomeCollection && p.isHA !== undefined) || (!oneHomeCollection && (p.isHA !== undefined || p.emCount !== undefined))
     const displayHA = p.isHA !== undefined
     const displayEM = (!oneHomeCollection && p.emCount !== undefined)
@@ -234,14 +256,14 @@ export function listCompareDisplayIndividual(p, oneHomeCollection, theme, list, 
                 value={p.onhandId !== undefined ? p.onhandId : `${p.id} ${p.ball}`}
                 onChange={toggleFunc}
             >
-                {listCompareDisplayIndividualComp(p, theme, oneHomeCollection, showHAEMArea, displayHA, displayEM, displayName, nameSizeAdjust, nameBallAreaMarge, isSelected, list, true)}
+                {listCompareDisplayIndividualComp(p, theme, oneHomeCollection, showHAEMArea, displayHA, displayEM, displayName, nameSizeAdjust, nameBallAreaMarge, isSelected, list, true, specificScreenBp)}
                 {isSelected && 
                     <Box sx={{position: 'absolute', top: '3px', right: '3px'}}>
                         <ImgData type='icons' linkKey='greencheckmark' size='16px'/>
                     </Box>
                 }
             </ToggleButton> : 
-            listCompareDisplayIndividualComp(p, theme, oneHomeCollection, showHAEMArea, displayHA, displayEM, displayName, nameSizeAdjust, nameBallAreaMarge, false, list)
+            listCompareDisplayIndividualComp(p, theme, oneHomeCollection, showHAEMArea, displayHA, displayEM, displayName, nameSizeAdjust, nameBallAreaMarge, false, list, false, specificScreenBp)
             }
             
         </Item>

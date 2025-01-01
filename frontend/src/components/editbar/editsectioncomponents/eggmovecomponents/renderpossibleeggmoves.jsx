@@ -1,7 +1,7 @@
 import {Grid, ToggleButtonGroup, ToggleButton} from '@mui/material'
 import EggMove from './eggmove'
 
-export default function RenderPossibleEggMoves({possibleEggMoves, EMs, handleEMChange, maxEMs, isOnHandEdit=false}) {
+export default function RenderPossibleEggMoves({possibleEggMoves, EMs, handleEMChange, maxEMs, isOnHandEdit=false, customXs=undefined, customSx={}}) {
 
     const gridStyles = {
         border: '1px solid black',
@@ -28,6 +28,7 @@ export default function RenderPossibleEggMoves({possibleEggMoves, EMs, handleEMC
                 return (
                     <EggMove 
                         moveName={em} 
+                        customXs={customXs}
                         onClickFunc={disabled ? undefined : (e) => handleEMChange(e)}
                         displayType='possibleEggMoves'
                         selected={isSelected}
@@ -57,14 +58,14 @@ export default function RenderPossibleEggMoves({possibleEggMoves, EMs, handleEMC
         return (
             Array.from(Array(numToFill).keys()).map(n => {
                 return (
-                    <Grid key={`empty-em-fill-${n}`} item xs={2}></Grid>
+                    <Grid key={`empty-em-fill-${n}`} item xs={customXs !== undefined ? 2 : customXs}></Grid>
                 )
             })
         )
     }
 
     return (
-        <Grid container sx={{height: '100%', width: '100%'}} spacing={0}>
+        <Grid container sx={{height: '100%', width: '100%', ...customSx}} spacing={0}>
             {possibleEggMoveButtons()}
             {possibleEggMoves.length <= 6 && fillEggMoves()}
         </Grid>

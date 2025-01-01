@@ -19,33 +19,38 @@ export default function Root() {
             <Typography sx={{fontWeight: 700, mt: 2, color: 'white'}}>This website is not built for mobile</Typography>
         </Box>
         <Box sx={{width: '100%', height: '50px', display: 'flex', mb: 5, backgroundColor: theme.palette.color2.main, borderBottomRightRadius: '100%', borderBottomLeftRadius: '100%'}}></Box>
-        <Box sx={{...theme.components.box.fullCenterCol, width: '100%', height: '450px', mb: 2}}>
-          <Box sx={{...theme.components.box.fullCenterCol, width: '90%', height: '450px', maxWidth: '800px', position: 'relative', border: `1px solid ${theme.palette.color1.dark}`, backgroundColor: hexToRgba(theme.palette.color1.main, 0.9), borderRadius: '10px'}}>
+        <Box sx={{...theme.components.box.fullCenterCol, width: '100%', height: '550px', mb: 2}}>
+          <Box sx={{...theme.components.box.fullCenterCol, width: '90%', height: '550px', maxWidth: '800px', position: 'relative', border: `1px solid ${theme.palette.color1.dark}`, backgroundColor: hexToRgba(theme.palette.color1.main, 0.9), borderRadius: '10px'}}>
             <Button sx={{textTransform: 'none', position: 'absolute', top: '0px', left: '0px', ml: 2, fontSize: '11px', color: theme.palette.color3.main}} size='small' onClick={() => navigate('/announcements')}><ArrowRightAltIcon/> Announcements</Button>
             <Box sx={{...theme.components.box.fullCenterCol, alignItems: 'start', height: '100%', justifyContent: 'start', width: '100%', ml: 4, mt: 3}}>
-              <Typography sx={{fontSize: '36px', color: 'white', fontWeight: 700}}>Post-Launch Update 2</Typography>
-              <Typography sx={{fontSize: '14px', color: 'white', textIndent: '30px', width: '95%'}}>Hey guys! First off, I want to thank everyone for the positive reception to the site! I've been working on implementing some smaller, more easier-to-implement features and so here are the changes:</Typography>
-              <Box sx={{...theme.components.box.fullCenterCol, width: '90%', justifyContent: 'start', mt: 1}}>
-                <Box sx={{...theme.components.box.fullCenterCol, width: '100%', alignItems: 'start'}}>
-                  <Typography sx={{fontSize: '13px', color: 'white', textIndent: '30px'}}> - Added more filtering options. You can now:</Typography>
-                    <Typography sx={{fontSize: '12px', color: 'white', textIndent: '50px'}}> - Filter by game in HOME collections</Typography>
-                    <Typography sx={{fontSize: '12px', color: 'white', textIndent: '50px'}}> - Filter out completed sets of pokemon (where they have all ball combinations owned)</Typography>
-                    <Typography sx={{fontSize: '12px', color: 'white', textIndent: '50px'}}> - Reset filters</Typography>
-                  <Typography sx={{fontSize: '13px', color: 'white', textIndent: '30px'}}> - Added an option to complete an entire pokemon set with one button when they are selected</Typography>
-                  <Typography sx={{fontSize: '13px', color: 'white', textIndent: '30px'}}> - Fixed an error with editing LF/FT Items in non-HOME collections, if you had not set it up when creating the collection</Typography>
-                  <Typography sx={{fontSize: '13px', color: 'white', textIndent: '30px'}}> - Changed the color of wanted/pending tags so they pop out more</Typography>
-                  <Typography sx={{fontSize: '13px', color: 'white', textIndent: '30px'}}> - Slightly changed collection importing</Typography>
-              </Box>
-              <Typography sx={{color: 'white', fontSize: '14px', width: '95%', textIndent: '30px', mt: 2}}>
-                Many of these changes came from feedback given to the site, so thank you if you had suggested these! On top of those smaller changes, 
-                I'm looking to perform some bigger ones well (many also suggested to me), which include linking HOME collections to HOME game collections,
-                exporting collections, and making the site mobile friendly (especially the collection/edit collection page). These might take a month or longer 
-                to complete. 
+              <Typography sx={{fontSize: '36px', color: 'white', fontWeight: 700}}>Mobile Update #1</Typography>
+              <Typography sx={{fontSize: '15px', color: 'white', textIndent: '30px', width: '95%'}}>
+                Hey guys! I have a much larger update this time around. This update took a lot longer to complete than I originally thought, but it was mostly because I haven't had a lot of time to work on the site. 
+                There aren't many changes, but they are very big. Here they are:
               </Typography>
-              <Typography sx={{color: 'white', fontSize: '14px'}}>
-                Thanks again for using the site!
+              <Box sx={{...theme.components.box.fullCenterCol, width: '90%', justifyContent: 'start', mt: 1}}>
+                <Box sx={{...theme.components.box.fullCenterCol, width: '100%', alignItems: 'start', gap: 1}}>
+                  <Typography sx={{fontSize: '14px', color: 'white', textIndent: '30px', fontWeight: 700}}>1. The show collection and edit collection pages are fully mobile friendly and come with new layouts on smaller screens!</Typography>
+                    <Typography sx={{fontSize: '13px', color: 'white', textIndent: '50px'}}> - These are the only two pages that are mobile friendly as of right now, but since they are undoubtedly the most difficult to translate to that format, the other pages shouldn't be too far off.</Typography>
+                    {/* <Typography sx={{fontSize: '12px', color: 'white', textIndent: '50px'}}> - Filter out completed sets of pokemon (where they have all ball combinations owned)</Typography>
+                    <Typography sx={{fontSize: '12px', color: 'white', textIndent: '50px'}}> - Reset filters</Typography> */}
+                  <Typography sx={{fontSize: '14px', color: 'white', textIndent: '30px', fontWeight: 700}}>2. You can now edit the on-hand list when it's in "by pokemon" view</Typography>
+                  {/* <Typography sx={{fontSize: '13px', color: 'white', textIndent: '30px'}}> - You can edit almost </Typography>
+                  <Typography sx={{fontSize: '13px', color: 'white', textIndent: '30px'}}> - Changed the color of wanted/pending tags so they pop out more</Typography>
+                  <Typography sx={{fontSize: '13px', color: 'white', textIndent: '30px'}}> - Slightly changed collection importing</Typography> */}
+              </Box>
+              <Box sx={{...theme.components.box.fullCenterCol, width: '100%', justifyContent: 'start', alignItems: 'start', mt: 1, gap: 1}}>
+              <Typography sx={{color: 'white', fontSize: '15px', width: '95%', textIndent: '30px', mt: 2, textAlign: 'left'}}>Here are some upcoming changes (ordered by priority) along with their ETA (still a very rough estimate as the upcoming season is going to take up a lot of my time!):</Typography>
+              <Typography sx={{fontSize: '13px', color: 'white', textIndent: '50px'}}> 1. Export Collection to .csv file (by the end of January - later on, I plan to add a more comprehensive export function that will automatically construct a google sheet for you - more details later)</Typography>
+              <Typography sx={{fontSize: '13px', color: 'white', textIndent: '50px'}}> 2. Making various pages mobile friendly (ongoing - will be done while I do other updates)</Typography>
+              <Typography sx={{fontSize: '13px', color: 'white', textIndent: '50px'}}> 3. Adding Custom Sheets to Aprimon Collections (May)</Typography>
+              <Typography sx={{fontSize: '13px', color: 'white', textIndent: '50px'}}> 4. Adding Egg Moves and Item Trading to Home Collections (June)</Typography>
+              </Box>
+              <Typography sx={{color: 'white', fontSize: '14px', mt: 3}}>
+                Thanks again for using the site! Happy new year!
               </Typography>
             </Box>
+            <Typography sx={{position: 'absolute', top: '3px', right: '5px', fontSize: '12px', color: 'white'}}>December 31, 2024</Typography>
           </Box>
         </Box>
       </Box>

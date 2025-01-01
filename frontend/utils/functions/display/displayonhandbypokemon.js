@@ -27,3 +27,24 @@ export default function displayOnHandByPokemon(onhandList, collectionList) {
     })
     return displayList
 }
+
+export function updateListWithNewOnHands(newOnhands, onhandList, collectionList) {
+    const newOnhandsInListAlready = newOnhands.filter(p => onhandList.filter(p2 => p2.imgLink === p.imgLink).length !== 0)
+    const newOnhandsNotInList = newOnhands.filter(p => onhandList.filter(p2 => p2.imgLink === p.imgLink).length === 0)
+
+    const newOnHands = displayOnHandByPokemon(newOnhandsNotInList, collectionList)
+    const newOnHandList = onhandList.map(p => {
+        const newOnhandsData = newOnhandsInListAlready.filter(p2 => p2.imgLink === p.imgLink)
+        const changeQty = newOnhandsData.length !== 0
+        if (changeQty) {
+            newOnhandsData.forEach(ohD => {
+                p.balls[ohD.ball].numTotal += ohD.qty
+                if (ohD.isHA !== undefined && !ohD.isHA) {
+                    p.balls[ohD.ball].numNonHA += ohD.qty
+                }
+            })
+        }
+        return p
+    })
+    return [...newOnHandList, ...newOnHands]
+}

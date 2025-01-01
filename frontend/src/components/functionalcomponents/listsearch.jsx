@@ -1,11 +1,13 @@
 import { TextField } from "@mui/material";
 import { useState } from "react";
 
-export default function ListSearch({queryFunc, textFieldProps, textFieldStyles}) {
+export default function ListSearch({queryFunc, textFieldProps, textFieldStyles, customValue=undefined}) {
     const [searchData, setSearchData] = useState('')
 
     const handleSearch = (e) => {
-        setSearchData(e.target.value)
+        if (!customValue) {
+            setSearchData(e.target.value)
+        }
         const reFilterList = e.target.value.length < searchData.length
         queryFunc(e.target.value, reFilterList)
     }
@@ -14,7 +16,7 @@ export default function ListSearch({queryFunc, textFieldProps, textFieldStyles})
         <TextField 
             {...textFieldProps}
             sx={{...textFieldStyles}}
-            value={searchData}
+            value={customValue ? customValue : searchData}
             onChange={(e) => handleSearch(e)}
         />
     )

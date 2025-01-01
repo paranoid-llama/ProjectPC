@@ -48,7 +48,7 @@ const gridComponents = {
     ))
 }
 
-const generateOneOrOtherContent = (option1, option2, activePokemon, handleChange, isBabyAdultSelection, groupInfo, ballScope, nameDisplaySettings) => {
+const generateOneOrOtherContent = (option1, option2, activePokemon, handleChange, isBabyAdultSelection, groupInfo, ballScope, nameDisplaySettings, sw) => {
     const multipleOption2 = Array.isArray(option2)
     const noLegalBalls = !option1 === undefined && (!option1.legalBalls.map(ball => (
         ball === 'apriball' ?
@@ -57,7 +57,7 @@ const generateOneOrOtherContent = (option1, option2, activePokemon, handleChange
     )).includes(true))
     const tyrogueInfo = option1 === undefined
     return (
-        <Item sx={{width: '95%', mb: 1, display: 'flex', flexDirection: 'row', padding: '8px', backgroundColor: '#283f57', justifyContent: 'center'}}>
+        <Item sx={{width: sw ? '94%' : '95%', mb: 1, display: 'flex', flexDirection: 'row', padding: '8px', backgroundColor: '#283f57', justifyContent: 'center'}}>
             {!tyrogueInfo &&
             <>
             <Box sx={{display: 'flex', justifyContent: 'start', alignItems: 'center', width: '50%'}}>
@@ -242,7 +242,7 @@ const generateOneOrOtherContent = (option1, option2, activePokemon, handleChange
     )
 }
 
-export default function PokemonGroupDisplay({totalPokemon, activePokemon, ballScope, isInterchangeableAltFormSelection, groupInfo, handleChange, tyroguePresent}) {
+export default function PokemonGroupDisplay({totalPokemon, activePokemon, ballScope, isInterchangeableAltFormSelection, groupInfo, handleChange, tyroguePresent, sw, height='300px'}) {
     const theme = useTheme()
     const nameDisplaySettings = useRouteLoaderData('root').user === undefined ? undefined :  useRouteLoaderData('root').user.settings.display.pokemonNames
     const isBabyAdultSelection = !Array.isArray(totalPokemon)
@@ -265,16 +265,23 @@ export default function PokemonGroupDisplay({totalPokemon, activePokemon, ballSc
         })
     }
     // const setItemContent = ()
+    const gridItemEdit = sw ? {
+        Item: forwardRef(({children, ...props}, ref) => (
+            <Grid item {...props} xs={3} ref={ref}>
+                {children}
+            </Grid>
+        ))
+    } : {}
 
     return (
         (isBabyAdultSelection || isInterchangeableAltFormSelection) ? 
         <Virtuoso
-            style={{height: '300px', width: '100%', display: 'flex', alignItems: 'center'}}
+            style={{height, width: '100%', display: 'flex', alignItems: 'center'}}
             totalCount={isBabyAdultSelection ? (groupInfo.subGroup === 'regular') ? totalPokemon.babies.length+1 : totalPokemon.babies.length : reOrderedInterchangeableSel.length}
             itemContent={(index) => 
                 isBabyAdultSelection ? 
-                generateOneOrOtherContent(totalPokemon.babies[index], totalPokemon.adults[index], [...fullBabyData.active, ...fullAdultData.active], handleChange, true, groupInfo, ballScope, nameDisplaySettings) : 
-                generateOneOrOtherContent(reOrderedInterchangeableSel[index], interchangeableOtherOpts[reOrderedInterchangeableSel[index].imgLink], activePokemon, handleChange, false, groupInfo, ballScope, nameDisplaySettings)
+                generateOneOrOtherContent(totalPokemon.babies[index], totalPokemon.adults[index], [...fullBabyData.active, ...fullAdultData.active], handleChange, true, groupInfo, ballScope, nameDisplaySettings, sw) : 
+                generateOneOrOtherContent(reOrderedInterchangeableSel[index], interchangeableOtherOpts[reOrderedInterchangeableSel[index].imgLink], activePokemon, handleChange, false, groupInfo, ballScope, nameDisplaySettings, sw)
             }
             // components={{
             //     Scroller: forwardRef((props, ref) => {
@@ -284,10 +291,11 @@ export default function PokemonGroupDisplay({totalPokemon, activePokemon, ballSc
             // }}
         /> :
         <VirtuosoGrid
-            style={{ height: '300px', width: '100%', overflowY: 'scroll' }}
+            style={{ height, width: '100%', overflowY: 'scroll' }}
             totalCount={totalPokemon.length}
             components={{
                 ...gridComponents,
+                ...gridItemEdit
                 // Scroller: forwardRef((props, ref) => {
                 //     const otherProps = {...props, ref: undefined, children: undefined, style: undefined}
                 //     return <ScrollBar style={props.style} forwardedRef={ref} color={theme.palette.color3.dark} children={props.children} otherProps={otherProps}/>

@@ -1,4 +1,4 @@
-import {Box, Typography, Select, MenuItem, ToggleButton, Button} from '@mui/material'
+import {Box, Typography, Select, MenuItem, ToggleButton, Button, useTheme} from '@mui/material'
 import ArrowForward from '@mui/icons-material/ArrowForward'
 import { useState, useEffect, useContext } from 'react'
 import { AlertsContext } from '../../../../alerts/alerts-context'
@@ -10,11 +10,12 @@ import { backendChangeOptions } from '../../../../../utils/functions/backendrequ
 import { sortList } from '../../../../../common/sortingfunctions/customsorting.mjs'
 import SaveChangesConfirmModal from '../savechangesconfirmmodal'
 
-export default function CollectionSortingOptions({elementBg, collectionGen, collectionId, demo}) {
+export default function CollectionSortingOptions({elementBg, collectionGen, collectionId, demo, sw}) {
     const dispatch = useDispatch()
     const {handleError} = useContext(ErrorContext)
     const currentOptions = useSelector((state) => state.collectionState.options.sorting.collection)
     const collectionListState = useSelector((state) => state.collectionState.collection)
+    const theme = useTheme()
 
     const buttonStyles = {
         opacity: 0.5,
@@ -122,7 +123,7 @@ export default function CollectionSortingOptions({elementBg, collectionGen, coll
 
     return (
         <>
-        <Box sx={{...elementBg, width: '95%', height: '35px', display: 'flex', alignItems: 'center', mb: 1}}>
+        <Box sx={{...elementBg, width: '95%', height: sw ? '80px' : '35px', display: 'flex', alignItems: 'center', mb: 1}}>
             <Button sx={{color: 'rgb(38, 188, 201)', fontWeight: 700, textTransform: 'none', fontSize: '1rem'}} onClick={() => changeOptionsSave(false, 'main')}>Collection Options</Button>
             <ArrowForward sx={{color: 'rgb(38, 188, 201)'}}/>
             <Button sx={{color: 'rgb(38, 188, 201)', fontWeight: 700, textTransform: 'none', fontSize: '1rem'}} onClick={() => changeOptionsSave(false, 'sorting')}>Sorting Options</Button>
@@ -130,8 +131,9 @@ export default function CollectionSortingOptions({elementBg, collectionGen, coll
             <Typography sx={{color: 'white', fontWeight: 700, mx: 1}}>Collection Sorting</Typography>
         </Box>
         <Box sx={{...elementBg, width: '95%', height: '85%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', mt: 1, gap: 4}}>
-            <Box sx={{width: '100%', height: '20%', display: 'flex', flexDirection: 'row', gap: 2, alignItems: 'center', ml: 10}}>
+            <Box sx={{width: '100%', height: '20%', display: 'flex', flexDirection: sw ? 'column' : 'row', gap: 2, alignItems: 'center', ml: sw ? 0 : 10}}>
                 <Typography sx={{fontSize: '18px', fontWeight: 700}}>Auto Re-Sort List:</Typography>
+                <Box sx={{...theme.components.box.fullCenterRow, gap: sw ? 4 : 2}}>
                 <ToggleButton 
                     sx={{padding: 1, px: 2, ...buttonStyles}} 
                     value={true} 
@@ -148,12 +150,13 @@ export default function CollectionSortingOptions({elementBg, collectionGen, coll
                 >
                     No
                 </ToggleButton>
+                </Box>
             </Box>
-            <Box sx={{width: '100%', height: '20%', display: 'flex', flexDirection: 'row', gap: 2, alignItems: 'center', ...disabledResortEffect, ml: 10}}>
+            <Box sx={{width: '100%', height: '20%', display: 'flex', flexDirection: sw ? 'column' : 'row', gap: 2, alignItems: 'center', ...disabledResortEffect, ml: sw ? 0:10}}>
                 <Typography sx={{fontSize: '18px', fontWeight: 700}}>Sort By:</Typography>
                 <Select 
                     value={sortingOptions.options.default}
-                    sx={{'&.MuiInputBase-root': {width: '70%', color: 'white', border: '1px solid white'}}}
+                    sx={{'&.MuiInputBase-root': {width: sw ? '90%' : '70%', color: 'white', border: '1px solid white'}}}
                     size='small'
                     onChange={(e, newVal) => changeOption('default', newVal.props.value)}
                 >
@@ -164,16 +167,16 @@ export default function CollectionSortingOptions({elementBg, collectionGen, coll
                 </Select>
             </Box>
         </Box>
-        <Box sx={{mt: 1, height: '35px', width: '100%', display: 'flex'}}>
-            <Box sx={{...elementBg, width: '20%', height: '100%', mr: '20%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+        <Box sx={{mt: 1, height: sw ? '50px' : '35px', width: '100%', display: 'flex'}}>
+            <Box sx={{...elementBg, width: '20%', height: '100%', mr: sw ? '5%' : '20%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                 <Button size='small' variant='contained' sx={{py: 0}} onClick={() => changeOptionsSave(false, 'exit')}>Exit</Button>
             </Box>
-            <Box sx={{...elementBg, width: '20%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                <Button size='small' variant='contained' sx={{py: 0}} onClick={() => changeOptionsSave(true, 'sorting')}>Save</Button>
+            <Box sx={{...elementBg, width: sw ? '35%' : '20%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                <Button size={sw ? 'large' : 'small'} variant='contained' sx={{py: 0, fontSize: sw ? '20px' : '15px'}} onClick={() => changeOptionsSave(true, 'sorting')}>Save</Button>
             </Box>
             {sortingOptions.saveErrorNotice && 
-            <Box sx={{...elementBg, width: '25%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', ml: 5}}>
-                <Typography sx={{fontSize: '12px', color: 'white', fontWeight: 700}}>
+            <Box sx={{...elementBg, width: '25%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', ml: sw ? 1 : 5}}>
+                <Typography sx={{fontSize: '12px', color: 'white', fontWeight: 700, textAlign: 'center'}}>
                     No changes were made!
                 </Typography>
             </Box>
@@ -188,6 +191,8 @@ export default function CollectionSortingOptions({elementBg, collectionGen, coll
             handleChange={finalizeChanges}
             closeModal={closeSaveChangesConfirm}
             saving={sortingOptions.saving}
+            sw={sw}
+            modalWrapperSx={{height: '70%'}}
         />
         </>
     )

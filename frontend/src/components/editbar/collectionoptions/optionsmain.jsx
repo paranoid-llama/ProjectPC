@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux'
 import { changeModalState } from '../../../app/slices/editmode'
 import ArrowForward from '@mui/icons-material/ArrowForward'
 
-export default function OptionsMain({elementBg}) {
+export default function OptionsMain({elementBg, sw}) {
     const dispatch = useDispatch()
     return (
         <>

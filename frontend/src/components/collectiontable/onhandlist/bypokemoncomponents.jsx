@@ -1,5 +1,6 @@
 import { capitalizeFirstLetter } from "../../../../utils/functions/misc"
-import { TableCell, Typography, TableRow, Box, Tooltip } from "@mui/material"
+import { TableCell, Typography, TableRow, Box, Tooltip, Button, useTheme } from "@mui/material"
+import ControlPointIcon from '@mui/icons-material/ControlPoint';
 import { apriballs } from "../../../../common/infoconstants/miscconstants.mjs"
 
 const setBallCols = (userData, ballScopeDisplay) => {
@@ -67,11 +68,15 @@ export function setHeaders(columns, styles) {
     )
 }
 
-export function OnHandQtyDisplay({qty, nonHAQty, reserved, styles, blackSquare}) {
+export function OnHandQtyDisplay({qty, nonHAQty, reserved, styles, blackSquare, boxWrapper=false, height='72px', blackSquareStyles={}, wrapperStyles={}, fs='24px', bcStyles={}, onClickFunc=undefined, isSelected, deleteOnHandMode, flaggedForDeletion}) {
+    const theme = useTheme()
+    const Wrapper = boxWrapper ? Box : TableCell
+    const isSelectedZIdx = isSelected ? {zIndex: 1, borderBottom: '2px solid turquoise', borderRight: 'none', borderLeft: 'none'} : {}
+    const incrementBsStyles = (blackSquare && onClickFunc) ? {':hover': {opacity: 0.8}, position: 'relative', ...isSelectedZIdx} : {}
     return (
-        <TableCell 
+        <Wrapper
             padding='none' 
-            sx={blackSquare ? {backgroundColor: 'black'} : {...styles.tableCell, position: 'relative', height: '72px'}}
+            sx={blackSquare ? {backgroundColor: 'black', ...blackSquareStyles, ...incrementBsStyles} : {...styles.tableCell, position: 'relative', height, ...wrapperStyles}}
         >
             {!blackSquare &&
                 <>
@@ -95,12 +100,12 @@ export function OnHandQtyDisplay({qty, nonHAQty, reserved, styles, blackSquare})
                         </Typography>
                     </Tooltip>}
                 </Box>
-                <Box sx={{...styles.alignment.checkboxAlignment, ...styles.bodyColor, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '42px'}}>
+                <Box sx={{...styles.alignment.checkboxAlignment, ...styles.bodyColor, ...bcStyles, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '42px'}}>
                     <Typography 
                         sx={{
                             position: 'absolute',
                             fontWeight: 700,
-                            fontSize: '24px'
+                            fontSize: fs
                         }}
                     >
                         {qty}
@@ -127,9 +132,22 @@ export function OnHandQtyDisplay({qty, nonHAQty, reserved, styles, blackSquare})
                         </Typography>
                     </Tooltip>}
                 </Box>
+                {(onClickFunc && !deleteOnHandMode) && <Button sx={{width: '100%', minWidth: '0px', height: '50%', padding: 0, position: 'absolute', top: '0px', left: '0px', zIndex: 3}} fullWidth onClick={() => onClickFunc(true)}></Button>}
+                {(onClickFunc && !deleteOnHandMode) && <Button sx={{width: '100%', minWidth: '0px', height: '50%', padding: 0, position: 'absolute', bottom: '0px', left: '0px', zIndex: 3}} fullWidth onClick={() => onClickFunc(false)}></Button>}
+                {(onClickFunc && deleteOnHandMode) && <Button sx={{width: '100%', minWidth: '0px', height: '100%', padding: 0, position: 'absolute', bottom: '0px', left: '0px', zIndex: 3, ':hover': {backgroundColor: 'rgba(200, 40, 40, 0.3)'}}} fullWidth onClick={onClickFunc}></Button>}
+                {flaggedForDeletion &&
+                    <Box onClick={onClickFunc} sx={{position: 'absolute', backgroundColor: 'rgba(200, 40, 40, 0.1)', border: '3px solid rgb(200, 40, 40)', width: '90%', height: '95%', top: '-2px', left: '0px', ':hover': {backgroundColor: 'rgba(200, 40, 40, 0.3)'}}}>
+
+                    </Box>
+                }
                 </>
             }
-        </TableCell>
+            {(blackSquare && onClickFunc) && //indicates you can increment by one
+            <Button sx={{width: '100%', minWidth: '0px', height: '72px', position: 'absolute', top: '0px', left: '0px', padding: 0, zIndex: 1}} fullWidth onClick={() => onClickFunc(true, true)}>
+                <ControlPointIcon sx={{color: 'rgba(255, 255, 255, 0.5)'}}/>
+            </Button>
+            }
+        </Wrapper>
     )
 }
 

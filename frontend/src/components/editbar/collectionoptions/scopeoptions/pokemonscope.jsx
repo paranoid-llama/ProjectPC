@@ -13,7 +13,7 @@ import { AlertsContext } from '../../../../alerts/alerts-context';
 import { ErrorContext } from '../../../../app/contexts/errorcontext';
 import { setListState } from '../../../../app/slices/collectionstate';
 
-export default function PokemonScope({elementBg, collectionGen, collectionId, demo}) {
+export default function PokemonScope({elementBg, collectionGen, collectionId, demo, sw}) {
     const dispatch = useDispatch()
     const {handleError} = useContext(ErrorContext)
     const scopeTotal = useSelector((state) => state.editmode.pokemonScopeTotal)
@@ -156,6 +156,7 @@ export default function PokemonScope({elementBg, collectionGen, collectionId, de
             changingScope={true}
             changeScopeSave={saveChangesConfirmOpen}
             saveErrorNoticeShow={modalState.saveErrorNotice}
+            sw={sw}
         />
         <SaveChangesConfirmModal 
             open={modalState.saveChangesConfirmOpen}
@@ -166,6 +167,7 @@ export default function PokemonScope({elementBg, collectionGen, collectionId, de
             handleChange={finalizeChanges}
             closeModal={closeSaveChangesConfirm}
             saving={modalState.saving}
+            sw={sw}
         />
         </>
     )

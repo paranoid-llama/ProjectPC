@@ -1,6 +1,6 @@
 import {Box, AppBar, Button, ToggleButton, ToggleButtonGroup, Tooltip, Typography, useTheme} from '@mui/material'
 import { useState, useEffect } from 'react'
-import { useLoaderData, useLocation, useNavigate } from 'react-router-dom'
+import { useLoaderData, useLocation, useNavigate, useRevalidator } from 'react-router-dom'
 import { Link } from 'react-router-dom'
 import Header from './subcomponents/header'
 import TextSpaceDouble from './subcomponents/textspacedouble'
@@ -11,18 +11,23 @@ import ItemDisplay from './itemdisplay'
 import ComparisonMain from '../functionalcomponents/comparecollections/comparisonmain'
 import { tradePreferenceDisplay } from '../../../common/infoconstants/miscconstants'
 import { useDispatch, useSelector } from 'react-redux'
-import { changeModalState } from '../../app/slices/editmode'
+import { changeModalState, setUnsavedChanges } from '../../app/slices/editmode'
+import store from '../../app/store'
 import { homeCompatibleGames } from '../../../common/infoconstants/miscconstants.mjs'
 import { checkIfCanTrade } from '../../../utils/functions/comparecollections/checkifcantrade'
 import { setCollectionInitialState } from '../../app/slices/collection'
 import { setOnHandInitialState } from '../../app/slices/onhand'
 import { setOptionsInitialState } from '../../app/slices/options'
+import SWDisplays from './subcomponents/swdisplays'
 
-export default function ShowCollectionTitle({collectionInfo, collectionID, options, isEditMode, isOwner, userIsLoggedIn, userData, demo, passDemoCollectionForward}) {
+export default function ShowCollectionTitle({collectionInfo, collectionID, options, isEditMode, isOwner, userIsLoggedIn, userData, demo, passDemoCollectionForward, smallScreen}) {
     const theme = useTheme()
     const dispatch = useDispatch()
     const navigate = useNavigate()
+    const revalidator = useRevalidator()
     const link = useLocation().pathname
+    const linkBack = link.slice(0, -5)
+    const demoGen = demo && useSelector((state) => state.collectionState.demoData.gen)
     const [displayScreen, setDisplayScreen] = useState('ballProgress')
     const [comparisonModal, setComparisonModal] = useState(false)
     const gen8Collection = isNaN(parseInt(collectionInfo.gen))
@@ -45,13 +50,13 @@ export default function ShowCollectionTitle({collectionInfo, collectionID, optio
     }, [itemsState, link])
 
     const colorStyles1 = {
-        bgColor: 'linear-gradient(90deg, rgba(40,63,87,1) 90%, rgba(60,165,186,0) 100%)',
+        bgColor: smallScreen ? 'rgb(40,63,87)' : 'linear-gradient(90deg, rgba(40,63,87,1) 90%, rgba(60,165,186,0) 100%)',
         isGradient: true,
         textColor: 'white', 
         labelBgColor: '#1e2f41'
     }
     const colorStyles2 = {
-        bgColor: 'linear-gradient(90deg, rgba(181,157,14,1) 90%, rgba(60,165,186,0) 100%)',
+        bgColor: smallScreen ? 'rgb(181,157,14)' : 'linear-gradient(90deg, rgba(181,157,14,1) 90%, rgba(60,165,186,0) 100%)',
         isGradient: true,
         textColor: 'black',
         labelBgColor: '#98830b'
@@ -59,6 +64,7 @@ export default function ShowCollectionTitle({collectionInfo, collectionID, optio
 
     const changeDisplayScreen = (newVal) => {setDisplayScreen(newVal)}
     const toggleComparisonModal = () => {setComparisonModal(!comparisonModal)}
+    // const generateInteractionButtons = 
    
     //breakpoints when the label wraps
     const tradeStatusLabelStyles = {
@@ -73,16 +79,23 @@ export default function ShowCollectionTitle({collectionInfo, collectionID, optio
         },
         '@media only screen and (min-width: 768px) and (max-width: 820px)': {
             fontSize: '11px'
+        },
+        '@media only screen and (min-width: 0px) and (max-width: 440px)': {
+            fontSize: '11px'
         }
     }
     const tradeTagTextStyles = {
+        '@media only screen and (max-width: 360px)': {
+            marginLeft: 0,
+            fontSize: '10.25px'
+        },
         '@media only screen and (min-width: 908px) and (max-width: 1043px)': {
             marginRight: '20px'
         },
         '@media only screen and (min-width: 1044px) and (max-width: 1150px)': {
             marginRight: '40px'
         },
-        fontSize: formattedTradePreferences.length === 3 ? '10.5px' : '12px'
+        fontSize: !smallScreen && formattedTradePreferences.length === 3 ? '10.5px' : '12px'
     }
     const tagAreaStyles = {
         '@media only screen and (max-width: 768px)': {
@@ -103,14 +116,24 @@ export default function ShowCollectionTitle({collectionInfo, collectionID, optio
         ':hover': {backgroundColor: 'rgba(39, 38, 37, 0.9)'}
     }
 
+    const leaveEditMode = () => {
+        dispatch(setUnsavedChanges('reset')) 
+        
+        const state = demo ? {state: {collection: passDemoCollectionForward(true)}} : {}
+        navigate(linkBack, state)
+        revalidator.revalidate()
+        //do not switch the order of these or it ends up revalidating the edit route before it changes which means every other unnecessary state 
+        //(col onhand options) gets revalidated too. at least, i THINK thats what happens since it re-renders a LOT when leaving edit mode
+    }
+
     const initializeEditMode = () => {
         const state = demo ? {state: {collection: passDemoCollectionForward(true)}} : {}
         navigate(demo ? '/demo-collection/edit' : `/collections/${collectionID}/edit`, state)
     }
 
     return (
-        <Box sx={{display: 'flex', flexDirection: 'row', width: '100%', marginBottom: '1rem', height: '200px'}}>
-            <Box sx={{display: 'flex', flexDirection: 'column', width: '45%'}}>
+        <Box sx={{display: 'flex', flexDirection: smallScreen ? 'column' : 'row', marginBottom: '1rem', height: smallScreen ? 'auto' : '200px'}}>
+            <Box sx={{display: 'flex', flexDirection: 'column', width:  smallScreen ? '100%' : '45%'}}>
                 {/* <TextSpaceDouble label1={'Type'} text1={collectionType} label2={'Owner'} text2={collectionInfo.owner.username} colorStyles={colorStyles} width='100%'/>
                 <TextSpaceDouble label1='Trade Status' text1={tradeStatus} text2={formattedTradePreferences} colorStyles={colorStyles} width='100%' isLast={true} otherTextStyles={tradeStatusStyles}/> */}
                 <TextSpaceSingle 
@@ -119,6 +142,7 @@ export default function ShowCollectionTitle({collectionInfo, collectionID, optio
                     text={collectionType}
                     label={'Type'}
                     width='100%'
+                    noRounding={smallScreen ? true : false}
                 />
                 <TextSpaceSingle 
                     colorStyles={colorStyles2}
@@ -126,6 +150,7 @@ export default function ShowCollectionTitle({collectionInfo, collectionID, optio
                     text={demo ? 'You' : collectionInfo.owner.username}
                     label={'Owner'}
                     width='100%'
+                    noRounding={smallScreen ? true : false}
                 />
                 <TextSpaceSingle 
                     colorStyles={colorStyles1}
@@ -134,6 +159,7 @@ export default function ShowCollectionTitle({collectionInfo, collectionID, optio
                     text={ownerTradesDisabled ? 'Not accepting offers!' : tradePreferenceDisplay.status[tradePreferences.status]}
                     label={'Trade Status'}
                     width='100%'
+                    noRounding={smallScreen ? true : false}
                 />
                 <TextSpaceSingle 
                     colorStyles={colorStyles2}
@@ -142,14 +168,32 @@ export default function ShowCollectionTitle({collectionInfo, collectionID, optio
                     multipleTexts={formattedTradePreferences}
                     displayingTags={true}
                     width='100%'
+                    noRounding={smallScreen ? true : false}
                 />
+                {!smallScreen ? 
                 <Box sx={{width: '100%', height: '20%', display: 'flex', justifyContent: 'center'}}>
-                    <ToggleButtonGroup exclusive sx={{mt: 0.5, mb: 0.5, width: '95%', '& .MuiToggleButton-root': {border: '1px solid rgba(40,63,87,1)', color: 'white', backgroundColor: '#272625'}}} size='small' value={displayScreen} onChange={(e, newVal) => changeDisplayScreen(newVal)}>
+                    <ToggleButtonGroup exclusive sx={{mt: 0.5, mb: 0.5, width: smallScreen ? '100%' : '95%', '& .MuiToggleButton-root': {border: '1px solid rgba(40,63,87,1)', color: 'white', backgroundColor: '#272625'}}} size='small' value={displayScreen} onChange={(e, newVal) => changeDisplayScreen(newVal)}>
                         <ToggleButton value='ballProgress' sx={{width: '40%', fontSize: '12px', padding: 0, ...toggleButtonSelectedStyles}}>Progress</ToggleButton>
                         <ToggleButton value='rates' sx={{width: '30%', fontSize: '12px', ...toggleButtonSelectedStyles}}>Rates</ToggleButton>
                         <ToggleButton value='items' sx={{width: '30%', fontSize: '12px', ...toggleButtonSelectedStyles, '&.Mui-disabled': {color: 'white', opacity: 0.7}}} disabled={tradePreferences.items === 'none'}>Items</ToggleButton>
                     </ToggleButtonGroup>
+                </Box> : 
+                <Box sx={{width: '100%', height: '20%', ...theme.components.box.fullCenterCol}}>
+                    <SWDisplays 
+                        display={displayScreen}
+                        changeDisplayScreen={changeDisplayScreen}
+                        ballScopeInit={options.collectingBalls}
+                        isEditMode={isEditMode}
+                        demo={demo}
+                        collectionList={collectionInfo.ownedPokemon}
+                        userData={userData}
+                        isOwner={isOwner}
+                        owner={demo ? 'You' : collectionInfo.owner.username}
+                        gen={collectionInfo.gen}
+                        tradePreferences={tradePreferences}
+                    />
                 </Box>
+                }
                 <Box sx={{width: '100%', height: '15%', display: 'flex', justifyContent: 'center'}}>
                     {canInitiateTrade && <Button sx={{width: '60%', fontSize: '11px'}} onClick={toggleComparisonModal}>Compare Collections</Button>}
                     {canInitiateTrade && 
@@ -164,15 +208,18 @@ export default function ShowCollectionTitle({collectionInfo, collectionID, optio
                         </>
                     }
                     {(isOwner && !isEditMode) && <Button sx={{width: '40%', fontSize: '12px'}} onClick={initializeEditMode}>Edit Mode</Button>}
-                    {isEditMode && <Button sx={{fontSize: '12px'}} onClick={() => dispatch(changeModalState({open: true, screen: 'main'}))}>Collection Options</Button>}
+                    {(isEditMode && smallScreen) && <Button sx={{fontSize: '11px', width: '50%'}} onClick={() => leaveEditMode()}>Leave Edit Mode</Button>}
+                    {isEditMode && <Button sx={{fontSize: smallScreen ? '11px' : '12px', width: smallScreen ? '50%' : 'auto'}} onClick={() => dispatch(changeModalState({open: true, screen: 'main'}))}>Collection Options</Button>}
                 </Box>
             </Box>
-            <Box sx={{display: 'flex', flexDirection: 'column', alignItems: 'center', width: '55%'}}>
+            {!smallScreen && 
+            <Box sx={{display: 'flex', flexDirection: 'column', alignItems: 'center', width: '55%', height: 'auto'}}>
                 {displayScreen === 'ballProgress' && <CollectionProgress ballScopeInit={options.collectingBalls} isEditMode={isEditMode} demo={demo} collectionList={collectionInfo.ownedPokemon} isOwner={isOwner} userData={userData}/>}
                 {displayScreen === 'rates' && <RateDisplay rates={tradePreferences.rates} owner={demo ? '' : collectionInfo.owner.username} collectionGen={collectionInfo.gen} demo={demo}/>}
-                {displayScreen === 'items' && <ItemDisplay collectionGen={collectionInfo.gen} itemTradeStatus={tradePreferences.items} lfItems={tradePreferences.lfItems} ftItems={tradePreferences.ftItems}/>}
+                {(displayScreen === 'items' && collectionInfo.gen !== 'home') && <ItemDisplay collectionGen={collectionInfo.gen} itemTradeStatus={tradePreferences.items} lfItems={tradePreferences.lfItems} ftItems={tradePreferences.ftItems}/>}
             </Box>
-            {canInitiateTrade && <ComparisonMain open={comparisonModal} toggleModal={toggleComparisonModal} tradeableCollections={tradeableCollections} collectionData={collectionInfo} userData={userData}/>}
+            }
+            {canInitiateTrade && <ComparisonMain open={comparisonModal} toggleModal={toggleComparisonModal} tradeableCollections={tradeableCollections} collectionData={collectionInfo} userData={userData} sw={smallScreen}/>}
         </Box>
     )
 }

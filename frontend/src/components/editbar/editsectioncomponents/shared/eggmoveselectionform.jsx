@@ -2,7 +2,7 @@ import {Box, FormLabel, ToggleButtonGroup, styled, Grid, Typography} from '@mui/
 import MuiToggleButton from '@mui/material/ToggleButton'
 import RenderEggMoves from './rendereggmoves'
 
-export default function EggMoveSelectionForm({noEMs, EMs, emCount, handleEmCountChange, toggleScreen, maxEms=4, idxOfSelectedEM, handleEMChange, disabled, width='40%', height='100%', color='black', newOnHandSelect=false, noInfoBgColor, isHomeCollection}) {
+export default function EggMoveSelectionForm({noEMs, EMs, emCount, handleEmCountChange, toggleScreen, maxEms=4, idxOfSelectedEM, handleEMChange, disabled, width='40%', height='100%', color='black', newOnHandSelect=false, noInfoBgColor, isHomeCollection, otherEmTextStyles={}}) {
 
     const disabledStyle = disabled ? {opacity: 0.5} : {}
 
@@ -45,7 +45,18 @@ export default function EggMoveSelectionForm({noEMs, EMs, emCount, handleEmCount
                     </Box>
                 </Box>
                 <Box sx={{height: '100%', width: '65%', display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
-                    <RenderEggMoves emCount={emCount} EMs={EMs} maxEms={maxEms} idxOfSelectedEM={idxOfSelectedEM} toggleScreen={toggleScreen} handleEMChange={handleEMChange} disabledSelection={disabled} noInfoBgColor={noInfoBgColor}/>
+                    <RenderEggMoves 
+                        emCount={emCount} 
+                        EMs={EMs} 
+                        maxEms={maxEms} 
+                        idxOfSelectedEM={idxOfSelectedEM} 
+                        toggleScreen={toggleScreen} 
+                        handleEMChange={handleEMChange} 
+                        disabledSelection={disabled} 
+                        noInfoBgColor={noInfoBgColor}
+                        otherEmTextStyles={otherEmTextStyles}
+                        // {...swRenderEMTooltipInfo}
+                    />
                 </Box>
             </>
             }

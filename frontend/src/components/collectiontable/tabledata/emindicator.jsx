@@ -2,11 +2,11 @@ import {Box, Typography, ToggleButton, Button, Grid, Tooltip, ClickAwayListener,
 import { useState } from 'react'
 import getMoveStyles from '../../../../utils/functions/eggmoves/getmovestyles'
 
-export default function EMIndicator({sx, textOnly, isEditMode, emCount, EMs, handleChange}) {
+export default function EMIndicator({sx, textOnly, isEditMode, emCount, EMs, handleChange, smallWidth}) {
     const theme = useTheme()
     const [emsOpen, setEmsOpen] = useState(false)
     const disabledButton = !textOnly && !isEditMode
-    const offset = !textOnly ? {right: '-2px'} : {}
+    const offset = smallWidth ? {} : !textOnly ? {right: '-2px'} : {}
 
     const renderEmTooltip = () => {
         const renderedEms = EMs.slice(0, emCount)

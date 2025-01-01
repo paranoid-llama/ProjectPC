@@ -1,8 +1,9 @@
 import getMoveStyles from './../../../../../utils/functions/eggmoves/getmovestyles'
 import {Grid, Typography} from '@mui/material'
 
-export default function EggMove({moveName='none', onClickFunc=undefined, displayType, selected=false, displayNoInfo=false, displayAddEM=false, disabled=false, dropDownMenu=false, disabledWholeEMSelection=false, noInfoBgColor}) {
-    const xs = displayType === 'possibleEggMoves' ? 2 :
+export default function EggMove({moveName='none', onClickFunc=undefined, displayType, selected=false, displayNoInfo=false, displayAddEM=false, disabled=false, dropDownMenu=false, disabledWholeEMSelection=false, noInfoBgColor, customXs=undefined, otherTextStyles={}}) {
+    const xs = customXs !== undefined ? customXs :  
+            displayType === 'possibleEggMoves' ? 2 :
         (displayType === 'currentEggMoves' || displayType === 'editScreenCurrentEMs') ? 6 :
         displayType === 'onHandEditEMs' && 6
     const spacing = displayType === 'onHandEditEMs' ? 0.5 : 0
@@ -39,9 +40,10 @@ export default function EggMove({moveName='none', onClickFunc=undefined, display
             return moveName
         } 
     }
+    
     return (
         <Grid item xs={xs} sx={{...gridStyles, ...typeStyles, ...selectedStyles, ...infoStyles}} onClick={onClickFunc}>
-            <Typography sx={textStyles}>{disabledWholeEMSelection ? '' : displayText()}</Typography>
+            <Typography sx={{...textStyles, ...otherTextStyles}}>{disabledWholeEMSelection ? '' : displayText()}</Typography>
         </Grid>
     )
 }

@@ -16,6 +16,10 @@ import userLoginRequest from "../../../utils/functions/backendrequests/users/log
 import userLogoutRequest from "../../../utils/functions/backendrequests/users/logout";
 import hexToRgba from "hex-to-rgba";
 import DotWaitingText from "../functionalcomponents/dotwaitingtext";
+import { useSelector } from "react-redux";
+import { selectScreenBreakpoint } from "../../app/selectors/windowsizeselectors";
+import ImgData from "../collectiontable/tabledata/imgdata";
+import SmallWidthDashboard from "./navbarcomps/smallwidthdashboard";
 
 export default function NavBar() {
     const theme = useTheme()
@@ -39,6 +43,12 @@ export default function NavBar() {
             }, 1)
         }
     }
+
+    const screenBreakpoint = useSelector((state) => selectScreenBreakpoint(state, 'navbar'))
+    
+    const superSmallSc = screenBreakpoint === 'super-sm' || screenBreakpoint === 'tiny'
+    const smallBreakpoint = superSmallSc || screenBreakpoint === 'sm'
+    const tinyScreen = screenBreakpoint === 'tiny'
 
     //alerts
     const [alertIds, setAlertIds] = useState([])
@@ -174,15 +184,22 @@ export default function NavBar() {
         {loginArea.open && <Box onClick={toggleLoginArea} sx={{width: '100vw', height: '100vh', position: 'fixed', opacity: 0.5, backgroundColor: 'black', zIndex: 250}}></Box> }
         <Box sx={{width: '100%', height: '61px', zIndex: 300}}>
             <AppBar position="relative">
-                <div className="NavBar">
+                <div className="NavBar" style={{justifyContent: tinyScreen ? 'center' : 'end'}}>
+                    {!tinyScreen && 
+                    <Link href="/" sx={{color: '#FFF'}} underline="none">
+                        <Box sx={{ml: 1, flexGrow: 1, position: superSmallSc ? 'absolute' : 'auto', left: '4px', top: '10px', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                            <ImgData type='icons' linkKey='aprimon' size='40px'/>
+                        </Box>
+                    </Link>}
+                    {!superSmallSc && 
                     <Typography
                         variant="h4"
                         noWrap
-                        sx={{flexGrow: 1, display: {sm: 'flex'}, mx: 5}}
+                        sx={{flexGrow: 1, display: {sm: 'flex'}, mr: 5, ml: 2}}
                         className="NavTypography"
                     >
                         <Link href="/" sx={{color: '#FFF'}} underline="none">Pokellections</Link>
-                    </Typography>
+                    </Typography>}
                     
                     {(!userData.loggedIn && loginArea.open) && 
                     <Box sx={{position: 'absolute', width: '50%', minWidth: '360px', maxWidth: '500px', height: '175px', top: '100%', right: '0.01%', zIndex: 1, ...theme.components.box.fullCenterCol}}>
@@ -216,7 +233,7 @@ export default function NavBar() {
                             </Box>
                         </Box>
                     </Box>}
-                    {(userData.loggedIn && userArea.open) &&
+                    {(userData.loggedIn && userArea.open && !smallBreakpoint) &&
                     <Box sx={{position: 'absolute', width: '50%', minWidth: '200px', maxWidth: '300px', height: '315px', top: '100%', right: '0.01%', zIndex: 1, ...theme.components.box.fullCenterCol}}>
                         <Box sx={{...theme.components.box.fullCenterCol, zIndex: 1, backgroundColor: theme.palette.color1.dark, width: '100%', height: '100%', borderBottom: '1px solid black', borderLeft: '1px solid black', borderBottomLeftRadius: '10px'}}>
                             <Box sx={{width: '90%', height: '40%', ...theme.components.box.fullCenterCol}}>
@@ -233,6 +250,8 @@ export default function NavBar() {
                                 const linkTo = o === 'Notifications' ? `/users/${userData.user.username}/notifications` : o === 'Profile' ? `/users/${userData.user.username}` : o === 'Settings' ? `/users/${userData.user.username}/settings` : o === 'Logout' ? `/` : o === 'Trades' ? `/users/${userData.user.username}/trades` : null
                                 const backgroundColorStyle = evenOption ? {backgroundColor: theme.palette.color1.main} : {backgroundColor: theme.palette.color1.darker}
                                 const hoverStyle = disabledNotifications ? {} : evenOption ? {'&:hover': {backgroundColor: hexToRgba(theme.palette.color1.main, 0.5), cursor: 'pointer'}} : {'&:hover': {backgroundColor: hexToRgba(theme.palette.color1.darker, 0.3), cursor: 'pointer'}}
+                                const textWidth = isNotifications ? {} : {width: '100%'}
+                                const noCollectionStyle = isCollectionOption && userData.user.collections.length === 0 ? {color: 'grey'} : {}
                                 return (
                                     <Box 
                                         sx={{
@@ -242,25 +261,31 @@ export default function NavBar() {
                                             position: 'relative',
                                             ...theme.components.box.fullCenterCol, 
                                             ...backgroundColorStyle, 
-                                            ...hoverStyle
+                                            ...hoverStyle,
+                                            borderBottomLeftRadius: o === 'Logout' ? '10px' : '0px'
                                         }} 
                                         key={`user-${o}-option`}
                                         onMouseEnter={isCollectionOption ? () => toggleCollectionArea(true) : null}
                                         onMouseLeave={isCollectionOption ? () => toggleCollectionArea(false) : null}
                                         onClick={(isCollectionOption || (o === 'Logout' && loggingInOrOut)) || (o === 'Notifications' && location === `/users/${userData.user.username}/notifications`) ? null : () => navigateUserOption(o === 'Logout', linkTo)}
                                     >
-                                        <Typography sx={{width: '100%', textAlign: 'center', position: 'relative', opacity: location === `/users/${userData.user.username}/notifications` && o === 'Notifications' ? 0.5 : 1}}>
-                                            {isCollectionOption && 
+                                        {isNotifications ? 
+                                        <Box sx={{position: 'relative', opacity: location === `/users/${userData.user.username}/notifications` ? 0.5 : 1}}>
+                                            <Typography sx={{textAlign: 'center'}}>Notifications</Typography>
+                                            {(unreadNotificationsAmount > 0) && 
+                                                <Box sx={{width: '20px', height: '20px', borderRadius: '50%', position: 'absolute', bottom: '3px', left: '108%', backgroundColor: 'rgb(250, 53, 69)', opacity: location === `/users/${userData.user.username}/notifications` ? 0.5 : 1}}>
+                                                    <Typography sx={{fontSize: '14px', width: '19px', fontWeight: 700, color: 'white', position: 'absolute', left: '0px', top: '0px', textAlign: 'center'}}>{unreadNotificationsAmount}</Typography>
+                                                </Box>
+                                            }
+                                        </Box> : 
+                                        <Typography sx={{...textWidth , textAlign: 'center', position: 'relative', ...noCollectionStyle}}>
+                                            {(isCollectionOption && userData.user.collections.length !== 0) && 
                                                 <ArrowBack sx={{position: 'absolute', left: '0%', width: '16px'}}/>
                                             }
-                                            {(o === 'Logout' && loggingInOrOut) ? <>Logging out<DotWaitingText/></>  : o}
-                                            
+                                            {(o === 'Logout' && loggingInOrOut) ? <>Logging out<DotWaitingText/></>  : (isCollectionOption && userData.user.collections.length === 0) ? <i>No Collections</i> : o}
                                         </Typography>
-                                        {(isNotifications && unreadNotificationsAmount > 0) && 
-                                            <Box sx={{width: '20px', height: '20px', borderRadius: '50%', position: 'absolute', bottom: '20%', right: '75px', backgroundColor: 'rgb(250, 53, 69)', opacity: location === `/users/${userData.user.username}/notifications` ? 0.5 : 1}}>
-                                                <Typography sx={{fontSize: '14px', width: '19px', fontWeight: 700, color: 'white', position: 'absolute', left: '0px', top: '0px', textAlign: 'center'}}>{unreadNotificationsAmount}</Typography>
-                                            </Box>
                                         }
+                                        
                                         {isCollectionOption && 
                                             <Box 
                                                 ref={collectionAreaRef} 
@@ -311,18 +336,31 @@ export default function NavBar() {
                         </Box>
                     </Box>
                     }
+                    {(userData.loggedIn && userArea.open && smallBreakpoint) && 
+                        <SmallWidthDashboard 
+                            toggleDashboard={() => setUserArea({...userArea, open: !userArea.open})}
+                            userData={userData.user}
+                            unreadNotificationsAmount={unreadNotificationsAmount}
+                            loggingInOrOut={loggingInOrOut}
+                            navigateUserOption={navigateUserOption}
+                            goToCollectionFunc={(link) => {
+                                navigate(link)
+                                setUserArea({...userArea, open: false})
+                            }}
+                        />
+                    }
                     {icons.map((i, idx) => {
                         const isLogin = i === 'login'
                         const isUserProfile = i === 'user'
                         const doubleWord = i === 'homeicon' || i === 'createcollection'
                         const display = !doubleWord ? i[0].toUpperCase() + i.slice(1, i.length) : i === 'homeicon' ? 'Home' : 'New Collection'
                         return (
-                            <Fragment key={i}>
+                            <Box  key={i} sx={{...theme.components.box.fullCenterCol, width: '66px', height: '100%'}}>
                                 {(!isLogin && !isUserProfile) ?
                                 <Tooltip title={display} arrow>
                                 <Link 
                                     href={iconLinks[idx]} 
-                                    sx={{mr: 2, display: {sm:'flex'}, justifyContent: {xs: 'center'}, width: '50px'}}
+                                    sx={{display: {sm:'flex', xs: 'flex'}, justifyContent: {xs: 'center'}, width: '50px'}}
                                 >
                                     <IconButton
                                         size="small"
@@ -336,7 +374,7 @@ export default function NavBar() {
                                 isUserProfile ? 
                                 <IconButton
                                     size="small"
-                                    sx={{mr: 2, display: {sm:'flex'}, justifyContent: {xs: 'center'}, width: '50px', position: 'relative'}}
+                                    sx={{display: {sm:'flex'}, justifyContent: {xs: 'center'}, width: '50px', position: 'relative'}}
                                     edge="end"
                                     aria-label={i}
                                     className="NavIcons"
@@ -351,7 +389,7 @@ export default function NavBar() {
                                 <Tooltip title={display} arrow>
                                 <IconButton
                                     size="small"
-                                    sx={{mr: 2, display: {sm:'flex'}, justifyContent: {xs: 'center'}, width: '50px',}}
+                                    sx={{display: {sm:'flex'}, justifyContent: {xs: 'center'}, width: '50px',}}
                                     edge="end"
                                     aria-label={i}
                                     className="NavIcons"
@@ -360,7 +398,7 @@ export default function NavBar() {
                                     <img src={`https://res.cloudinary.com/duaf1qylo/image/upload/icons/${i}white.png`} height='20px' width= '20px'/>
                                 </IconButton></Tooltip>
                                 }
-                            </Fragment>
+                            </Box>
                         )
                     })}
                 </div>

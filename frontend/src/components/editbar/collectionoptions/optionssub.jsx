@@ -6,7 +6,7 @@ import { changeModalState } from '../../../app/slices/editmode'
 import { getPokemonGroups } from '../../../../utils/functions/backendrequests/getpokemongroups'
 import ArrowForward from '@mui/icons-material/ArrowForward'
 
-export default function OptionsSub({elementBg, screenType, collectionGen}) {
+export default function OptionsSub({elementBg, screenType, collectionGen, sw}) {
     const dispatch = useDispatch()
     const {handleError} = useContext(ErrorContext)
     const [isPending, startTransition] = useTransition()
@@ -62,10 +62,10 @@ export default function OptionsSub({elementBg, screenType, collectionGen}) {
 
     return (
         <>
-        <Box sx={{...elementBg, width: '95%', height: '35px', display: 'flex', alignItems: 'center'}}>
+        <Box sx={{...elementBg, width: '95%', height: sw ? '80px' : '35px', display: 'flex', alignItems: 'center'}}>
             <Button sx={{color: 'rgb(38, 188, 201)', fontWeight: 700, textTransform: 'none', fontSize: '1rem'}} onClick={() => dispatch(changeModalState({screen: 'main'}))}>Collection Options</Button>
             <ArrowForward sx={{color: 'rgb(38, 188, 201)'}}/>
-            <Typography sx={{color: 'white', fontWeight: 700, mx: 1}}>{navIndicator}</Typography>
+            <Typography sx={{color: 'white', fontWeight: 700, mx: 1, textAlign: 'center'}}>{navIndicator}</Typography>
         </Box>
         <Box sx={{...elementBg, width: '95%', height: '92%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', mt: 1}}>
             {!isPending ? 

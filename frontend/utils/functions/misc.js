@@ -75,13 +75,13 @@ function randomGender() {
 function setNewOnHandPokemonState(ballInfo, newSelection) {
     if (ballInfo.isHA === undefined && ballInfo.EMs === undefined) {
         const newOnHandData = {
-            gender: newSelection.possibleGender === 'both' ? randomGender() : newSelection.possibleGender, 
+            gender: newSelection.possibleGender === 'both' ? 'unknown' : newSelection.possibleGender, 
             qty: 1
         }
         return newOnHandData
     } else if (ballInfo.isHA === undefined) {
         const newOnHandData = {
-            gender: newSelection.possibleGender === 'both' ? randomGender() : newSelection.possibleGender, 
+            gender: newSelection.possibleGender === 'both' ? 'unknown' : newSelection.possibleGender, 
             emCount: ballInfo.emCount,
             EMs: ballInfo.EMs,
             qty: 1
@@ -89,14 +89,14 @@ function setNewOnHandPokemonState(ballInfo, newSelection) {
         return newOnHandData
     } else if (ballInfo.EMs === undefined) {
         const newOnHandData = {
-            gender: newSelection.possibleGender === 'both' ? randomGender() : newSelection.possibleGender, 
+            gender: newSelection.possibleGender === 'both' ? 'unknown' : newSelection.possibleGender, 
             isHA: ballInfo.isHA,
             qty: 1
         }
         return newOnHandData
     } else {
         const newOnHandData = {
-            gender: newSelection.possibleGender === 'both' ? randomGender() : newSelection.possibleGender, 
+            gender: newSelection.possibleGender === 'both' ? 'unknown' : newSelection.possibleGender, 
             isHA: ballInfo.isHA,
             emCount: ballInfo.emCount,
             EMs: ballInfo.EMs,

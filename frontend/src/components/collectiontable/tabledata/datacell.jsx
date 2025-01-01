@@ -1,4 +1,4 @@
-import {Box, TableCell, Typography, useTheme, Tooltip} from '@mui/material'
+import {Box, TableCell, Typography, useTheme, Tooltip, Checkbox} from '@mui/material'
 import ImgData from './imgdata'
 import {useSelector, useDispatch} from 'react-redux'
 import {setSelected, deselect} from './../../../app/slices/editmode'
@@ -10,7 +10,7 @@ import { setPokemon } from '../../../app/slices/tradeoffer'
 import { selectIfPokemonIsSelected } from '../../../app/selectors/tradeselectors'
 import { getGameColor, homeDisplayGames } from '../../../../common/infoconstants/miscconstants.mjs'
 
-export default function DataCell({label, styles, alignment='none', isEditMode, imgParams={isImg: false}, leftMostCell=false, isSelected=false, onClickFunc, onhandCells=false, specialStyles={}, blackSquare=false, availableGames=undefined, localHandleChange=null, isTradePage=false, tradeSide, tradeDispData, imgAlignment={}, bodyColorOverride={}, fontSizeOverride, reserved=0, isEmDisplay=false, flaggedForDeletion=null, ohDeleteMode=false, specificDeselectFunc=null}) {
+export default function DataCell({label, styles, alignment='none', isEditMode, imgParams={isImg: false}, leftMostCell=false, isSelected=false, onClickFunc, onhandCells=false, specialStyles={}, blackSquare=false, availableGames=undefined, localHandleChange=null, isTradePage=false, tradeSide, tradeDispData, imgAlignment={}, bodyColorOverride={}, fontSizeOverride, reserved=0, isEmDisplay=false, flaggedForDeletion=null, ohDeleteMode=false, specificDeselectFunc=null, checkboxCell=false, checkboxData={}}) {
     const {isImg, imgLinkKey, imgSize='32px', imgType='poke'} = imgParams
     const theme = useTheme()
     const blackSquareStyles = blackSquare ? {backgroundColor: 'black'} : {}
@@ -74,7 +74,14 @@ export default function DataCell({label, styles, alignment='none', isEditMode, i
             <Box sx={!(blackSquare) ? {...alignment, ...bodyColorSx, ...relativeStyle, ...extraBodyColorSx, ...bodyColorOverride} : {}}>
                 {isImg ? 
                 <><Box sx={{position: 'absolute', ...imgAlignment}}><ImgData type={imgType} size={imgSize} linkKey={imgLinkKey}/></Box></> :
-                !(blackSquare) && <Typography sx={{...otherTextStyles, ...specialStyles, width: '100%', height: '100%', textAlign: 'center', position: 'absolute', left: '0px', top: '0px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: fontSizeOverride ? fontSizeOverride : isEmDisplay ? '12px' : '14px'}} variant={'body2'}>{label}</Typography>
+                checkboxCell ? 
+                    <Checkbox 
+                        sx={{...checkboxData.sx, color: 'white', pointerEvents: isEditMode ? 'auto' : 'none'}}
+                        checked={checkboxData.active}
+                        onChange={checkboxData.onChange}
+                    />
+                : 
+                !(blackSquare) && <Typography sx={{...otherTextStyles, ...specialStyles, width: '100%', height: '100%', textAlign: 'center', position: 'absolute', left: '0px', top: '0px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: fontSizeOverride ? fontSizeOverride : isEmDisplay ? '12px' : '14px', fontStyle: label === 'Unknown' ? 'italic' : 'normal'}} variant={'body2'}>{label}</Typography>
                 }
                 {includeBottomText && 
                 <Box sx={{position: 'absolute', fontSize: '10px', width: '80%', right: '10%', bottom: '-3px', display: 'flex', justifyContent: 'center'}}>

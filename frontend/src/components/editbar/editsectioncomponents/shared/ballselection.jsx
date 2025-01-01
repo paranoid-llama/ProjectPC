@@ -4,10 +4,10 @@ import {Box, ToggleButtonGroup, ToggleButton} from '@mui/material'
 import ImgData from '../../../collectiontable/tabledata/imgdata'
 import {renderedBallList} from '../../../../../utils/functions/renderballselection'
 
-export default function BallSelection({relativeHeight, relativeWidth, allowedBalls, handleChange, value}) {
+export default function BallSelection({relativeHeight, relativeWidth, allowedBalls, handleChange, value, customBallStyles={}, customBallSize='32px'}) {
     const selectionBoxRef = useRef()
-
-    const renderedBalls = renderedBallList(allowedBalls, value)
+    const finalPositioning = customBallStyles.padding !== undefined ? (parseInt(customBallStyles.padding)*2+parseInt(customBallSize))/2 : (parseInt(customBallSize)+10)/2
+    const renderedBalls = renderedBallList(allowedBalls, value, finalPositioning)
 
     const handleAllChange = (event, newBall) => {
         // code to make transition. WIP.
@@ -24,7 +24,7 @@ export default function BallSelection({relativeHeight, relativeWidth, allowedBal
         const unselectedBallStyles = unselectedBall && {opacity: 0.5}
         const additionalStyles = twoToFourAllowedBalls && style
         return (
-            <ToggleButton key={ball} sx={{border: 'none', ...unselectedBallStyles, padding: '5px', ...additionalStyles}} value={ball}><ImgData type='ball' linkKey={ball}/></ToggleButton>
+            <ToggleButton key={ball} sx={{border: 'none', ...unselectedBallStyles, padding: '5px', ...additionalStyles, ...customBallStyles}} value={ball}><ImgData size={customBallSize} type='ball' linkKey={ball}/></ToggleButton>
         )
     }
 
